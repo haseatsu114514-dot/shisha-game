@@ -12,6 +12,7 @@ import {
   CALL_MISS, byTime,
 } from "./tonari-floor-data.js";
 import { floorVenue, floorVenueShiftPay, resolveVenueVisitor, TONARI_RULES } from "./floor-venues.js";
+import { CHAT_STAFF, STAFF_CHAT_PERCENT } from "./floor-chats.js";
 
 export const FLOOR_TABLE_COUNT = TONARI_RULES.tableCount;
 /** 1刻みの実時間（ミリ秒）。画面の時計と検査で同じ値を使う。 */
@@ -157,7 +158,8 @@ const personalOrder = (o) => ({ wish: o.wish, quote: o.quote, pref: { label: o.l
  * @param opts.dusk 昼から夜まで通しの店番（2026-11-25 オーナー「昼から始めて2コマ使う」・TFL62）。営業の半ばで日が暮れ、
  *   そこから来る客は夜の呼び名になる（画面は店内の絵を夜へ替える）。daytime と一緒に使う
  */
-export function createFloorNight({ venue = "tonari", seed = 0, level = 0, chapter = 1, rainy = false, daytime = false, night = null, visitor = null, visitorName = null, dusk = false, floorPerks = null } = {}) {
+// staff＝一緒に店に立つ人（"tsumugi"＝第5章の tonari でつむぎが働く日。雑談の一部がつむぎの話になる・TFL69）
+export function createFloorNight({ venue = "tonari", seed = 0, level = 0, chapter = 1, rainy = false, daytime = false, night = null, visitor = null, visitorName = null, dusk = false, floorPerks = null, staff = null } = {}) {
   const v = floorVenue(venue);
   const r = v.rules;
   const def = night ? v.nights[night] || v.nights.usual : pickNight(level, seed, { rainy, daytime, venue: v });
@@ -202,6 +204,7 @@ export function createFloorNight({ venue = "tonari", seed = 0, level = 0, chapte
     seed: Number(seed) >>> 0, level, chapter, night: def.id, title: byTime(def.title, daytime), daytime: !!daytime, dusk: duskAt,
     floorPerks: { floorMatch: floorPerks?.floorMatch || 0, floorTop: floorPerks?.floorTop || 0 },
     visitor: visitorAllowed && guests.g3?.charId ? who.id : null,
+    staff: staff && CHAT_STAFF[staff] ? staff : null,
     hint: level >= r.sightAt ? "sight" : "said",
     t: 0, length: def.length, done: false, closing: null, rolls: 0,
     guests, upcoming: Object.keys(guests), came: 0,
@@ -232,6 +235,51 @@ function nextCallLineIndex(s, key, length) {
   turns[key] = turn + 1;
   return (s.seed + turn) % length;
 }
+// ---- 雑談（TFL68〜70）: 客の話しかけ → はじめ（つむぎ）の返し → 客のひとこと。台本は floor-chats.js ----
+/** 種と回数から決まる 32bit の値（rolls を進めないので、雑談の選び方は他の抽選の並びを変えない）。 */
+function hash32(a, b) {
+  let h = Math.imul((a >>> 0) ^ 0x2c1b3c6d, 0x297a2d39) ^ Math.imul((b >>> 0) + 1, 0x85ebca6b);
+  h ^= h >>> 15; h = Math.imul(h, 0x2c1b3c6d); h ^= h >>> 13;
+  return h >>> 0;
+}
+/** 雑談の一覧。key＝"venue"（その店）／"staff:つむぎ"（一緒に働く人の話）／"visitor:人物ID"（来店した本編の人物だけの話）。 */
+function chatList(s, key) {
+  const v = venueOf(s);
+  const [kind, id] = key.split(":");
+  if (kind === "visitor") return v.visitorChats?.[id] || [];
+  if (kind === "staff") return CHAT_STAFF[id] || [];
+  return v.chats?.length ? v.chats : CALLS.chatty.lines;
+}
+/** 本編の人物に、その店でその人だけの雑談があるか。 */
+const visitorChats = (s, guest) => (guest?.charId ? venueOf(s).visitorChats?.[guest.charId] || [] : []);
+/**
+ * 次に出す雑談を選ぶ。同じ一覧の話は、出しきるまで繰り返さない（出しきったら、直前の一つを除いて最初から）。
+ * 昼だけ・夜だけの話（at）は、その時間帯にだけ出す。つむぎが働く日は、ふつうの客の雑談の一部がつむぎの話になる。
+ */
+function pickChat(s, guest) {
+  const turn = (s.chatTurns = (s.chatTurns || 0) + 1);
+  let key = "venue";
+  if (visitorChats(s, guest).length) key = `visitor:${guest.charId}`;
+  else if (s.staff && CHAT_STAFF[s.staff]?.length && hash32(s.seed ^ 0x5bd1e995, turn) % 100 < STAFF_CHAT_PERCENT) key = `staff:${s.staff}`;
+  const list = chatList(s, key);
+  const when = !s.daytime || floorDusk(s) ? "night" : "day";
+  const fits = list.map((c, i) => (!c.at || c.at === when ? i : -1)).filter((i) => i >= 0);
+  if (!fits.length) return null;
+  const seen = (s.chatSeen ??= {});
+  let used = seen[key] || [];
+  let open = fits.filter((i) => !used.includes(i));
+  if (!open.length) {
+    used = used.slice(-1); // 出しきった。直前の一つだけ避けて、最初から
+    open = fits.filter((i) => !used.includes(i));
+    if (!open.length) open = fits;
+  }
+  const index = open[hash32(s.seed, turn) % open.length];
+  seen[key] = [...used, index];
+  return { key, index };
+}
+/** 頼みに付いている雑談（ref＝{ key, index }）。無ければ null。 */
+const chatAt = (s, ref) => (ref ? chatList(s, ref.key)[ref.index] || null : null);
+
 /** 本編の人物の言葉（TFL65）。ふつうの客は undefined（呼び出し側の共通の言葉を使う）。 */
 const ownLine = (s, guest, key) => resolveVenueVisitor(venueOf(s), guest?.charId)?.lines[key];
 /**
@@ -370,7 +418,8 @@ function close(s, why) {
 function openCall(s, table, type, { coal = false } = {}) {
   const r = rulesOf(s);
   const variant = nextCallLineIndex(s, type, CALLS[type].lines.length);
-  table.call = { type, since: s.t, until: s.t + r.call, coal, variant };
+  const chat = type === "chatty" ? pickChat(s, guestAt(s, table)) : null; // 雑談は、その店・その人・一緒に働く人の話から選ぶ
+  table.call = { type, since: s.t, until: s.t + r.call, coal, variant, ...(chat ? { chat } : {}) };
   note(s, { type: "call", tableId: table.id, call: type, coal });
 }
 
@@ -389,11 +438,12 @@ function serve(s, table) {
   Object.assign(table, { phase: "enjoy", refill: false, since: s.t, make: null, mood: result.mood, grade: result.grade, rating: result.rating, stayEnd: s.t + stay,
     nextCall: s.t + 10, drinkAt: s.t + r.drink, wear: Math.max(0.3, 1 - r.mood.decayPerLast * mixLast(table.mix)) });
   resetCoal(s, table);
-  // 客ごとの頼み: 初めての客はむせやすい、話し好きは声をかけてほしい、ほかは喉。はじめての営業は吸い方の案内だけ
+  // 客ごとの頼み: 初めての客はむせやすい、話し好きは声をかけてほしい、ほかは喉。はじめての営業は吸い方の案内だけ。
+  // 本編の人物は、その人だけの雑談があれば、話し好きと同じ頃に話しかけてくる（TFL70）
   const wants = [];
   if (guest.trait === "beginner") wants.push({ type: "cough", at: s.t + Math.round(stay * 0.2) });
   if (s.level > 0) {
-    if (guest.trait === "talker") wants.push({ type: "chatty", at: s.t + Math.round(stay * 0.45) });
+    if (guest.trait === "talker" || visitorChats(s, guest).length) wants.push({ type: "chatty", at: s.t + Math.round(stay * 0.45) });
     if (guest.fastThirsty) wants.push({ type: "thirsty", at: s.t + Math.round(stay * 0.35) });
     else if (guest.stay === "long" || guest.trait === null) wants.push({ type: "thirsty", at: s.t + Math.round(stay * 0.7) });
     if ((guest.callsPerStay || 1) >= 2 && wants.length < 2) {
@@ -643,12 +693,13 @@ export function floorAct(state, action) {
       const call = CALLS[table.call.type];
       const { type, coal } = table.call;
       const ok = action.verb === call.verb;
+      const chat = chatAt(s, table.call.chat);
       table.call = null;
       table.nextCall = s.t + r.callGap;
       if (coal) resetCoal(s, table, ok ? 1 : 0.6);
       if (ok) {
         table.mood = clamp(table.mood + r.mood.care);
-        table.line = ownLine(s, guest, "calls")?.[type]?.good
+        table.line = chat?.good || ownLine(s, guest, "calls")?.[type]?.good
           || call.lines[nextCallLineIndex(s, `good:${type}`, call.lines.length)].good;
         s.counts.care += 1;
         gain(s, FEVER.care);
@@ -657,7 +708,9 @@ export function floorAct(state, action) {
         table.line = ownLine(s, guest, "miss") || CALL_MISS[nextCallLineIndex(s, "miss", CALL_MISS.length)];
         s.counts.careMiss += 1;
       }
-      note(s, { type: "care", tableId: table.id, call: type, ok, line: table.line });
+      // 雑談に応えた時は、会話（客の話しかけ・はじめかつむぎの返し・客のひとこと）を画面に渡す
+      note(s, { type: "care", tableId: table.id, call: type, ok, line: table.line,
+        ...(ok && chat ? { said: chat.said, reply: chat.reply, by: chat.by || "hajime" } : {}) });
       // 雑談がはずむと、もう一杯頼みたくなる
       if (ok && type === "chatty" && table.extra < guest.drinksMax && roll(s) < 0.6) addDrink(s, table, "chat");
       break;
@@ -855,6 +908,8 @@ export function floorCallLine(s, tableId) {
   const table = tableOf(s, tableId);
   if (!table?.call) return null;
   const call = CALLS[table.call.type];
+  const chat = chatAt(s, table.call.chat);
+  if (chat) return { label: call.label, said: chat.said, sight: chat.sight };
   const { said, sight } = call.lines[table.call.variant ?? 0];
   const own = ownLine(s, guestAt(s, table), "calls")?.[table.call.type];
   return { label: call.label, said: own?.said || said, sight };

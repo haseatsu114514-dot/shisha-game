@@ -7,6 +7,7 @@ import { floorShiftBasePay, floorShiftPay, FLOOR_COMMISSION_PERCENT } from "../c
 import {
   PRICE, HAND_SIZE, GUESTS, VISITORS, NIGHTS, RANKS, SERVE_LINES, SEND_LINES,
 } from "./tonari-floor-data.js";
+import { CHAT_COMMON, CHAT_TONARI, CHAT_MUKAI, CHAT_DUBAI, VISITOR_CHATS } from "./floor-chats.js";
 
 export const FLOOR_RANK_ORDER = Object.freeze(["C", "B", "A", "S"]);
 
@@ -371,6 +372,9 @@ export const FLOOR_VENUES = Object.freeze({
     ranks: RANKS,
     serveLines: SERVE_LINES,
     sendLines: SEND_LINES,
+    // 雑談（TFL68〜70）: どの店でも通る味の話＋その店の客の話。visitorChats＝本編の人物がレアで来た時だけの話（floor-chats.js）
+    chats: freezeObj([...CHAT_COMMON, ...CHAT_TONARI]),
+    visitorChats: VISITOR_CHATS.tonari,
   }),
 
   mukai: freezeObj({
@@ -428,6 +432,8 @@ export const FLOOR_VENUES = Object.freeze({
     ranks: MUKAI_RANKS,
     serveLines: SERVE_LINES,
     sendLines: SEND_LINES,
+    chats: freezeObj([...CHAT_COMMON, ...CHAT_MUKAI]),
+    visitorChats: VISITOR_CHATS.mukai,
   }),
 
   dubai: freezeObj({
@@ -488,6 +494,8 @@ export const FLOOR_VENUES = Object.freeze({
     ranks: DUBAI_RANKS,
     serveLines: SERVE_LINES,
     sendLines: SEND_LINES,
+    chats: freezeObj([...CHAT_COMMON, ...CHAT_DUBAI]),
+    visitorChats: VISITOR_CHATS.dubai,
   }),
 });
 

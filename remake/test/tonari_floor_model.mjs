@@ -14,6 +14,9 @@ import {
   TUTORIAL, CALL_MISS,
 } from "../js/daily/tonari-floor-data.js";
 import { playFloorBot, bestMix, floorBotAction } from "./tonari_floor_bot.mjs";
+import { CHAT_COMMON, CHAT_TONARI, CHAT_MUKAI, CHAT_DUBAI, CHAT_STAFF, CHAT_SPEAKERS, VISITOR_CHATS } from "../js/daily/floor-chats.js";
+import { FLOOR_VENUES } from "../js/daily/floor-venues.js";
+import { OVERSEAS_HEROINES } from "../js/core/overseas-companion.js";
 
 const at = (s, id) => s.tables[id - 1];
 const act = (s, action) => {
@@ -468,6 +471,135 @@ test("頼みの台詞と地の文は、同じ営業内で同じ一文が続か�
   }
 });
 
+// ---- 雑談（TFL68〜70）: 客の話しかけ → はじめ（つむぎ）の返し → 客のひとこと ----
+/** 1卓の客に、雑談の頼みを n 回出させて、そのたびに応える。出た雑談（台本の行）と、応えた後の state を返す。 */
+function chatRounds(s, n, tableId = 1) {
+  const shown = [];
+  for (let i = 0; i < n; i++) {
+    Object.assign(at(s, tableId), { nextCall: s.t, coalAt: s.length, stayEnd: s.length, call: null, wants: [{ type: "chatty", at: s.t }] });
+    s = until(s, (x) => !!at(x, tableId).call, 3);
+    assert.equal(at(s, tableId).call.type, "chatty");
+    const asked = floorCallLine(s, tableId);
+    s = act(s, { type: "care", tableId, verb: "chat" });
+    const care = s.log.find((e) => e.type === "care");
+    shown.push({ said: asked.said, sight: asked.sight, reply: care.reply, by: care.by, good: at(s, tableId).line });
+  }
+  return { s, shown };
+}
+
+test("雑談の台本: 味・趣味・何気ない話・愚痴をたっぷり。どれも2行に収まる短い会話で、大会に触れない（TFL68〜70）", () => {
+  const venues = Object.values(FLOOR_VENUES);
+  const rows = [
+    ...CHAT_COMMON, ...CHAT_TONARI, ...CHAT_MUKAI, ...CHAT_DUBAI, ...Object.values(CHAT_STAFF).flat(),
+    ...Object.values(VISITOR_CHATS).flatMap((byId) => Object.values(byId).flat()),
+  ];
+  const lines = new Set();
+  for (const row of rows) {
+    for (const key of ["said", "reply", "good"]) {
+      const line = row[key];
+      assert.ok(line && !line.endsWith("。"), `台詞は句点で終えない: ${line}`);
+      assert.ok([...line].length <= 34, `吹き出し2行まで（34字まで）: ${line}`);
+      assert.ok((line.match(/。/g) || []).length <= 2, line);
+      assert.ok(!lines.has(line), `同じ台詞を使い回さない: ${line}`);
+      lines.add(line);
+    }
+    assert.ok(row.sight.endsWith("。") && !lines.has(row.sight), row.sight);
+    lines.add(row.sight);
+    assert.ok(!/大会|本番|優勝|予選|審査|決勝/.test(`${row.said}${row.reply}${row.good}${row.sight}`), `大会の前後どちらでも通る: ${row.said}`);
+    assert.ok(!row.by || CHAT_SPEAKERS[row.by], row.by);
+    assert.ok(!row.at || ["day", "night"].includes(row.at), row.at);
+  }
+  // モブの共通の言葉（頼み・提供・見送り）とも重ならない
+  const mob = [...Object.entries(CALLS).filter(([k]) => k !== "chatty").flatMap(([, c]) => c.lines.flatMap((l) => [l.said, l.good])), ...CALL_MISS];
+  for (const line of mob) assert.ok(!lines.has(line), line);
+  assert.equal(CALLS.chatty.lines, CHAT_COMMON, "どの店でも通る味の話が、頼みの雑談の既定");
+  // 店ごと: 味の話（全店共通）＋その店の客の話。tonari は趣味・何気ない話・愚痴を十本以上ずつ
+  const topics = (list) => Object.fromEntries(["taste", "hobby", "daily", "gripe"].map((t) => [t, list.filter((c) => c.topic === t).length]));
+  assert.ok(Object.values(topics(FLOOR_VENUES.tonari.chats)).every((n) => n >= 10), JSON.stringify(topics(FLOOR_VENUES.tonari.chats)));
+  for (const v of venues) {
+    assert.ok(v.chats.length >= 30, `${v.id}: 雑談 ${v.chats.length} 本`);
+    assert.ok(CHAT_COMMON.every((c) => v.chats.includes(c)), v.id);
+    assert.ok(v.chats.some((c) => c.at === "day") && v.chats.some((c) => c.at === "night"), `${v.id}: 昼だけ・夜だけの話もある`);
+    // レアで来る本編の人物は、全員その人だけの雑談を持つ（三本ずつ。ドバイへ同行した人は二本から）
+    for (const who of Object.values(v.visitors)) assert.ok(v.visitorChats[who.id]?.length >= 3, `${v.id}: ${who.id}`);
+  }
+  for (const id of OVERSEAS_HEROINES) assert.ok(FLOOR_VENUES.dubai.visitorChats[id]?.length >= 2, `ドバイへ同行した ${id}`);
+  // つむぎが働く日の話: 客がつむぎのことを話す物と、つむぎ本人が返す物
+  const staff = CHAT_STAFF.tsumugi;
+  assert.ok(staff.length >= 12 && staff.filter((c) => c.by === "tsumugi").length >= 4 && staff.filter((c) => !c.by).length >= 6);
+  assert.ok(staff.filter((c) => c.by === "tsumugi").every((c) => c.reply.startsWith("……")), "つむぎは、間に「……」を置いて話す");
+});
+
+test("雑談: その店の話から選び、出しきるまで同じ話を繰り返さない。昼だけ・夜だけの話は、その時間にだけ出る", () => {
+  const byLine = new Map([...FLOOR_VENUES.tonari.chats, ...CHAT_MUKAI, ...CHAT_DUBAI].map((c) => [c.said, c]));
+  // 夜の営業: 昼だけの話は出ない。出しきるまで、同じ話は出ない
+  const nightFits = FLOOR_VENUES.tonari.chats.filter((c) => c.at !== "day");
+  let s = serveFirst(createFloorNight({ seed: 11, level: 3, night: "usual" }));
+  s.upcoming = [];
+  const { s: after, shown } = chatRounds(s, nightFits.length + 3);
+  const first = shown.slice(0, nightFits.length).map((c) => c.said);
+  assert.equal(new Set(first).size, nightFits.length, "出しきるまで繰り返さない");
+  shown.slice(1).forEach((c, i) => assert.notEqual(c.said, shown[i].said, "出しきった後も、直前の話は続けない"));
+  for (const c of shown) {
+    const row = byLine.get(c.said);
+    assert.ok(row && row.at !== "day", c.said);
+    assert.deepEqual([c.sight, c.reply, c.by, c.good], [row.sight, row.reply, "hajime", row.good], "話しかけ・返し・ひとことは一組");
+  }
+  assert.ok(after.counts.care >= shown.length, "雑談に応えるのもケアに数える");
+  // 昼の営業（日が暮れる前）: 夜だけの話は出ない
+  let day = serveFirst(createFloorNight({ seed: 11, level: 3, night: "usual", daytime: true }));
+  day.upcoming = [];
+  for (const c of chatRounds(day, 20).shown) assert.notEqual(byLine.get(c.said).at, "night", c.said);
+  // mukai・ドバイは、その店の話と味の話だけ
+  for (const [venue, own] of [["mukai", CHAT_MUKAI], ["dubai", CHAT_DUBAI]]) {
+    let v = serveFirst(createFloorNight({ venue, seed: 4, level: 3, chapter: venue === "mukai" ? 3 : 4, night: "usual" }));
+    v.upcoming = [];
+    const said = chatRounds(v, 24).shown.map((c) => c.said);
+    assert.ok(said.every((line) => [...CHAT_COMMON, ...own].some((c) => c.said === line)), venue);
+    assert.ok(said.some((line) => own.some((c) => c.said === line)), `${venue}: その店の客の話が出る`);
+  }
+});
+
+test("雑談: つむぎが働く日（第5章の tonari）は、一部がつむぎの話になり、つむぎ本人が返すこともある（TFL69）", () => {
+  const staff = CHAT_STAFF.tsumugi;
+  const plain = serveFirst(createFloorNight({ seed: 21, level: 3, chapter: 5, night: "usual" }));
+  plain.upcoming = [];
+  assert.equal(plain.staff, null);
+  assert.ok(chatRounds(plain, 30).shown.every((c) => !staff.some((x) => x.said === c.said)), "つむぎがいない日は、つむぎの話は出ない");
+  let s = serveFirst(createFloorNight({ seed: 21, level: 3, chapter: 5, night: "usual", staff: "tsumugi" }));
+  s.upcoming = [];
+  assert.equal(s.staff, "tsumugi");
+  const shown = chatRounds(s, 30).shown;
+  const hers = shown.filter((c) => staff.some((x) => x.said === c.said));
+  assert.ok(hers.length >= 6 && hers.length <= 24, `30回のうち、つむぎの話 ${hers.length} 回`);
+  assert.ok(shown.length - hers.length >= 6, "ふつうの雑談も混ざる");
+  for (const c of hers) {
+    const row = staff.find((x) => x.said === c.said);
+    assert.deepEqual([c.reply, c.by, c.good], [row.reply, row.by || "hajime", row.good]);
+  }
+  assert.ok(hers.some((c) => c.by === "tsumugi") && hers.some((c) => c.by === "hajime"), "つむぎが返す話も、はじめが返す話もある");
+  assert.equal(createFloorNight({ seed: 21, staff: "nobody" }).staff, null);
+  // 同じ種なら、つむぎがいてもいなくても、客の並び・注文・ミックスの並びは同じ（雑談の選び方は、他の抽選を動かさない）
+  const a = createFloorNight({ seed: 21, level: 3, chapter: 5 }), b = createFloorNight({ seed: 21, level: 3, chapter: 5, staff: "tsumugi" });
+  assert.deepEqual([a.guests, a.hand, a.deck], [b.guests, b.hand, b.deck]);
+});
+
+test("雑談: mukai・ドバイにレアで来た本編の人物も、その人だけの雑談で話しかける（TFL70）", () => {
+  for (const [venue, chapter, id] of [["mukai", 3, "ayatori"], ["mukai", 5, "yoru"], ["dubai", 4, "noor"], ["dubai", 4, "mashiro"], ["dubai", 4, "tsumugi"]]) {
+    let s = createFloorNight({ venue, seed: 5, level: 2, chapter, visitor: id });
+    assert.equal(s.visitor, id, `${venue}: ${id}`);
+    s = until(s, (x) => x.tables.some((t) => t.guestId === "g3" && t.phase === "order"), 300);
+    const table = s.tables.find((t) => t.guestId === "g3");
+    s = act(s, { type: "order", tableId: table.id, mix: s.hand[0] });
+    s = until(s, (x) => at(x, table.id).phase === "enjoy", 60);
+    assert.ok(at(s, table.id).wants.some((w) => w.type === "chatty"), `${id}: 雑談の頼みがある`);
+    s.upcoming = [];
+    const own = FLOOR_VENUES[venue].visitorChats[id];
+    const shown = chatRounds(s, own.length, table.id).shown;
+    assert.deepEqual(shown.map((c) => c.said).sort(), own.map((c) => c.said).sort(), `${venue}: ${id} の雑談を出しきる`);
+  }
+});
+
 test("追加ドリンクとおかわり: 居心地の良い客が自分から頼む（こちらからは誘わない）", () => {
   const happy = (seed) => {
     let s = serveFirst(createFloorNight({ seed, level: 1, night: "usual" }));
@@ -710,16 +842,28 @@ test("レアな来店: 本編の人物は三組目として来て、その人の
     s = act(s, { type: "order", tableId: table.id, mix: liked });
     s = until(s, (x) => at(x, table.id).phase === "enjoy", 60);
     assert.equal(at(s, table.id).line, who.lines.best);
-    // 炭が尽きても気遣いの頼みは出ない。自分から調整でき、お水の頼みはその人の口調で出る。
+    // 炭が尽きても気遣いの頼みは出ない。自分から調整できる。その人だけの雑談で話しかけてきて（TFL70）、お水の頼みはその人の口調で出る。
     at(s, table.id).nextCall = s.t;
     at(s, table.id).coalAt = s.t;
     s = floorTick(s);
     assert.equal(at(s, table.id).call, null);
     assert.equal(floorTap(s, table.id), "tend");
-    s = until(s, (x) => {
-      assert.ok(!x.log.some((e) => e.type === "call" && e.tableId === table.id && e.coal), who.id);
-      return !!at(x, table.id).call;
+    const waitCall = (x) => until(x, (y) => {
+      assert.ok(!y.log.some((e) => e.type === "call" && e.tableId === table.id && e.coal), who.id);
+      return !!at(y, table.id).call;
     }, 80);
+    s = waitCall(s);
+    assert.equal(at(s, table.id).call.type, "chatty", `${who.id}: 本編の人物も雑談で話しかける`);
+    const ownChats = VISITOR_CHATS.tonari[who.id];
+    const talked = ownChats.find((c) => c.said === floorCallLine(s, table.id).said);
+    assert.ok(talked, `${who.id}: その人だけの雑談（${floorCallLine(s, table.id).said}）`);
+    assert.equal(floorCallLine(s, table.id).sight, talked.sight);
+    const chatted = act(s, { type: "care", tableId: table.id, verb: "chat" });
+    assert.equal(at(chatted, table.id).line, talked.good);
+    assert.deepEqual(["said", "reply", "by"].map((k) => chatted.log.find((e) => e.type === "care")[k]), [talked.said, talked.reply, "hajime"], "画面に会話を渡す");
+    s = chatted;
+    at(s, table.id).nextCall = s.t;
+    s = waitCall(s);
     const call = at(s, table.id).call.type;
     assert.equal(call, "thirsty");
     assert.equal(floorCallLine(s, table.id).said, who.lines.calls[call].said);

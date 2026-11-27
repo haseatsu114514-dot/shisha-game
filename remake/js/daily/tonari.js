@@ -517,12 +517,14 @@ async function serveFloor(owner, signal, getAllowances) {
   if (!current()) return null;
   const floorPerks = growthPerks(owner);
   const visitor = floorVisitor(owner, seed, progress.nights, view.FLOOR_VISITORS, floorPerks?.floorRare || 0);
+  // 第5章は、つむぎがスタッフとして店にいる日（出張の日は除く）。雑談の一部がつむぎの話になる（TFL69）
+  const staff = owner.chapter >= 5 && tsumugiAtTonari(owner) ? "tsumugi" : null;
   let result;
   // 開店前の札から「遊び方（チュートリアル）」を選んだら、チュートリアルを開いてから、同じ一日を始め直す
   for (;;) {
     result = await view.runTonariFloor({
       seed, level: progress.nights, chapter: owner.chapter, fans: progress.fans, topSales: progress.top, getAllowances,
-      visitor, floorPerks, rainy: isRainy(), night: false, dusk: true, art: bgUrl(TONARI_BG, "day"), artNight: bgUrl(TONARI_BG, "night"),
+      visitor, staff, floorPerks, rainy: isRainy(), night: false, dusk: true, art: bgUrl(TONARI_BG, "day"), artNight: bgUrl(TONARI_BG, "night"),
       offerTutorial: true, isCurrent: current, signal,
     });
     if (!current() || !result) return null;
