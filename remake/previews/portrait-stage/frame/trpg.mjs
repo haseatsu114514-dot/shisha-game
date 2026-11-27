@@ -1,9 +1,15 @@
 // 縦画面の試作: ボドゲカフェ（短編TRPG）を縦の画面で動かす（縦試作の枠 ../index.html?view=play&scene=trpg が iframe で読む。単体でも開ける）。
-// 本編の単独ページ（remake/js/trpg/preview.js）と同じ mountTrpgCollection を呼ぶだけ。物語・台詞・判定・絵・音は本編のまま、並べ方は trpg.css。
-// この卓は本編の保存を読まない・書かない（mountTrpgCollection の決まり）。
-// ?shot=library|cover|talk|choice|roll|topics|explore は、一覧（PC）に並べる止め絵（choice＝行動の宣言、roll＝判定の結果、topics＝聞き込み、explore＝部屋を調べる）。?scenario=・?seed=・?traveler=・?tutorial=1 は単独ページと同じ。
-import { mountTrpgCollection } from "../../../js/trpg/collection.js";
-import { initPortraitFit, shot, param, until } from "./frame.mjs";
+// 本編のボドゲカフェと同じ「本をめくって物語を選ぶ」本棚（js/trpg/campaign-view.js・TRP11）と卓を、使い捨ての状態で開く。
+// 状態の作り方は本編の試遊（js/trpg/trial.js・TRF21）と同じ trpgTrialState（夜・部員がそろっている・部員の本は買ってある）。
+// 本編のセーブ・設定は読み書きしない（状態はこのページの中だけ。卓を遊び終えたら次の夜の本棚へ）。
+// 物語・台詞・判定・絵・音は本編のまま、並べ方は trpg.css。
+// ?shot=library|turned|cover|talk|choice|roll|topics|explore は、一覧（PC）に並べる止め絵
+//   （library＝本の見開き、turned＝別の本へめくった所、choice＝行動の宣言、roll＝判定の結果、topics＝聞き込み、explore＝部屋を調べる）。
+import { newState } from "../../../js/core/state.js";
+import { mountTrpgCampaign } from "../../../js/trpg/campaign-view.js";
+import { loadTrpgClubResources } from "../../../js/trpg/index.js";
+import { trpgTrialState } from "../../../js/trpg/trial-state.js";
+import { initPortraitFit, shot, param, tellParent, until } from "./frame.mjs";
 
 const stage = document.getElementById("stage"), host = document.getElementById("trpg-app");
 initPortraitFit(stage);
@@ -12,18 +18,27 @@ document.documentElement.dataset.density = "phone";
 document.documentElement.dataset.layout = "portrait";
 
 const SHOT_SCENARIO = "ordinary-cup"; // 止め絵に使う物語（世界一普通の一台）
-let collection = null;
+let controller = null, state = null, resources = null;
 
-function boot() {
-  collection?.destroy();
-  const seedText = param("seed");
-  collection = mountTrpgCollection(host, {
-    initialScenarioId: param("scenario") || (shot && shot !== "library" ? SHOT_SCENARIO : null) || (param("traveler") || seedText ? SHOT_SCENARIO : null),
-    seed: seedText != null && seedText !== "" ? Number(seedText) : shot ? 7 : undefined,
-    profileId: param("traveler"), tutorial: param("tutorial") === "1",
+/** 本棚を開く（卓を遊び終えたら次の夜、閉じたら枠に知らせて開き直す）。 */
+function shelf() {
+  controller?.destroy();
+  const owner = state;
+  controller = mountTrpgCampaign(host, { getState: () => owner, save: () => true, closeLabel: "戻る", resources: null });
+  controller.finished.then(result => {
+    if (state !== owner) return;
+    if (result?.completed) { owner.day++; owner.slot = 1; shelf(); return; }
+    tellParent("leave", { game: "trpg" }); // 本編では街へ戻る。試作では本棚を開き直す
+    shelf();
   });
-  window.__trpg = Object.freeze({ snapshot: () => collection.snapshot(), audio: () => collection.audioSnapshot(),
-    get ready() { return collection.loaded; } });
+}
+async function boot() {
+  resources = await loadTrpgClubResources();
+  state = trpgTrialState(newState(), resources.catalog, "ready");
+  // 店長の説明（はじめての卓）は本編と同じに出す。止め絵だけは説明を飛ばして、場面をそろえる
+  if (shot) { state.flags ||= {}; state.flags._trpg_tutorial_seen = true; state.seed = 7; }
+  shelf();
+  window.__trpg = Object.freeze({ get state() { return state; }, get ready() { return !!host.querySelector('[data-test="trpg-book-spread"]'); } });
 }
 
 const find = selector => [...document.querySelectorAll(selector)].find(node => node.offsetParent !== null && !node.disabled) || null;
@@ -38,9 +53,16 @@ const SHOT_READY = {
 };
 /** 止め絵の場面を作る（画面のボタンを、遊ぶ人と同じ順に押していく）。 */
 async function pose(name) {
-  await until(() => collection?.loaded);
+  await until(() => find('[data-test="trpg-book-spread"]'));
+  await wait(1400); // 入口の幕が上がるのを待つ
   if (name === "library") return;
-  await until(() => find('[data-test="trpg-start"]'));
+  // 止め絵の物語の頁へめくる
+  const tab = await until(() => find(`[data-test="trpg-tab-${SHOT_SCENARIO}"]`));
+  if (tab.getAttribute("aria-current") !== "true") { tab.click(); await wait(700); }
+  if (name === "turned") return;
+  (await until(() => find(`[data-test="trpg-play-${SHOT_SCENARIO}"]`))).click();
+  await until(() => find('[data-test="trpg-start"]'), { timeout: 30000 });
+  await wait(600);
   if (name === "cover") return;
   const ready = SHOT_READY[name] || SHOT_READY.talk;
   find('[data-test="trpg-start"]').click();
@@ -57,7 +79,6 @@ async function pose(name) {
   await wait(900);
 }
 
-window.addEventListener("pagehide", () => collection?.destroy());
-window.addEventListener("pageshow", event => { if (event.persisted) boot(); });
-boot();
+window.addEventListener("pagehide", () => controller?.destroy());
+boot().catch(error => { console.error(error); host.textContent = "ボドゲカフェを準備できませんでした。読み込み直してください。"; });
 if (shot) pose(shot).catch(error => console.warn(error));

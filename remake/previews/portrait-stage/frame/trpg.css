@@ -2,6 +2,7 @@
    本編の画面（js/trpg/）の部品をそのまま使い、置き場所と大きさだけ縦用に替える。色・絵・動き・台詞は css/trpg*.css と本編のまま。
    ステージは幅 640（スマホの幅 390px で 0.61 倍）。字は 22px 以上（実寸 13px）、押す所は 72px 以上（実寸 44px）。
    文字とタップの大きさは、本編のスマホ向けの決まり（html[data-density="phone"]）を土台にする。
+   並べ方（本棚）: 本編のボドゲカフェと同じ「本をめくって物語を選ぶ」画面（js/trpg/campaign-view.js・TRP11）。横長の見開きを、上下に開く本に組み替える（下の「本棚」の節）。
    並べ方（卓）: 上＝部屋の絵（横長の絵の真ん中を縦長に切り出す）。絵の上の縁に、段の名前と道具（音・ログ・シート・？・戻る）、その下に連携札と盛り上がり。
                  絵の裾に話している人物、その下に席の並び（4人）、いちばん下に台詞と「次へ」。
    調べる場面だけは、調べる場所が全部見えるよう絵を横長のまま出し、場所を下の大きな札に並べる（絵には番号の印）。
@@ -208,28 +209,6 @@ html:root[data-density="phone"][data-layout="portrait"] { --phone-text: 24px; --
 #stage .trpg-root.trpg-cinematic[data-phase="ending"] .trpg-stage-action { gap: 8px; }
 #stage .trpg-root.trpg-cinematic[data-phase="ending"] .trpg-stage-action .trpg-button { font-size: 22px; line-height: 1.25; padding: 6px 4px; }
 
-/* ───────── 物語を選ぶ: 2列の札。絵・題・時間・囲む人の顔・開くボタンだけ（紹介文は表紙で読む） ───────── */
-#stage .trpg-root.trpg-library .trpg-library-header { top: 12px; left: 16px; right: 10px; align-items: center; }
-#stage .trpg-root.trpg-library :is(.trpg-library-header .trpg-kicker, .trpg-library-meta > span, .trpg-library-intro, .trpg-library-byline, .trpg-library-copy > p, .trpg-library-details > span:nth-child(n+2), .trpg-library-cast > div > span:last-child, .trpg-library-footer) { display: none; }
-#stage .trpg-root.trpg-library .trpg-library-header h1 { margin: 0; font-size: 36px; white-space: nowrap; }
-#stage .trpg-root.trpg-library .trpg-library-meta { gap: 4px; padding: 0; }
-#stage .trpg-root.trpg-library .trpg-library-meta .trpg-icon-button { width: 82px; height: 82px; }
-#stage .trpg-root.trpg-library .trpg-library-books { left: 10px; right: 10px; top: 106px; bottom: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-content: start; overflow-y: auto; }
-#stage .trpg-root.trpg-library .trpg-library-book { min-height: 0; }
-#stage .trpg-root.trpg-library .trpg-library-art { height: 150px; }
-#stage .trpg-root.trpg-library .trpg-library-number { left: 10px; top: 4px; font-size: 32px; }
-#stage .trpg-root.trpg-library .trpg-library-genre { right: 6px; top: 8px; padding: 2px 10px; font-size: 22px; }
-#stage .trpg-root.trpg-library .trpg-library-copy { padding: 8px 10px 10px; }
-#stage .trpg-root.trpg-library .trpg-library-copy h2 { margin: 0 0 4px; font-size: 28px; line-height: 1.3; min-height: 2.6em; }
-#stage .trpg-root.trpg-library .trpg-library-details { margin: 0 0 6px; gap: 10px; font-size: 22px; }
-#stage .trpg-root.trpg-library .trpg-library-cast { gap: 6px; margin-bottom: 10px; }
-#stage .trpg-root.trpg-library .trpg-library-face { width: 50px; height: 56px; }
-#stage .trpg-root.trpg-library .trpg-library-actions { grid-template-columns: minmax(0, 1fr) 80px; gap: 6px; }
-#stage .trpg-root.trpg-library :is(.trpg-library-actions > button, .trpg-library-copy > button) { min-height: 80px; padding-inline: 6px; justify-content: center; gap: 6px; font-size: 24px; white-space: nowrap; }
-#stage .trpg-root.trpg-library :is(.trpg-library-actions > button, .trpg-library-copy > button) > span:last-child:not(:first-child) { display: none; } /* 「→」は出さない（金の札で押せると分かる） */
-/* 「絵本をみる」は、字をやめて本の形の印に */
-#stage .trpg-root.trpg-library .trpg-library-actions > .trpg-picturebook-open { font-size: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff4d6' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 6.5c-2-1.300-4.600-1.800-8-1.500v13c3.400-.300 6 .200 8 1.500 2-1.300 4.600-1.800 8-1.500V5c-3.400-.300-6 .200-8 1.500z'/%3E%3Cpath d='M12 6.500v13'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: center; background-size: 44px; }
-
 /* ───────── 判定と宣言の、読まなくてよい添え字は出さない ───────── */
 #stage .trpg-root.trpg-cinematic :is(.trpg-roll-context, .trpg-roll-chance > small, .trpg-approach-first) { display: none; }
 
@@ -264,6 +243,111 @@ html:root[data-density="phone"][data-layout="portrait"] { --phone-text: 24px; --
 /* 台詞の帯の地: 塗りだけだった所を、卓のフェルトと真鍮の縁に */
 #stage .trpg-root.trpg-cinematic .trpg-dock { background: linear-gradient(180deg, rgba(5, 37, 41, .5), rgba(4, 20, 24, .88)), url("../../../img/ui/trpg/deep-teal-felt.webp") center / 420px, #082c31;
   border-top: 3px solid #b08a3e; box-shadow: inset 0 2px 0 rgba(241, 214, 138, .4), inset 0 12px 20px rgba(0, 0, 0, .35); }
-/* 物語選びの題字: 字だけだった所を、木と真鍮の枠の札に（字はそのまま） */
-#stage .trpg-root.trpg-library .trpg-library-header h1 { padding: 6px 22px 8px; border: 16px solid transparent; border-image: url("../../../img/ui/trpg/walnut-brass-frame.webp") 145 / 16px / 0 stretch;
-  background: linear-gradient(180deg, rgba(5, 37, 41, .7), rgba(4, 20, 24, .9)), url("../../../img/ui/trpg/deep-teal-felt.webp") center / 300px; background-clip: padding-box; font-size: 32px; color: #f6e7bd; text-shadow: 0 2px 0 rgba(0, 0, 0, .6); }
+
+/* ───────── 本棚: 本をめくって物語を選ぶ（TRP11 を縦に。VPG15） ─────────
+   2026-11-27 オーナー「TRpGは本を捲る風な選択画面とか最近作ったはずなのでそれを」。本編と同じ本棚（campaign-view.js）を、縦では次のように組む:
+     上の帯＝店のロゴ・？・本棚（過去の卓）・戻る。その下に店主サイの一言、部のランクと道具（マイダイス）を1段。残りの高さいっぱいに本。
+     本は上下に開く（book-open-portrait.webp。本編の book-open.webp と同じ画風で生成）。上の紙＝どんな話か（場面の絵・題）、下の紙＝ひとこと・誰と（配役の顔と時間）・押す所。
+     本の上の縁にしおり（1〜9）、背の高さに左右の矢印と「何冊目」。横に払ってもめくれる（本編と同じ）。めくると、下の紙が背を越えて上へ返る（前へは上の紙が下へ）。
+   本の絵の紙面: 上の紙 縦 5.0〜46.7%、下の紙 49.1〜91.4%、横 5.9〜93.9%、背 48.2%（絵の画素から測った値）。
+   出さない字（VPG07）: 「今夜、誰と物語を囲む？」の見出し（店主の一言と本で分かる）、日付と所持金、案内の一文、部員の一覧（今夜の卓は本の顔で分かる）、
+   次のランクまでの一言（帯で分かる）、作者の行、本棚の「過去プレイを再生」。 */
+#stage .trpg-root.trpg-campaign[data-view="shelf"] { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr); gap: 8px; padding: 10px 12px 14px; overflow: hidden; }
+/* 上の帯 */
+#stage .trpg-campaign[data-view="shelf"] > .trpg-campaign-header { grid-column: 1; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 84px; }
+#stage .trpg-campaign[data-view="shelf"] > .trpg-campaign-header h1, #stage .trpg-campaign[data-view="shelf"] .trpg-campaign-meta > span { display: none; }
+#stage .trpg-campaign[data-view="shelf"] > .trpg-campaign-header .store-logo { display: inline-block; width: 124px !important; height: 83px !important; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-meta { display: flex; align-items: center; gap: 8px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-meta .trpg-button { width: 82px; min-width: 82px; height: 82px; min-height: 82px; padding: 0; display: grid; place-items: center; font-size: 0; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-meta .trpg-button.trpg-help-button { font-size: 34px; }
+/* 本棚（過去の卓）は本が並んだ形、戻るは矢印の形 */
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-meta .trpg-button:is([data-test="trpg-bookshelf-open"], [data-test="trpg-campaign-close"])::before { content: ""; width: 42px; height: 42px; background: currentColor;
+  -webkit-mask: var(--meta-icon) center / contain no-repeat; mask: var(--meta-icon) center / contain no-repeat; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-meta [data-test="trpg-bookshelf-open"] { --meta-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 4h3.5v16H3zM8 6h3.5v14H8zm5.6-1.4 3.4-.9 3.6 15.4-3.4.8zM2 21h20v1.6H2z'/%3E%3C/svg%3E"); }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-meta [data-test="trpg-campaign-close"] { --meta-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 12H6M11 6l-6 6 6 6'/%3E%3C/svg%3E"); }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-meta [data-test="trpg-bookshelf-open"] > span { display: none !important; }
+/* 店主の一言・ランク・道具: 本の上に、詰めて */
+#stage .trpg-campaign[data-view="shelf"] > .trpg-campaign-side { grid-column: 1; grid-row: 2; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; overflow: visible; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side > :is(.trpg-campaign-notice, .trpg-campaign-party, .trpg-club-demo-visits) { display: none; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .venue-host { grid-column: 1 / -1; min-height: 0; padding: 6px 14px 6px 6px; gap: 12px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .venue-host-portrait { flex: 0 0 76px; height: 80px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .venue-host-portrait img { width: 180px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .venue-host-copy strong { font-size: 22px; margin: 0; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .venue-host-copy p { font-size: 24px; line-height: 1.4; }
+/* 部のランク: 円の数字と帯だけ（「次のランクまで あと n」は出さない。帯で分かる） */
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .trpg-campaign-club { display: flex; align-items: center; gap: 12px; flex-wrap: nowrap; min-width: 0; padding: 6px 14px 6px 8px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .trpg-campaign-club-rank small { display: none; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .trpg-campaign-club-rank b { width: 50px; height: 50px; font-size: 28px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .trpg-campaign-club-copy { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; flex: 1 1 0; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .trpg-campaign-club-copy strong { font-size: 24px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .trpg-campaign-club-copy small { display: none; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .trpg-campaign-club-bar { height: 12px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .trpg-campaign-club-growth { flex: none; font-size: 22px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .trpg-campaign-gear .gear-offer { min-height: 76px; height: 100%; padding: 4px 14px; font-size: 24px; white-space: nowrap; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .trpg-campaign-gear .gear-offer-effect { display: none; } /* 効き目は title と「？」で */
+/* 縦が短い端末では、店主の一言を1行に詰める */
+@container (max-height: 1200px) {
+  #stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .venue-host-portrait { flex-basis: 60px; height: 60px; }
+  #stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .venue-host-copy strong { display: none; }
+  #stage .trpg-campaign[data-view="shelf"] .trpg-campaign-side .venue-host-copy p { font-size: 22px; line-height: 1.35; }
+}
+
+/* 本: 残りの高さに収まる大きさ（縦横 2:3） */
+#stage .trpg-campaign[data-view="shelf"] > .trpg-campaign-books { grid-column: 1; grid-row: 3; container-type: size; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-flipbook { --tab-rise: 58px; aspect-ratio: 1024 / 1536; width: min(100cqw, calc((100cqh - var(--tab-rise)) * 1024 / 1536)); container-type: inline-size;
+  background-image: url("../../../img/ui/trpg/book-open-portrait.webp"); perspective: 1800px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book { color: #2a2117; }
+/* 上の紙: 場面の絵（紙に貼った写真）と題 */
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-art { left: 10%; right: 10%; width: auto; top: 8.6%; height: 26%; rotate: -.8deg; border-width: 8px 8px 11px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-art::before { left: -20px; } #stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-art::after { right: -20px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-badge { font-size: 22px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-by { display: none; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy { display: contents; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy > * { position: absolute; left: 9.5%; right: 9.5%; margin: 0; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy > h2 { top: auto; bottom: 55.6%; padding: 0 0 8px; font-size: max(24px, 5.2cqw); line-height: 1.25; -webkit-line-clamp: 2; text-align: center;
+  background: linear-gradient(90deg, #b98e4400, #b98e44 20%, #b98e44 80%, #b98e4400) center bottom / 100% 2px no-repeat; }
+/* 下の紙の、押す所のすぐ上: 今夜の卓（顔）と、かかる時間 */
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy > .trpg-campaign-book-cast { top: auto; bottom: calc(11% + 104px); margin: 0; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-cast[data-ok="true"] { min-height: 0; justify-content: flex-start; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-cast-face { zoom: 1.12; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-cast-face.trpg-cast-initial { width: 52px; height: 54px; font-size: 26px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-cast[data-ok="false"] { font-size: 22px; line-height: 1.35; }
+/* かかる時間: 顔の右に、時計の印と分 */
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-time { display: block; left: auto; right: 9.5%; top: auto; bottom: calc(11% + 112px); translate: none; padding: 2px 14px 2px 40px; font-size: 22px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235d4f3d' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 7.5V12l3 2'/%3E%3C/svg%3E") 12px 50% / 22px no-repeat; }
+/* 下の紙: ひとこと（3行まで）・遊んだ記録・しおり → 押す所 */
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy > :is(.trpg-campaign-book-tagline, .trpg-campaign-memory, [data-test="trpg-finale-progress"]) { top: 53%; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy > p { font-size: max(22px, 4.1cqw); line-height: 1.5; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy > .trpg-campaign-book-tagline { -webkit-line-clamp: 3; text-align: center; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-memory > strong, #stage .trpg-campaign[data-view="shelf"] .trpg-campaign-memory > .trpg-campaign-endings { font-size: 22px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-memory > .trpg-campaign-endings > span { display: none; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy > .trpg-campaign-bookmark { top: auto; bottom: calc(11% + 176px); font-size: 22px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-campaign-book-copy > .trpg-book-actions { top: auto; bottom: 11%; gap: 10px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-book-actions > .trpg-button { min-height: 92px; font-size: 30px; border-radius: 10px; }
+/* 「絵本をみる」: 本の形の印に「絵本」の字（2字なので残す） */
+#stage .trpg-campaign[data-view="shelf"] .trpg-book-actions > .trpg-button.trpg-picturebook-open { flex: 0 0 auto; padding: 0 16px; font-size: 26px; }
+/* しおり（本の上の縁）・矢印（背の高さの左右）・何冊目（背の真ん中） */
+#stage .trpg-campaign[data-view="shelf"] .trpg-book-tabs { left: 6.5%; right: 6.5%; bottom: calc(97.6% - 12px); height: calc(var(--tab-rise) + 12px); gap: 5px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-book-tab { font-size: 24px; padding-bottom: 12px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-page-turn { top: 48.2%; width: 82px; height: 82px; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-page-turn[data-dir="prev"] { left: -1.2%; } #stage .trpg-campaign[data-view="shelf"] .trpg-page-turn[data-dir="next"] { right: -1.2%; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-page-number { left: 50%; width: auto; top: 48.2%; translate: -50% -50%; z-index: 3; padding: 2px 16px; font-size: 22px; color: #2a1b0c; border-radius: 999px;
+  background: linear-gradient(180deg, #fff1c8, #d2ae66); box-shadow: 0 2px 4px #0006; }
+/* めくる紙: 次へは、下の紙が背を越えて上へ返る。前へは、上の紙が下へ返る */
+#stage .trpg-campaign[data-view="shelf"] .trpg-page-leaf { left: 5.9%; right: auto; width: 88%; top: 49.1%; bottom: auto; height: 42.3%; transform-origin: 50% 0; border-radius: 2px 2px 6px 6px;
+  background: linear-gradient(180deg, #d9c595 0%, #f3e5c2 8%, #f8edd2 55%, #efdfb8 100%); }
+#stage .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="next"] .trpg-page-leaf { animation-name: trpg-leaf-up; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="prev"] .trpg-page-leaf { left: 5.9%; right: auto; top: 5%; height: 41.7%; transform-origin: 50% 100%; border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(0deg, #d9c595 0%, #f3e5c2 8%, #f8edd2 55%, #efdfb8 100%); animation-name: trpg-leaf-down; }
+@keyframes trpg-leaf-up { 0% { transform: rotateX(0deg); opacity: 1; filter: brightness(1); } 40% { filter: brightness(.86); } 78% { transform: rotateX(180deg); opacity: 1; filter: brightness(1); } 100% { transform: rotateX(180deg); opacity: 0; } }
+@keyframes trpg-leaf-down { 0% { transform: rotateX(0deg); opacity: 1; filter: brightness(1); } 40% { filter: brightness(.86); } 78% { transform: rotateX(-180deg); opacity: 1; filter: brightness(1); } 100% { transform: rotateX(-180deg); opacity: 0; } }
+/* めくっている間: 返る紙の下から次の頁が見え、着地する側は前の本のまま（本編の見開きと同じ考え方を上下で） */
+#stage .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn] > [data-flip] .trpg-campaign-book-copy { visibility: visible; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn] > [data-flip] > :is(.trpg-campaign-book-art, .trpg-campaign-book-time) { visibility: visible; }
+#stage .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="next"] > [data-flip="out"] .trpg-campaign-book-copy > :not(h2),
+#stage .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="next"] > [data-flip="out"] > .trpg-campaign-book-time,
+#stage .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="next"] > [data-flip="in"] > .trpg-campaign-book-art,
+#stage .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="next"] > [data-flip="in"] .trpg-campaign-book-copy > h2,
+#stage .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="prev"] > [data-flip="out"] > .trpg-campaign-book-art,
+#stage .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="prev"] > [data-flip="in"] > .trpg-campaign-book-time,
+#stage .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="prev"] > [data-flip="out"] .trpg-campaign-book-copy > h2,
+#stage .trpg-campaign[data-view="shelf"] .trpg-flipbook[data-turn="prev"] > [data-flip="in"] .trpg-campaign-book-copy > :not(h2) { visibility: hidden; }
