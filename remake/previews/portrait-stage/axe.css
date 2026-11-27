@@ -5,13 +5,13 @@
 
 .phone[data-kind="axe"] { --slate: #17211e; --wood: #8a5a32; --chalk: #f4f0e6; --orange: #ff8c3a; background: #120c08; }
 /* 高さで変わる寸法は、枠（.phone）ではなく中の部品に持たせる */
-.ax-stage, .ax-body, .ax-summary { --ax-pad: 27rem; --ax-mate: 6.6rem; --ax-top: 6.6rem; --ax-grip: 8.4rem; --ax-travel: 8.6rem; }
+.ax-stage, .ax-body, .ax-summary { --ax-pad: 27rem; --ax-mate: 7.2rem; --ax-top: 6.6rem; --ax-grip: 8.4rem; --ax-travel: 8.6rem; }
 
 /* ───────── レーンと的 ───────── */
 .pic.ax-lane { height: 100%; -webkit-mask-image: none; mask-image: none; }
 .pic.ax-lane > .bg { object-position: 50% 42%; filter: brightness(0.78) saturate(1.05); }
 .ax-veil { top: 52%; background: linear-gradient(180deg, transparent 0%, #120c08b3 34%, #120c08f2 62%, #120c08 100%); }
-.ax-stage { position: absolute; z-index: 7; left: 0; right: 0; top: var(--ax-top); bottom: calc(var(--ax-pad) + var(--ax-mate) + 1.4rem); display: grid; place-items: center; will-change: transform; }
+.ax-stage { position: absolute; z-index: 7; left: 0; right: 0; top: var(--ax-top); bottom: calc(var(--ax-pad) + var(--ax-mate) + 1.9rem); display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); place-items: center; will-change: transform; }
 .ax-board { display: block; height: 100%; width: auto; max-width: 100%; aspect-ratio: 450 / 466; overflow: visible; filter: drop-shadow(0 1.6rem 1.8rem #000b); touch-action: manipulation; cursor: pointer; }
 .ax-flying, .ax-impacts, .ax-trail, .ax-cross, .ax-fixed, .ax-needle, .ax-guide, .ax-shadow, .ax-halo, .ax-called, .ax-shift, .ax-release { pointer-events: none; }
 .ax-kill-hits circle { pointer-events: none; }
@@ -64,9 +64,9 @@
 .ax-body { padding: 0 1rem max(1rem, env(safe-area-inset-bottom, 0px)); }
 .ax-mate { display: flex; align-items: center; gap: 1rem; height: var(--ax-mate); margin-bottom: 0.6rem; }
 .ax-face { flex: none; width: 5.4rem; height: 5.4rem; border-radius: 50%; background: #f3e9d6 no-repeat; box-shadow: 0 0 0 0.16rem var(--orange), 0 0.4rem 1rem #000a; }
-.ax-line { flex: 1; min-width: 0; margin: 0; padding: 0.5rem 1.4rem 0.8rem; border-radius: 1.6rem 1.6rem 1.6rem 0.5rem; color: var(--chalk); background: linear-gradient(180deg, #1f2b27e6, #131b18f2); box-shadow: 0 0 0 0.1rem #ffffff2e, 0 0.8rem 1.6rem #000a; }
-.ax-line small { display: block; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.14em; color: var(--orange); }
-.ax-line-text { display: block; min-height: 2.6rem; font-size: 1.66rem; font-weight: 500; line-height: 1.5; letter-spacing: 0.02em; word-break: auto-phrase; line-break: strict; }
+.ax-line { flex: 1; min-width: 0; margin: 0; padding: 0.4rem 1.4rem 0.6rem; border-radius: 1.6rem 1.6rem 1.6rem 0.5rem; color: var(--chalk); background: linear-gradient(180deg, #1f2b27e6, #131b18f2); box-shadow: 0 0 0 0.1rem #ffffff2e, 0 0.8rem 1.6rem #000a; }
+.ax-line small { display: block; font-size: 1.05rem; line-height: 1.3; font-weight: 700; letter-spacing: 0.14em; color: var(--orange); }
+.ax-line-text { display: block; min-height: 2.4rem; font-size: 1.66rem; font-weight: 500; line-height: 1.45; letter-spacing: 0.02em; word-break: auto-phrase; line-break: strict; }
 .ax-line-text.small { font-size: 1.46rem; }
 
 /* ───────── 下: 投げる専用の場所 ───────── */
@@ -121,7 +121,7 @@
 .ax-mat[data-demo="true"] .ax-grip { animation: ax-demo 1.05s ease-in-out both; }
 @keyframes ax-demo { 0%, 20% { transform: none; } 70% { transform: translateY(calc(var(--ax-travel) * -1)); } 100% { transform: none; } }
 .ax-pad[data-phase="flight"] .ax-grip, .ax-pad[data-phase="flight"] .ax-arrow, .ax-pad[data-phase="flight"] .ax-mat-label { opacity: 0; }
-.ax-gauge { position: absolute; right: 1.6rem; bottom: 1.4rem; top: 7.4rem; width: 3rem; border-radius: 0.8rem; background: #0b0f0d; box-shadow: 0 0 0 0.16rem #c79a5c, inset 0 0 0.6rem #000; }
+.ax-gauge { position: absolute; right: 1.6rem; bottom: 1.4rem; top: 8.8rem; width: 3rem; border-radius: 0.8rem; background: #0b0f0d; box-shadow: 0 0 0 0.16rem #c79a5c, inset 0 0 0.6rem #000; }
 .ax-gauge[hidden] { display: none; }
 .ax-gauge .ax-stick, .ax-gauge .ax-sweet, .ax-gauge .ax-fill { position: absolute; left: 0.3rem; right: 0.3rem; }
 .ax-stick { background: #8a5a32; } .ax-sweet { background: #6fd58a; box-shadow: 0 0 0.6rem #6fd58a99; }
@@ -165,8 +165,8 @@
 .ax-sum-goals { width: 100%; margin: 0; }
 .ax-sum-buttons { width: 100%; display: flex; align-items: stretch; gap: 1rem; margin-bottom: -0.8rem; }
 .ax-sum-buttons .ax-tag { flex: 1 1 0; min-height: 6.4rem; padding: 0 0.4rem; font-size: 1.8rem; white-space: nowrap; }
-.ax-sum-mate { width: 100%; height: auto; margin: 0; } .ax-sum-mate .ax-face { width: 4.6rem; height: 4.6rem; } .ax-sum-mate .ax-line { padding: 0.3rem 1.2rem 0.6rem; background: #0b100e99; box-shadow: inset 0 0 0 0.1rem #ffffff24; }
-.ax-sum-mate .ax-line-text { font-size: 1.5rem; } .ax-sum-mate .ax-line-text.small { font-size: 1.34rem; } .ax-sum-buttons .ax-primary { flex: 1.5 1 0; min-height: 6.4rem; margin-top: 0; }
+.ax-sum-mate { width: 100%; height: auto; margin: 0; gap: 0.7rem; } .ax-sum-mate .ax-face { width: 4.6rem; height: 4.6rem; } .ax-sum-mate .ax-line { padding: 0.3rem 0.9rem 0.6rem; background: #0b100e99; box-shadow: inset 0 0 0 0.1rem #ffffff24; }
+.ax-sum-mate .ax-line-text { font-size: 1.5rem; } .ax-sum-mate .ax-line-text.small { font-size: 1.3rem; } .ax-sum-buttons .ax-primary { flex: 1.5 1 0; min-height: 6.4rem; margin-top: 0; }
 .phone[data-ax-summary="true"] .ax-body { visibility: hidden; }
 .phone[data-ax-summary="true"] .ax-board { filter: brightness(0.55) drop-shadow(0 1.6rem 1.8rem #000b); }
 /* 落ちた時、画面の縁が沈む */
@@ -176,16 +176,17 @@
 
 /* ───────── 背の低い画面 ───────── */
 @container phone (max-height: 80rem) {
-  .ax-stage, .ax-body, .ax-summary { --ax-pad: 24.4rem; --ax-mate: 6.2rem; --ax-top: 6.3rem; --ax-grip: 7.6rem; --ax-travel: 7.4rem; }
+  .ax-stage, .ax-body, .ax-summary { --ax-pad: 24.4rem; --ax-mate: 6.8rem; --ax-top: 6.3rem; --ax-grip: 7.6rem; --ax-travel: 7.4rem; }
+  .ax-line { padding: 0.3rem 1.3rem 0.5rem; } .ax-line-text { font-size: 1.6rem; line-height: 1.42; } .ax-line-text.small { font-size: 1.42rem; }
   .ax-primary { min-height: 6.6rem; } .ax-primary[data-wide="true"] b { font-size: 3rem; } .ax-rank { width: 8.4rem; height: 8.4rem; } .ax-rank b { font-size: 4rem; } .ax-sum-score strong { font-size: 4.8rem; }
 }
 @container phone (max-height: 71rem) {
-  .ax-stage, .ax-body, .ax-summary { --ax-pad: 21.6rem; --ax-mate: 5.4rem; --ax-top: 5.9rem; --ax-grip: 6.6rem; --ax-travel: 6.2rem; }
+  .ax-stage, .ax-body, .ax-summary { --ax-pad: 21.6rem; --ax-mate: 6rem; --ax-top: 5.9rem; --ax-grip: 6.6rem; --ax-travel: 6.2rem; }
   .ax-round { width: 4.4rem; height: 4.4rem; } .ax-tiles li { height: 4rem; } .ax-total { padding-block: 0.1rem 0.2rem; } .ax-total b { font-size: 2.2rem; }
-  .ax-face { width: 4.6rem; height: 4.6rem; } .ax-line { padding: 0.3rem 1.2rem 0.5rem; } .ax-line-text { font-size: 1.5rem; min-height: 2.3rem; } .ax-line-text.small { font-size: 1.34rem; } .ax-mate { margin-bottom: 0.4rem; }
+  .ax-face { width: 4.6rem; height: 4.6rem; } .ax-line { padding: 0.2rem 1.2rem 0.4rem; } .ax-line small { line-height: 1.2; } .ax-line-text { font-size: 1.5rem; line-height: 1.36; min-height: 2rem; } .ax-line-text.small { font-size: 1.34rem; } .ax-mate { margin-bottom: 0.4rem; }
   .ax-pad { gap: 0.6rem; padding: 0.8rem; } .ax-goals li { height: 2.9rem; font-size: 1.16rem; } .ax-tag { min-height: 4.4rem; font-size: 1.46rem; } .ax-call { min-height: 4.8rem; }
   .ax-primary { min-height: 5.8rem; border-width: 1.7rem 2.4rem; } .ax-primary b { font-size: 2.3rem; } .ax-primary-icon { width: 3.3rem; height: 3.3rem; font-size: 2rem; }
-  .ax-gauge { top: 6.6rem; bottom: 1.1rem; } .ax-mat-label { font-size: 1.5rem; top: 0.7rem; } .ax-live b { font-size: 2.2rem; }
+  .ax-gauge { top: 8rem; bottom: 1.1rem; } .ax-mat-label { font-size: 1.5rem; top: 0.7rem; } .ax-live b { font-size: 2.2rem; }
   .ax-result { gap: 0.3rem; margin-top: 0.2rem; } .ax-result-num { font-size: 3.6rem; } .ax-zone { font-size: 1.5rem; } .ax-tip { font-size: 1.3rem; min-height: 3.7rem; } .ax-review b { font-size: 1.38rem; }
   .ax-summary { gap: 0.6rem; padding: 0.8rem 1.2rem 1.2rem; border-width: 2rem; } .ax-rank { width: 7.2rem; height: 7.2rem; } .ax-rank b { font-size: 3.4rem; } .ax-sum-score strong { font-size: 4.2rem; } .ax-sum-score em { font-size: 1.5rem; }
   .ax-sum-buttons .ax-tag, .ax-sum-buttons .ax-primary { min-height: 5.6rem; } .ax-sum-stats { font-size: 1.2rem; } .ax-cue strong { font-size: 2.1rem; } .ax-cue span { font-size: 1.36rem; }
