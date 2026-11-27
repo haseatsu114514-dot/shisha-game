@@ -170,7 +170,7 @@ test("ミックスの属性: メイン＝◎・サブ＝○・ほか＝×。提�
   // 1種の物は「〜単」。作った名前は付けず、（）も付けない（名前がそのまま中身）
   assert.deepEqual([mixName("cottoncandy"), mixFullName("cottoncandy"), mixNameParts("cottoncandy")], ["コットンキャンディ単", "コットンキャンディ単", ["コットン", "キャンディ単"]]);
   assert.deepEqual([mixName("apple"), mixFullName("apple"), mixNameParts("apple")], ["ダブルアップル単", "ダブルアップル単", ["ダブル", "アップル単"]]);
-  assert.deepEqual([mixName("cappuccino"), mixName("earlgrey"), mixName("mintshake")], ["カプチーノ単", "アールグレイ単", "ペパーミントシェイク単"]);
+  assert.deepEqual([mixName("cappuccino"), mixName("earlgrey"), mixName("mintshake")], ["カプチーノ単", "アールグレイ単", "ペパーミントシェーク単"]);
   assert.equal(mixFullName("applemint"), "スパイスミント（ダブルアップル・ミント）");
   assert.equal(mixFullName("caramelapple"), "スパイスキャラメル（キャラメル・ダブルアップル）");
   assert.equal(mixFullName("cinnamonapple"), "シナモンスパイス（シナモン・ダブルアップル）");

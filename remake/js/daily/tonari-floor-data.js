@@ -30,11 +30,11 @@ export const WISH_IDS = Object.freeze(WISHES.map((w) => w.id));
 // （「｜」は、狭い札で折ってよい所。data/flavors.json の名前と食い違うと検査で止まる）
 const FULL_NAMES = Object.freeze({
   cool_mint: "クール｜ミント", blueberry_mint: "ブルーベリー｜ミント", ice_grape: "アイス｜グレープ", ice_lemon: "アイス｜レモン",
-  peppermint_shake: "ペパーミント｜シェイク", frozen_citrus: "フローズン｜シトラス",
+  peppermint_shake: "ペパーミント｜シェーク", frozen_citrus: "フローズン｜シトラス",
   grapefruit: "グレープ｜フルーツ", pineapple: "パイナップル", blueberry: "ブルーベリー", strawberry: "ストロベリー",
   lemon_tea: "レモン｜ティー", cherry: "レッド｜チェリー", passion_fruit: "パッション｜フルーツ", chocolate: "チョコレート",
-  cotton_candy: "コットン｜キャンディ", hazelnut: "ヘーゼル｜ナッツ", white_gummy_bear: "ホワイト｜グミベア", double_apple: "ダブル｜アップル",
-  dragonfruit: "ドラゴン｜フルーツ", red_gummy_bear: "レッド｜グミベア", spring_water: "スプリング｜ウォーター",
+  cotton_candy: "コットン｜キャンディ", hazelnut: "ヘーゼル｜ナッツ", white_gummy_bear: "しろくま｜グミ", double_apple: "ダブル｜アップル",
+  dragonfruit: "ドラゴン｜フルーツ", red_gummy_bear: "あかくま｜グミ", spring_water: "スプリング｜ウォーター",
   black_tea: "ブラック｜ティー", absal_earlgrey: "アール｜グレイ", white_musk: "ホワイト｜ムスク", sakura: "桜",
   mountain_mist: "マウンテン｜ミスト", nightside_blast_mint: "ブラスト｜ミント",
 });
@@ -48,7 +48,7 @@ export const FLAVORS = Object.freeze(Object.fromEntries([
   // 清涼・スパイス（刺激系）
   flavor("mint", "ミント", "fresh"), flavor("cool_mint", "クールミント", "fresh"), flavor("blueberry_mint", "ベリーミント", "fresh", ["fruit"]),
   flavor("ice_grape", "アイスグレープ", "fresh", ["fruit"]), flavor("ice_lemon", "アイスレモン", "fresh", ["fruit"]),
-  flavor("peppermint_shake", "ミントシェイク", "fresh", ["sweet"]), flavor("frozen_citrus", "フローズンシトラス", "fresh", ["fruit"]),
+  flavor("peppermint_shake", "ミントシェーク", "fresh", ["sweet"]), flavor("frozen_citrus", "フローズンシトラス", "fresh", ["fruit"]),
   flavor("double_apple", "ダブルアップル", "fresh"), flavor("cinnamon", "シナモン", "fresh", ["sweet"]),
   flavor("cardamom", "カルダモン", "fresh"), flavor("ginger", "ジンジャー", "fresh"),
   // fruit（フルーティ）
@@ -65,7 +65,7 @@ export const FLAVORS = Object.freeze(Object.fromEntries([
   flavor("hazelnut", "ナッツ", "sweet"), flavor("honey", "ハニー", "sweet"), flavor("cola", "コーラ", "sweet"),
   flavor("coffee", "コーヒー", "sweet", ["deep"]), flavor("cappuccino", "カプチーノ", "sweet", ["deep"]),
   flavor("milk", "ミルク", "sweet", [], 2), flavor("white_gummy_bear", "グミ", "sweet", ["fruit"], 2),
-  flavor("red_gummy_bear", "レッドグミベア", "sweet", ["fruit"], 2),
+  flavor("red_gummy_bear", "あかくまグミ", "sweet", ["fruit"], 2),
   flavor("spring_water", "スプリングウォーター", "deep", [], 2),
   // 花・茶葉（リラックス）。ブラックティーの本編カテゴリは spice。
   flavor("black_tea", "ティー", "deep"), flavor("absal_earlgrey", "アールグレイ", "deep", ["fresh"]),
@@ -281,8 +281,8 @@ export const VISITORS = Object.freeze(Object.fromEntries([
       bye: "ごちそうさま。ここで吸うと落ち着くね", byeLow: "今日はこの辺で。ごちそうさま", mad: "…今日は帰るね。またゆっくり来るから",
     }),
   visitor("ageha", "あげは", [2, 3, 4, 5], "normal", "plain", 1,
-    { wish: "sweet", label: "ホワイトグミベア", has: ["white_gummy_bear"], quote: "ハジメっち、うちホワイトグミベアがいい！" },
-    { wish: "sweet", label: "レッドグミベア", has: ["red_gummy_bear"], quote: "次、レッドグミベア！ 白と吸い比べたいじゃん" }, {
+    { wish: "sweet", label: "しろくまグミ", has: ["white_gummy_bear"], quote: "ハジメっち、うちしろくまグミがいい！" },
+    { wish: "sweet", label: "あかくまグミ", has: ["red_gummy_bear"], quote: "次、あかくまグミ！ 白と吸い比べたいじゃん" }, {
       best: "これこれ！ グミ、ほんとに噛めそう", good: "この甘さも好き。グミの方も気になる！", off: "んー、うち今日はグミの口なんだよね",
       calls: {
         thin: { said: "ハジメっち、さっきより煙少なくない？", good: "戻った！ このひと口待ってた！" },

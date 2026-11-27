@@ -16,7 +16,7 @@ const FLAVORS = [
   { id: 'mint', n: 'ミント', b: 'アルファーヘブン', k: 'cool', t: 2, lo: 3, hi: 6, j: [4, 5], s: 9, pair: 'fruit', ab: '【クッション】脇役のとき、主役の焦げラインを+1する。' },
   { id: 'ice_grape', n: 'アイスグレープ', b: 'アルファーヘブン', k: 'cool', t: 3, lo: 3, hi: 5, j: [4], s: 7, pair: 'sweet', ab: '' },
   { id: 'cool_mint', n: 'クールミント', b: 'アルファーヘブン', k: 'cool', t: 3, lo: 4, hi: 7, j: [6], s: 9, pair: 'fruit', ab: '【キレ】脇役のとき、上側のズレを適温として扱う。' },
-  { id: 'death_by_ice', n: 'デスバイアイス', b: 'フォースフェクタ', k: 'cool', t: 4, lo: 6, hi: 8, j: [8], s: 9, pair: 'none', ab: '【強烈】1枚でもボウルにあれば、枚数に関係なく主役になる。' },
+  { id: 'death_by_ice', n: 'デスバイフロスト', b: 'フォースフェクタ', k: 'cool', t: 4, lo: 6, hi: 8, j: [8], s: 9, pair: 'none', ab: '【強烈】1枚でもボウルにあれば、枚数に関係なく主役になる。' },
   { id: 'double_apple', n: 'ダブルアップル', b: 'アルファーヘブン', k: 'spice', t: 3, lo: 6, hi: 8, j: [7], s: 10, pair: 'none', ab: '【原点】ボウルがこの葉だけなら、適温の一口+1。' },
   { id: 'cinnamon', n: 'シナモン', b: 'アルファーヘブン', k: 'spice', t: 3, lo: 6, hi: 8, j: [7], s: 99, pair: 'sweet', ab: '【耐熱】焦げない。' },
   { id: 'cardamom', n: 'カルダモン', b: 'アフサール', k: 'spice', t: 4, lo: 5, hi: 6, j: [6], s: 7, pair: 'floral', ab: '' },
@@ -26,7 +26,7 @@ const FLAVORS = [
   { id: 'jasmine', n: 'ジャスミン', b: 'アフサール', k: 'floral', t: 3, lo: 4, hi: 6, j: [5], s: 7, pair: 'fruit', ab: '【余韻】ボウルに2枚以上あれば、各セッション最後の一口+1。' },
   { id: 'spring_water', n: 'スプリングウォーター', b: 'アフサール', k: 'floral', t: 1, lo: 2, hi: 8, j: [], s: 10, pair: 'none', ab: '【つなぎ】ほかの葉があるかぎり主役にならない。脇役のとき、主役の相性を必ず満たす。' },
   { id: 'vanilla', n: 'バニラ', b: 'アルファーヘブン', k: 'sweet', t: 3, lo: 5, hi: 7, j: [6], s: 8, pair: 'spice', ab: '【NG：ミント】ミントと2枚ずつ以上重なると、ミックスと相性の加点なし。' },
-  { id: 'white_gummy_bear', n: 'ホワイトグミベア', b: 'フワリ', k: 'sweet', t: 3, lo: 4, hi: 6, j: [5], s: 8, pair: 'fruit', ab: '' },
+  { id: 'white_gummy_bear', n: 'しろくまグミ', b: 'フワリ', k: 'sweet', t: 3, lo: 4, hi: 6, j: [5], s: 8, pair: 'fruit', ab: '' },
   { id: 'chocolate', n: 'チョコレート', b: 'ドバジ', k: 'sweet', t: 4, lo: 5, hi: 6, j: [6], s: 7, pair: 'cool', ab: '' },
   { id: 'coffee', n: 'コーヒー', b: 'ドバジ', k: 'sweet', t: 4, lo: 7, hi: 8, j: [8], s: 9, pair: 'sweet', ab: '' },
 ];

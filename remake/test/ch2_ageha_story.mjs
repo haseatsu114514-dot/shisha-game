@@ -124,7 +124,7 @@ assert.equal(agehaStoryScene({flags:{},affinity:{ageha:66}},3,{[AGEHA_VISITS[1]]
   assert.doesNotMatch(all.map((l) => l.text || "").join("\n"), /大会|本番|いよいよ/, "no tournament-bound wording");
 }
 
-// ♥5（#2023）: 白・赤のグミベアの試作が最後の通う回で、味の会話を兼ねる。締めくくりは専用ハガルを渡し、大会の前後で分岐する
+// ♥5（#2023）: 白・赤のくまグミの試作が最後の通う回で、味の会話を兼ねる。締めくくりは専用ハガルを渡し、大会の前後で分岐する
 {
   assert.equal(AGEHA_VISITS.at(-1), "remake_ch2_ageha_gummy");
   const gummy = story.remake_ch2_ageha_gummy;
@@ -158,7 +158,7 @@ assert.equal(syncAgehaVibes(flags), 1); assert(!flags._ch2_vibes_understood);
 flags._ch2_vibes_hit_magazine = true;
 assert.equal(syncAgehaVibes(flags), 2); assert(flags._ch2_vibes_understood);
 
-// 各回の答え合わせ: 選択肢の行き先がそろい、当たりの枝だけが当たりの印を付ける（♥5のグミベアの回は答え合わせではない）
+// 各回の答え合わせ: 選択肢の行き先がそろい、当たりの枝だけが当たりの印を付ける（♥5のくまグミの回は答え合わせではない）
 const vibesVisits = AGEHA_VISITS.filter((id) => id !== "remake_ch2_ageha_gummy");
 assert.deepEqual(vibesVisits, ["remake_ch2_ageha_gyaru", "remake_ch2_ageha_newcomer", "remake_ch2_ageha_magazine"]);
 for (const id of ["remake_ch2_ageha_scout", ...vibesVisits]) {

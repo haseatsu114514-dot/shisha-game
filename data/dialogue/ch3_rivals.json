@@ -3415,6 +3415,318 @@
           "text": "怒らない。ちょっと大げさにして、僕が流す"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch3_ayatori_owner_visit",
+      "comment": "RLS10⑥（第3章は綾取を厚く描く・2026-11-27 VOL21 第3弾）。煙幕の初訪問の後、大会前に一度。間借りの店を貸してくれた人の父（昔ここで乾物屋をしていた）が見回りに来る。噂を自分で流す綾取が、借りた物は借りた時よりきれいに返す（店の仕事は本物・正本）。白紙の札に「昼の乾物屋」と書かれ、入れていない味の感想を「いちばん好きな種類」と受け取る。窓辺の鉢（ch3_outing_enmaku_visit_f）には触れない。大会・恋愛に触れない。好感度は動かさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の煙幕。扉を開けると、綾取が床に膝をついて、換気扇の下の油を拭いていた。"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "nervous",
+          "text": "あ、いいところに。君、その椅子、全部ひっくり返して"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大掃除ですか"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "nervous",
+          "text": "三時に、店を貸してくれた人のお父さんが見に来るの。昔、ここで店をやってた人"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "組織の存亡がかかってる。今日だけは、噂も流さない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "噂を自分で流す人とは思えないほど、手つきは丁寧だった。椅子の脚の裏まで拭いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そこまで見ますか"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "借りた物は、借りた時よりきれいに返す。……福岡で、最初に教わったこと"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "三時ちょうど、杖をついた小柄なおじいさんが入ってきた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……煙の店と聞いたが、煙くないな"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "換気扇、さっきまで磨いてましたから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "おじいさんはカウンターを指でなぞり、棚の葉の袋を一つずつ眺めた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取はうしろで手を組んで立っている。組んだ指先が、小さく動いていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（緊張してる。……勝負の時と、全然違う顔だ）"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "ここは昔、乾物屋でな。わしの店だった"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "棚の高さが、昔のままだ。女房の背に合わせて、低くしたんだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "おじいさんの目が、低い棚に積まれた白紙の札の束で止まった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "これは何だ。品書きか"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "味の名前を先に言わないための札です。吸ってから、お客さんが書くんです"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……白紙の品書きか。変わったことをする"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "わしの頃は、品書きに値段しか書かなかった。呼び名は、客が勝手につけた"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "……それ、僕の店と同じです"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "一台、作りましょうか。名前は、吸ったあとで"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "吸ったことがない、……少しだけなら"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取が組んだのは、いちばん軽い一台だった。いつもより、炭の数が一つ少ない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "おじいさんは二口吸って、むせずに煙を吐いた。それから白紙の札に、震える字で何か書いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "札には、「昼の乾物屋」とあった。"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "surprise",
+          "text": "……干した物なんて、入れてないです"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "入ってなくても、したんだ。仕方ない"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "……はい。いちばん好きな種類の感想です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "おじいさんは杖をついて帰っていった。店を返せとも、延ばせとも言わなかった。"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "nervous",
+          "text": "……緊張した。審査員より、緊張した"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "審査員の前のほうが、怖い顔してそうですけど"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smug",
+          "text": "あれは緊張じゃなくて、作戦の顔"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取は書かれた札を、胸ポケットにしまった。白紙の札の、いちばん手前に。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_ayatori_hoarse",
+      "comment": "RLS10⑥（第3章は綾取を厚く描く・2026-11-27 VOL21 第3弾）。煙幕の初訪問の後、大会前に一度。熱が下がったばかりで声のかすれた綾取の代わりに、はじめが注文を聞く（幼い頃は体調を崩しやすかった・正本）。喋らない綾取の手。大げさな噂を書く日は自信がない日だと、本人が言う。大会・恋愛・ましろとの過去に触れない。好感度は動かさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の煙幕。「いらっしゃい」と言った綾取の声が、半分かすれていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "声、どうしたんですか"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "nervous",
+          "text": "昨日、ちょっと熱が出て。もう下がったよ。声だけ、まだ寝てる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "休まなくていいんですか"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "予約のお客さんがいるの。組織は、休まない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席には、二人連れが一組。綾取が話そうとするたびに、咳が先に出た。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "注文、俺が聞きます。綾取さんは、作るほうだけで"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "surprise",
+          "text": "……いいの？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "店で働いてるので。聞くのは、慣れてます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人連れは、果物の一台とお茶の一台を頼んだ。味の名前は、伏せるほうを選んだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取は黙って炭を並べた。喋らない綾取の手は、いつもより速く見えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（話さないぶん、手のほうが喋ってる）"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……これ、何味ですか。なんか、縁日みたい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取が白紙の札に答えを書いて、黙って差し出した。読んだ客が、笑う。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "外れた。でも、縁日って言ったほうが合ってる気がする"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取は、かすれた声で「僕も、そう思います」と言った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客が帰ったあと、綾取はカウンターにおでこをつけた。"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "……助かった。今日の噂、何にするか考える元気もなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "噂って、毎日考えてるんですか"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "大げさに書く日は、たいてい自信がない日。今日は書かなくて済んだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（噂って、そういう日に書くんだ）"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "君のこと、黒板に書いていい？「今夜の煙幕、通訳つき」って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "通訳はしてません。注文を聞いただけです"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "……じゃあ、「今夜の煙幕、聞き役つき」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取は喉に手を当てたまま、黒板には何も書かずに、灯りを落とした。"
+        }
+      ]
     }
   ]
 }

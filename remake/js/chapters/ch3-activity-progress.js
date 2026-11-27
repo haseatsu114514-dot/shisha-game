@@ -3,7 +3,7 @@ import { chapterThreeFreeTime, completeChapterThreeFreeTime } from "./ch3-progre
 import { tokyoWindowReserved, tokyoGymWindowAllowed, timeNumber } from "../core/tokyo-clock.js";
 
 export const TOKYO_GYM = Object.freeze({ id: "choizap", stat: "charm", stamina: -8 });
-/** 東京の CHOI-ZAP の場面。昼・夜それぞれを順番に読む（daily/spots.js の quietTurn。鍵は TOKYO_GYM_TURN）。 */
+/** 東京の サクッとジム の場面。昼・夜それぞれを順番に読む（daily/spots.js の quietTurn。鍵は TOKYO_GYM_TURN）。 */
 export const TOKYO_GYM_SCENES = Object.freeze({
   // #3097: 昼夜それぞれ3本→5本（スクワットの重心・同じ順番の常連／鏡の中の疲れ・器具を拭く時間）
   day: Object.freeze(["ch3_choizap_day", "ch3_choizap_lunch", "ch3_choizap_train", "ch3_choizap_squat", "ch3_choizap_regular",

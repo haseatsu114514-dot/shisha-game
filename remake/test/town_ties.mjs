@@ -82,7 +82,7 @@ check("the secrets stay secret: no age, no confession, and Rio never learns why 
   assert.equal(lovers.length, 2, "Naru's parting line and Rio's last line both change for a lover");
   assert(lovers.every((l) => l.char_id === "rio" && tea.branches[l.next_true]?.length));
   assert(!/好き|告白|惚れ/.test(text("ch5_rio_naru_tea")));
-  assert(text("ch5_rio_naru_tea").includes("ケムリクサさん") && text("ch5_rio_naru_tea").includes("円頓寺さん"));
+  assert(text("ch5_rio_naru_tea").includes("ケムリヤさん") && text("ch5_rio_naru_tea").includes("円頓寺さん"));
 });
 
 check("Naru and Rio, the order (#3468 E): names unchanged, Rio never reads it as more than work, Naru says what he needs", () => {
@@ -90,7 +90,7 @@ check("Naru and Rio, the order (#3468 E): names unchanged, Rio never reads it as
   const rows = dlg.lines.filter((l) => !l.type), all = [...rows, ...Object.values(dlg.branches).flat()];
   const whole = all.map((l) => l.text).join("");
   // 呼び名は変えない（屋号と、敬語の苗字）。好意・恋の進展を思わせる言葉は出さない。旧名・マニキュアの話は持ち込まない
-  assert(whole.includes("ケムリクサさん") && whole.includes("円頓寺さん"));
+  assert(whole.includes("ケムリヤさん") && whole.includes("円頓寺さん"));
   assert(!/好き|告白|惚れ|憧れ|照れ|赤く|亮太|鳴切|凛想さんって|くゆり|マニキュア|爪/.test(whole));
   assert(all.filter((l) => l.speaker === "naru").every((l) => !/凛想/.test(l.text)), "Naru keeps calling her by her family name");
   // 凛想が覚えていたのは仕事の記録（焼き菓子の台・焦げ）。なるは伝票を揃えかけて止め、自分の条件を先に言う

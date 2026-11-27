@@ -54,7 +54,7 @@ export const SCENE_PROPS = {
     { file: "shisha_kemurikusa.png", x: 390, y: 378, h: 190, ratio: 454 / 768 },
     { file: "shisha_tonari.png", x: 180, y: 406, h: 220, ratio: 469 / 768 },
   ],
-  // tonari とケムリクサの台は店内背景に描き込み済み（#3810）。
+  // tonari とKEMURIYAの台は店内背景に描き込み済み（#3810）。
   "peppermint.png": [
     { file: "shisha_peppermint.png", x: 900, y: 471, h: 180, ratio: 512 / 768 },
     { file: "shisha_peppermint.png", x: 950, y: 623, h: 260, ratio: 512 / 768 },

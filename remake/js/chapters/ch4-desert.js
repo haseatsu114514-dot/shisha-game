@@ -158,7 +158,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     const before = desertRecords(owner);
     const name = DB.characters[DESERT_GUIDE]?.display_name || "ヌール", naruName = DB.characters.naru?.display_name || "なる";
     // 締めくくりで「二人で見たい」と答えた後の砂丘: 滑ったあと夕日で告白（DSR20）。この日はなるを呼ばない
-    // 第5章（帰国後にまたドバイへ来た日・naru: false）は、なるは地元の KEMURIKUSA にいるので砂丘に来ない。ヌールとだけ滑る
+    // 第5章（帰国後にまたドバイへ来た日・naru: false）は、なるは地元の KEMURIYA にいるので砂丘に来ない。ヌールとだけ滑る
     const rivals = !naru || (confessionDay && !before.naruMet) ? ["noor"] : desertRivals(owner);
     // ヌールに勝った後の最初の外出: なるが砂丘に来て勝負を持ちかける（一度だけ）
     if (rivals.includes("naru") && !before.naruMet) {
