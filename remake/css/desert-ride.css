@@ -802,10 +802,13 @@ html:root[data-density="phone"] .desert-ride .dr-tier-face { width: 46px; height
 /* ランクの名前: リボンの下に、革の名札（720×150 の絵。字は名札の革の面の中） */
 .dr-result .dr-rank span { top: auto; bottom: -2%; min-width: 64%; padding: 10px 34px 12px; box-sizing: border-box; text-align: center; border-radius: 0; box-shadow: none;
   color: #ffeec8; text-shadow: 0 2px 0 rgba(30, 10, 4, .8); background: transparent url("../img/ui/desert_ride_result/plate_rank.webp") center / 100% 100% no-repeat; }
-.dr-result[data-rank] .dr-rank span { background-color: transparent; background-image: url("../img/ui/desert_ride_result/plate_rank.webp"); }
+/* B・C は元の節（ランクごとの名札の色）が background をまとめて指定しているので、大きさと位置もここで上書きする（でないと絵が原寸で欠ける） */
+.dr-result[data-rank] .dr-rank span { background: transparent url("../img/ui/desert_ride_result/plate_rank.webp") center / 100% 100% no-repeat; }
 /* 自己ベスト更新: 赤い漆の札（900×234 の絵）の上に字。札ごと少し傾けて押す */
 .dr-result .dr-best[data-new="true"] { padding: 14px 52px 16px; border: 0; border-radius: 0; box-shadow: none; background: transparent url("../img/ui/desert_ride_result/stamp_best.webp") center / 100% 100% no-repeat;
-  color: #fff8e8; text-shadow: 0 2px 0 rgba(90, 10, 4, .8), 0 0 10px rgba(255, 200, 120, .4); letter-spacing: .08em; }
+  color: #fff8e8; text-shadow: 0 2px 0 rgba(90, 10, 4, .8), 0 0 10px rgba(255, 200, 120, .4); letter-spacing: .08em; white-space: nowrap; }
+/* 横スマホは結果の左の列が細いので、札の余白を詰めて1行に収める */
+html:root[data-density="phone"] .desert-ride .dr-result .dr-best[data-new="true"] { padding: 6px 26px 8px; letter-spacing: .02em; }
 /* 段の札（初級・中級・上級）: 革の名札 */
 .dr-result-tier, .dr-result-tier[data-tier] { padding: 6px 22px 8px; border-radius: 0; box-shadow: none; color: #ffeec8; text-shadow: 0 2px 0 rgba(30, 10, 4, .8);
   background: transparent url("../img/ui/desert_ride_result/plate_rank.webp") center / 100% 100% no-repeat; }
