@@ -1569,6 +1569,7 @@ class Phone {
         const marks = ORDER.filter((i) => SPOTS[i].mark), after = marks.find((i) => ORDER.indexOf(i) > ORDER.indexOf(st.sel));
         this.select(after ?? marks[0]);
       } else if (id === "wide") this.toggleOverview();
+      else if (id === "lime" && st.scene === "map" && !this.fixed) this.setScene("lime"); // 地図の LIME の札から、LIME の画面へ（VPM06）
       else if (id === "terms" || id === "config" || id === "help" || id === "menu" || id === "lime") this.toast("この試作では開きません");
       else if (id === "auto" || id === "skip") { st[id] = !st[id]; hit.classList.toggle("on", st[id]); }
     }
@@ -1650,7 +1651,7 @@ class Phone {
     if (st.scene === "map") {
       if (st.list) { st.list = false; this.patch(); return; }
       if (SPOTS[st.sel].closed || this.fixed) return;
-      const scene = { tonari: "door", minto: "minto" }[SPOTS[st.sel].id];
+      const scene = { tonari: "door", minto: "minto", kannon: "growth" }[SPOTS[st.sel].id]; // 観音堂は心得の盤へ（VPM04）
       if (scene) this.enterShop(scene); else this.toast("この試作では入れません");
       return;
     }
