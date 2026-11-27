@@ -195,6 +195,15 @@ await suite("portrait-games", async check => {
     assert.equal(await page.evaluate(() => [...document.styleSheets].some(sheet => /portrait\.css/.test(sheet.href || ""))), false, "portrait.css is not loaded");
   }, { pageEntry: `${baseURL}previews/dj/index.html?set=1&mute=1`, pageReadySelector: "#play-a" });
 
+  // てつこといっしょ: 付き合ってくれる回数を使い切ると、帰りの札（ハート → なかよし）が縦の画面に収まって出る。
+  // なかよし 58 から帰ると、肉球3つの節目（60）を越えて色つきの火種のしるしが並ぶ（TKT35・TKT39）。ご機嫌ななめの日でも一日は終わる（TKT36）
+  await check("tetsuko-portrait-day-ends-on-the-result-card", async page => {
+    const t = name => `[data-test="tetsuko-${name}"]`;
+    await page.locator(`${t("result")}[data-filled="1"]`).waitFor({ timeout: 120000 });
+    await boxesInside(page, [t("result"), t("result-paws"), t("result-ember-60")]);
+    assert(Number(await page.locator(t("result")).getAttribute("data-gain")) >= 2, "going home always adds to the bond");
+  }, { ...PHONE, pageEntry: frame("tetsuko.html?shot=end&bond=58&mood=grumpy"), pageReadySelector: '[data-test="tetsuko-time-screen"]' });
+
   await check("prototype-hosts-the-game-frames", async page => {
     for (const [scene, ready] of [["desert", '[data-test="desert-start"]'], ["camel", '[data-test="camel-tutorial"]'], ["dj", "#play-a"], ["tetsuko", '[data-test="tetsuko-time-screen"]'], ["trpg", '[data-test="trpg-book-spread"]']]) {
       await page.goto(`${baseURL}previews/portrait-stage/index.html?view=play&scene=${scene}&bare`, { waitUntil: "load" });

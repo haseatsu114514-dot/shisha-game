@@ -91,6 +91,9 @@ async function pose(name) {
     await wait(2600); // とっておき（ハートがいっぱいの時）が出ていれば、落ち着くのを待つ
     for (let i = 0; i < 24 && !screen.dataset.ended; i++) await press("brush", 1200);
     await until(() => document.querySelector(test("result"))?.dataset.filled === "1");
+    // 節目のおみやげ・火種がある日は、それが札に並ぶまで待つ（肉球が伸びた後に出る）
+    const result = document.querySelector(test("result"));
+    if (result.dataset.gifts || result.dataset.embers) await until(() => result.dataset.gift === "1");
     await wait(900); // 肉球が伸び終わるのを待つ
   }
   // 止め絵は、作った場面をそのまま残す: 画面の写しを取り、動いている本物は閉じる（放っておくと、てつこが動き続け、やがて今日の分が終わって画面が消える）
