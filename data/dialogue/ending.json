@@ -19,6 +19,21 @@
           "text": "tonariの閉店後。顔を出したスミさんが、洗い終えたグラスを勝手に伏せていく。"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "おかえりなさい、スミさん"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……ここは、もうお前の店だろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "スミさんが帰ってくる店でもあるんで"
+        },
+        {
           "speaker": "sumi",
           "face": "normal",
           "text": "腹減ったな。何か食うか"
@@ -1065,6 +1080,108 @@
           "condition_type": "story_seen",
           "dialogue": "ch5_tsumugi_little_notes",
           "next_true": "omote_note"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後。最後の椅子を、つむぎが一人で上げた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの端で、顔を出したスミさんが水を飲んでいる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭を扱う前に、息を吐くようになったね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_surprise",
+          "text": "……見てたんですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "暇だったから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンター席で、スミさんが小さくむせた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "戸締まり、頼める？ 明日の朝、返して"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは鍵束を両手で受け取った。思ったより重い、という顔をしていた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "……どっかで聞いた台詞だな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "一番効く言い方なんで"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……これも、三人目の受け売りですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "……数え間違いだ。五人目だな"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_surprise",
+          "text": "……五人目？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "マスター、俺、ひより、はじめ、……それから、お前だ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "hiyori",
+          "next_true": "hiyori_met",
+          "next_false": "hiyori_unmet"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "『燃やす』んじゃねえ、ってのも、元は葉巻の話だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは鍵束を、エプロンのポケットにしまった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店を出て、振り返った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎが入口の灯りを一つだけ残して、シャッターを下ろしていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが、昔からそうしてきたように。"
         }
       ],
       "branches": {
@@ -1073,6 +1190,25 @@
             "speaker": "",
             "face": "",
             "text": "つむぎのノートを開く。ネクタイを締めた猫の横に、小さく『表さん』と書き足した。"
+          }
+        ],
+        "hiyori_met": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（ひよりさんも、ちゃんと数に入ってる）"
+          }
+        ],
+        "hiyori_unmet": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "ひより？"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "前のバイトだ。……そのうち、吸いに来る"
           }
         ]
       }

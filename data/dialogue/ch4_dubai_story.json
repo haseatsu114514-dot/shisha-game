@@ -366,6 +366,21 @@
         {
           "speaker": "sumi",
           "face": "normal",
+          "text": "ボウルは、奥の席のやつが洗ってった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "つむぎちゃんが？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "見るだけって言ったんだがな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
           "text": "そっちの炭はどうだ"
         },
         {

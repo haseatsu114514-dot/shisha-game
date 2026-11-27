@@ -1549,9 +1549,12 @@ await suite("ch5-full-flow", async check => {
       "スミさん。tonariって、どうしてこの名前なんですか", "客の隣に座れる店にしたかった……それだけだ",
       "別の日。閉店後、栞さんの部屋で遅い夕飯を作った。", "返事を聞きながら、もう一つボウルを出す。",
       "閉店の少し前。奥まった席に、いつもの鉄仮面さんが座った。",
-      "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。"].map(text => lines.indexOf(text));
+      "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。",
+      "戸締まり、頼める？ 明日の朝、返して",
+      "スミさんが、昔からそうしてきたように。"].map(text => lines.indexOf(text));
     assert(order.every((index, i) => index >= 0 && (i === 0 || index > order[i - 1])), `finale order: ${order}`);
-    assert.equal(order.at(-1), lines.length - 1, "The last picture is the oldest trophy");
+    // 最後の画は、第1章の戸締まりの夜を写した場面の、入口の灯り（2026-11-27 オーナー「バトンが渡るとこにエモさ」）
+    assert.equal(order.at(-1), lines.length - 1, "The last picture is the light Tsumugi leaves on");
     assert.equal(order[5], order[4] + 1, "The name scene follows the daily scene without a break");
   });
 });

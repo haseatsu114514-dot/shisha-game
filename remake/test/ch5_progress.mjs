@@ -26,6 +26,7 @@ const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import
 // 場面表の全IDが台本に実在し、本文がある。廃止した夢の前後と振り返りの仮台本は通しの台本にも登録しない。
 const files = { ch5_main: readData("dialogue/ch5_main").dialogues, ending: readData("dialogue/ending").dialogues,
   relationship_conflicts: readData("dialogue/relationship_conflicts").dialogues };
+files.ch1_sumi = readData("dialogue/ch1_sumi").dialogues;
 const connected = [];
 for (const [file, ids] of Object.entries(CH5_SCENE_FILES)) {
   for (const id of ids) {
@@ -832,15 +833,16 @@ for (const scenes of [
     "tonariは任せた。お前の店の名前は、その先まで取っとけ"].map(at);
   assert(order.every((index, i) => index >= 0 && (i === 0 || index === order[i - 1] + 1)), `ending_normal order: ${order}`);
   assert.deepEqual(order.map(index => normal[index][0]), ["", "", "sumi", "hajime", "sumi", "sumi"]);
-  assert.deepEqual(endingLines("ending_salaryman_name").filter(([speaker]) => speaker).map(([, text]) => text), [
+  assert.deepEqual(endingLines("ending_salaryman_name").filter(([speaker]) => speaker).slice(0, 5).map(([, text]) => text), [
     "ダブルアップルにミント少し、ですね", "……今日の、[pause]良かったよ", "……笑いました？",
     "……表です。表克己。いつも、ありがとうございます", "ありがとうございます……また明日"]);
-  // 最後の地の文はトロフィー。つむぎの開店前の練習（ノートの猫）を読んだ保存だけ、その後に『表さん』を書き足す一行（2026-11-24 添削 N9）
+  // 名乗りの後はトロフィー。つむぎのノートの猫を読んだ保存だけ、その後に『表さん』を書き足す一行（2026-11-24 添削 N9）
   {
     const name = files.ending.find(row => row.dialogue_id === "ending_salaryman_name");
-    assert.deepEqual(endingLines("ending_salaryman_name").filter(([, text]) => text).at(-1), ["", "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。"]);
+    const trophy = name.lines.findIndex(line => line.text === "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。");
+    assert(trophy > 0, "The trophy line stays");
     // ノートの猫は、つむぎ目線の新人編では初日（ch5_tsumugi_first_day）、旧来の並びでは自由場面の開店前の練習（#4253）
-    const [first, tail] = name.lines.slice(-2);
+    const [first, tail] = name.lines.slice(trophy + 1, trophy + 3);
     assert.deepEqual([first.type, first.condition_type, first.dialogue, first.next_true],
       ["condition", "story_seen", "ch5_tsumugi_first_day", "omote_note"]);
     assert.deepEqual([tail.type, tail.condition_type, tail.dialogue, tail.next_true],
@@ -849,6 +851,20 @@ for (const scenes of [
     for (const id of ["ch5_tsumugi_first_day", "ch5_tsumugi_little_notes"])
       assert(files.ch5_main.find(row => row.dialogue_id === id).lines
         .some(line => line.text?.includes("ネクタイを締めていた")), `The necktie cat is in Tsumugi's notebook scene: ${id}`);
+    // 終幕の最後（2026-11-27 オーナー「バトンが渡るとこにエモさ」）: 第1章の戸締まりの夜（ch1_sumi_closing）を、はじめ→つむぎで写す。
+    // スミさんが数え直す（マスター・スミ・ひより・はじめ・つむぎ）。ひよりに会っていない保存では、はじめが聞き返す。最後は入口の灯り。
+    const closing = files.ch1_sumi.find(row => row.dialogue_id === "ch1_sumi_closing").lines.map(line => line.text);
+    assert(closing.includes("戸締まり、頼む。明日の朝、返せ") && closing.includes("暇だったからな"), "The first chapter's night is still there");
+    const mirror = name.lines.slice(trophy + 3).map(line => line.text).filter(Boolean);
+    for (const text of ["炭を扱う前に、息を吐くようになったね", "暇だったから", "戸締まり、頼める？ 明日の朝、返して",
+      "マスター、俺、ひより、はじめ、……それから、お前だ"]) assert(mirror.includes(text), text);
+    assert.equal(mirror.at(-1), "スミさんが、昔からそうしてきたように。");
+    const met = name.lines.find(line => line.type === "condition" && line.condition_type === "met");
+    assert.deepEqual([met.char_id, met.next_true, met.next_false], ["hiyori", "hiyori_met", "hiyori_unmet"]);
+    assert.equal(name.branches.hiyori_unmet[0].text, "ひより？");
+    // 終幕の開始: 帰ってきたスミさんに、はじめが「おかえりなさい」を返す
+    assert.deepEqual(endingLines("ending_start").filter(([speaker]) => speaker).slice(0, 3).map(([, text]) => text),
+      ["おかえりなさい、スミさん", "……ここは、もうお前の店だろ", "スミさんが帰ってくる店でもあるんで"]);
   }
 
 // つむぎ目線の新人編（#4253）: 面接は判明の一行まで名前・一人称・店名を出さない。つむぎ目線の間は本人の立ち絵を出さず、

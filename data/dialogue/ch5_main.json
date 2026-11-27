@@ -153,6 +153,12 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
+          "text": "ボウルの洗い方は、スミさんに見せてもらいました",
+          "portrait": false
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
           "text": "私がホースを置くまで待ってくれる日と、その前に声をかけてくれる日があって",
           "portrait": false
         },
@@ -284,7 +290,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "うん。俺も、最初の日に言われたんだ",
+          "text": "うん。俺も、スミさんに言われたんだ",
           "portrait": "hajime",
           "portrait_face": "smile"
         },
@@ -780,6 +786,16 @@
           "speaker": "",
           "face": "",
           "text": "次の日の昼。お客さんのいない時間に、ノートを開いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（前にいたバイトのひよりさんも、ピーチを三回焦がしてた）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（スミさんは三回とも、『待て』しか言わなかった）"
         },
         {
           "speaker": "",
@@ -1324,6 +1340,11 @@
         {
           "speaker": "",
           "face": "",
+          "text": "ゴボゴボ、ゴボボ……。いつもの水の音が、今日は客の席から聞こえる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "一口吸う。やわらかい煙が、喉の奥でほどけた。"
         },
         {
@@ -1333,8 +1354,8 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "（つむぎちゃんが入ってから、休みの日ができた。こうして、客の席にも座れる）"
+          "face": "smile",
+          "text": "（……うん、悪くないんじゃないかな、つむぎちゃん）"
         },
         {
           "speaker": "",
@@ -1444,6 +1465,11 @@
           "speaker": "",
           "face": "",
           "text": "つむぎを先に上がらせて、シャッターを下ろす。店の中の音が、急に少なくなった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入口の灯りは、一つだけ残す。スミさんの頃からの決まりだ。"
         },
         {
           "speaker": "sumi",
@@ -1795,6 +1821,21 @@
         {
           "speaker": "sensu",
           "face": "normal",
+          "text": "……終電を逃した晩も、この席だった。あの頃は、葉巻のバーだったがな"
+        },
+        {
+          "speaker": "sensu",
+          "face": "serious",
+          "text": "あの晩の席を、どこの夜にも置きたい。だから、博士の側に立つ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……会長が座ったのは、この席だったのか）"
+        },
+        {
+          "speaker": "sensu",
+          "face": "normal",
           "text": "当日は、客席にいる。吸ってから、また話そう"
         },
         {
@@ -1934,6 +1975,16 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "（何を見て決めるのか、俺は言えなかった。残っていたのは、動画だけだ）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……スミさんも、三ヶ月目に、葉巻の火を客の袖に落としたって"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "baito_surprise",
+            "text": "……スミさんが、ですか"
           },
           {
             "speaker": "tsumugi",

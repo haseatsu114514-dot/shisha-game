@@ -704,6 +704,26 @@
           "text": "……はい。聞きました"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……スミさんも、落としたことあるんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……ある。三ヶ月目に、葉巻の火を客の袖に落とした"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "葉巻、ですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "……昔の話だ"
+        },
+        {
           "type": "condition",
           "condition_type": "flag",
           "flag": "_ch2_coal_role_coals",

@@ -168,6 +168,26 @@
           "text": "一人ずつだ。葉より先に顔を見ろ"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それも、スミさんの言葉ですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "マスターのだ。……ここが、葉巻のバーだった頃の"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……ここ、バーだったんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "カウンターは、その頃のままだ"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "鉄仮面さんには休憩の長さを、仕込み中のスミさんには吸える時間を聞いた。"
@@ -1956,6 +1976,11 @@
         },
         {
           "speaker": "sumi",
+          "face": "thinking",
+          "text": "……一人でもなかったがな"
+        },
+        {
+          "speaker": "sumi",
           "face": "serious",
           "text": "お前が休めねえ店じゃ、次の店の話もできねえ"
         },
@@ -2009,6 +2034,21 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（いつかの店が、一歩だけ近くなった。そう思ったら、指先が熱くなった）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "誰か来ますかね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "……来るだろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは、奥の席を一度だけ見た。"
         },
         {
           "speaker": "",
@@ -2349,8 +2389,18 @@
         },
         {
           "speaker": "sensu",
-          "face": "thinking",
-          "text": "昔、終電を逃した晩に、古い小さな店へ入った。あの席に、助けられた"
+          "face": "normal",
+          "text": "前に話した、終電の晩の店だ。……カウンターに、あいつが立っていた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……スミさんが働いてた、葉巻のバーだ）"
+        },
+        {
+          "speaker": "sensu",
+          "face": "normal",
+          "text": "あの席に、助けられた"
         },
         {
           "speaker": "sensu",
