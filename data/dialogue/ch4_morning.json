@@ -3,7 +3,7 @@
   "dialogues": [
     {
       "dialogue_id": "ch4_tournament_morning_open",
-      "comment": "導入。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "comment": "導入。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。 VOL21 第2弾（2026-11-27）: なるの靴紐の結び直し。",
       "lines": [
         {
           "speaker": "",
@@ -24,6 +24,21 @@
           "speaker": "naru",
           "face": "smile",
           "text": "俺もだ。会場まで歩くぞ。走らないから安心しろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるの靴紐は、右だけ三回結び直した跡があった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……なるも、半分くらいだったんだな"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "うるせえ。結び目が気に入らなかっただけだ"
         }
       ]
     },
@@ -51,7 +66,7 @@
     },
     {
       "dialogue_id": "ch4_tournament_morning_close",
-      "comment": "締め。なると会場まで歩く。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "comment": "締め。なると会場まで歩く。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。 VOL21 第2弾（2026-11-27）: 会場まで歩く間のノートの話（数字ばかりだった頃）。",
       "lines": [
         {
           "speaker": "",
@@ -67,6 +82,26 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "うん。なるもね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "白い道を、日陰を選んで歩く。並ぶと、なるの方が半歩だけ速い。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "昨日の夜、ノートを最初から読み返した。……県大会の頃の字、ひでえな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺のもだよ。あの頃は、数字ばっかりだった"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "今日のぶんは、帰ってから書こうぜ。……二人とも、いい字でな"
         },
         {
           "speaker": "",
