@@ -1070,27 +1070,13 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .thermo.forecast .th-now { display: none; }
 .thermo.forecast[data-selected="false"] :is(.th-range, .th-pointer) { opacity: 0; }
 
-/* タイマーの場面の空きをなくす案（VPL127）。d＝縦長のタイマー／e＝雑念の世界がのぞく */
+/* 縦長のキッチンタイマー（VPL127 で縦長に決め、VPL129 で実物に合わせた絵に描き直した）。ランクの下から一言の上までの高さに合わせ、まん中にそろえる。絵ごとの縦横比は --ar（液晶とボタンの位置は app.mjs の TIMER_LOOKS） */
 .phone[data-scene="timer"] .veil { top: calc(100% - var(--cp) - 5rem); } /* 紫の幕は一言のすぐ上から下だけ（上の画面を暗くしない） */
 .phone[data-scene="timer"] .pic { -webkit-mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); } /* 上の絵の下のぼかしは、一言のすぐ上だけ（初期値の 66% からだと、タイマーの下半分が暗くなる） */
-/* 案D: 本編のタイマーを縦に組み直した絵（img/ui-kitchen-timer-tall.webp・1280×1672）。ランクの下から一言の上までの高さいっぱいに置き、まん中にそろえる */
-.phone[data-tfill="d"] .timer-a { top: 7.8rem; bottom: 2.2rem; justify-content: center; container-type: size; }
-.phone[data-tfill="d"] .ktimer { width: min(35.4rem, 100cqh * 1280 / 1672); aspect-ratio: 1280 / 1672; }
-.phone[data-tfill="d"] .ktimer .lcd { left: 14.61%; width: 70.86%; top: 12.26%; height: 31.22%; }
-.phone[data-tfill="d"] .ktimer .lcd svg { width: 90%; height: 90%; }
-.ktimer .lcd text { font: 700 15px var(--gothic); text-anchor: middle; }
-.phone[data-tfill="d"] .kt-key { height: 14.95%; border-radius: 3cqw; }
-.phone[data-tfill="d"] .kt-min { left: 30.47%; top: 58.37%; width: 32.81%; font-size: 8.4cqw; }
-.phone[data-tfill="d"] .kt-sec { left: 69.53%; top: 58.37%; width: 32.81%; font-size: 8.4cqw; }
-.phone[data-tfill="d"] .kt-reset { left: 25.43%; top: 79.31%; width: 22.73%; font-size: 5cqw; }
-.phone[data-tfill="d"] .kt-start { left: 64.49%; top: 79.31%; width: 42.89%; font-size: 6cqw; }
-/* 案E: タイマーの下に、次の雑念よけの世界（本編の背景）がにじむ。心が脈打ち、雑念の玉が右から左へ流れる */
-.tf-e { position: absolute; left: 0; right: 0; top: 27rem; bottom: 0; background-size: cover; background-position: center; pointer-events: none; -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 45%); mask-image: linear-gradient(180deg, transparent 0, #000 45%); }
-.tf-e-heart { position: absolute; left: 50%; top: 56%; width: 5.6rem; height: 5.6rem; margin: -2.8rem 0 0 -2.8rem; fill: #ff6b9a; filter: drop-shadow(0 0 1.2rem #ff6b9a) drop-shadow(0 0 2.4rem #b48cff); animation: tf-beat 1.1s ease-in-out infinite; }
-@keyframes tf-beat { 0%, 60%, 100% { transform: scale(1); } 15% { transform: scale(1.18); } 30% { transform: scale(1.04); } 45% { transform: scale(1.12); } }
-.tf-e-dot { position: absolute; right: -2rem; width: 1.4rem; height: 1.4rem; border-radius: 50%; background: radial-gradient(circle, #fff 0 25%, #c9a8ff 45%, transparent 70%); opacity: 0.6; animation: tf-drift 7s linear infinite; }
-.tf-e-dot:nth-of-type(1) { top: 40%; } .tf-e-dot:nth-of-type(2) { top: 72%; animation-delay: -2.4s; animation-duration: 8.5s; } .tf-e-dot:nth-of-type(3) { top: 52%; animation-delay: -4.6s; animation-duration: 6.2s; width: 1rem; height: 1rem; } .tf-e-dot:nth-of-type(4) { top: 84%; animation-delay: -1.2s; animation-duration: 9s; }
-@keyframes tf-drift { to { transform: translateX(-44rem); } }
+.phone[data-scene="timer"] .timer-a { top: 9.4rem; bottom: 2.4rem; justify-content: center; container-type: size; }
+.phone[data-scene="timer"] .ktimer { width: min(31.4rem, 100cqh * var(--ar)); }
+.phone[data-scene="timer"] .ktimer .lcd svg { width: 90%; height: 88%; }
+.phone[data-scene="timer"] .kt-key { border-radius: 3cqw; }
 
 /* 温度計（VPL103）: 配合・詰め方・吸い出しで、上端・長さ・太さをそろえる。長さは、いちばん狭い配合の上の画面に合わせる（下の段の高さ --cp-mix から決める）。
    いちばん下の一言の段（配合の「この配合の適温」など）は、どの場面でも同じ高さを取っておく（空でも管の長さが変わらない） */
