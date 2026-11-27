@@ -62,6 +62,7 @@ const IMG = {
   stove: `${OWN_IMG}ui-stove-zoom.webp`,
   coalCold: `${REMAKE_IMG}ui/making/heat_flat_cold.webp`,
   kitchenTimer: `${REMAKE_IMG}ui/making/kitchen_timer.webp`, // 蒸らしのタイマー（本編と同じ絵。VPL105）
+  hajimeWait: `${REMAKE_IMG}ui/making/hajime_steam_wait.webp`, // 蒸らしを待つはじめ（本編のタイマー・雑念よけと同じ絵。VPL124 の案A）
   coalLit: `${REMAKE_IMG}ui/making/heat_flat_lit.webp`,
   // 炭壺とトングを持ち、コンロの熱の明かりに下から照らされたはじめ（生成・背景なし。会場の背景に重ねる・VPL57）
   coalHajime: `${OWN_IMG}craft-coal-hajime.webp`,
@@ -158,6 +159,12 @@ const clockTime = (sec) => `${String(Math.floor(sec / 60)).padStart(2, "0")}:${S
 // 蒸らし後の温度の目安（この試作の吸い出しの温度の物差し）。5分で吸い出しの初め（0.40）、長いほど高い。気温や炭の状態で ±0.03 前後する
 const steamPredict = (sec) => Math.max(0.06, Math.min(0.95, 0.4 + steamHeatFor(sec)));
 const STEAM_SPREAD = 0.03;
+// タイマーの場面の空きを埋める案（VPL124）: a＝はじめの待ち姿を後ろに／b＝タイマーを上に、下から蒸らしの湯気／c＝タイマーを上に寄せるだけ
+const TIMER_FILLS = {
+  a: { name: "はじめの待ち姿", lead: "本編のタイマー・雑念よけと同じ「蒸らしを待つはじめ」の絵を後ろに置き、上の空きをはじめで埋める。タイマーは手前の下寄り（はじめが目を閉じて待つ）" },
+  b: { name: "蒸らしの湯気", lead: "タイマーを上寄りに置き、下から蒸らしの湯気（本編の煙）がゆっくり立ちのぼる。絵は増やさず、空きを動きで埋める" },
+  c: { name: "タイマーを上に寄せるだけ", lead: "タイマーを上寄りに置き、空きは店の絵のまま" },
+};
 // 液晶の7つの区画（本編 remake/js/craft/digital-clock.js と同じ形。数字を絵に焼き込まない）
 const SEG_DIGITS = ["abcdef", "bc", "abdeg", "abcdg", "bcfg", "acdfg", "acdefg", "abc", "abcdefg", "abcdfg"];
 const SEG_PATHS = { a: "M6 2h28l4 4-4 4H6L2 6Z", b: "m38 8 4 4v20l-4 4-4-4V12Z", c: "m38 38 4 4v20l-4 4-4-4V42Z", d: "M6 64h28l4 4-4 4H6l-4-4Z", e: "m2 38 4 4v20l-4 4-4-4V42Z", f: "m2 8 4 4v20l-4 4-4-4V12Z", g: "M6 33h28l4 4-4 4H6l-4-4Z" };
@@ -601,7 +608,7 @@ function meterHtml() {
 /* ───────── 1台ぶん ───────── */
 
 class Phone {
-  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", steamSec = 0, grade = 0, gradeP = 0, water = 0, mix = null, venue = "tonari", attack = false, temp = null, ...ext } = {}) {
+  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", steamSec = 0, tfill = "a", grade = 0, gradeP = 0, water = 0, mix = null, venue = "tonari", attack = false, temp = null, ...ext } = {}) {
     this.el = el;
     this.extOpts = ext; // 別ファイルの場面の見せ方（店番の営業の種類・一覧に並べる場面 shot など。1台表示では URL の値がそのまま入る）
     el.lang = "ja";
@@ -612,6 +619,7 @@ class Phone {
     this.uid = (Phone.seq = (Phone.seq || 0) + 1); // SVG の id を台ごとに分ける
     this.keys = new Set();
     this.rankAt = RANK_PLACES[rank] ? rank : "d"; // ランクの置き場所の案
+    el.dataset.tfill = TIMER_FILLS[tfill] ? tfill : "a"; // タイマーの場面の空きを埋める案（VPL124）
     this.steamSec = Math.max(0, Math.min(STEAM_MAX, Math.round((Number(steamSec) || 0) / 10) * 10)); // 蒸らし時間（秒。VPL105）。次の雑念よけの長さと、吸い出しの初めの温度に効く
     this.venue = VENUES[venue] ? venue : "tonari"; // 作る場面の会場（背景）
     this.attackLearned = !!attack; // 雑念よけのアタックを覚えたか（覚えると精密と入れ替える切り替えが出る・VPL62）
@@ -681,7 +689,7 @@ class Phone {
     if (st.scene === "water") this.syncWater();
     if (st.scene === "mix") this.syncMix();
     if (st.scene === "steam") requestAnimationFrame(() => this.startDodge());
-    if (st.scene === "timer") this.syncTimer();
+    if (st.scene === "timer") { this.syncTimer(); this.timerSteam(); }
     if (st.scene === "coal") this.startCoals();
     if (!this.talk && st.scene !== "map") this.fitCoach();
   }
@@ -1429,7 +1437,7 @@ class Phone {
     const now = performance.now();
     // 雑念よけの長さ（VPL105）: タイマーで決めた蒸らし時間を、本編と同じ長さに縮めて遊ぶ（5分＝12秒）。タイマーを通らない時はこれまでの9秒
     this.dodgeMs = this.steamSec ? steamPlaySeconds(this.steamSec) * 1000 : DODGE.time;
-    this.dodge = { t0: now + DODGE.ready, heart: { x: 195, y: size.H * 0.7 }, bullets: [], hits: 0, safeUntil: 0, bombAt: -1e9, atkAt: -1e9, slashes: [], lastHit: -1e9, calmSince: 0, beat: 0, beatAt: now, rings: [],
+    this.dodge = { t0: now + DODGE.ready, heart: { x: 195, y: size.H * 0.5 }, bullets: [], hits: 0, safeUntil: 0, bombAt: -1e9, atkAt: -1e9, slashes: [], lastHit: -1e9, calmSince: 0, beat: 0, beatAt: now, rings: [],
       nextSpawn: 0, nextWave: 1600, warn: null, over: false, H: size.H };
     if (this.fixed) {
       // 一覧は途中の一コマ: 言葉と炭・玉が四方から迫り、上から扇の波が来る
@@ -1438,7 +1446,7 @@ class Phone {
       [["失敗したらどうしよう", 120, H * 0.32], ["温度、大丈夫か", 300, H * 0.48], ["穴、足りてたかな", 90, H * 0.6], ["手が、汗ばむ", 290, H * 0.8]].forEach(([word, x, y]) => d.bullets.push({ x, y, word, hw: word.length * 6.7 }));
       [[230, H * 0.36, "orb", 6], [160, H * 0.5, "coal", 7], [330, H * 0.64, "smoke", 9], [60, H * 0.42, "orb", 6]].forEach(([x, y, kind, r]) => d.bullets.push({ x, y, kind, r }));
       for (let i = 0; i < 5; i++) d.bullets.push({ x: 195 + (i - 2) * 26, y: H * 0.18 + Math.abs(i - 2) * 8, kind: "orb", r: 6 });
-      d.heart = { x: 210, y: H * 0.68 };
+      d.heart = { x: 210, y: H * 0.56 };
       size.field.querySelector(".d-time i").style.transform = `scaleX(${(1 - 4200 / DODGE.time).toFixed(3)})`;
       this.drawDodge(now);
       return;
@@ -1454,7 +1462,7 @@ class Phone {
     const kind = word ? "word" : ["coal", "orb", "orb", "smoke"][Math.floor(Math.random() * 4)];
     const rad = { coal: 8, orb: 7, smoke: 9 }[kind] || 0;
     const x = side === "left" ? -hw - 10 : side === "right" ? 400 + hw : 20 + Math.random() * 350;
-    const y = side === "top" ? -14 : side === "bottom" ? d.H + 14 : 70 + Math.random() * (d.H - 140);
+    const y = side === "top" ? -14 : side === "bottom" ? d.H + 14 : 24 + Math.random() * (d.H - 48); // 場はランクの下から始まるので、上の余白は時間の線の分だけ（VPL120）
     const speed = (DODGE.speed[0] + Math.random() * (DODGE.speed[1] - DODGE.speed[0])) * (word ? 0.8 : 1);
     const ang = Math.atan2(d.heart.y - y, d.heart.x - x);
     d.bullets.push({ x, y, vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed, word: text, hw, kind, r: rad });
@@ -1462,7 +1470,7 @@ class Phone {
 
   /** 予告つきの波（本編 steam-patterns.js の fan・ring・rain・sweep を縦の場に合わせたもの）。 */
   /** 予告つきの波。第1章（calm）は本編 steam-patterns.js のとおり横なぎだけ: 9本の帯のうち続く3本が通り道。 */
-  laneOf(d) { const top = 74, h = (d.H - top - 18) / 9; return { top, h }; }
+  laneOf(d) { const top = 24, h = (d.H - top - 18) / 9; return { top, h }; }
   spawnWave(d, wave) {
     const { top, h } = this.laneOf(d), dir = wave.side === "left" ? 1 : -1;
     for (let i = 0; i < 9; i++) if (i < wave.open || i > wave.open + 2) d.bullets.push({ kind: "coal", r: 8, x: dir > 0 ? -14 : 404, y: top + h * (i + 0.5), vx: dir * 135, vy: 0 });
@@ -1488,7 +1496,7 @@ class Phone {
       if (len > 1) { vx /= len; vy /= len; }
       const sp = (this.st.slow ? DODGE.slow : DODGE.move) * dt;
       d.heart.x = Math.max(12, Math.min(378, d.heart.x + vx * sp));
-      d.heart.y = Math.max(70, Math.min(d.H - 16, d.heart.y + vy * sp));
+      d.heart.y = Math.max(20, Math.min(d.H - 16, d.heart.y + vy * sp));
       // 弾と波
       if (t >= d.nextSpawn) { this.spawnBullet(d); d.nextSpawn = t + DODGE.every; }
       if (!d.warn && t >= d.nextWave - DODGE.warn && d.nextWave < (this.dodgeMs || DODGE.time) - 600) {
@@ -1545,8 +1553,8 @@ class Phone {
     const lv = this.fixed ? "steady" : this.mindLevel(now), mind = MIND_INK[lv], stress = this.fixed ? 0.1 : this.mindTension(now);
     ctx.setTransform(u, 0, 0, u, 0, 0);
     ctx.clearRect(0, 0, 390, d.H);
-    // 奥の時計（本編: 場の中央奥に不透明度 .16、色は心の状態）。場の真ん中より少し下（VPL63）
-    const cy = d.H * 0.6;
+    // 奥の時計（本編: 場の中央奥に不透明度 .16、色は心の状態）。場の真ん中（VPL63 は少し下、VPL120 で真ん中に。心も真ん中から始まる）
+    const cy = d.H * 0.5;
     const left = Math.max(0, Math.ceil(((this.dodgeMs || DODGE.time) - Math.max(0, now - d.t0)) / 1000));
     const text = `0${Math.floor(left / 60)}${String(left % 60).padStart(2, "0")}`.slice(-3);
     ctx.save(); ctx.globalAlpha = 0.16; ctx.fillStyle = mind;
@@ -2201,10 +2209,25 @@ class Phone {
   /** 蒸らしのタイマー（VPL105）: 上の画面に本編と同じキッチンタイマー（液晶と4つの物理ボタン）と、蒸らし後の温度の目安・雑念よけの長さ。 */
   timerPic() {
     const keys = [["min", "分"], ["sec", "秒"], ["start", "スタート<br>＆ストップ"], ["reset", "リセット"]]; // 絵の物理ボタンの位置は CSS（.kt-min など）
-    return `<img class="bg" src="${IMG[this.venue]}" alt=""><div class="timer-a">
+    return `<img class="bg" src="${IMG[this.venue]}" alt=""><img class="t-wait" src="${IMG.hajimeWait}" alt=""><div class="t-steam"></div><div class="timer-a">
       <div class="ktimer"><img src="${IMG.kitchenTimer}" alt=""><output class="lcd" aria-live="polite"></output>
         ${keys.map(([k, label]) => `<button class="kt-key kt-${k}" data-act="timer" data-key="${k}">${label}</button>`).join("")}</div>
       </div>`;
+  }
+
+  /** 案B（VPL124）: タイマーの下から、蒸らしの湯気（本編の煙）がゆっくり立ちのぼる。場面を離れたら止まる */
+  timerSteam() {
+    if (this.el.dataset.tfill !== "b" || !smokeAllowed()) return;
+    const host = this.el.querySelector(".t-steam");
+    if (!host) return;
+    const layer = smokeLayer(host, { zIndex: 0, className: "timer-steam", gridScale: 0.5 });
+    const puff = () => {
+      if (!host.isConnected || this.st.scene !== "timer" || this.el.dataset.tfill !== "b") return;
+      const x = 0.2 + Math.random() * 0.6;
+      layer.breathe([{ x, y: 1.02, angle: -Math.PI / 2 + (Math.random() - 0.5) * 0.3, spread: 0.6, speed: 0.12, width: 0.1, dur: 2, rate: 5, size: 0.06, life: 4.2, buoy: 0.04, drag: 0.7, turb: 0.14, hold: 0.4, alpha: 0.3, swell: 2.2, soft: true, flat: true, colors: [smokeTint("#d9d2e6", 0.1)] }]);
+      setTimeout(puff, 1800 + Math.random() * 900);
+    };
+    puff();
   }
 
   /** タイマーのボタン（下の画面と、絵の物理ボタンの両方から）。分＝＋1分、秒＝＋10秒、早見＝その分、リセット＝0、スタート＝雑念よけへ */
@@ -2463,6 +2486,9 @@ function showGallery() {
     <p class="g-note">本編の制作ランク（D〜SSS の絵）を縦画面のどこに置くか。どの案も、工程を終えてランクが上がった瞬間は舞台の真ん中に大きく出し（下の英語まで読める）、置き場所へ縮めて収める。1台表示の右上のつまみ →「ランク」で案を替え、「↑」で上がる動きを何度でも見られる。</p>
     ${Object.entries(RANK_PLACES).map(([v, place]) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}${v === "d" ? "（オーナー案）" : ""}</small>${place.name}<a href="?view=play&scene=holes&rank=${v}">1台で動きを見る</a></h3><p>${place.lead}</p>
       <div class="g-grid">${[["pack", 1, 0.3, "詰め（ランクC）"], ["holes", 2, 0.6, "穴あけ（ランクB・進み6割）"], ["pull", 4, 0.4, "吸い出し（ランクS）"]].map(([scene, grade, gradeP, cap]) => `<figure class="g-cell"><article class="phone" data-rank="${v}" data-scene="${scene}" data-grade="${grade}" data-gp="${gradeP}"></article><figcaption>${cap}</figcaption></figure>`).join("")}</div></section>`).join("")}
+    <h2 class="g-sub">タイマーの場面の空きを埋める案（VPL124）</h2>
+    <p class="g-note">蒸らしのタイマーの上の画面の空きをどう埋めるか。1台表示の右上のつまみ →「タイマー」でも替えられる。</p>
+    <div class="g-grid">${Object.entries(TIMER_FILLS).map(([v, f]) => `<figure class="g-cell"><article class="phone" data-tfilldemo="${v}" data-scene="timer"></article><figcaption>案${v.toUpperCase()}${v === "a" ? "（おすすめ・いまの既定）" : ""}　${f.name}</figcaption></figure>`).join("")}</div>
     <h2 class="g-sub">「？」（説明）の置き場所</h2>
     <section class="g-aux"><h3><small>案Aで決定</small>${HELP_PLACE.name}<a href="?view=play&scene=pull">1台で触る</a></h3><p>${HELP_PLACE.lead}</p>
       <div class="g-grid">${[["mix", "配合"], ["holes", "穴あけ"], ["pull", "吸い出し"]].map(([scene, cap]) => `<figure class="g-cell"><article class="phone" data-helpdemo="a" data-scene="${scene}"></article><figcaption>${cap}</figcaption></figure>`).join("")}</div></section>
@@ -2483,6 +2509,7 @@ function showGallery() {
       BROADCAST_READY.then(show);
     }
   });
+  app.querySelectorAll(".phone[data-tfilldemo]").forEach((el) => phones.push(new Phone(el, "timer", { fixed: true, tfill: el.dataset.tfilldemo, steamSec: 300 })));
   app.querySelectorAll(".phone[data-helpdemo]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, grade: 2, gradeP: 0.4 })));
   app.querySelectorAll(".phone[data-ci]").forEach((el) => phones.push(new Phone(el, "cutin", { fixed: true, ci: el.dataset.ci, who: el.dataset.who })));
   app.querySelectorAll(".phone[data-ext]").forEach((el) => phones.push(new Phone(el, el.dataset.ext, { fixed: true, ...EXT[el.dataset.ext].META.gallery.shots[Number(el.dataset.shotI)] })));
@@ -2512,12 +2539,13 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
       <div><small>登場</small>${[["minto", "みんと"], ["sumi", "スミ"]].map(([id, name]) => `<button data-who="${id}" aria-pressed="${id === who}">${name}</button>`).join("")}<a href="?view=gallery" data-go="gallery">一覧</a></div>
       <div><small>雑念よけ</small><button data-attack aria-pressed="${params.has("attack")}">アタック習得</button></div>
       <div><small>会場</small>${Object.entries(VENUES).map(([v, name]) => `<button data-venue="${v}" aria-pressed="${v === (params.get("venue") || "tonari")}">${name}</button>`).join("")}</div>
-      <div><small>ランク</small>${Object.keys(RANK_PLACES).map((v) => `<button data-rank="${v}" aria-pressed="${v === (params.get("rank") || "d")}">案${v.toUpperCase()}</button>`).join("")}<button data-rankup aria-label="ランクを上げる">↑</button></div></div></nav>`}</div>`;
+      <div><small>ランク</small>${Object.keys(RANK_PLACES).map((v) => `<button data-rank="${v}" aria-pressed="${v === (params.get("rank") || "d")}">案${v.toUpperCase()}</button>`).join("")}<button data-rankup aria-label="ランクを上げる">↑</button></div>
+      <div><small>タイマー</small>${Object.keys(TIMER_FILLS).map((v) => `<button data-tfill="${v}" aria-pressed="${v === (params.get("tfill") || "a")}">案${v.toUpperCase()}</button>`).join("")}</div></div></nav>`}</div>`;
   const el = app.querySelector(".phone");
   // 先に大きさを決めてから描く（立ち絵と地図の位置は絵の大きさから決まる）
   const box = app.getBoundingClientRect(), rem = Math.min(box.width / 39, box.height / 66);
   root.style.fontSize = `${rem}px`; el.style.height = `${Math.min(box.height, rem * 92)}px`;
-  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { ...Object.fromEntries(params), step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", venue: params.get("venue") || "tonari", attack: params.has("attack"), grade: params.get("grade"), ...opts });
+  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { ...Object.fromEntries(params), step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", tfill: params.get("tfill") || "a", venue: params.get("venue") || "tonari", attack: params.has("attack"), grade: params.get("grade"), ...opts });
   current = make(scene);
   const nav = app.querySelector(".switch");
   if (!nav) return;
@@ -2557,6 +2585,12 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
         if (crafting) current.render(); else current.setScene("holes");
       } else if (crafting) current.rankUp({ loop: true });
       else { current.setScene("holes"); setTimeout(() => current.rankUp({ loop: true }), 400); }
+    }
+    else if (button.dataset.tfill) {
+      // タイマーの場面の空きを埋める案を替える（VPL124）
+      current.el.dataset.tfill = button.dataset.tfill;
+      nav.querySelectorAll("[data-tfill]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.tfill === button.dataset.tfill)));
+      if (current.st.scene === "timer") current.render(); else current.setScene("timer");
     }
     else if (button.dataset.ci || button.dataset.who) {
       // 登場カットインの案・人物を替えて、その場で流す

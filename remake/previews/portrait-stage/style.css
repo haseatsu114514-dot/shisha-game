@@ -840,7 +840,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .tool-bomb .gl-out circle { fill: currentColor; } .tool-bomb .gl-out path { fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; opacity: 0.8; }
 .btn-a.bomb.ready .gl-wave2 { animation: wave-out 1.6s ease-out infinite; transform-origin: 50px 50px; }
 @keyframes wave-out { 0% { transform: scale(0.7); opacity: 0.9; } 100% { transform: scale(1.15); opacity: 0; } }
-.act-label { position: absolute; z-index: 2; left: 0; right: 0; bottom: 13%; text-align: center; font-size: calc(var(--ring) * 0.066); font-weight: 800; letter-spacing: 0.04em; color: #fff; text-shadow: 0 0.1rem 0.4rem #0b0812; pointer-events: none; }
+.act-label { position: absolute; z-index: 2; left: 0; right: 0; bottom: 15%; text-align: center; font-size: calc(var(--ok, 11.2rem) * 0.11); font-weight: 800; letter-spacing: 0; /* 丸の中に収まる大きさ（VPL120。前は十字キーの大きさから決めていて、はみ出していた） */ color: #fff; text-shadow: 0 0.1rem 0.4rem #0b0812; pointer-events: none; }
 .btn-a.bomb .cool { z-index: 3; }
 .act-sub { position: absolute; left: calc(1.5rem + var(--ring)); top: 0.9rem; /* パッドのすぐ右で、下の画面の上端。リフレッシュとは斜めにずらして間をあける（VPL75） */ width: calc(var(--ring) * 0.43); height: calc(var(--ring) * 0.43); display: block; padding: 0; border: 0.14rem solid color-mix(in srgb, #ffd35a 70%, #fff); border-radius: 50%; color: #fff; background: radial-gradient(circle at 50% 30%, #ffd35a33, transparent 60%), url("img/ui-button.webp") center / 100% 100% no-repeat; box-shadow: 0 0 0 0.5rem #ffffff0f, 0 0.8rem 1.6rem #000b; touch-action: manipulation; }
 .act-sub .tool-svg { inset: 10% 18% 30% 18%; width: 64%; height: 60%; }
@@ -952,9 +952,9 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .phone[data-kind="craft"] .btn-a.sub.l { right: auto; top: auto; left: var(--edge); bottom: var(--low); width: var(--ok); height: var(--ok); margin: 0; }
 .phone[data-scene="water"] .btn-a.center.pour { top: auto; bottom: var(--low); width: var(--ok); height: var(--ok); margin-left: calc(var(--ok) / -2); }
 .phone[data-kind="craft"][data-scene="water"] .pic { height: calc(100% - var(--low) - var(--ok) - 1.2rem); } /* 上の絵は、いちばん下の段のすぐ上まで続ける（VPL111。下の画面の空きを詰める） */
-.phone[data-scene="water"] .water-a { --bw: min(21.5rem, calc((100cqh - var(--cp) - 16rem) / 1.63)); } /* 上の画面の余裕の分、流し台ごと少し大きく（VPL112。流し台の左右の端は画面の外へ少し出る） */
+.phone[data-scene="water"] .water-a { --bw: min(24rem, calc((100cqh - var(--cp) - 16.4rem) / 1.63)); } /* 上の画面を使い切る大きさ（VPL112 で 21.5rem、VPL123 で最大 24rem。流し台の左右の端は画面の外へ出る） */
 /* カウンターの手前の縁（ボトルの縦 87.5%）が、スミさんの一言の段の真ん中に来る高さ。ボトルの水の線は一言より上に見える */
-.phone[data-scene="water"] .water-a .bottle { left: calc(50% - var(--bw) * 0.179); bottom: calc(var(--cp) + 2.4rem - var(--low) - var(--ok) - 1.2rem - var(--bw) * 0.185); width: var(--bw); }
+.phone[data-scene="water"] .water-a .bottle { left: calc(50% - var(--bw) * 0.179); top: calc(11.6rem + var(--bw) * 0.3325); bottom: auto; width: var(--bw); } /* 蛇口のてっぺんがランクのすぐ下（11.6rem）に来る高さ。カウンターから下は戸棚で、一言のすぐ上まで続く（VPL123） */
 /* 前板の下は、流し台の下の戸棚（ステンレスの扉）で、いちばん下の段の上まで埋める */
 .bottle .cabinet { position: absolute; z-index: 1; left: -41.33%; width: 222.6%; top: calc(106.9% - 0.2rem); height: 60rem; pointer-events: none;
   background: linear-gradient(180deg, #00000066 0, transparent 0.8rem), repeating-linear-gradient(90deg, transparent 0 calc(25% - 0.1rem), #0000004d calc(25% - 0.1rem) 25%), linear-gradient(180deg, #8a6e5c, #5a463d 40%, #2c2027); } /* 流し台の幅（ボトルの約2倍）が画面に収まる大きさ。流し台の真ん中が画面の真ん中に来る（VPL101） */
@@ -962,7 +962,9 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 /* 雑念よけ: 精密（アタック）も同じ大きさ */
 .phone[data-scene="steam"] .act-sub { width: var(--ok); height: var(--ok); }
 .phone[data-scene="steam"] .act-sub small { font-size: calc(var(--ok) * 0.12); }
-.phone[data-scene="steam"] .act-swap { left: calc(2.6rem + var(--ring) + var(--ok)); top: calc(0.9rem + var(--ok) / 2 - var(--ring) * 0.11); }
+/* 雑念よけ（VPL121）: 精密（アタック）はリフレッシュの真上に、同じ大きさで縦に並べる（右の列）。入れ替えの小さな丸は、精密の左上の札 */
+.phone[data-scene="steam"] .act-sub { left: auto; right: var(--edge); top: calc(var(--cp) - var(--low) - var(--ok) * 2 - 1rem); }
+.phone[data-scene="steam"] .act-swap { left: auto; right: calc(var(--edge) + var(--ok) - 2.6rem); top: calc(var(--cp) - var(--low) - var(--ok) * 2 - 2rem); width: 4.4rem; height: 4.4rem; z-index: 3; }
 /* 真ん中の押し続ける丸（刺す・吸う） */
 .phone[data-scene="holes"] .ctrl > * { --hb: var(--hold); --hp: calc(var(--hold) * 1.45); --hy: calc(var(--cp) - var(--hold-y) - var(--hp) / 2); }
 .pic.craft-holes .foil { bottom: 9rem; width: 31.6rem; } /* 上の画面の余白を使って大きく（VPL90） */
@@ -1037,7 +1039,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 @container phone (max-height: 71rem) { .phone[data-scene="steam"] .ctrl { --ring: 18.4rem; } }
 
 /* 蒸らしのタイマー（VPL105）: 上の画面に本編のキッチンタイマー（液晶・4つの物理ボタン）と、蒸らし後の温度の目安。下は早見とリセット、分・秒・スタート */
-.timer-a { position: absolute; left: 0; right: 5.6rem; top: 8.4rem; bottom: 6.4rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.4rem; }
+.timer-a { position: absolute; left: 0; right: 5.6rem; top: 8.4rem; bottom: 5.6rem; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 1.4rem; } /* キッチンタイマーは一言のすぐ上へ寄せる（VPL122。下半分の空きをなくす） */
 .ktimer { position: relative; flex: none; width: min(32rem, calc((100cqh - var(--cp) - var(--band) - 15.6rem) / 0.9)); aspect-ratio: 1280 / 1150; container-type: inline-size; } /* 下の目安の札をなくした分、縦にも大きく（VPL116。絵を縦に約3割のばす） */
 .ktimer > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 1.6rem #000b); pointer-events: none; }
 .ktimer .lcd { position: absolute; left: 13.6%; width: 72.8%; top: 22%; height: 33.4%; display: grid; place-items: center; color: #192e28; }
@@ -1067,6 +1069,14 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .th-range { position: absolute; left: -0.3rem; right: -0.3rem; z-index: 6; bottom: calc((var(--t) - var(--spread)) * 100%); height: calc(var(--spread) * 200%); border: 0.2rem solid #fff; border-radius: 0.6rem; background: #ffffff33; box-shadow: 0 0 0.8rem #fff; transition: bottom 0.4s var(--ease-out); }
 .thermo.forecast .th-now { display: none; }
 .thermo.forecast[data-selected="false"] :is(.th-range, .th-pointer) { opacity: 0; }
+
+/* タイマーの場面の空きを埋める案（VPL124）。a＝はじめの待ち姿／b＝蒸らしの湯気／c＝上に寄せるだけ */
+.t-wait, .t-steam { display: none; }
+.phone[data-tfill="a"] .t-wait { display: block; position: absolute; z-index: 0; width: 56rem; max-width: none; left: calc(50% - 2.8rem - 56rem * 0.565); top: 0.5rem; pointer-events: none; filter: drop-shadow(0 1rem 2rem #000a) brightness(0.92); }
+.phone[data-tfill="b"] .t-steam { display: block; position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.phone:is([data-tfill="b"], [data-tfill="c"]) .timer-a { justify-content: center; padding-bottom: 3.6rem; } /* タイマーを上寄りに（VPL124） */
+.phone[data-tfill="a"] .timer-a { padding-bottom: 2rem; } /* 案A: はじめの頭と肩が見える所まで、タイマーを少し上へ */
+.timer-a { z-index: 1; }
 
 /* 温度計（VPL103）: 配合・詰め方・吸い出しで、上端・長さ・太さをそろえる。長さは、いちばん狭い配合の上の画面に合わせる（下の段の高さ --cp-mix から決める）。
    いちばん下の一言の段（配合の「この配合の適温」など）は、どの場面でも同じ高さを取っておく（空でも管の長さが変わらない） */
