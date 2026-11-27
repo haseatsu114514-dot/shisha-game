@@ -68,5 +68,100 @@
   ],
   "result": "c4_v1.png",
   "prompt": "Vertical 2:3 chapter title key visual for a Japanese visual-novel game about shisha (hookah) lounges, chapter 1 \"A Town Tied by Smoke\". Match the painting style, line quality, color richness and cinematic lighting of the attached chapter title illustrations (modern anime key visual, clean cel shading with 2-3 shadow steps, no airbrushed shine, NOT a 1990s OVA/cel style). Characters must be the SAME people as the attached standing sprites: identical faces, eye colors, hairstyles, outfits and colors. Hajime (the young man in a black cap, black hoodie and black pants) wears NO necklace. Composition: keep all characters and the main motif inside the upper 60% of the frame; the lower 35% must be a calm, darker, low-detail area (soft haze or shadow) because the chapter title text will be overlaid there later. Absolutely no text, letters, numbers, logos or readable signage anywhere (shop signs are glowing blank shapes or light only). Do not draw any hookah, shisha pipe, hose, charcoal, foil, cigarettes or vapes; smoke appears only as soft drifting wisps and ribbons. Scene: Night rooftop above a small Japanese city. Hajime, seen from behind and slightly from the side, stands at the railing looking up. Above the town, the smoke drifting up from many lit shop windows gathers in the sky into the faint, beautiful shape of a crown made of smoke, lit warmly from below by the city lights — the cup he wants to win."
+ },
+ {
+  "id": "d1",
+  "title": "好敵手",
+  "tag": "v1",
+  "model": "gpt-image-2.6-sunburst",
+  "endpoint": "/v1/images/edits",
+  "size": "1024x1536",
+  "quality": "high",
+  "references": [
+   "hajime.png",
+   "naru.png",
+   "ch2-title.png",
+   "ch3-title.png",
+   "ch4-title.png"
+  ],
+  "result": "d1_v1.png",
+  "prompt": "Vertical 2:3 chapter title key visual for a Japanese visual-novel game about shisha (hookah) lounges, chapter 1 \"A Town Tied by Smoke\". Match the painting style, line quality, color richness and cinematic lighting of the attached chapter title illustrations (modern anime key visual, clean cel shading with 2-3 shadow steps, no airbrushed shine, NOT a 1990s OVA/cel style). Characters must be the SAME people as the attached standing sprites: identical faces, eye colors, hairstyles, outfits and colors. Hajime (the young man in a black cap, black hoodie and black pants) wears NO necklace. Composition: keep all characters and the main motif inside the upper 60% of the frame; the lower 35% must be a calm, darker, low-detail area (soft haze or shadow) because the chapter title text will be overlaid there later. Absolutely no text, letters, numbers, logos or readable signage anywhere (shop signs are glowing blank shapes or light only). Do not draw any hookah, shisha pipe, hose, charcoal, foil, cigarettes or vapes; smoke appears only as soft drifting wisps and ribbons. Scene: Frame the characters LARGE and close like the attached chapter title illustrations (waist-up or chest-up, faces big and expressive, strong cinematic key light and rich color), not small figures in a wide scene. Rival poster. Hajime in the front left, waist-up, determined eyes looking ahead past the viewer. Behind him on the right, Naru (silver hair, white-and-black jacket) stands taller with arms crossed and a confident half smile. Split lighting: warm orange glow of a night shopping street on Hajime, cool blue on Naru, a ribbon of pale smoke curling between them."
+ },
+ {
+  "id": "d2",
+  "title": "tonari のはじめくん",
+  "tag": "v1",
+  "model": "gpt-image-2.6-sunburst",
+  "endpoint": "/v1/images/edits",
+  "size": "1024x1536",
+  "quality": "high",
+  "references": [
+   "hajime.png",
+   "sumi.png",
+   "ch2-title.png",
+   "ch3-title.png",
+   "ch4-title.png"
+  ],
+  "result": "d2_v1.png",
+  "prompt": "Vertical 2:3 chapter title key visual for a Japanese visual-novel game about shisha (hookah) lounges, chapter 1 \"A Town Tied by Smoke\". Match the painting style, line quality, color richness and cinematic lighting of the attached chapter title illustrations (modern anime key visual, clean cel shading with 2-3 shadow steps, no airbrushed shine, NOT a 1990s OVA/cel style). Characters must be the SAME people as the attached standing sprites: identical faces, eye colors, hairstyles, outfits and colors. Hajime (the young man in a black cap, black hoodie and black pants) wears NO necklace. Composition: keep all characters and the main motif inside the upper 60% of the frame; the lower 35% must be a calm, darker, low-detail area (soft haze or shadow) because the chapter title text will be overlaid there later. Absolutely no text, letters, numbers, logos or readable signage anywhere (shop signs are glowing blank shapes or light only). Do not draw any hookah, shisha pipe, hose, charcoal, foil, cigarettes or vapes; smoke appears only as soft drifting wisps and ribbons. Scene: Frame the characters LARGE and close like the attached chapter title illustrations (waist-up or chest-up, faces big and expressive, strong cinematic key light and rich color), not small figures in a wide scene. Chest-up close portrait of Hajime inside a small cozy shisha lounge at night, a soft friendly smile toward the viewer. Behind him, warm bokeh of Turkish mosaic lamps of varied shapes and colors; Sumi stands far behind out of focus. A single soft ribbon of smoke curls past Hajime's face, catching the lamp light."
+ },
+ {
+  "id": "d3",
+  "title": "ライバルたち",
+  "tag": "v1",
+  "model": "gpt-image-2.6-sunburst",
+  "endpoint": "/v1/images/edits",
+  "size": "1024x1536",
+  "quality": "high",
+  "references": [
+   "hajime.png",
+   "naru.png",
+   "minto.png",
+   "adam.png",
+   "ch2-title.png",
+   "ch3-title.png",
+   "ch4-title.png"
+  ],
+  "result": "d3_v1.png",
+  "prompt": "Vertical 2:3 chapter title key visual for a Japanese visual-novel game about shisha (hookah) lounges, chapter 1 \"A Town Tied by Smoke\". Match the painting style, line quality, color richness and cinematic lighting of the attached chapter title illustrations (modern anime key visual, clean cel shading with 2-3 shadow steps, no airbrushed shine, NOT a 1990s OVA/cel style). Characters must be the SAME people as the attached standing sprites: identical faces, eye colors, hairstyles, outfits and colors. Hajime (the young man in a black cap, black hoodie and black pants) wears NO necklace. Composition: keep all characters and the main motif inside the upper 60% of the frame; the lower 35% must be a calm, darker, low-detail area (soft haze or shadow) because the chapter title text will be overlaid there later. Absolutely no text, letters, numbers, logos or readable signage anywhere (shop signs are glowing blank shapes or light only). Do not draw any hookah, shisha pipe, hose, charcoal, foil, cigarettes or vapes; smoke appears only as soft drifting wisps and ribbons. Scene: Frame the characters LARGE and close like the attached chapter title illustrations (waist-up or chest-up, faces big and expressive, strong cinematic key light and rich color), not small figures in a wide scene. Group poster of four, waist-up, overlapping like the attached three-person chapter title illustration: Hajime in the center front, Naru to his right, Minto to his left with a playful smile, Adam (red-and-green hair) behind them looking proud. Each is lit by a different colored glow from the night town; drifting smoke ties the four together."
+ },
+ {
+  "id": "d4",
+  "title": "夜明けの街",
+  "tag": "v1",
+  "model": "gpt-image-2.6-sunburst",
+  "endpoint": "/v1/images/edits",
+  "size": "1024x1536",
+  "quality": "high",
+  "references": [
+   "hajime.png",
+   "ch2-title.png",
+   "ch3-title.png",
+   "ch4-title.png"
+  ],
+  "result": "d4_v1.png",
+  "prompt": "Vertical 2:3 chapter title key visual for a Japanese visual-novel game about shisha (hookah) lounges, chapter 1 \"A Town Tied by Smoke\". Match the painting style, line quality, color richness and cinematic lighting of the attached chapter title illustrations (modern anime key visual, clean cel shading with 2-3 shadow steps, no airbrushed shine, NOT a 1990s OVA/cel style). Characters must be the SAME people as the attached standing sprites: identical faces, eye colors, hairstyles, outfits and colors. Hajime (the young man in a black cap, black hoodie and black pants) wears NO necklace. Composition: keep all characters and the main motif inside the upper 60% of the frame; the lower 35% must be a calm, darker, low-detail area (soft haze or shadow) because the chapter title text will be overlaid there later. Absolutely no text, letters, numbers, logos or readable signage anywhere (shop signs are glowing blank shapes or light only). Do not draw any hookah, shisha pipe, hose, charcoal, foil, cigarettes or vapes; smoke appears only as soft drifting wisps and ribbons. Scene: Frame the characters LARGE and close like the attached chapter title illustrations (waist-up or chest-up, faces big and expressive, strong cinematic key light and rich color), not small figures in a wide scene. Waist-up shot of Hajime at dawn on a pedestrian bridge above a small Japanese town, wind in his hoodie, looking toward the sunrise with quiet resolve. Morning mist and thin smoke rising from the streets below glow gold in the low sun; the sky shifts from deep blue to warm orange."
+ },
+ {
+  "id": "d5",
+  "title": "煙の糸",
+  "tag": "v1",
+  "model": "gpt-image-2.6-sunburst",
+  "endpoint": "/v1/images/edits",
+  "size": "1024x1536",
+  "quality": "high",
+  "references": [
+   "hajime.png",
+   "sumi.png",
+   "tsumugi.png",
+   "minto.png",
+   "naru.png",
+   "adam.png",
+   "ch2-title.png",
+   "ch3-title.png",
+   "ch4-title.png"
+  ],
+  "result": "d5_v1.png",
+  "prompt": "Vertical 2:3 chapter title key visual for a Japanese visual-novel game about shisha (hookah) lounges, chapter 1 \"A Town Tied by Smoke\". Match the painting style, line quality, color richness and cinematic lighting of the attached chapter title illustrations (modern anime key visual, clean cel shading with 2-3 shadow steps, no airbrushed shine, NOT a 1990s OVA/cel style). Characters must be the SAME people as the attached standing sprites: identical faces, eye colors, hairstyles, outfits and colors. Hajime (the young man in a black cap, black hoodie and black pants) wears NO necklace. Composition: keep all characters and the main motif inside the upper 60% of the frame; the lower 35% must be a calm, darker, low-detail area (soft haze or shadow) because the chapter title text will be overlaid there later. Absolutely no text, letters, numbers, logos or readable signage anywhere (shop signs are glowing blank shapes or light only). Do not draw any hookah, shisha pipe, hose, charcoal, foil, cigarettes or vapes; smoke appears only as soft drifting wisps and ribbons. Scene: Frame the characters LARGE and close like the attached chapter title illustrations (waist-up or chest-up, faces big and expressive, strong cinematic key light and rich color), not small figures in a wide scene. Symbolic poster: Hajime in the center, waist-up, holding out one open hand. Fine glowing threads of smoke run from his hand to the faint, half-transparent figures of Sumi, Tsumugi, Minto, Naru and Adam arranged around and behind him in the dark, as if the smoke ties them all together. Deep night blue with warm gold light on the threads."
  }
 ]

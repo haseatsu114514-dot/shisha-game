@@ -12,6 +12,10 @@ ROOT = HERE.parents[2]
 MODEL = "gpt-image-2.6-sunburst"
 SPRITE = lambda cid: ROOT / f"assets/sprites/characters/{cid}/chr_{cid}_normal.png"
 STYLE = [ROOT / "remake/img/ui/chapters/ch3-title.webp", ROOT / "remake/img/ui/chapters/ch4-title.webp"]
+# 2回目（d1〜d5）は、人物に大きく寄った第2章の絵も画風の参照に足す（オーナー「いまなんか画像が微妙で」）
+STYLE_V2 = [ROOT / "remake/img/ui/chapters/ch2-title.webp"] + STYLE
+CLOSE = ("Frame the characters LARGE and close like the attached chapter title illustrations (waist-up or chest-up, faces big and expressive, "
+         "strong cinematic key light and rich color), not small figures in a wide scene. ")
 
 COMMON = (
     "Vertical 2:3 chapter title key visual for a Japanese visual-novel game about shisha (hookah) lounges, chapter 1 \"A Town Tied by Smoke\". "
@@ -53,6 +57,41 @@ CONCEPTS = {
                   "the smoke drifting up from many lit shop windows gathers in the sky into the faint, beautiful shape of a crown made of smoke, lit warmly from below "
                   "by the city lights — the cup he wants to win.",
     },
+    # 2回目: 人物に寄った迫力のある構図
+    "d1": {
+        "title": "好敵手",
+        "refs": ["hajime", "naru"], "style": "v2",
+        "prompt": CLOSE + "Rival poster. Hajime in the front left, waist-up, determined eyes looking ahead past the viewer. Behind him on the right, Naru "
+                  "(silver hair, white-and-black jacket) stands taller with arms crossed and a confident half smile. Split lighting: warm orange glow of a night "
+                  "shopping street on Hajime, cool blue on Naru, a ribbon of pale smoke curling between them.",
+    },
+    "d2": {
+        "title": "tonari のはじめくん",
+        "refs": ["hajime", "sumi"], "style": "v2",
+        "prompt": CLOSE + "Chest-up close portrait of Hajime inside a small cozy shisha lounge at night, a soft friendly smile toward the viewer. Behind him, "
+                  "warm bokeh of Turkish mosaic lamps of varied shapes and colors; Sumi stands far behind out of focus. A single soft ribbon of smoke curls past "
+                  "Hajime's face, catching the lamp light.",
+    },
+    "d3": {
+        "title": "ライバルたち",
+        "refs": ["hajime", "naru", "minto", "adam"], "style": "v2",
+        "prompt": CLOSE + "Group poster of four, waist-up, overlapping like the attached three-person chapter title illustration: Hajime in the center front, "
+                  "Naru to his right, Minto to his left with a playful smile, Adam (red-and-green hair) behind them looking proud. Each is lit by a different "
+                  "colored glow from the night town; drifting smoke ties the four together.",
+    },
+    "d4": {
+        "title": "夜明けの街",
+        "refs": ["hajime"], "style": "v2",
+        "prompt": CLOSE + "Waist-up shot of Hajime at dawn on a pedestrian bridge above a small Japanese town, wind in his hoodie, looking toward the sunrise with "
+                  "quiet resolve. Morning mist and thin smoke rising from the streets below glow gold in the low sun; the sky shifts from deep blue to warm orange.",
+    },
+    "d5": {
+        "title": "煙の糸",
+        "refs": ["hajime", "sumi", "tsumugi", "minto", "naru", "adam"], "style": "v2",
+        "prompt": CLOSE + "Symbolic poster: Hajime in the center, waist-up, holding out one open hand. Fine glowing threads of smoke run from his hand to the faint, "
+                  "half-transparent figures of Sumi, Tsumugi, Minto, Naru and Adam arranged around and behind him in the dark, as if the smoke ties them all "
+                  "together. Deep night blue with warm gold light on the threads.",
+    },
 }
 
 def png_bytes(path, max_side=1536):
@@ -64,7 +103,8 @@ def run(cid, tag):
     key = os.environ["OPENAI_API_KEY"]
     c = CONCEPTS[cid]
     prompt = COMMON + " Scene: " + c["prompt"]
-    images = [(f"{name}.png", png_bytes(SPRITE(name))) for name in c["refs"]] + [(p.stem + ".png", png_bytes(p)) for p in STYLE]
+    style = STYLE_V2 if c.get("style") == "v2" else STYLE
+    images = [(f"{name}.png", png_bytes(SPRITE(name))) for name in c["refs"]] + [(p.stem + ".png", png_bytes(p)) for p in style]
     b = uuid.uuid4().hex
     def part(k, v): return f'--{b}\r\nContent-Disposition: form-data; name="{k}"\r\n\r\n{v}\r\n'.encode()
     body = b"".join(part(k, v) for k, v in [("model", MODEL), ("prompt", prompt), ("size", "1024x1536"), ("quality", "high"), ("output_format", "png")])
@@ -85,7 +125,7 @@ if __name__ == "__main__":
     tag = sys.argv[1]; ids = sys.argv[2:] or list(CONCEPTS)
     log_path = HERE / "prompts.json"
     log = json.loads(log_path.read_text()) if log_path.exists() else []
-    with cf.ThreadPoolExecutor(4) as ex:
+    with cf.ThreadPoolExecutor(5) as ex:
         for cid, res, prompt, refs in ex.map(lambda i: run(i, tag), ids):
             print(cid, res, flush=True)
             log.append({"id": cid, "title": CONCEPTS[cid]["title"], "tag": tag, "model": MODEL, "endpoint": "/v1/images/edits", "size": "1024x1536",

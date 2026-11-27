@@ -3,7 +3,7 @@
 // 登場カットインは、縦画面で決めた案A「縦のポスター」（VPL22・VPL28）に組み直す: 上に人物、真ん中に斜めの帯と名前、下に一言。
 // 名前・二つ名・一言・好きなフレーバー・色・絵は、本編が出したカットイン（vn/intro-art.js の .cutin.art-intro）からそのまま読む。
 // 章タイトル（タイトルコール）は案A（VPN19）: 章タイトルの横長の絵から人物を縦に切り出して上に置き、章名は本編の明朝で下に組み直す。
-// どの章かは本編の章タイトル（core/ui.js chapterTitle の .chapter-card）から読み、章名・英題・編名は core/chapter-title-art.js の登録から。
+// どの章かは本編の章タイトル（core/ui.js chapterTitle の .chapter-card）から読み、章名・英題は core/chapter-title-art.js の登録から（「〇〇編」は出さない・VPN23）。
 import { el } from "../../core/util.js";
 import { CHAPTER_TITLE_ART } from "../../core/chapter-title-art.js";
 import { textOf, mirrorBackground, relayTap } from "./frame.js";
@@ -83,7 +83,7 @@ function readChapterTitle(roots) {
   if (!entry) return null;
   const img = card.querySelector("img.cc-art");
   return {
-    chapter: entry.chapter, no: entry.no, name: entry.name, sub: entry.sub || "",
+    chapter: entry.chapter, no: entry.no, name: entry.name,
     english: String(entry.read || "").split("──").pop().trim(),
     art: card.classList.contains("illustrated") ? img?.currentSrc || img?.src || entry.url : "",
     out: card.classList.contains("out"),
@@ -149,7 +149,7 @@ export function createCoverScene(frame, own) {
   function renderCall(title) {
     call.dataset.chapter = String(title.chapter);
     call.style.cssText = `--ct-focus:${TITLE_FOCUS[title.chapter] ?? DEFAULT_FOCUS}`;
-    call.setAttribute("aria-label", [title.no, title.name, title.english, title.sub].filter(Boolean).join("　"));
+    call.setAttribute("aria-label", [title.no, title.name, title.english].filter(Boolean).join("　"));
     call.replaceChildren(
       title.art ? el("img.vt-ct-amb", { src: title.art, alt: "", draggable: "false" }) : null,
       title.art ? el("div.vt-ct-pic", [el("img.vt-ct-art", { src: title.art, alt: "", draggable: "false" })]) : null,
@@ -160,7 +160,7 @@ export function createCoverScene(frame, own) {
         el(`div.vt-ct-name${[...title.name].length > 5 ? ".long" : ""}`, { text: title.name }),
         el("i.vt-ct-rule"),
         title.english ? el("div.vt-ct-read", { text: title.english }) : null,
-        title.sub ? el("div.vt-ct-sub", { text: title.sub }) : null,
+        // 「〇〇編」は章によって有ったり無かったりするので、縦画面のタイトルコールでは出さない（VPN23）
       ]),
     );
   }

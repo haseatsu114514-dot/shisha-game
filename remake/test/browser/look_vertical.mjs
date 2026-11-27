@@ -402,7 +402,7 @@ await suite("look_vertical", async (check) => {
     });
     assert.equal(call.scene, "cover");
     assert.equal(call.cover, "title");
-    assert.deepEqual([call.en, call.name, call.read, call.sub], ["CHAPTER 2", "才能の壁", "Hollow Crown", "HAZE: OPEN CLOUD 編"]);
+    assert.deepEqual([call.en, call.name, call.read, call.sub], ["CHAPTER 2", "才能の壁", "Hollow Crown", ""], "no 「〇〇編」 line (VPN23)");
     assert.match(call.art, /ch2-title\.webp/);
     assert(call.full, "the title call covers the whole frame");
     assert(call.padCovered, "the pad is hidden under the title call");
