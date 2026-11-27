@@ -1,17 +1,18 @@
 // 縦画面C案「煙の舞台」: 店番（tonari フロア営業）を縦へ移した試作（要望台帳 VPM02）。
 // ルール・数値・客・ミックス・台詞は本編のもの（remake/js/daily/tonari-floor-model.js・tonari-floor-data.js）をそのまま呼ぶ。
-// ここで作るのは縦の画面だけ: 上の画面＝店内と5つの卓の札／下の画面＝選んでいる卓の画面（VPM17）。
+// ここで作るのは縦の画面だけ: 上の画面＝16:9に近い形で写した店内と、その中の5つの卓のボックス／下の画面＝選んでいる卓の専用の画面（VPM17・VPM18）。
 // 十字キーと丸ボタンは置かない（2026-11-27 オーナー「縦レイアウトは必ず十字ボタンや決定ボタンはいらない　その分を専用UIに」・VPM07）。
 // 卓の札を押すと、下の画面がその卓のものに替わる（オーナー「卓をタップすると下画面がそれに応じたUIになる感じがいいかも」）:
 //   注文待ち＝客の一言と、ミックス5つ（属性の印・名前・使ったフレーバー・その客との合い方 ◎○×。VPM08）／頼み＝客の一言と、5つの手（短い言葉の大きな札。VPM12）／
 //   炭の調整・会計＝押したらその場で済む（本編と同じ）／それ以外＝その卓の様子（満足・炭・滞在・仕込みの進み）と、いまのミックスの棚。
 //   注文と頼みを聞いている間は、店の時間が止まる（本編の「接客の画面」と同じ）。上の店内はそのまま見えていて、ほかの卓を押せばそちらへ移る。
-// 上の卓の札は親指から遠いので、下の画面のいちばん上に「卓の段」（1〜5卓の小さな札。並びは変わらない）を置き、そこを押しても同じに進む（VPM11）。
+// 上の画面に置くのは、卓のボックスと、残り時間・店の売上だけ（2026-11-27 オーナー「16:9に近い形で店全体を上に写して、その中に卓ごとにボックスを置き下で色々操作する感じ」
+//   「左上のシーシャ作る本数のやついらない」「中間の横並びの卓のやつもいらない　その代わり卓をタップすると専用UIになる」・VPM18）。卓を選ぶのは、上の卓のボックスだけ。
 // 会計の客が出たら、チリーンと鳴らす（VPM13。音はこの一つだけ）。
 // 本編の進行・所持金・保存には触れない。
 import {
   createFloorNight, createFloorTutorial, floorTick, floorAct, floorTap, floorTutorialCue, floorHint, floorResult,
-  floorUrgency, floorWaitLeft, floorStayLeft, floorCoalLeft, floorTendDue, floorMaking, floorHand, floorShuffleLeft, floorTimeLeft, floorStage,
+  floorUrgency, floorWaitLeft, floorStayLeft, floorCoalLeft, floorTendDue, floorHand, floorShuffleLeft, floorTimeLeft, floorStage,
   floorFeverReady, floorOutlook, floorPlan, floorCallLine, floorDusk, floorBill, mixName, mixFlavorNames, mixIsSingle,
   floorFeverMax, floorFeverCost, floorFeverLength, FLOOR_TICK_MS,
 } from "../../js/daily/tonari-floor-model.js";
@@ -92,7 +93,7 @@ export class FloorScene {
     options: { name: "shift", default: "usual", values: Object.fromEntries(Object.entries(FLOOR_SHIFTS).map(([id, shift]) => [id, shift.name])) },
     gallery: {
       title: "店番（tonari のフロア営業）",
-      note: "本編の店番（バイト）を縦へ。ルール・数値・客・ミックス・台詞は本編のものをそのまま使い、画面だけ縦に組んだ。十字キーは無い。卓を押すと、下の画面がその卓のもの（注文＝ミックス5つ／頼み＝5つの手／それ以外＝卓の様子と棚）に替わる。",
+      note: "本編の店番（バイト）を縦へ。ルール・数値・客・ミックス・台詞は本編のものをそのまま使い、画面だけ縦に組んだ。上に16:9に近い形で店内を写し、その中に卓のボックスを置く。十字キーは無い。卓を押すと、下の画面がその卓の専用の画面（注文＝ミックス5つ／頼み＝5つの手／それ以外＝卓の様子と棚）に替わる。",
       shots: [
         { caption: "開店前", shot: "intro" },
         { caption: "営業中（下は、選んでいる卓の様子と棚）", shot: "live" },
@@ -181,9 +182,9 @@ export class FloorScene {
       <div class="pic fl-room"><img class="bg" src="${this.roomDay}" alt=""><img class="bg fl-night" src="${this.roomNight}" alt=""><i class="fl-lights"></i></div>
       <i class="veil"></i>
       <div class="fl-hud">
-        <span class="fl-making" role="img" aria-label="仕込み中: なし">${icon("cook")}${Array.from({ length: RULES.slots }, () => `<i></i>`).join("")}<em hidden></em></span>
+        <span class="pill fl-status fl-status-clock">
+          <span class="fl-clock">${icon("clock")}<b>0:00</b><i class="fl-timebar"><i></i></i></span></span>
         <span class="pill fl-status">
-          <span class="fl-clock">${icon("clock")}<b>0:00</b><i class="fl-timebar"><i></i></i></span><i class="sep"></i>
           <span class="fl-sales">${icon("coins")}<b>0</b><small>円</small>
             <i class="fl-outlook" role="img" aria-label="いまの調子: まだ分からない">${VENUE.ranks.filter((r) => r.min > 0).map((r) => `<u style="left:${r.min}%"></u>`).join("")}<i></i></i></span>
         </span>
@@ -196,7 +197,6 @@ export class FloorScene {
         <div class="telop fl-telop" data-slot="telop">
           <p class="fl-line" role="status" aria-live="polite"></p>
           <button class="coach fl-coach" data-act="fl-coach" aria-label="スミさんの言葉" hidden><img src="${this.face("sumi")}" alt=""><span class="say"><span class="say-text"></span><i class="fl-coach-next"></i></span></button>
-          <div class="fl-slots" role="group" aria-label="卓の段（押すと、下の画面がその卓に替わる）">${Array.from({ length: RULES.tableCount }, (_, i) => `<button class="fl-slot" data-act="fl-table" data-id="${i + 1}" data-need=""><i class="fl-slot-no">${i + 1}</i><span class="fl-slot-main"></span><b class="fl-slot-sub"></b></button>`).join("")}</div>
         </div>
         <div class="fl-deck" data-slot="deck" data-busy="false" data-kind="info">
           <div class="fl-guest"></div>
@@ -216,9 +216,8 @@ export class FloorScene {
     this.refs = {
       room: q(".fl-room"), tables: [...el.querySelectorAll(".fl-table")].map((root) => ({ root, want: root.querySelector(".fl-want"), fx: root.querySelector(".fl-fx"),
         who: root.querySelector(".fl-who"), cell: root.querySelector(".fl-cell"), bar: root.querySelector(".fl-bar i"), count: root.querySelector(".fl-count"), keys: {} })),
-      making: q(".fl-making"), clock: q(".fl-clock b"), timebar: q(".fl-timebar i"), sales: q(".fl-sales b"), outlook: q(".fl-outlook"),
+      clock: q(".fl-clock b"), timebar: q(".fl-timebar i"), sales: q(".fl-sales b"), outlook: q(".fl-outlook"),
       band: q(".fl-band"), notice: q(".fl-notice"), flash: q(".fl-flash"), line: q(".fl-line"),
-      slots: [...el.querySelectorAll(".fl-slot")].map((root) => ({ root, main: root.querySelector(".fl-slot-main"), sub: root.querySelector(".fl-slot-sub"), key: "" })),
       coach: q(".fl-coach"), coachText: q(".fl-coach .say-text"), deck: q(".fl-deck"), who: q(".fl-guest"), rows: q(".fl-rows"), info: q(".fl-info"), busy: q(".fl-busy"),
       acts: q('[data-slot="acts"]'), layer: q('[data-slot="layer"]'),
     };
@@ -570,33 +569,6 @@ export class FloorScene {
     const countKey = (table.call || table.phase === "bill") && left != null ? (left > 0 ? String(seconds(left)) : "!") : "";
     if (k.count !== countKey) { k.count = countKey; spot.count.innerHTML = countKey ? `${icon("clock")}<b>${countKey === "!" ? "！" : countKey}</b>` : ""; }
     spot.root.setAttribute("aria-label", `${table.id}卓、${guest ? `${guest.name}、` : ""}${want[1]}`);
-    // 下の用件の段（親指の届く所に、同じ卓の今の用件を出す。押すと、卓の札を押したのと同じ）。並びは卓の番号のまま変えない（押す位置を手が覚える）
-    const slot = this.refs.slots[table.id - 1], tap = floorTap(s, table.id);
-    const need = ["order", "care", "tend", "bill"].includes(tap) ? tap : "";
-    const slotKey = `${table.phase}/${need}/${cellKey}/${countKey}/${guest?.order.wish || ""}/${table.refill}`;
-    Object.assign(slot.root.dataset, { need, phase: table.phase, urgent: spot.root.dataset.urgent, sel: String(this.sel === table.id) });
-    slot.root.style.setProperty("--c", guest ? WISH[guest.order.wish].color : "transparent");
-    if (slot.key !== slotKey) {
-      slot.key = slotKey;
-      slot.main.innerHTML = need === "order" ? icon(WISH_ICON[guest.order.wish]) : need === "care" ? icon(want[0]) : need === "tend" ? icon("add") : need === "bill" ? icon("bill")
-        : table.phase === "prep" ? icon(making ? "cook" : "clock") : stage ? `<img src="${this.art(MOOD_ART[stage.id])}" alt="">` : table.phase === "cool" ? icon("clean") : "";
-      const count = (n) => `<em>${n}</em>`;
-      slot.sub.innerHTML = need === "order" ? `${table.refill ? "替え" : "注文"}${count(seconds(left))}` : need === "care" ? `頼み${countKey ? count(countKey === "!" ? "！" : countKey) : ""}`
-        : need === "tend" ? "炭" : need === "bill" ? `会計${countKey ? count(countKey === "!" ? "！" : countKey) : ""}` : making ? count(seconds(table.make.left)) : "";
-      slot.root.setAttribute("aria-label", `${table.id}卓、${want[1]}`);
-    }
-  }
-
-  syncMaking() {
-    const list = floorMaking(this.s), active = list.slice(0, RULES.slots), { making } = this.refs;
-    [...making.querySelectorAll("i")].forEach((pip, i) => {
-      const m = active[i];
-      pip.dataset.on = String(!!m);
-      pip.style.setProperty("--p", m ? `${Math.round((1 - m.left / m.total) * 100)}%` : "0%");
-    });
-    const waiting = Math.max(0, list.length - RULES.slots), more = making.querySelector("em");
-    more.hidden = !waiting; more.textContent = waiting ? `＋${waiting}` : "";
-    making.setAttribute("aria-label", list.length ? `仕込み中: ${active.map((m) => `${m.tableId}卓 ${m.label}`).join("、")}${waiting ? `。順番待ち ${waiting}台` : ""}` : "仕込み中: なし");
   }
 
   /** 下の画面＝選んでいる卓の画面（VPM17）。いちばん上に、その卓の客と一言。その下は、卓の用件で替わる:
@@ -684,11 +656,15 @@ export class FloorScene {
     who.dataset.key = key;
     who.dataset.verdict = "";
     who.dataset.guest = String(!!guest);
+    who.style.setProperty("--sx", `${(SEATS[table.id - 1][0] / 100 * 39 - 1.2).toFixed(2)}rem`); // 上の卓のボックスの真下に、つなぐ印を出す（画面の幅39rem・左右の余白1.2rem）
+    // 札は、注文の気分か、押すと進む用件（頼み・炭の調整・会計）だけ。金額は、札が無い時と会計の時に出す（幅が足りず、呼び名が切れるので）
+    const acting = ["care", "tend", "bill"].includes(tap);
     const chip = !guest ? "" : table.phase === "order" ? this.wishChip(guest.order, { refill: table.refill })
-      : `<span class="fl-need" data-tone="${want[2]}">${icon(want[0])}<b>${want[1]}</b></span>`;
+      : acting ? `<span class="fl-need" data-tone="${want[2]}">${icon(want[0])}<b>${want[1]}</b></span>` : "";
+    const showTotal = total > 0 && (!chip || tap === "bill");
     who.innerHTML = `<span class="fl-guest-face">${guest ? this.guestImg(guest, happy) : ""}<b class="fl-guest-no" aria-label="${table.id}卓">${table.id}</b><i class="fl-guest-mark" aria-hidden="true"></i></span>
       <div class="fl-guest-side">
-        <div class="fl-guest-top"><b class="fl-guest-name">${guest ? esc(guest.name) : table.phase === "cool" ? "片付け中" : "空席"}</b>${chip}${total ? `<em>${icon("coins")}${yen(total)}</em>` : ""}</div>
+        <div class="fl-guest-top"><b class="fl-guest-name">${guest ? esc(guest.name) : table.phase === "cool" ? "片付け中" : "空席"}</b>${chip}${showTotal ? `<em>${icon("coins")}${yen(total)}</em>` : ""}</div>
         <p class="fl-quote" data-sight="${sight}"></p>
       </div>`;
     this.fitText(who.querySelector(".fl-quote"), lead);
@@ -712,11 +688,11 @@ export class FloorScene {
       let meters = "";
       if (table.phase === "order") meters = bar("wait", "待ち時間", "clock");
       else if (table.phase === "prep") meters = `<span class="fl-meter wide" data-k="mix">${attrHtml(this.art, table.mix)}<b>${esc(mixName(table.mix))}</b></span>${bar("make", "仕込み", "cook")}`;
-      else if (served) meters = `<span class="fl-meter" data-k="mood"><img src="${this.art(MOOD_ART[stage.id])}" alt=""><b>満足</b><small>${stage.label}</small></span>
-        <span class="fl-meter" data-k="mix">${table.mix ? `${attrHtml(this.art, table.mix)}<b>${esc(mixName(table.mix))}</b>` : ""}</span>${table.phase === "enjoy" ? `${bar("coal", "炭", "add")}${bar("stay", "滞在", "clock")}` : ""}`;
+      else if (served) meters = `${table.mix ? `<span class="fl-meter wide" data-k="mix">${attrHtml(this.art, table.mix)}<b>${esc(mixName(table.mix))}</b><span class="fl-meter-mood"><img src="${this.art(MOOD_ART[stage.id])}" alt=""><small>${stage.label}</small></span></span>` : ""}
+        ${table.phase === "enjoy" ? `${bar("coal", "炭", "add")}${bar("stay", "滞在", "clock")}` : ""}`;
       // いまのミックスの棚（見るだけ。選んでいる卓が注文待ちなら、その客との合い方も出す）
       const shelf = wait > 0 ? `<p class="fl-shelf-busy">${icon("shuffle")}<b>入れ替え中</b><small></small></p>`
-        : `<ul>${list.map((mix) => `<li data-rating="${mix.rating || ""}">${attrHtml(this.art, mix.id)}<b>${esc(mix.name)}</b>${mix.rating ? `<i>${RATE_MARK[mix.rating]}</i>` : ""}</li>`).join("")}</ul>`;
+        : `<ul>${list.map((mix) => `<li data-rating="${mix.rating || ""}">${attrHtml(this.art, mix.id)}<b>${esc(mix.name)}</b>${mix.single ? "" : `<small>（${mix.recipe.join("・")}）</small>`}${mix.rating ? `<i>${RATE_MARK[mix.rating]}</i>` : ""}</li>`).join("")}</ul>`;
       info.innerHTML = `${go}${meters ? `<div class="fl-meters" data-phase="${table.phase}">${meters}</div>` : ""}<div class="fl-shelf"><h4>いまのミックスの棚</h4>${shelf}</div>`;
     }
     // 動く所（棒と秒）だけ書き換える
@@ -737,7 +713,6 @@ export class FloorScene {
     const s = this.s, r = this.refs;
     if (!r) return;
     s.tables.forEach((table, i) => this.syncTable(r.tables[i], table));
-    this.syncMaking();
     this.syncDeck();
     r.clock.textContent = floorTimeLeft(s);
     r.timebar.style.width = `${Math.max(0, 100 - (s.t / s.length) * 100).toFixed(1)}%`;
@@ -774,7 +749,7 @@ export class FloorScene {
     }
     const hint = floorHint(s);
     this.hint = hint;
-    for (const spot of [...r.tables, ...r.slots]) spot.root.dataset.guide = String(s.level === 0 && !this.coach && String(hint.tableId) === spot.root.dataset.id);
+    for (const spot of r.tables) spot.root.dataset.guide = String(s.level === 0 && !this.coach && String(hint.tableId) === spot.root.dataset.id);
   }
 
   /** フィーバーの札: 灯りと残量。使える量まで溜まると金に灯り、使っている間は紫。もう一度押すと終了し、残りは次に使える。 */
@@ -841,11 +816,11 @@ export class FloorScene {
   select(id) {
     if (id !== this.reopen) this.reopen = 0;
     this.sel = id;
-    for (const spot of [...this.refs.tables, ...this.refs.slots]) spot.root.dataset.sel = String(spot.root.dataset.id === String(id));
+    for (const spot of this.refs.tables) spot.root.dataset.sel = String(spot.root.dataset.id === String(id));
     this.syncDeck(); // 下の画面を、その卓のものに替える
   }
 
-  /** 卓を押した（上の卓の札・下の卓の段・下の画面の大きな札で同じ）: 下の画面がその卓のものに替わり、用件があれば進む。
+  /** 卓を押した（上の卓のボックス・下の画面の大きな札で同じ）: 下の画面がその卓のものに替わり、用件があれば進む。
    *  注文・頼みは、客の一言を読んで選ぶ（その間、店の時間は止まる）。炭の調整・会計は、押したらその場で済む。 */
   tapTable(id) {
     if (this.band) return;
@@ -1250,7 +1225,7 @@ export class FloorScene {
     this.nudgeTimer = this.later(() => { if (this.coach) this.coachSay(); }, 1600);
   }
 
-  /** スミさんの言葉を出す（上の画面の裾。卓の段のすぐ上）。 */
+  /** スミさんの言葉を出す（下の画面のいちばん上。店内と、客の段のあいだ）。 */
   coachSay(text = this.coachLine()) {
     const { coach, coachText } = this.refs;
     coach.hidden = !this.coach;
@@ -1269,7 +1244,7 @@ export class FloorScene {
     if (!this.refs) return;
     const step = this.coach?.step, table = this.coachTable();
     const [kind, id] = table ? ["table", table] : step?.focus || [];
-    for (const spot of [...this.refs.tables, ...this.refs.slots]) spot.root.dataset.coach = String(kind === "table" && spot.root.dataset.id === String(id));
+    for (const spot of this.refs.tables) spot.root.dataset.coach = String(kind === "table" && spot.root.dataset.id === String(id));
     this.el.querySelector(".fl-chip-shuffle")?.setAttribute("data-coach", String(kind === "shuffle"));
     this.el.querySelector(".fl-chip-fever")?.setAttribute("data-coach", String(kind === "fever"));
   }
@@ -1316,7 +1291,6 @@ export class FloorScene {
     this.lineLog = "";
     this.refs.deck.dataset.key = "";
     for (const spot of this.refs.tables) { spot.keys = {}; spot.fx.innerHTML = ""; }
-    for (const slot of this.refs.slots) slot.key = "";
     this.said = {}; this.reopen = 0;
     this.refs.who.dataset.key = ""; this.refs.info.dataset.key = "";
     this.setMode("intro");
