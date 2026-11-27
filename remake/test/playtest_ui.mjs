@@ -190,11 +190,19 @@ try {
     T.core.config.skipSeenOnly = false;
     T.core.newGame(); Object.assign(T.core.state, { phase: "daily", day: 4, stamina: 70 });
     Object.assign(T.core.state.flags, { _intro_sumi: true, _intro_customer: true, _ev_kuraudo_cameo: true, _ev_reviewer_cameo: true, _ev_uezono_cameo: true });
-    T.DB.baito = [{ id: "skip_probe", category: "beginner", text: "注文が入った", choices: [
-      { text: "好みを聞く", result: "話しながら一台を仕上げた", stats: { technique: 1 } },
-      { text: "お任せで作る", result: "落ち着いて一台を仕上げた", stats: { technique: 1 } },
-    ] }];
-    T.shiftDone = false; T.shift = T.tonari.doBaito().then(() => { T.shiftDone = true; });
+    // バイトは店番（TFL62）になり、旧シフトの抽選の接客（DB.baito）と今日の注文（shift-order-*）は廃止された（TFL63）。
+    // 店番の画面はこの検査の対象外なので、ブラウザ検査の既定（support.mjs）と同じくすぐ早じまいにする。
+    localStorage.setItem("suien_floor", "instant");
+    // 選択肢のある場面は、本編と同じく開店前に読む常連さんの話（doBaito の story・calendar.js の carriedShiftStory）として差し込む
+    const story = async () => {
+      await T.vn.play({ dialogue_id: "skip_probe", lines: [
+        { speaker: "", text: "注文が入った" },
+        { type: "choice", id: "skip_probe_choice", choices: [{ text: "好みを聞く" }, { text: "お任せで作る" }] },
+        { speaker: "", text: "一台を仕上げた" },
+      ] });
+      return "skip_probe";
+    };
+    T.shiftDone = false; T.shift = T.tonari.doBaito({ story }).then(() => { T.shiftDone = true; });
   });
   await page.waitForSelector("#vn.active .vn-text");
   await page.locator('[data-test="vn-skip"]').click();
@@ -202,7 +210,6 @@ try {
   await page.waitForTimeout(300);
   assert.equal(await page.locator(".vn-choices.show .vn-choice").count(), 2, "SKIP chose a response without the player");
   await page.locator(".vn-choice").first().click();
-  await page.locator('[data-test="shift-order-0"]').click({ timeout: 10000 });
   await page.locator('[data-test="after-none"]').click({ timeout: 30000 });
   await page.waitForFunction(() => T.shiftDone, { timeout: 5000 });
   // SKIPは場面をまたいで保持する（#3558 項目7・オーナー決定 2026-11-25）。シフト終了でも解除されない。

@@ -4,7 +4,7 @@ import path from 'node:path';
 import {createRequire} from 'node:module';
 import {layoutSnapshot,settledPreview} from './trpg_layout.mjs';
 import {TrpgSession} from '../../js/trpg/session.js';
-import { startTrpgStory } from "./trpg_start.mjs";
+import { assertTrpgChoiceFits, rollTrpgCheck, startTrpgStory } from "./trpg_start.mjs";
 const {chromium}=createRequire(import.meta.url)('playwright');
 const base=process.env.BASE_URL||'http://127.0.0.1:8123/remake/';
 const out=path.resolve(process.env.ARTIFACT_DIR||'docs/qa/trpg-roll-ui-issue596');fs.mkdirSync(out,{recursive:true});
@@ -36,13 +36,15 @@ async function twistStep(page) {
   const card = page.locator('[data-test^="trpg-approach-"]').first();
   if (touch) await card.tap(); else await card.click();
   for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
-  const roll = page.locator('[data-test="trpg-roll"]');
-  if (touch) await roll.tap(); else await roll.click();
-  await page.locator('[data-test="trpg-settle"]').waitFor();
+  await rollTrpgCheck(page); // 振り直せる出目は、劇場の中の「振り直す？」で「このまま続ける」
   const settle = page.locator('[data-test="trpg-settle"]');
   if (touch) await settle.tap(); else await settle.click();
   for (let i = 0; i < 60 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
 }
+// 劇場（と劇場の中で選ぶ札）が片付いて、結果の窓が出るまで待つ
+async function settled(p){await p.waitForFunction(()=>document.querySelector('[data-test="trpg-settle"]')&&!document.querySelector('.trpg-roll-show'),null,{timeout:20000});}
+// 劇場の中で選ぶ札（2026-11-27 オーナー決定: スキルは劇場の中で選ぶ）を、その画面の大きさで撮って、丸ごと見えて押せる 44px 以上の札かを見る
+async function fitShow(p,label,tests){await p.mouse.move(0,0);await assertTrpgChoiceFits(p,tests);await p.screenshot({path:path.join(out,label+'.png')});}
 async function declare(p){const card=p.locator('[data-test^="trpg-approach-"]').first();if(await card.count()&&await card.isVisible()){await card.click();await lines(p);}}
 async function assertReducedDice(p){
  // The 40ms result render replaces rolling dice. Query and read styles in one
@@ -162,8 +164,14 @@ try{
   // Reopen through the real action, roll and verify committed keyboard guard.
   await ctl(p,'trpg-listen-open').click();await declare(p);await ctl(p,'trpg-roll').focus();await p.keyboard.down('Enter');await p.keyboard.down('Enter');await p.keyboard.up('Enter');
   await p.keyboard.press('Escape');assert.equal(await p.locator('[role=dialog]').count(),1);
-  await ctl(p,'trpg-settle').waitFor();assert.equal(await p.locator('[role=status].trpg-dice-total').count(),1);await fit(p,scenario+'-result');
-  if(await ctl(p,'trpg-reroll-0').count()){await ctl(p,'trpg-reroll-0').dblclick();assert.equal(await ctl(p,'trpg-reroll-0').count(),0);}
+  // seed 9 の最初の判定は成功しない: 劇場を閉じずに劇場の中で「振り直す？」。二度押しても振り直しは1回、選ぶ札はその場で片付く
+  await ctl(p,'trpg-show-reroll-0').waitFor({timeout:20000});await fitShow(p,scenario+'-show-reroll',['trpg-show-reroll-0','trpg-show-reroll-1','trpg-show-keep']);
+  assert.equal(await ctl(p,'trpg-reroll-0').count(),0,'The window offers no reroll card while the show asks');
+  const teamwork=(await p.evaluate(()=>__trpg.snapshot())).teamwork;
+  await ctl(p,'trpg-show-reroll-0').dblclick();assert.equal(await p.locator('[data-test^="trpg-show-"]').count(),0);
+  await settled(p);const rerolled=await p.evaluate(()=>__trpg.snapshot());assert.equal(rerolled.teamwork,teamwork-1);assert(rerolled.pending.rerolled);
+  assert.equal(await p.locator('[role=status].trpg-dice-total').count(),1);await fit(p,scenario+'-result');
+  assert.equal(await ctl(p,'trpg-reroll-0').count(),0,'A spent reroll is not offered again');
   await ctl(p,'trpg-settle').click();await lines(p);await interviewStep(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'explore');
   // Adopted table presentation: check real CSS/viewport separately from DOM ports.
   // The seat rail marks who is speaking, so it is measured during a line; idle choice screens hide it.
@@ -198,17 +206,27 @@ try{
   await ctl(p,'trpg-prepare-open').click();await declare(p);
   const helper=scenarioData.checks.prepare.helper;
   const lead=scenarioData.checks.prepare.approaches[0],leadBase=scenarioData.cast.find(c=>c.id===lead.actor).sheet.stats[lead.stat];
-  assert(await ctl(p,'trpg-support-'+helper).isEnabled());
-  assert.match(await p.locator('.trpg-aid-art img').getAttribute('src'),new RegExp(helper));
+  // スキルは劇場の中で選ぶ（2026-11-27 オーナー決定）: 窓に助力の札は無い。振ると劇場の幕の上で「スキルを使う？」
+  assert.equal(await ctl(p,'trpg-support-'+helper).count(),0,'The aid is chosen in the show, not in the window');
   for(const [width,height] of [[1280,720],[800,600],[390,844],[844,390]]){
     await p.setViewportSize({width,height});await fit(p,`${scenario}-aid-${width}x${height}`);
     await ctl(p,'trpg-details-toggle').press('Enter');await fit(p,`${scenario}-aid-${width}x${height}-details`);await ctl(p,'trpg-details-toggle').press('Space');
-    await ctl(p,'trpg-support-'+helper).press('Space');assert(await ctl(p,'trpg-support-'+helper).isChecked());
-    const momentum=(await p.evaluate(()=>__trpg.snapshot())).momentum; // table excitement adds to the shown bonus
-    assert.equal(await ctl(p,'trpg-bonus').textContent(),'＋'+(leadBase+7+momentum*4));await ctl(p,'trpg-support-'+helper).press('Space');
   }
-  await ctl(p,'trpg-support-'+helper).check();await ctl(p,'trpg-roll').click();await ctl(p,'trpg-settle').waitFor();
-  assert((await p.evaluate(()=>__trpg.snapshot())).used[helper]);assert.equal(await ctl(p,'trpg-reroll-0').count(),0,'Spent teamwork and used reroll cannot offer another reroll');
+  await p.setViewportSize({width:1280,height:720});
+  const momentum=(await p.evaluate(()=>__trpg.snapshot())).momentum; // table excitement adds to the bonus
+  await ctl(p,'trpg-roll').click();await ctl(p,'trpg-show-support').waitFor();
+  assert.match(await p.locator('[data-test="trpg-show-support"] .trpg-rs-pick-face img').getAttribute('src'),new RegExp(helper));
+  for(const [width,height] of [[1280,720],[800,600],[390,844],[844,390]]){
+    await p.setViewportSize({width,height});await fitShow(p,`${scenario}-aid-show-${width}x${height}`,['trpg-show-support','trpg-show-nosupport']);
+  }
+  await p.setViewportSize({width:1280,height:720});
+  // 札はキーでも押せる（焦点は最初の札。Space で使う）
+  assert.equal(await p.evaluate(()=>document.activeElement?.dataset.test),'trpg-show-support');await p.keyboard.press('Space');
+  await settled(p);
+  const aided=await p.evaluate(()=>__trpg.snapshot());assert(aided.used[helper]);assert.equal(aided.pending.helper,helper);
+  assert.equal(aided.pending.bonus,leadBase+7+momentum*4+aided.pending.hypothesisBonus,'The aid adds +7 to the roll (a matching hypothesis adds its own bonus)');
+  assert.equal(await p.locator('[data-test^="trpg-show-"]').count(),0);
+  assert.equal(await ctl(p,'trpg-reroll-0').count(),0,'Spent teamwork and used reroll cannot offer another reroll');
   await fit(p,scenario+'-help-used-result');
   await ctl(p,'trpg-settle').click();await lines(p);
   for(const field of scenarioData.flow?.serve||['approach'])await ctl(p,'trpg-plan-'+field+'-'+scenarioData.options[field][0].id).click();
@@ -219,9 +237,10 @@ try{
  for(const scenario of ['ordinary-cup','shark-last-order'])for(const [width,height] of [[1280,720],[800,600],[390,844],[844,390]]){
    const c=await browser.newContext({viewport:{width:1280,height:720},hasTouch:true});const p=await c.newPage();
    await p.goto(base+`trpg-preview.html?scenario=${scenario}&seed=9`);await startTrpgStory(p);await lines(p);await declare(p);
-   await p.setViewportSize({width,height});await ctl(p,'trpg-details-toggle').press('Enter');await ctl(p,'trpg-roll').click();await ctl(p,'trpg-settle').waitFor();
-   await fit(p,`${scenario}-${width}x${height}-actual-result`);
-   assert(await ctl(p,'trpg-reroll-0').count());await ctl(p,'trpg-reroll-0').click();await ctl(p,'trpg-settle').waitFor();
+   await p.setViewportSize({width,height});await ctl(p,'trpg-details-toggle').press('Enter');await ctl(p,'trpg-roll').click();
+   // 出目は劇場の中で「振り直す？」（2026-11-27 オーナー決定）。札はその画面の大きさでも丸ごと見えて押せる
+   await ctl(p,'trpg-show-reroll-0').waitFor({timeout:20000});await fitShow(p,`${scenario}-${width}x${height}-show-reroll`,['trpg-show-reroll-0','trpg-show-reroll-1','trpg-show-keep']);
+   await ctl(p,'trpg-show-reroll-0').click();await settled(p);
    await fit(p,`${scenario}-${width}x${height}-rerolled-result`);
    await ctl(p,'trpg-settle').click();await p.setViewportSize({width:1280,height:720});await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'interview','after the first roll the story character is interviewed');await c.close();
  }
@@ -239,11 +258,13 @@ try{
  assert.equal(Object.keys(seeds).length,3);
  for(const [grade,seed] of Object.entries(seeds)){
    const c=await browser.newContext();const p=await c.newPage();await p.goto(base+`trpg-preview.html?scenario=ordinary-cup&seed=${seed}`);await startTrpgStory(p);await lines(p);await declare(p);
-   await ctl(p,'trpg-roll').click();assert(await ctl(p,'trpg-roll').isDisabled());await p.screenshot({path:path.join(out,'rolling-'+grade+'.png')});await ctl(p,'trpg-settle').waitFor();assert.equal(await ctl(p,'trpg-roll-total').getAttribute('data-grade'),grade);await fit(p,'grade-'+grade);await c.close();
+   const shown=await rollTrpgCheck(p,{press:async selector=>{await p.locator(selector).click();if(selector==='[data-test="trpg-roll"]'){assert(await ctl(p,'trpg-roll').isDisabled());await p.screenshot({path:path.join(out,'rolling-'+grade+'.png')});}}});
+   assert.equal(shown.reroll,grade!=='success','The show offers a reroll exactly when the roll does not succeed');
+   await ctl(p,'trpg-settle').waitFor();assert.equal(await ctl(p,'trpg-roll-total').getAttribute('data-grade'),grade);await fit(p,'grade-'+grade);await c.close();
  }
  // Deliberately fail all decorative resources; live content stays usable.
  const c=await browser.newContext();const p=await c.newPage();await p.route(/\/(walnut-brass-frame|deep-teal-felt|harbour-paper-stack|spare-polyhedral-kit)\.webp$/,r=>r.abort());
- await p.goto(base+'trpg-preview.html?scenario=ordinary-cup&seed=9');await startTrpgStory(p);await lines(p);await declare(p);await fit(p,'missing-decoration');await ctl(p,'trpg-roll').click();await ctl(p,'trpg-settle').waitFor();await ctl(p,'trpg-settle').click();await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'interview');await c.close();
+ await p.goto(base+'trpg-preview.html?scenario=ordinary-cup&seed=9');await startTrpgStory(p);await lines(p);await declare(p);await fit(p,'missing-decoration');await rollTrpgCheck(p);await ctl(p,'trpg-settle').click();await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'interview');await c.close();
 }finally{await browser.close();fs.writeFileSync(path.join(out,'measurements.json'),JSON.stringify(results,null,2)+'\n');}
 console.log('PASS tabletop viewport, live input, state invariance and missing image checks');
 

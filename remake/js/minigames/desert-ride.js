@@ -54,16 +54,30 @@ const HORIZON = 262;             // 地平線の高さ（路面＝斜面の消�
 const SLOPE = Object.freeze({ edgePx: 0, runout: 260 });
 const CAM = { depth: 1.5, height: 2.0, back: 4.5, meterPerLane: 1.6 }; // 疑似3Dのカメラ（人物の4.5m後ろ・高さ2m。lane 1 = 1.6m）
 /**
- * 下り坂の見え方（縦画面。2026-11-27 オーナー「サンドボードは縦画面のやつでもレース中にも坂をくだってる立体感がわかりやすくしたい」）。
- * 見た目だけの値で、判定・規則・採点・手応えの数値は変えない。横（既定）は使わない（startDesertRide の downhill で切り替える）。
- * 横の作りでは路面の消失線＝遠くの砂丘の足元（HORIZON）なので、路面が平らな台地のまま砂丘へ届いて見えた。
+ * 人物の足元を、平らな作り（路面の消失線 HORIZON・カメラの高さ CAM.height）と同じ画面の高さ（502px）に置く路面の消失線（px）。
+ * 人物は CAM.back m 先に立つので、足元は「消失線 ＋ カメラの高さ × (CAM.depth / CAM.back) × (H / 2)」。カメラを上げたぶん消失線を上げる。
+ */
+const groundKeepingRider = height => Math.round(HORIZON + (CAM.height - height) * (CAM.depth / CAM.back) * (H / 2));
+/**
+ * 下り坂の見え方（2026-11-27 オーナー「サンドボードは縦画面のやつでもレース中にも坂をくだってる立体感がわかりやすくしたい」で縦に入れ、
+ * 同日「横にも当てる」と決まって横にも当てた）。見た目だけの値で、判定・規則・採点・手応えの数値は変えない。
+ * 既定で当てる（startDesertRide の downhill: false で、前の平らな見え方に戻せる）。
+ * 平らな作りでは路面の消失線＝遠くの砂丘の足元（HORIZON）なので、路面が平らな台地のまま砂丘へ届いて見えた。
  * 下り坂では、目の高さ（eye: 空と遠くの稜線の境）より下に路面の消失線（ground）を置く。路面は目の高さより下へ続き、
  * その間に坂の下の谷（生成した谷の絵 DESERT_VALLEY_ART）が見える＝見下ろしながら坂を下っている見え方。
- * height は斜面から測ったカメラの高さ（m。横の 2m より高いほど見下ろす）。valleyWidth は谷の絵（DESERT_VALLEY_ART）を描く幅（px。縦横同じ倍率）。
+ * height は斜面から測ったカメラの高さ（m。平らな作りの 2m より高いほど見下ろす）。valleyWidth は谷の絵（DESERT_VALLEY_ART）を描く幅（px。縦横同じ倍率）。
+ * portrait（縦）: 横長の絵の真ん中だけを大きく見せるので、人物は画面の少し下寄り（足元 612px）。
+ * landscape（横）: 人物の画面上の高さは平らな作りと同じ（groundKeepingRider。足元 502px。縦と同じ置き方だと 612px で、左右・ジャンプのボタンに近づいた）。
+ *   カメラは 2.4m（縦より少し低く。消失線 214px）、目の高さ 108px で、目の高さと路面の消失線の間（谷が見える幅）は縦とほぼ同じ 106px。
+ *   空は狭く、路面は広く見える（見下ろしている）。谷の絵は画面の幅いっぱい（並べた継ぎ目を見せない）。
  * valleyHaze は谷にかける空気の濃さ [目の高さ, 斜面の端]（遠いほど白く霞み、低く遠い所にあると分かる）。
  * posts はコースの両端の杭とロープ（路面の区間の点＝SEG m ごと、reach m 先まで。杭の高さ height m）。坂の下へ細く集まる2本の線で、コースの向きと奥行きを見せる。
  */
-const DOWNHILL = Object.freeze({ eye: 190, ground: 300, height: 2.6, valleyWidth: 520, valleyHaze: Object.freeze([0.5, 0.12]), posts: Object.freeze({ reach: 170, height: 0.85 }) });
+const DOWNHILL = Object.freeze({
+  portrait: Object.freeze({ eye: 190, ground: 300, height: 2.6, valleyWidth: 520 }),
+  landscape: Object.freeze({ eye: 108, ground: groundKeepingRider(2.4), height: 2.4, valleyWidth: W * 1.1 }),
+  valleyHaze: Object.freeze([0.5, 0.12]), posts: Object.freeze({ reach: 170, height: 0.85 }),
+});
 const COUNTDOWN = 2.4;           // 本番のスタートの合図（3・2・1・GO）の秒数（その相手との最初の一本）
 /**
  * 手応え（演出）の数値（2026-11-13 オーナー「手応えレビューの内容を実装して、より面白く」）。規則（desert-ride-model.js）と違い凍結しない:
@@ -189,7 +203,8 @@ function curveSignsFor(course) {
 // 模様は周期的に作ってあるので継ぎ目が出ない。遠いほど縮小した模様（ミップ）を使い、ちらつきを抑える。
 const SAND = { tile: 512, meters: 8 }; // 512px の模様が 8m 四方
 const SAND_IS_LE = new Uint8Array(new Uint32Array([1]).buffer)[0] === 1;
-const SAND_BUF_W = 640, SAND_ROW_H = 4, SAND_BUF_H = Math.ceil((H + GROUND_BLEED - HORIZON) / SAND_ROW_H) + 2;
+// 砂の行の面の高さは、いちばん高い路面の消失線（横の下り坂）から画面の外の余白まで
+const SAND_BUF_W = 640, SAND_ROW_H = 4, SAND_BUF_H = Math.ceil((H + GROUND_BLEED - Math.min(HORIZON, DOWNHILL.portrait.ground, DOWNHILL.landscape.ground)) / SAND_ROW_H) + 2;
 let sandLevels = null;
 function sandTexture() {
   if (sandLevels !== null) return sandLevels;
@@ -371,11 +386,13 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
   // layout: "portrait" は縦画面の試作（remake/previews/portrait-stage/frame/desert.html）だけが渡す。画面の並べ方は data-layout を見るCSSが決め、
   // 規則・採点・描く中身は横と同じ。縦では横向きの案内（回転ガード）を見張らない。既定（横）の動きは変えない。
   const portrait = layout === "portrait";
-  // 下り坂の見え方（DOWNHILL）は縦だけ。downhill: true/false で明示すると横でも切り替えられる（横に当てた時の見え方の確認用）
-  const sloped = downhill ?? portrait;
-  const EYE_Y = sloped ? DOWNHILL.eye : HORIZON;       // 目の高さの地平線（空と遠くの稜線の境。遠景の絵を合わせる）
-  const GROUND_Y = sloped ? DOWNHILL.ground : HORIZON; // 路面の消失線（坂の下の端）。EYE_Y より下にあるほど急な下りに見える
-  const CAM_H = sloped ? DOWNHILL.height : CAM.height; // 斜面から測ったカメラの高さ（m）
+  // 下り坂の見え方（DOWNHILL）は縦・横とも既定で当てる（値は縦横で別。横は人物の画面上の高さを平らな作りと同じに保つ）。
+  // downhill: false で前の平らな見え方（見比べ用）
+  const sloped = downhill ?? true;
+  const tilt = DOWNHILL[portrait ? "portrait" : "landscape"];
+  const EYE_Y = sloped ? tilt.eye : HORIZON;       // 目の高さの地平線（空と遠くの稜線の境。遠景の絵を合わせる）
+  const GROUND_Y = sloped ? tilt.ground : HORIZON; // 路面の消失線（坂の下の端）。EYE_Y より下にあるほど急な下りに見える
+  const CAM_H = sloped ? tilt.height : CAM.height; // 斜面から測ったカメラの高さ（m）
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   if (signal?.aborted) return Promise.resolve({ results: [], practiced: false });
@@ -486,7 +503,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       watch.observe(root); watch.observe(canvas);
     }
     let fxShots = [];                       // 一度きりの絵の演出（踏み切りの砂の柱・着地の砂）。人物の足元の点に置く
-    const riderPx = { unit: 120, lift: 0 }; // 人物の 1m の画素と、地面から持ち上げて描いている量（drawPlayerBody が毎コマ更新）
+    const riderPx = { unit: 120, lift: 0, ground: 0 }; // 人物の 1m の画素と、地面から持ち上げて描いている量、足元の地面の画面の高さ（drawPlayerBody が毎コマ更新）
     let fxDt = 1 / 60;                      // 砂を出す量の計算に使う、直前のコマの長さ // 速さで広がる視界。back を depth に比例させ、人物の大きさは変えない
     const streaks = Array.from({ length: 80 }, (_, i) => ({ angle: (i / 80) * Math.PI * 2 + Math.random() * 0.1, phase: Math.random(), len: 0.6 + Math.random() * 0.8, w: 1 + Math.random() * 2 }));
     let tut = null, preloadRunId = -1;
@@ -734,11 +751,13 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     const bestSlot = el("div.dr-best-slot");
     const bestLabel = key => key === "naru" ? "なる戦" : TIER_LABEL[key];
     const formatBest = top => `${top.score.toLocaleString("ja-JP")}点 ／ ${top.rank}`;
-    const easyExclusions = "評価報酬の対象外";
-    /** 段の札の下の一言: 閉じていれば開く条件、クリア済み、呼び出し側の案内（本編は上級に白火）、この場で開いた、ほかは段の手触り。 */
+    /**
+     * 段の札の下の一言: 閉じていれば開く条件、クリア済み、呼び出し側の案内（本編は上級に白火）、この場で開いた、ほかは段の手触り。
+     * 初級も同じ（2026-11-27 オーナー「報酬対象外とかシステム的な説明は載せないようにしたり、読むので疲れさせないで」で、
+     * 初級の札の「報酬対象外」の小さな札と、読み上げ用の「評価報酬の対象外」を外した。初級が評価のご褒美に数えない決まりは同じ）。
+     */
     function tierSub(t) {
       if (!openTiers.includes(t)) return `${TIER_LABEL[TIERS[TIERS.indexOf(t) - 1]]}クリアで開く`;
-      if (t === "easy") return clearedTiers.has(t) ? `クリア済み · ${easyExclusions}` : easyExclusions;
       if (clearedTiers.has(t)) return "クリア済み";
       if (tierNotes && typeof tierNotes[t] === "string" && tierNotes[t]) return tierNotes[t];
       return freshTiers.has(t) ? "開いた！" : TIER_WORD[t];
@@ -756,10 +775,9 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       parts.push(rest);
       return parts.map(part => el("span", { text: part }));
     }
-    /** 札の下の一言の種類。word（段の手触り）・cleared・fresh は印（星・CLEAR・NEW）で見せるので字は出さず、locked・note・easy は字で見せる。 */
+    /** 札の下の一言の種類。word（段の手触り）・cleared・fresh は印（星・CLEAR・NEW）で見せるので字は出さず、locked・note は字で見せる。 */
     function tierSubKind(t) {
       if (!openTiers.includes(t)) return "locked";
-      if (t === "easy") return "easy";
       if (clearedTiers.has(t)) return "cleared";
       if (tierNotes && typeof tierNotes[t] === "string" && tierNotes[t]) return "note";
       return freshTiers.has(t) ? "fresh" : "word";
@@ -783,8 +801,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         return el(`button.btn.dr-tier${chosen ? ".primary" : ""}`, { type: "button", role: "radio", "aria-checked": String(chosen), disabled: !open,
           dataset: { test: "desert-tier", tier: t, state: !open ? "locked" : chosen ? "chosen" : "open", ...(freshTiers.has(t) ? { fresh: "true" } : {}), ...(clearedTiers.has(t) ? { cleared: "true" } : {}) },
           onclick: () => chooseTier(t) }, [el("b", { text: TIER_LABEL[t] }), el("i.dr-tier-stars", { "aria-hidden": "true" }),
-            el("small", { dataset: { kind: tierSubKind(t) } }, phraseSpans(tierSub(t))),
-            t === "easy" && open ? el("em.dr-tier-flag", { "aria-hidden": "true", text: "報酬対象外" }) : null]);
+            el("small", { dataset: { kind: tierSubKind(t) } }, phraseSpans(tierSub(t)))]);
       }), ...(naruSlot ? [naruCard()] : []));
       tierRow.dataset.slots = String(TIERS.length + (naruSlot ? 1 : 0));
       // 自己ベスト: 評価のメダルと点だけを見せる（「◯級の自己ベスト」「点 ／」は読み上げ用に残す）
@@ -1679,7 +1696,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
           // 段（#3779）: 記録の板の上に、どの段の滑りかの札（なるとの勝負は段の外なので出さない）
           result.tier ? el("p.dr-result-tags", [
             el("b.dr-result-tier", { text: TIER_LABEL[result.tier], dataset: { test: "desert-result-tier", tier: result.tier } }),
-            result.tier === "easy" ? el("small", { text: easyExclusions }) : null,
+            // 初級の「評価報酬の対象外」の注記は、結果の札からも外した（2026-11-27 オーナー「全て推奨で適応」・DSR111。決まりは同じ）
           ]) : null,
           el("div.dr-rows", [
             statRow("滑走時間", `${result.time.toFixed(1)} 秒`, "desert-time"),
@@ -2019,10 +2036,10 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       return c;
     }
     /**
-     * 遠景の絵の置き方。横: 絵の縁（lip）の行を HORIZON に合わせる（空・稜線は同じ倍率、縁より下は画面の下端まで伸ばす）。
+     * 遠景の絵の置き方。平らな作り（downhill: false）: 絵の縁（lip）の行を HORIZON に合わせる（空・稜線は同じ倍率、縁より下は画面の下端まで伸ばす）。
      * 下り坂（DOWNHILL）: 空は画面の上から目の高さ EYE_Y の少し下まで。その上に谷の絵（DESERT_VALLEY_ART）を、遠くの稜線の足元が EYE_Y に乗るように縦横同じ倍率で置き、
      * 路面の消失線 GROUND_Y から下は手前の斜面の砂（陸の絵の縁より下）。谷の絵の下の方は斜面の向こう側に隠れる（坂の上から見えない所）。
-     * 谷の絵がまだ無い時は、陸の絵の稜線を GROUND_Y に乗せる（横と同じ倍率）。
+     * 谷の絵がまだ無い時は、陸の絵の稜線を GROUND_Y に乗せる（平らな作りと同じ倍率）。
      */
     function backdropFit(valleyArt) {
       const B = DESERT_ART.backdrop, above = B.horizon - DESERT_ART.land.top, below = B.height - B.horizon;
@@ -2038,8 +2055,8 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       }
       const V = DESERT_VALLEY_ART.valley, [vw, vh] = V.size;
       // 谷の絵の下端が斜面の消失線より上で切れないよう、必要なら大きくする
-      // 横に当てた時（downhill: true）は見える幅が広いので、絵を画面の幅いっぱいに（並べた継ぎ目を見せない）
-      const kv = Math.max((portrait ? DOWNHILL.valleyWidth : W * 1.1) / vw, (GROUND_Y - EYE_Y + 6) / (vh - V.horizon));
+      // 横は見える幅が広いので、絵を画面の幅いっぱいに（並べた継ぎ目を見せない。tilt.valleyWidth）
+      const kv = Math.max(tilt.valleyWidth / vw, (GROUND_Y - EYE_Y + 6) / (vh - V.horizon));
       return { skySrc, skyW, skyY: -40, skyH: skySrc * skyK, landW: Math.round(vw * kv), landY: EYE_Y - V.horizon * kv, landH: vh * kv, above, below, valley: true };
     }
     function drawBackdrop(dusk, progress, present = true) {
@@ -3083,7 +3100,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       drawCarveGlints(cx, groundY, unit);
       if (curveCueOn) drawCurveCue(cx, groundY - unit * 1.1, unit, Math.sign(curveAt(game.course, game.z)));
       const baseY = groundY - riderLift(height, unit, groundY) + bob;
-      riderPx.unit = unit; riderPx.lift = groundY - baseY; // 空中の砂・きらめきの出どころ（地面からの高さ・画素）
+      riderPx.unit = unit; riderPx.lift = groundY - baseY; riderPx.ground = groundY; // 空中の砂・きらめきの出どころ（地面からの高さ・画素）
       // カーブへ切り込んでいる間（カービング）は、横へ動いていなくても体が内側へ倒れる
       const carveDir = game.carving ? Math.sign(curveAt(game.course, game.z)) : 0;
       // 左右を押した最初のコマから体を傾ける（横の速さが付くのを待つと約5コマ遅れる）。押している間、姿勢の絵は押した向き
@@ -3823,7 +3840,8 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       endHitStop() { hitStopT = 0; },
       get fx() { return { hitStop: hitStopT, slow: slowT, shake: { ...shake }, flash: { ...flash }, flashDark: flashDarkT, goal: goal ? goal.t : null, countdownTotal, pose, lastLand, rings: rings.map(r => r.grade || "burst"),
         confetti: particles.filter(p => p.confetti).length, aura: game ? auraStrength(game.boostT, view.boost || 0) : 0, rise: view.rise, grains: particles.filter(p => p.grain).length, shots: fxShots.map(shot => shot.name), puffs: particles.filter(p => !p.streak && !p.grain && !p.spark && !p.chip && !p.confetti).length,
-        orbs: orbs.length, curveCue: curveCueOn, carveHeat: carveFx.heat, carveChain: carveFx.chain, carveShow: carveFx.show, carveGlints: carveFx.glints.length, carveRuns: carveFx.runs.length, sparks: particles.filter(p => p.spark).length, rivalDust: rivalFx.dust.length, rivalRings: rivalFx.rings.length, rivalSurge: rivalSurge(), smashFlash: smashFlash.size, squash: game ? squashOf(game, lastLand) : [1, 1], shownHeight: game ? shownHeight(game) : 0 }; },
+        orbs: orbs.length, curveCue: curveCueOn, carveHeat: carveFx.heat, carveChain: carveFx.chain, carveShow: carveFx.show, carveGlints: carveFx.glints.length, carveRuns: carveFx.runs.length, sparks: particles.filter(p => p.spark).length, rivalDust: rivalFx.dust.length, rivalRings: rivalFx.rings.length, rivalSurge: rivalSurge(), smashFlash: smashFlash.size, squash: game ? squashOf(game, lastLand) : [1, 1], shownHeight: game ? shownHeight(game) : 0,
+        downhill: sloped, riderGround: riderPx.ground }; },
     };
     // メニューの空き時間に一仕事ずつ進める。待たずに開始した場合は準備ゲートで残りを作る。
     function scheduleMenuWarm(task) {

@@ -617,3 +617,16 @@ Draw on a fully transparent background one object only: the work sink of this sh
 Do not draw: water, a hookah, a glass base, bottles, glasses, dishes, sponges, towels, people, hands, a wall, tiles, a window, text, letters, logos, watermark.
 ```
 
+## 15回目: 縦長のキッチンタイマー（VPL127・生成なし）
+
+オーナー「どの案も微妙　さらに考え直して」（蒸らしのタイマーの場面の空き）。空きに物を足すのでなく、タイマーそのものを縦画面の形にした。
+新しく生成はしていない。本編の `remake/img/ui/making/kitchen_timer.webp`（1280×853）を部品に分け、等倍のまま組み直した。線の太さと角の丸みは元の絵と同じ。
+
+- 本体: 上の縁（0〜150行）と、下の縁と影（695〜853行）は元のまま。間は、むらの無い516行目の1行をくり返して伸ばした（横幅は元のまま）。
+- 液晶（145〜1125・150〜492）: 角の64pxを保って、縦だけ 600px に伸ばした。
+- ボタン: 灰（140〜345・525〜690）と緑（578〜908・525〜690）を、角を保って伸ばした（左右52・上44・下56px は元のまま）。2段に並べた。上の段は分・秒（灰）、下の段はリセット（灰・幅36%）とスタート＆ストップ（緑）。
+- 出来上がりは 1280×1672（`remake/previews/portrait-stage/img/ui-kitchen-timer-tall.webp`）。液晶の数字と、ボタンの字は試作が上に重ねる（絵に焼き込まない）。
+
+| 元の絵 | 試作で使う絵（img/） | 使う所 |
+|---|---|---|
+| `remake/img/ui/making/kitchen_timer.webp`（本編・1280×853） | `ui-kitchen-timer-tall.webp`（1280×1672・組み直し） | 蒸らしのタイマーの場面の案D |

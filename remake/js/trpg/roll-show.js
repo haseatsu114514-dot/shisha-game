@@ -10,7 +10,8 @@
 //   5. 評価の大文字が叩きつけられる。成功＝金・紙吹雪・集中線、クリティカル＝四方から文字が飛んでくる・金の噴水・大揺れ、
 //      ひと手間＝緑、思わぬ出来事＝落ちてくる重い文字・画面が沈む、ファンブル＝ダイスが割れ・青く暗く・文字が崩れる。
 // スキル（仲間の助力・振り直し）を使った判定は、投げる前に「SKILL!」のカットインで誰の何が発動したかを見せる。
-// 振り直せる時は、評価のあとに「○○の「△△」で振り直せる！」と知らせる。
+// スキルを使うか・振り直すかは、劇場の中の選ぶ札（showRollChoice）で選ぶ。呼び出し側が rerollHint を渡した時だけ、
+// 評価のあとに「○○の「△△」で振り直せる！」と知らせる。
 // タップ・Enter・Space・Escape で結果まで飛ばせる。動きを減らす設定と、本番のDOM以外（単体テストの簡易DOM）では null を返し、
 // 呼び出し側がこれまでどおり卓の窓の中で見せる。揺れを減らす設定（body.reduce-shake）では揺れ・閃光・寄りを省く。
 import { el } from "../core/util.js";
@@ -102,7 +103,7 @@ export function playRollShow(host, show) {
     el("span.trpg-rs-crack", { html: CRACK }),
   ]));
   const plus = [el("span.trpg-rs-plus.a", { text: "+" }), el("span.trpg-rs-plus.b", { text: "+" })];
-  // 補正がいくつか重なる時（能力＋助力など）は、何が足されて＋N になったかを丸の中に書く（縦の試作が bonusParts を渡す時だけ。VPG30）
+  // 補正がいくつか重なる時（能力＋助力など）は、何が足されて＋N になったかを丸の中に書く（劇場の中でスキルを選ぶ時に bonusParts を渡す。VPG30）
   const parts = Array.isArray(show.bonusParts) && show.bonusParts.length > 1 ? show.bonusParts : null;
   const chip = el("div.trpg-rs-chip", { dataset: { parts: parts ? String(parts.length) : "" } },
     [el("small", { text: parts ? parts.join("\n") : show.bonusLabel || "補正" }), el("b", { text: "＋" + bonus })]); // 内訳は1つずつ改行（丸の中で語の途中で折れない）
@@ -312,7 +313,7 @@ export function playRollShow(host, show) {
   animate(head, [{ opacity: 0, transform: "translateX(-120px) skewX(-20deg)" }, { opacity: 1, transform: "none" }], { duration: 360, delay: 80, easing: EASE.out });
   animate(goalNode, [{ opacity: 0, scale: "2.4", rotate: "20deg" }, { opacity: 1, scale: "1", rotate: "0deg" }], { duration: 380, delay: 200, easing: EASE.back });
   animate(hint, [{ opacity: 0 }, { opacity: .75 }], { duration: 300, delay: 600 });
-  // カットインの間は印を立てる（縦の試作は、この間サイコロの間の「＋」を隠す。VPG33）
+  // カットインの間は印を立てる（この間はサイコロの間の「＋」を隠す。VPG33）
   if (skillNode) { node.dataset.cutin = "true"; playSkill(); }
   after(lead, main);
 
@@ -657,7 +658,7 @@ export function playRollShow(host, show) {
 }
 
 /**
- * 劇場の中でスキルを使うか選ぶ（縦の試作・VPG29。2026-11-27 オーナー「スキルはダイス劇場内で発動選ぶ」）。
+ * 劇場の中でスキルを使うか選ぶ（VPG29。2026-11-27 オーナー「スキルはダイス劇場内で発動選ぶ」。縦の試作から横の本編にも当てた）。
  * 劇場と同じ幕・見出し・目標の盾の上に、選ぶ札を置いて、押されるまで待つ。投げる前（助力を使うか）と、
  * 出目が出た後（振り直すか）の両方に使う。判定・確率・回数は呼び出し側が決めた値をそのまま書き、ここでは何も決めない。
  * @param host 判定の窓を載せている幕（.trpg-overlay）
@@ -704,7 +705,8 @@ export function showRollChoice(host, opts) {
     el("em.trpg-rs-pick-odds", { text: choice.odds || "" }),
   ]));
   const keep = el("button.trpg-rs-keep", { type: "button", dataset: { test: opts.keep?.test || "trpg-show-keep" }, onclick: finish(() => opts.onKeep()) }, [opts.keep?.text || "このまま"]);
-  const panel = el("div.trpg-rs-choose", { role: "group", "aria-label": opts.prompt || "スキル" }, [el("p.trpg-rs-choose-prompt", { text: opts.prompt || "" }), ...cards, keep]);
+  // data-picks: 札の数（横の舞台は、札と「このまま」を1列に並べる。trpg-roll-show.css）
+  const panel = el("div.trpg-rs-choose", { role: "group", "aria-label": opts.prompt || "スキル", dataset: { picks: String(cards.length) } }, [el("p.trpg-rs-choose-prompt", { text: opts.prompt || "" }), ...cards, keep]);
   const camera = el("div.trpg-rs-camera", [head, goalNode, ...dieNodes.map(d => d.die), plus, verdict, panel].filter(Boolean));
   const node = el("div.trpg-roll-show.trpg-rs-choosing", { dataset: { phase: "choose", tone, rolled: String(!!dice) } },
     [el("i.trpg-rs-veil"), el("i.trpg-rs-lines"), el("div.trpg-rs-fit", [camera]), el("i.trpg-rs-vignette")]);
