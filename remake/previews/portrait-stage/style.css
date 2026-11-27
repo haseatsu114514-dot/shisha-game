@@ -523,6 +523,56 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .hole-pips { position: absolute; left: 50%; top: calc(10.2rem + var(--aux-g, 0rem) - 3.2rem); width: 21.4rem; height: 21.4rem; margin-left: -10.7rem; pointer-events: none; overflow: visible; }
 .hole-pips .pip { fill: #ffffff26; stroke: #ffffff4d; stroke-width: 0.5; } .hole-pips .pip.done { fill: #fff; } .hole-pips .pip.good { fill: #ffe2a6; filter: drop-shadow(0 0 1.5px #ffcf6b); }
 
+/* 丸ボタンは文字ではなく絵（VPL31）。線画は文字と同じ色・影。大きさはボタンの文字の大きさ（.t の font-size）に比例 */
+.btn-a .glyph { display: block; width: 1.75em; height: 1.75em; fill: none; stroke: currentColor; stroke-width: 2.7; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0.2rem 0.5rem #0b0812) drop-shadow(0 0 0.15rem #0b0812); overflow: visible; }
+.btn-a .glyph .f { fill: currentColor; stroke: none; }
+.btn-a .t { margin-right: 0; }
+.btn-a.hold.center .t { font-size: 4rem; }
+.btn-a[disabled] .t { font-size: 3rem; opacity: 0.55; }
+/* 刺す: 押し具合（--level）で針が下がってアルミを突く。満ちた所で金の火花、深すぎると針がさらに沈んで赤 */
+.g-poke .gl-needle { transform: translateY(calc(var(--level, 0) * 5.5px)); transition: transform 0.2s var(--ease-out); }
+.btn-a.hold.pressing .g-poke .gl-needle { transition: none; }
+.btn-a.hold[data-zone="over"] .g-poke .gl-needle { transform: translateY(8.5px); }
+.g-poke .gl-foil { stroke: #ece6f5; stroke-width: 2.2; }
+.g-poke .gl-dent { stroke-width: 2.2; opacity: clamp(0, calc((var(--level, 0) - 0.55) * 4), 1); }
+.g-poke .gl-spark { stroke: #ffcf6b; stroke-width: 2; opacity: 0; transition: opacity 0.12s; }
+.btn-a.hold[data-zone="good"] .g-poke .gl-spark, .btn-a.hold.res-good .g-poke .gl-spark { opacity: 1; }
+.btn-a.hold[data-zone="good"] .g-poke .gl-foil { stroke: #6b4a14; }
+.btn-a.hold[data-zone="over"] .t { color: #ffd2cc; }
+/* 吸う: 吸うたびに煙がのぼる */
+.g-puff .gl-mouth { stroke-width: 4.2; }
+.g-puff .gl-smoke { stroke-width: 2.2; opacity: 0.8; }
+.phone.puffing .g-puff .gl-smoke { animation: glyph-smoke 1.2s var(--ease-out); }
+@keyframes glyph-smoke { 0% { opacity: 0.2; transform: translateY(3px); } 40% { opacity: 1; } 100% { opacity: 0.8; transform: none; } }
+
+/* 工程の並びは絵記号だけ。今の工程は少し大きい光る丸 */
+.steps span.now { width: 4.6rem; height: 3.6rem; padding: 0; display: grid; font-size: 2.1rem; }
+
+/* 制作ランク（VPL30）: 案A パッドの裏に透かし／案B 舞台の左上の札／案C 工程の段の右端。絵は本編の D〜SSS */
+.rank { position: absolute; pointer-events: none; }
+.rank-box { position: relative; display: block; }
+.rank-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.rank-meter { position: relative; display: block; height: 0.5rem; margin: 0.2rem auto 0; border-radius: 1rem; background: #0b081299; box-shadow: inset 0 0 0 0.1rem #ffffff26; overflow: hidden; }
+.rank-meter i { display: block; height: 100%; width: calc(var(--p, 0) * 100%); border-radius: inherit; background: linear-gradient(90deg, #ffcf6b, #fff3d6); box-shadow: 0 0 0.8rem #ffcf6b; transition: width 0.35s var(--ease-out); }
+.rank.waiting .rank-box { opacity: 0; }
+.rank.landed .rank-box { animation: rank-land 0.6s var(--ease-out); }
+@keyframes rank-land { 0% { filter: brightness(2) drop-shadow(0 0 1.4rem #ffcf6b); transform: scale(1.14); } 100% { filter: none; transform: none; } }
+.rank-burst { position: absolute; z-index: 30; left: 50%; top: 34%; width: 27rem; height: 24rem; object-fit: contain; transform: translate(-50%, -50%); pointer-events: none; filter: drop-shadow(0 0 2.4rem #000c); }
+
+.rank-b { z-index: 5; left: 1rem; top: 6.4rem; }
+.rank-b .rank-box { width: 11rem; height: 9.2rem; filter: drop-shadow(0 0.4rem 0.8rem #000b); }
+.rank-b .rank-meter { width: 7.6rem; }
+
+.rank-c { z-index: 5; right: 0.9rem; top: max(0.7rem, calc(env(safe-area-inset-top, 0px) - 0.6rem)); }
+.rank-c .rank-box { width: 7.6rem; height: 5.8rem; filter: drop-shadow(0 0.3rem 0.6rem #000b); }
+.rank-c .rank-meter { width: 5.6rem; height: 0.4rem; margin-top: 0; }
+.phone[data-rank="c"] .steps { left: 1rem; transform: none; }
+
+.rank-a { z-index: 0; left: 0; right: 0; bottom: 0; height: calc(var(--ctrl-h) + var(--aux-h, 0rem)); display: grid; place-items: center; }
+.rank-a .rank-box { width: 32rem; height: 25rem; margin-top: 4.4rem; -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent); mask-image: radial-gradient(closest-side, #000 62%, transparent); }
+.rank-a .rank-art { opacity: 0.16; filter: saturate(0.7); }
+.rank-a .rank-fill { opacity: 0.55; filter: none; clip-path: inset(calc((1 - var(--p, 0)) * 100%) 0 0 0); transition: clip-path 0.45s var(--ease-out); }
+
 /* ───────── 背の低い画面 ───────── */
 @container phone (max-height: 80rem) {
   .body, .pic, .smoke, .sheet, .thermo, .cv-c { --ctrl-h: 26.2rem; } .ctrl { --ctrl-h: 26.2rem; --ring: 18.2rem; --a: 13.2rem; --pad-base: 6.3rem; } .chip { width: 3.9rem; height: 3.9rem; font-size: 1.9rem; } .chips { padding-top: 1rem; }
@@ -550,6 +600,17 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
   .chips.labeled .chip { height: 4.3rem; font-size: 1.7rem; } .chips.labeled .chip span { font-size: 1rem; } .phone[data-aux="1"] .serve, .phone[data-aux="3"] .serve { height: 4.3rem; } .sh { height: 4.2rem; font-size: 2rem; } .sh span { font-size: 1.3rem; } .phone[data-aux="2"] .serve { height: 4.2rem; }
   .tabbar { height: 4.7rem; } .tab { font-size: 1.9rem; } .phone[data-aux="3"] .btn-a.center { scale: 0.84; }
   .phone[data-scene="pack"] .thermo { bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 15.6rem); } .thermo { top: 6.4rem; width: 4.4rem; } .th-bar { width: 2.4rem; } .th-icon { width: 3rem; height: 3rem; font-size: 1.9rem; }
+}
+
+@container phone (max-height: 80rem) {
+  .rank-b { top: 6rem; } .rank-b .rank-box { width: 9.8rem; height: 8.2rem; } .rank-b .rank-meter { width: 6.8rem; }
+  .rank-a .rank-box { width: 28rem; height: 21.5rem; margin-top: 3.6rem; }
+}
+@container phone (max-height: 71rem) {
+  .rank-b { top: 5.6rem; } .rank-b .rank-box { width: 8.6rem; height: 7.2rem; } .rank-b .rank-meter { width: 6rem; height: 0.4rem; }
+  .rank-c .rank-box { width: 6.6rem; height: 5rem; } .rank-c .rank-meter { width: 4.8rem; }
+  .rank-a .rank-box { width: 24rem; height: 18.5rem; margin-top: 3rem; }
+  .btn-a.hold.center .t { font-size: 3.4rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -38,6 +38,8 @@ const IMG = {
   ciBgMinto: `${REMAKE_IMG}ui/character_intros/graphic/bg_minto.webp`,
   ciSumi: `${REMAKE_IMG}ui/character_intros/graphic/sumi.webp`,
   ciBgSumi: `${REMAKE_IMG}ui/character_intros/graphic/bg_sumi.webp`,
+  // 制作ランクの絵（本編の D〜SSS・CSL10）
+  ...Object.fromEntries(["D", "C", "B", "A", "S", "SS", "SSS"].map((g) => [`rank${g}`, `${REMAKE_IMG}ui/craft-rank/rank-${g}.webp`])),
   ...(globalThis.PORTRAIT_STAGE_ASSETS || {}),
 };
 
@@ -102,6 +104,14 @@ const COACH = {
   pack: "詰め方を見比べて決めよう。迷ったらノーマル",
   holes: "目印に重なったら押せ。色が満ちたら離せ",
   pull: "手元を見ているぞ。落ち着いていけ",
+};
+// 制作ランク（VPL30）。本編のリニューアルと同じく、D から始まり、工程を1つ終えるたびに1段上がる（CRN01・CRN12）。
+// この試作では穴あけと吸い出し（提供）を終えた時に上がる。上がった瞬間は舞台の真ん中に大きく出して（下の英語まで読める）、置き場所へ縮めて収める
+const GRADES = ["D", "C", "B", "A", "S", "SS", "SSS"];
+const RANK_PLACES = {
+  a: { name: "パッドの裏に透かし", lead: "操作パネルの裏に大きく薄く敷く。工程が進むと、文字が下から明るく満ちていく。上がった瞬間だけ舞台に大きく出て、裏へ沈む" },
+  b: { name: "舞台の左上の札", lead: "絵の左上に札で置く（熱ゲージの反対側）。下の細い線が次のランクまでの進み。上がった瞬間は舞台の真ん中に大きく出て、札へ縮む（本編と同じ動き）" },
+  c: { name: "工程の段の右端", lead: "上の工程の並びの右端に小さく置く（本編の上の帯と同じ場所）。下の細い線が次のランクまでの進み。上がった瞬間は舞台の真ん中に大きく出て、右上へ縮む" },
 };
 const HOLE_COUNT = 10;
 // 穴あけ: 一瞬押して、その押し具合で深さが決まる（VPL27）。「刺す」を押すと約0.2秒で色が下から上へ満ち、満ちた瞬間に離すのがちょうどいい。
@@ -233,7 +243,19 @@ function dpadHtml(live, marks = {}) {
   const key = (dir, label) => `<button class="dp dp-${dir}${live.includes(dir) ? " live" : ""}" data-act="dir" data-dir="${dir}" aria-label="${marks[dir]?.[1] || label}">${tri()}${marks[dir] ? icon(marks[dir][0]) : ""}</button>`;
   return `<div class="dpad${live ? "" : " idle"}" role="group" aria-label="十字キー">${key("up", "上")}${key("left", "左")}${key("right", "右")}${key("down", "下")}<i class="dp-core"></i></div>`;
 }
-const aHtml = (label, { disabled = false, cls = "", extra = "" } = {}) => `<button class="btn-a ${cls}" data-act="a" ${disabled ? "disabled" : ""}><span class="t">${label}</span>${extra}</button>`;
+// 丸ボタンは文字ではなく絵で示す（VPL31）。読み上げ用の名前は aria-label に残す。32×32・線画
+const GLYPHS = {
+  go: ["行く", '<path d="M8 28V14.5a8 8 0 0 1 16 0V28"/><path d="M4.5 28h23"/><path d="M11.5 20.5h9.5M17.5 17l3.5 3.5-3.5 3.5"/>'],
+  next: ["次へ", '<path d="M8.5 11.5l7.5 8 7.5-8"/>'],
+  ok: ["決定", '<circle cx="16" cy="16" r="9.5"/>'],
+  rest: ["休み", '<path d="M20.5 5.5a11 11 0 1 0 6 15.5 9 9 0 0 1-6-15.5z"/>'],
+  // 刺す: 押すと針が下がってアルミを突く（--level が押し具合）。ちょうどいい所で金の火花、深すぎると赤
+  poke: ["刺す", '<g class="gl-needle"><rect x="12.6" y="1.5" width="6.8" height="8.5" rx="2.4" class="f"/><path d="M16 10v9.5"/></g><path d="M3.5 23.5h10M18.5 23.5h10" class="gl-foil"/><path d="M13.5 23.5q2.5 2.6 5 0" class="gl-dent"/><path d="M9.5 18.5l2 1.6M22.5 18.5l-2 1.6M16 28.5v1.5" class="gl-spark"/>'],
+  // 吸う: 吸い口と、立ちのぼる煙（吸うたびに煙が動く）
+  puff: ["吸う", '<path d="M4.5 28.5l9-9"/><path d="M13.5 19.5l4.5-4.5" class="gl-mouth"/><path d="M21 13c-2.2-2.2 2.2-3.8 0-6.2M26.5 15.5c-2.2-2.2 2.2-3.8 0-6.2" class="gl-smoke"/>'],
+};
+const glyph = (kind) => `<svg class="glyph g-${kind}" viewBox="0 0 32 32" aria-hidden="true">${GLYPHS[kind][1]}</svg>`;
+const aHtml = (kind, { disabled = false, cls = "", extra = "" } = {}) => `<button class="btn-a ${cls}" data-act="a" aria-label="${GLYPHS[kind][0]}" ${disabled ? "disabled" : ""}><span class="t">${glyph(kind)}</span>${extra}</button>`;
 // 補助ボタン: [id, 絵記号, 読み上げの名前, 短い名前, 数の印, 押されているか]
 const TALK_CHIPS = (st) => [["log", "log", "LOG", "LOG"], ["auto", "auto", "AUTO", "AUTO", "", st.auto], ["skip", "skip", "SKIP", "SKIP", "", st.skip], ["terms", "book", "用語", "用語"], ["config", "gear", "設定", "設定"]];
 const CRAFT_CHIPS = [["menu", "menu", "MENU", "MENU"], ["help", "help", "説明", "説明"]];
@@ -263,14 +285,16 @@ function meterHtml() {
 /* ───────── 1台ぶん ───────── */
 
 class Phone {
-  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto" } = {}) {
+  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "c", grade = 0, gradeP = 0 } = {}) {
     this.el = el;
     el.lang = "ja";
     this.fixed = fixed; // 一覧では場面を固定し、その場面の中の操作だけ動かす
     this.aux = [1, 2, 3].includes(aux) ? aux : 1; // 補助ボタンの配置案
     this.moreOpen = !!more;
     el.dataset.aux = String(this.aux);
-    this.st = { scene, sel: DEFAULT_SPOT, step, page: 0, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0, temp: 0.4,
+    this.rankAt = RANK_PLACES[rank] ? rank : "c"; // ランクの置き場所の案
+    el.dataset.rank = this.rankAt;
+    this.st = { scene, sel: DEFAULT_SPOT, step, page: 0, grade: Math.max(0, Math.min(6, Number(grade) || 0)), gradeP: Number(gradeP) || 0, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0, temp: 0.4,
       ci: ["a", "b", "c"].includes(ci) ? ci : "a", who: CUTINS[who] ? who : "minto", ciPhase: "off" };
     this.cam = null;      // 地図をドラッグした時の位置（選び直すと選んだ店へ戻る）
     this.t0 = performance.now();
@@ -370,7 +394,7 @@ class Phone {
     const { st } = this, spot = SPOTS[st.sel];
     const marks = SPOTS.filter((s) => s.mark).length;
     return `${this.auxHtml("map", [["lime", "chat", "LIME", "LIME", "1"], ["menu", "menu", "MENU", "MENU"], ["next", "bang", "用事のある店へ", "用事", String(marks)], ["wide", st.overview ? "near" : "wide", st.overview ? "寄る" : "全体を見る", st.overview ? "寄る" : "全体", "", st.overview]])}
-      ${dpadHtml(st.list ? "up down" : "up down left right", st.list ? {} : { up: st.overview ? ["near", "寄る"] : ["wide", "全体を見る"], down: ["list", "一覧"] })}${aHtml(st.list ? "決定" : spot.closed ? "休み" : "行く", { disabled: !st.list && spot.closed })}`;
+      ${dpadHtml(st.list ? "up down" : "up down left right", st.list ? {} : { up: st.overview ? ["near", "寄る"] : ["wide", "全体を見る"], down: ["list", "一覧"] })}${aHtml(st.list ? "ok" : spot.closed ? "rest" : "go", { disabled: !st.list && spot.closed })}`;
   }
 
   sheetHtml() {
@@ -498,7 +522,7 @@ class Phone {
       <div class="glass${line.kind === "narr" ? " narr" : ""}${choosing ? " ask" : ""}"><p class="text ${line.kind}"></p>${choosing ? "" : `<i class="next"></i>`}</div>
       ${choosing ? `<div class="choices">${line.choice.map((text, i) => `<button class="choice" data-act="pick" data-pick="${i}" aria-current="${i === st.pick}" style="--i:${i}"><i></i>${esc(text)}</button>`).join("")}</div>` : ""}`;
     el.querySelector('[data-slot="ctrl"]').innerHTML = `${this.auxHtml("talk", TALK_CHIPS(st))}
-      ${dpadHtml(choosing ? "up down" : "")}${aHtml(choosing ? "決定" : "次へ")}`;
+      ${dpadHtml(choosing ? "up down" : "")}${aHtml(choosing ? "ok" : "next")}`;
     // 返事を選ぶ時は、問いの最後のページを出す
     this.showText(el.querySelector('[data-slot="telop"] .text'), line.text, { page: choosing ? Infinity : 0, instant: instant || choosing, delay });
   }
@@ -572,7 +596,7 @@ class Phone {
       ${hudHtml("talk", ci.backdrop === "shop" ? TALKS.minto.place : TALKS.tonari.place)}
       <div class="body">
         <div class="telop" data-slot="telop"></div>
-        <div class="ctrl" data-slot="ctrl">${this.auxHtml("talk", TALK_CHIPS(this.st))}${dpadHtml("")}${aHtml("次へ")}</div>
+        <div class="ctrl" data-slot="ctrl">${this.auxHtml("talk", TALK_CHIPS(this.st))}${dpadHtml("")}${aHtml("next")}</div>
       </div>`;
   }
 
@@ -645,17 +669,66 @@ class Phone {
     const pic = st.scene === "pack" ? `<img class="bg" src="${IMG.tonari}" alt=""><img class="bowl" src="${IMG[`bowl_${PACKS[st.pack].id}`]}" alt="">`
       : st.scene === "holes" ? `<img class="bg" src="${IMG.tonari}" alt=""><div class="foil"><img src="${IMG.foil}" alt=""><svg viewBox="-100 -100 200 200" class="foil-marks"></svg></div>`
       : `<img class="bg" src="${IMG.tonari}" alt=""><img class="pull-actor" src="${IMG.pullActor}" alt=""><img class="puff" src="${IMG.smoke}" alt="">`;
-    // 日付・体力・お金は出さない。上は工程の並びだけ（今の工程だけ名前を出す）
+    // 日付・体力・お金は出さない。上は工程の並びだけ。名前の文字は出さず、今の工程は光る丸で示す（VPL31）
     return `
       <img class="amb" src="${IMG.tonari}" alt="">
       <div class="pic craft craft-${st.scene}">${pic}</div>
       <i class="veil"></i>
       ${this.thermoHtml()}
-      <div class="steps" aria-label="工程">${STEPS.map(([id, name], i) => `<span class="${i === at ? "now" : i < at ? "done" : ""}" aria-label="${name}">${icon(id)}${i === at ? `<b>${name}</b>` : ""}</span>`).join("")}</div>
+      <div class="steps" aria-label="工程">${STEPS.map(([id, name], i) => `<span class="${i === at ? "now" : i < at ? "done" : ""}" aria-label="${name}"${i === at ? ` aria-current="step"` : ""}>${icon(id)}</span>`).join("")}</div>
+      ${this.rankAt === "a" ? "" : this.rankHtml()}
       <div class="body">
+        ${this.rankAt === "a" ? this.rankHtml() : ""}
         <div class="telop" data-slot="telop">${this.craftTelopHtml()}</div>
         <div class="ctrl craft" data-slot="ctrl">${this.craftCtrlHtml()}</div>
       </div>`;
+  }
+
+  /** 制作ランク（VPL30）。置き場所は案 a/b/c。絵は本編の D〜SSS。 */
+  rankHtml() {
+    const { st } = this, g = GRADES[st.grade];
+    return `<div class="rank rank-${this.rankAt}" data-grade="${g}" role="img" aria-label="ランク ${g}" style="--p:${st.gradeP.toFixed(3)}">
+      <span class="rank-box"><img class="rank-art" src="${IMG[`rank${g}`]}" alt="">${this.rankAt === "a" ? `<img class="rank-art rank-fill" src="${IMG[`rank${g}`]}" alt="">` : ""}</span>
+      ${this.rankAt === "a" ? "" : `<i class="rank-meter"><i></i></i>`}</div>`;
+  }
+
+  /** ランクの絵と進みだけを今の状態に合わせる。 */
+  syncRank() {
+    const box = this.el.querySelector(".rank");
+    if (!box) return;
+    const g = GRADES[this.st.grade];
+    if (box.dataset.grade !== g) {
+      box.dataset.grade = g; box.setAttribute("aria-label", `ランク ${g}`);
+      box.querySelectorAll(".rank-art").forEach((img) => { img.src = IMG[`rank${g}`]; });
+    }
+    box.style.setProperty("--p", this.st.gradeP.toFixed(3));
+  }
+
+  /** 工程を終えたら1段上げる。舞台の真ん中に大きく出し（下の英語まで読める）、置き場所へ縮めて収める（本編の burstRank と同じ流れ）。 */
+  rankUp({ loop = false } = {}) {
+    const { st, el } = this;
+    if (st.grade >= GRADES.length - 1) { if (!loop) return; st.grade = -1; }
+    st.grade += 1; st.gradeP = 0;
+    const place = el.querySelector(".rank");
+    if (!place) return;
+    el.querySelector(".rank-burst")?.remove();
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) { this.syncRank(); return; }
+    place.classList.add("waiting");
+    this.syncRank();
+    const burst = document.createElement("img");
+    burst.className = "rank-burst"; burst.alt = ""; burst.src = IMG[`rank${GRADES[st.grade]}`];
+    el.append(burst);
+    const from = burst.getBoundingClientRect(), to = place.querySelector(".rank-box").getBoundingClientRect();
+    const dx = to.left + to.width / 2 - (from.left + from.width / 2), dy = to.top + to.height / 2 - (from.top + from.height / 2);
+    const k = to.width / from.width, end = this.rankAt === "a" ? 0.35 : 1;
+    const at = (x, y, scale, opacity, offset) => ({ transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${scale})`, opacity, offset });
+    burst.animate([at(0, 0, 0.35, 0, 0), at(0, 0, 1.08, 1, 0.16), at(0, 0, 1, 1, 0.26), at(0, 0, 1, 1, 0.7), at(dx, dy, k, end, 1)],
+      { duration: 1900, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)", fill: "forwards" }).finished.then(() => {
+      burst.remove();
+      place.classList.remove("waiting"); place.classList.add("landed");
+      setTimeout(() => place.classList.remove("landed"), 600);
+    }).catch(() => {});
   }
 
   /** 熱ゲージ（温度帯）。シーシャ作りの間ずっと右に大きく出す。色の意味は本編と同じ（緑＝適温の目安、虹＝合わせやすい範囲、炎＝焦げる）。 */
@@ -683,7 +756,7 @@ class Phone {
   craftCtrlHtml() {
     const { st } = this;
     if (st.scene === "pack") {
-      return `${this.auxHtml("craft", CRAFT_CHIPS)}${dpadHtml("left right")}${aHtml("決める", { disabled: !!PACKS[st.pack].locked })}`;
+      return `${this.auxHtml("craft", CRAFT_CHIPS)}${dpadHtml("left right")}${aHtml("ok", { disabled: !!PACKS[st.pack].locked })}`;
     }
     if (st.scene === "holes") {
       // 「刺す」を真ん中に大きく置く。押すと色が下から上へ満ち、満ちた瞬間に金に光る（ここで離す）。周りの10個の点＝開けた穴（金＝ちょうどいい）
@@ -693,14 +766,14 @@ class Phone {
       }).join("");
       return `${this.auxHtml("craft", CRAFT_CHIPS)}
         <svg class="hole-pips" viewBox="-50 -50 100 100" aria-label="開けた穴 ${st.holes.length}/${HOLE_COUNT}">${pips}</svg>
-        ${aHtml("刺す", { cls: "hold center", extra: `<i class="fill"></i><i class="fill-line"></i>` })}`;
+        ${aHtml("poke", { cls: "hold center", extra: `<i class="fill"></i><i class="fill-line"></i>` })}`;
     }
     // 葉（フレーバーの持ち）は上の段の真ん中、吸った回数は「吸う」の中の点。ボタンに重ねない
     return `${this.auxHtml("craft", CRAFT_CHIPS)}
       <span class="leaves" role="img" aria-label="フレーバーの持ち 5">${`<img src="${IMG.leaf}" alt="">`.repeat(5)}</span>
       <button class="serve" data-act="serve" aria-label="提供する（あと2口）">${icon("bell")}<span>提供</span><i></i><i></i></button>
       <div class="gauge"><span class="end l">${icon("cool")}</span><span class="end r">${icon("heat")}</span>${meterHtml()}</div>
-      ${aHtml("吸う", { cls: "center", extra: `<span class="pips" aria-label="吸った回数 ${st.pulls}/5">${Array.from({ length: 5 }, (_, i) => `<i class="${i < st.pulls ? "on" : ""}"></i>`).join("")}</span>` })}`;
+      ${aHtml("puff", { cls: "center", extra: `<span class="pips" aria-label="吸った回数 ${st.pulls}/5">${Array.from({ length: 5 }, (_, i) => `<i class="${i < st.pulls ? "on" : ""}"></i>`).join("")}</span>` })}`;
   }
 
   /** 穴あけ: 目印（ひし形）・開けた穴・針先（水色の輪）を描く。 */
@@ -830,15 +903,18 @@ class Phone {
     }
     if (st.scene === "pack") { if (!PACKS[st.pack].locked && !this.fixed) this.setScene("holes"); return; }
     if (st.scene === "pull") {
-      if (this.hold) return;
+      if (this.hold || st.pulls >= 5) return;
       st.pulls = Math.min(5, st.pulls + 1);
+      st.gradeP = st.pulls / 5; this.syncRank();
+      if (st.pulls >= 5) setTimeout(() => this.rankUp(), 500);
       // 吸うたびに温度が動く（上げ吸いで上がり、下げ吸いで下がる）
       st.temp = Math.min(0.95, Math.max(0.06, st.temp + 0.05 + ((this.needleT ?? 0.5) - 0.5) * 0.32));
       this.hold = performance.now();
       el.classList.remove("puffing"); void el.offsetWidth; el.classList.add("puffing");
       this.patch();
       this.syncThermo();
-      setTimeout(() => { this.hold = 0; if (st.pulls >= 5) { if (this.fixed) { st.pulls = 0; st.temp = 0.4; this.patch(); this.syncThermo(); } else this.setScene("map"); } }, 700);
+      setTimeout(() => { this.hold = 0; if (st.pulls >= 5 && this.fixed) { st.pulls = 0; st.temp = 0.4; st.gradeP = 0; this.patch(); this.syncThermo(); this.syncRank(); } }, 700);
+      if (st.pulls >= 5 && !this.fixed) setTimeout(() => this.setScene("map"), 2600);
     }
   }
 
@@ -891,12 +967,15 @@ class Phone {
     const size = Math.min(1, heldMs / HOLD_FULL), zone = pressZone(size);
     const good = Math.abs((this.tipDeg ?? target) - target) < 5 && zone === "good";
     st.holes.push({ deg: this.tipDeg ?? target, r: HOLE_R[holeDepth(size)], size, good });
+    st.gradeP = Math.min(1, st.holes.length / HOLE_COUNT); this.syncRank();
     this.patch(); this.drawHoles();
     // 結果を「刺す」に返す: ちょうどいい大きさなら金の光、小さすぎ・大きすぎは小さく揺れる
     const btn = this.el.querySelector(".btn-a.hold");
     btn?.classList.add(zone === "good" ? "res-good" : "res-off");
     setTimeout(() => btn?.classList.remove("res-good", "res-off"), 520);
-    if (st.holes.length >= HOLE_COUNT) setTimeout(() => { if (this.fixed) { st.holes = []; this.patch(); this.drawHoles(); } else this.setScene("pull"); }, 900);
+    // 10個開け終えたら穴あけの工程が済み、ランクが1段上がる。大きく出たランクが収まってから次の工程へ
+    if (st.holes.length >= HOLE_COUNT) setTimeout(() => this.rankUp(), 500);
+    if (st.holes.length >= HOLE_COUNT) setTimeout(() => { if (this.fixed) { st.holes = []; st.gradeP = 0; this.patch(); this.drawHoles(); this.syncRank(); } else this.setScene("pull"); }, 2600);
   }
 
   /** 地図から店へ: 選んだ店へ寄ってから、煙の幕で店内へ替える。 */
@@ -914,6 +993,9 @@ class Phone {
   setScene(scene, { arrive = false } = {}) {
     clearTimeout(this.ciTimer);
     this.el.classList.remove("cutin-on");
+    const crafting = (id) => ["pack", "holes", "pull"].includes(id);
+    if (!crafting(this.st.scene) && crafting(scene)) Object.assign(this.st, { grade: 0, gradeP: 0 });
+    else if (crafting(scene)) this.st.gradeP = 0;
     Object.assign(this.st, { scene, step: 0, page: 0, choosing: false, pick: 0, list: false, overview: false, holes: [], pulls: 0, pack: 1, temp: 0.4 });
     this.quiet = false;
     this.render({ delay: arrive ? 1200 : 0 }); // 店に着いた時は、店名の札が出てから文字を送る
@@ -1000,19 +1082,25 @@ function showGallery() {
     <ul class="g-points">
       <li><b>立ち位置</b>1人は中央で少し寄り、2人は左右で身長差そのまま。話している側が手前で明るい</li>
       <li><b>地図</b>左右キーで隣の店へ画面が送られる。上で全体、下で一覧。指でずらす・「！」の店へ飛ぶ</li>
-      <li><b>パッド</b>輪の十字キーとAを大きく（幅の約半分と1/3強）。作る場面は工程ごとの操作に替わる</li>
+      <li><b>パッド</b>輪の十字キーとAを大きく（幅の約半分と1/3強）。作る場面は工程ごとの操作に替わる。Aは文字ではなく絵（行く・次へ・決定・刺す・吸う）で、刺すは押すと針が下がってアルミを突く</li>
       <li><b>補助ボタン</b>案1「名前つきの段」で確定（絵記号に短い名前を添えて横いっぱいに大きく）</li>
       <li><b>登場カットイン</b>案A「縦のポスター」で確定</li>
-      <li><b>出すもの</b>地図は章・日付・レベル・体力・お金（天気は降る雨で見せる）。会話は場所の名前だけ、シーシャ作りは工程の並びと熱ゲージだけ</li>
+      <li><b>出すもの</b>地図は章・日付・レベル・体力・お金（天気は降る雨で見せる）。会話は場所の名前だけ、シーシャ作りは工程の並び（絵記号だけ）・熱ゲージ・ランクだけ</li>
+      <li><b>ランク</b>置き場所を3案（下）。1台表示は案C「工程の段の右端」で始まる</li>
     </ul>
     <p class="g-note">絵・立ち絵・台詞は本編の素材、配置と動きが今回の案です。本編の進行や保存には触れません。<a href="?view=play" data-go="play">1台で通して触る</a></p>
     <div class="g-grid">${GALLERY.map((item, i) => `<figure class="g-cell"><article class="phone" data-i="${i}"></article><figcaption>${item.caption}</figcaption></figure>`).join("")}</div>
+    <h2 class="g-sub">ランクの出し場所（3案）</h2>
+    <p class="g-note">本編の制作ランク（D〜SSS の絵）を縦画面のどこに置くか。どの案も、工程を終えてランクが上がった瞬間は舞台の真ん中に大きく出し（下の英語まで読める）、置き場所へ縮めて収める。1台表示の右上のつまみ →「ランク」で案を替え、「↑」で上がる動きを何度でも見られる。</p>
+    ${Object.entries(RANK_PLACES).map(([v, place]) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}</small>${place.name}<a href="?view=play&scene=holes&rank=${v}">1台で動きを見る</a></h3><p>${place.lead}</p>
+      <div class="g-grid">${[["pack", 1, 0.3, "詰め（ランクC）"], ["holes", 2, 0.6, "穴あけ（ランクB・進み6割）"], ["pull", 4, 0.4, "吸い出し（ランクS）"]].map(([scene, grade, gradeP, cap]) => `<figure class="g-cell"><article class="phone" data-rank="${v}" data-scene="${scene}" data-grade="${grade}" data-gp="${gradeP}"></article><figcaption>${cap}</figcaption></figure>`).join("")}</div></section>`).join("")}
     <h2 class="g-sub">登場カットイン（縦画面）</h2>
     ${["a"].map((v) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}で決定</small>${CUT_VARIANTS[v].name}<a href="?view=play&scene=cutin&ci=${v}" data-go="play" data-ci="${v}">1台で動きを見る</a></h3><p>${CUT_VARIANTS[v].lead}</p>
       <div class="g-grid">${["minto", "sumi"].map((who) => `<figure class="g-cell"><article class="phone" data-ci="${v}" data-who="${who}"></article><figcaption>${who === "minto" ? "みんと" : "スミさん"}</figcaption></figure>`).join("")}</div></section>`).join("")}
   </main>`;
   app.querySelectorAll(".phone[data-i]").forEach((el) => { const item = GALLERY[Number(el.dataset.i)]; phones.push(new Phone(el, item.scene, { fixed: true, ...item })); });
   app.querySelectorAll(".phone[data-ci]").forEach((el) => phones.push(new Phone(el, "cutin", { fixed: true, ci: el.dataset.ci, who: el.dataset.who })));
+  app.querySelectorAll(".phone[data-gp]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, rank: el.dataset.rank, grade: Number(el.dataset.grade), gradeP: Number(el.dataset.gp) })));
   scrollTo(0, 0);
 }
 
@@ -1033,12 +1121,13 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
   app.innerHTML = `<div class="frame"><article class="phone"></article>${bare ? "" : `<nav class="switch" aria-label="場面と案の切り替え">
     <button class="grip" data-grip aria-expanded="false" aria-label="切り替えを開く"><i></i></button>
     <div class="panel"><div>${SCENES.map((id) => `<button data-scene="${id}" aria-pressed="${id === scene}">${SCENE_LABEL[id]}</button>`).join("")}</div>
-      <div><small>登場</small>${[["minto", "みんと"], ["sumi", "スミ"]].map(([id, name]) => `<button data-who="${id}" aria-pressed="${id === who}">${name}</button>`).join("")}<a href="?view=gallery" data-go="gallery">一覧</a></div></div></nav>`}</div>`;
+      <div><small>登場</small>${[["minto", "みんと"], ["sumi", "スミ"]].map(([id, name]) => `<button data-who="${id}" aria-pressed="${id === who}">${name}</button>`).join("")}<a href="?view=gallery" data-go="gallery">一覧</a></div>
+      <div><small>ランク</small>${Object.keys(RANK_PLACES).map((v) => `<button data-rank="${v}" aria-pressed="${v === (params.get("rank") || "c")}">案${v.toUpperCase()}</button>`).join("")}<button data-rankup aria-label="ランクを上げる">↑</button></div></div></nav>`}</div>`;
   const el = app.querySelector(".phone");
   // 先に大きさを決めてから描く（立ち絵と地図の位置は絵の大きさから決まる）
   const box = app.getBoundingClientRect(), rem = Math.min(box.width / 39, box.height / 66);
   root.style.fontSize = `${rem}px`; el.style.height = `${Math.min(box.height, rem * 92)}px`;
-  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, ...opts });
+  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "c", grade: params.get("grade"), ...opts });
   current = make(scene);
   const nav = app.querySelector(".switch");
   if (!nav) return;
@@ -1052,6 +1141,16 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
     if ("grip" in button.dataset) return open(!nav.classList.contains("open"));
     open(true);
     if (button.dataset.scene) current.setScene(button.dataset.scene);
+    else if (button.dataset.rank || "rankup" in button.dataset) {
+      // ランクの置き場所の案を替える／上がる動きを見る。作る場面でなければ穴あけへ
+      const crafting = ["pack", "holes", "pull"].includes(current.st.scene);
+      if (button.dataset.rank) {
+        current.rankAt = button.dataset.rank; current.el.dataset.rank = button.dataset.rank;
+        nav.querySelectorAll("[data-rank]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.rank === current.rankAt)));
+        if (crafting) current.render(); else current.setScene("holes");
+      } else if (crafting) current.rankUp({ loop: true });
+      else { current.setScene("holes"); setTimeout(() => current.rankUp({ loop: true }), 400); }
+    }
     else if (button.dataset.ci || button.dataset.who) {
       // 登場カットインの案・人物を替えて、その場で流す
       if (button.dataset.ci) current.st.ci = button.dataset.ci;
