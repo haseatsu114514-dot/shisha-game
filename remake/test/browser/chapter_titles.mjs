@@ -219,6 +219,7 @@ await suite('chapter-titles', async check => {
         await observeFade(page);
         const point = await page.evaluate(async () => {
           const core = await import('./js/core/state.js'); core.newGame(); core.save();
+          core.config.skipSeenOnly = false; // 未読の台詞も SKIP で送る（既定は既読のみ・#4194）。保存はしない
           localStorage.setItem('suien_remake_seen_dialogue_lines', JSON.stringify([JSON.stringify(['qa-existing', 'main', 0])]));
           localStorage.setItem('suien_remake_slot1', 'preserve-manual');
           localStorage.setItem('unrelated', 'preserve');

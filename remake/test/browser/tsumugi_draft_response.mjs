@@ -69,6 +69,11 @@ function stateDifferences(expected, actual, path = "") {
 }
 
 async function input(locator, touch) { if (touch) await locator.tap(); else await locator.click(); }
+// SKIP は場面をまたいで入ったまま（#3558 項目7・#4228）。入っていない時だけ押して入れる（押すと切れるので）。
+async function skipOn(page, touch) {
+  const button = page.locator('[data-test="vn-skip"]');
+  if (!await button.evaluate(node => node.classList.contains("on"))) await input(button, touch);
+}
 
 // Instant text is a player setting. Keep production transitions and input guards.
 async function start(page, scene) {
@@ -220,7 +225,7 @@ await suite("tsumugi-draft-response", async check => {
       await page.evaluate(() => { T.fresh(); });
       if (answer !== null) {
         await start(page, WIP);
-        await input(page.locator('[data-test="vn-skip"]'), touch);
+        await skipOn(page, touch);
         await page.locator('.vn-choices button').first().waitFor();
         await page.waitForTimeout(250);
         assert.deepEqual(await page.evaluate(keys => keys.map(k => T.core.state.flags[k] ?? null), KEYS), [null, null]);
@@ -228,7 +233,7 @@ await suite("tsumugi-draft-response", async check => {
         await page.waitForFunction(() => window.finished, null, { timeout: 20000 });
       } else await page.evaluate(() => { T.core.state.flags._tsumugi_contest_progress = true; });
       await start(page, ART);
-      await input(page.locator('[data-test="vn-skip"]'), touch);
+      await skipOn(page, touch);
       await page.waitForFunction(() => window.finished, null, { timeout: 20000 });
       assertResponse(await page.evaluate(() => T.lines()), answer);
       assert.equal(await page.locator('.vn-cg.show').count(), 0, "CG did not close");
@@ -240,7 +245,7 @@ await suite("tsumugi-draft-response", async check => {
     for (const answer of [0, 1]) {
       if (answer === 0) await page.evaluate(() => { T.fresh(); });
       await start(page, WIP);
-      await input(page.locator('[data-test="vn-skip"]'), false);
+      await skipOn(page, false);
       await page.locator('.vn-choices button').first().waitFor();
       await input(page.locator('.vn-choices button').nth(answer), false);
       const immediate = await page.evaluate(keys => {
