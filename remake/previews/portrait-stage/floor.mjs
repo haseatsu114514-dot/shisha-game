@@ -34,6 +34,7 @@ import { floorVenueCommissionPercent } from "../../js/daily/floor-venues.js";
 import { NODES, NODE_BY_ID } from "../../js/core/growth-board-layout.js";
 import { SQUARE_PERKS, perkIcon } from "../../js/core/growth-board-data.js";
 import { growthFloorPerks } from "../../js/core/growth-effects.js";
+import { MOB_ART, mobUrl } from "./mob-art.mjs";
 
 
 const WISH = Object.fromEntries(WISHES.map((w) => [w.id, w]));
@@ -45,18 +46,19 @@ const SALES_STEP = 10000;
 
 // 店ごとの見せ方（VPM26・VPM29）: 規則・客・営業の種類は本編の店（remake/js/daily/floor-venues.js の tonari / mukai / dubai）をそのまま使い、
 //   ここでは縦の画面の見せ方だけを決める。art＝フロアの絵（img/floor-<art>-day.webp・-night.webp。正方形。この画面に合わせて作った絵）、
-//   seats＝絵の中の5つの席（x・y＝席のカードの「下の辺のまん中」を置く所。絵の幅・高さに対する %。奥の壁に沿って3つ＝row 0、手前の左右に内向きで2つ＝row 1）、
+//   seats＝絵の中の5つの席（x・y＝席のカードの「下の辺のまん中」を置く所。絵の幅・高さに対する %。カードは席のソファに重ね、下の辺は座面の手前。
+//     奥の壁に沿って3つ＝row 0、手前の左右に内向きで2つ＝row 1）、
 //   chapter＝その店に来る章（並ぶミックスとレア客が変わる）、night＝夜だけの店（はじめから夜の絵）、visitors＝遊びに来る本編の人物（顔のアイコンがある人だけ）、boss＝精算で一言いう人の顔。
 //   絵を替える時は、席の表も合わせる
 const VENUE_VIEW = {
   tonari: { art: "tonari", chapter: 1, night: false, boss: "sumi",
-    seats: [{ x: 21, y: 37.5, row: 0 }, { x: 50, y: 37.5, row: 0 }, { x: 79, y: 37.5, row: 0 }, { x: 20.5, y: 69, row: 1 }, { x: 79.5, y: 69, row: 1 }],
+    seats: [{ x: 25, y: 41.5, row: 0 }, { x: 50, y: 41.5, row: 0 }, { x: 75, y: 41.5, row: 0 }, { x: 18, y: 74, row: 1 }, { x: 82, y: 74, row: 1 }],
     visitors: ["tsumugi", "naru", "adam"] },
   mukai: { art: "mukai", chapter: 3, night: true, boss: "mukai_master",
-    seats: [{ x: 23, y: 38.5, row: 0 }, { x: 50, y: 38.5, row: 0 }, { x: 77.5, y: 38.5, row: 0 }, { x: 20.5, y: 68, row: 1 }, { x: 79.5, y: 68, row: 1 }],
+    seats: [{ x: 25, y: 42.5, row: 0 }, { x: 50, y: 42.5, row: 0 }, { x: 75, y: 42.5, row: 0 }, { x: 18, y: 74, row: 1 }, { x: 82, y: 74, row: 1 }],
     visitors: ["steve", "volk", "yoru"] },
   dubai: { art: "dubai", chapter: 4, night: false, boss: null,
-    seats: [{ x: 22.5, y: 41.5, row: 0 }, { x: 50, y: 41.5, row: 0 }, { x: 77.5, y: 41.5, row: 0 }, { x: 20.5, y: 70, row: 1 }, { x: 79.5, y: 70, row: 1 }],
+    seats: [{ x: 25, y: 41.5, row: 0 }, { x: 50, y: 41.5, row: 0 }, { x: 75, y: 41.5, row: 0 }, { x: 18, y: 74, row: 1 }, { x: 82, y: 74, row: 1 }],
     visitors: ["naru", "da_silva", "master_hookah"] },
 };
 // 営業の種類（1台表示のつまみ・?shift= で選ぶ）
@@ -260,8 +262,7 @@ export class FloorScene {
     const urls = [...Object.values(MOOD_ART), "verdict-best", "verdict-bad", ...Object.values(MEDAL)].map((name) => this.art(name));
     for (const guest of Object.values(this.s.guests)) {
       if (guest.charId) continue;
-      const id = guest.art || guest.kind;
-      urls.push(this.art(`guest-${id}`), this.art(`guest-${id}-happy`));
+      for (const happy of [false, true]) { const m = this.guestImg(guest, happy).match(/src="([^"]+)"/); if (m) urls.push(m[1]); } // 実際に出す1枚だけ
     }
     this.preloaded = urls.map((src) => Object.assign(new Image(), { src }));
   }
@@ -288,7 +289,7 @@ export class FloorScene {
         <span class="fl-box"><i class="fl-burst"></i><span class="fl-who"></span>
           <span class="fl-side"><span class="fl-cell"></span><span class="fl-cue"></span></span>
           <i class="fl-anger">${icon("anger")}</i></span>
-        <i class="fl-no">${i + 1}</i>
+        <i class="fl-no">${i + 1}</i><span class="fl-count"></span>
       </button>`).join("");
     return `
       <img class="amb" src="${this.roomDay}" alt="">
@@ -330,7 +331,7 @@ export class FloorScene {
     const { el } = this, q = (sel) => el.querySelector(sel);
     this.refs = {
       room: q(".fl-room"), tables: [...el.querySelectorAll(".fl-table")].map((root) => ({ root, want: root.querySelector(".fl-want"), fx: root.querySelector(".fl-fx"),
-        who: root.querySelector(".fl-who"), cell: root.querySelector(".fl-cell"), cue: root.querySelector(".fl-cue"), keys: {} })),
+        who: root.querySelector(".fl-who"), cell: root.querySelector(".fl-cell"), cue: root.querySelector(".fl-cue"), count: root.querySelector(".fl-count"), keys: {} })),
       clock: q(".fl-clock b"), timebar: q(".fl-timebar i"), sales: q(".fl-sales b"), outlook: q(".fl-outlook"),
       band: q(".fl-band"), notice: q(".fl-notice"), flash: q(".fl-flash"), line: q(".fl-line"),
       coach: q(".fl-coach"), coachText: q(".fl-coach .say-text"), deck: q(".fl-deck"), who: q(".fl-guest"), rows: q(".fl-rows"), head: q(".fl-mixhead"), busy: q(".fl-busy"), me: q(".fl-me"), door: q(".fl-door"),
@@ -630,9 +631,18 @@ export class FloorScene {
     return `<span class="fl-wish${[...label].length > 6 ? " long" : ""}" style="--c:${w.color}">${refill ? `<i class="fl-again">${this.kit.icon("top")}</i>` : ""}${this.kit.icon(WISH_ICON[w.id])}<b>${this.kit.esc(label)}</b></span>`;
   }
 
+  /** 客の顔。本編の人物は顔のアイコン。モブの客は、作り直した絵（VPM29。店・客の種類ごとに数パターン）から、客ごとに決まった1枚
+   *  （営業の種・客の ID で選ぶので、同じ客はずっと同じ顔）。作り直した絵が無い種類は、本編の絵。 */
   guestImg(guest, happy = false) {
     if (guest.charId) return `<img src="${this.face(guest.charId === "minto" ? "minto_private" : guest.charId)}" alt="">`;
-    return `<img src="${this.art(`guest-${guest.art || guest.kind}${happy ? "-happy" : ""}`)}" alt="">`;
+    const key = guest.art || guest.kind, list = MOB_ART[this.venue.id]?.[key];
+    if (list?.length) {
+      let h = 2166136261;
+      for (const ch of `${this.s.seed}/${guest.id}`) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+      const pick = list[(h >>> 0) % list.length];
+      return `<img src="${mobUrl(happy ? pick.happy : pick.idle)}" alt="">`;
+    }
+    return `<img src="${this.art(`guest-${key}${happy ? "-happy" : ""}`)}" alt="">`;
   }
 
   /** 卓の札の上に出る用件: [記号, 言葉, 札の色, 見出しを出すか]。見出しを出すのは、押すと進む用件と「おかわり中」だけ（本編と同じ）。 */
@@ -652,8 +662,8 @@ export class FloorScene {
     }
   }
 
-  /** 席のカード（VPM26）: 横長の札。左＝客の顔と席の番号、右＝上の行に残り秒か満足の顔、下の行に「押す」の印（用件がある時）。
-   *  上の辺に、気分か用件の札（出来事の言葉は、その札の所に少しの間だけ出る）。 */
+  /** 席のカード（VPM26・VPM30）: 横長の札。左＝客の顔と席の番号、右＝残り秒か満足の顔（言葉は出さない）。用件がある時は、下の辺に「押す」の札がぶら下がる。
+   *  上に少し離して、気分か用件の札（出来事の言葉は、その札の所に少しの間だけ出る）。頼み・会計を待たせている残り秒は、右上の角の赤い札。 */
   syncTable(spot, table) {
     const s = this.s, { icon } = this.kit, k = spot.keys;
     // 来店した時は、カードが弾んで入ってくる
@@ -683,20 +693,22 @@ export class FloorScene {
       spot.want.innerHTML = !wantKey ? "" : table.phase === "order" ? this.wishChip(guest.order, { refill: table.refill })
         : `<span class="fl-need" data-tone="${want[2]}">${icon(want[0])}<b>${want[1]}</b></span>`;
     }
-    // 右の上の行: 注文待ちは残り秒、仕込み中は器の印と残り秒（順番待ちは時計の印だけ）、提供後は満足の顔。頼み・会計を待たせている間は、残り秒を赤で添える
+    // 右の上の行: 注文待ちは残り秒、仕込み中は器の印と残り秒（順番待ちは時計の印だけ）、提供後は満足の顔（言葉は出さない。顔の印で分かる）。
+    // 頼み・会計を待たせている残り秒は、カードの右下の角の赤い札
     const left = floorWaitLeft(s, table.id);
     const making = table.phase === "prep" && table.make.active;
     const count = (table.call || table.phase === "bill") && left != null ? (left > 0 ? String(seconds(left)) : "！") : "";
     const cellKey = table.phase === "order" ? `n${seconds(left)}` : table.phase === "prep" ? (making ? `p${seconds(table.make.left)}` : "queue")
-      : stage ? `m${stage.id}/${count}/${!!need}` : table.phase === "cool" ? "cool" : "";
+      : stage ? `m${stage.id}` : table.phase === "cool" ? "cool" : "";
     if (k.cell !== cellKey) {
       k.cell = cellKey;
       const mood = stage ? `<img src="${this.art(MOOD_ART[stage.id])}" alt="${stage.label}">` : "";
       spot.cell.innerHTML = table.phase === "order" ? `${icon("clock")}<b>${seconds(left)}</b>`
         : table.phase === "prep" ? (making ? `${icon("cook")}<b>${seconds(table.make.left)}</b>` : icon("clock"))
-        : stage ? `${mood}${count ? `<em>${icon("clock")}<b>${count}</b></em>` : need ? "" : `<small>${stage.label}</small>`}` : table.phase === "cool" ? icon("clean") : "";
+        : stage ? mood : table.phase === "cool" ? icon("clean") : "";
     }
-    // 右の下の行: 「押す」の印（上の画面のカードを押せば進む、と分かるように。VPM26）
+    if (k.count !== count) { k.count = count; spot.count.innerHTML = count ? `${icon("clock")}<b>${count}</b>` : ""; }
+    // 下の辺の「押す」の札（上の画面のカードを押せば進む、と分かるように。VPM26）
     if (k.cue !== need) {
       k.cue = need;
       const CUE = { order: "聞く", care: "聞く", tend: "整える", bill: "会計" };

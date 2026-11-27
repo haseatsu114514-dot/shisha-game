@@ -138,3 +138,69 @@ Change only the light and the view outside:
 
 Do not paint: people, animals, text, letters, logos, hookahs, shisha pipes, hoses, charcoal, smoke, fireworks. No lens flare, no bloom haze, no light rays, no mirror-like or wet-looking reflections on the floor.
 ```
+
+## 2026-11-27 作り直し（VPM30）
+
+オーナー「今椅子がやや下の方にあり上の方の人が変な位置にあるのでこの画面に合わせて背景せいせいして」。tonari の2回めの作り直しの絵（カメラを高くして床を広く写し、奥の3席を上の方、手前の左右の席を中ほどへ）を構図の参照に渡して、2つの店も作り直した（このフォルダの `floor-mukai-*-original.webp`・`floor-dubai-*-original.webp` は、この版）。
+- 生成した枚数: mukai 昼2（1枚採用）・夜1（採用）／ドバイ 昼2（1枚採用）・明るさを落とした昼1（採用。平均の明るさ 200→141）・夜1（採用）
+- 昼と夜の位置のずれ: どちらも0。平均の明るさ: mukai 昼110・夜92、ドバイ 昼141・夜121
+- 席のカードの位置（`floor.mjs` の `VENUE_VIEW`。絵の幅・高さに対する %。カードの下の辺のまん中）: 奥 x 25・50・75（mukai y 42.5・ドバイ y 41.5）、手前 x 18・82（y 74）
+- `floor-dubai-day-bright-original.webp` は、1回めの版の明るい昼（使っていない）
+
+### 依頼文（mukai・昼。作り直し）
+
+```text
+Two reference images are attached.
+- FIRST image: the place and the painting style. It is a small cafe-style shisha shop built under an elevated railway in Tokyo: warm ochre plaster walls with a muted blue-gray painted band along the lower half, an olive-green upholstered banquette bench with vertical channel stitching and a few gray-blue cushions, round stone-top tables on slim black metal pedestals, bentwood wooden cafe chairs, black gooseneck wall lamps, an exposed concrete ceiling with ducts and conduits, tall steel-framed windows with a view of city apartment buildings, large matte stone floor tiles, dark gray cabinets with a stone counter top.
+- SECOND image: a different shop. Use it ONLY for the camera position and the furniture layout. Do not copy its decoration, lamps, plants, sofas, rug or colors.
+
+Paint a NEW view of the shop from the FIRST image, to be used as the floor screen of a shop-management game. Keep the same hand-painted anime background style as the first image: visible brushwork, flat 2-3 step shading, no line art, no photo look, no 3D render look.
+
+Viewpoint (same as the second image): seen from above the counter, camera fairly high (about 2.6 meters) and tilted down, so that the floor takes most of the picture and the back wall is short, straight at the back wall, one-point perspective, symmetrical room. Square composition. Vertical lines stay vertical.
+
+Furniture layout (most important, same arrangement as the second image). It must look like a real, sensibly arranged small shop with exactly FIVE seating spots forming a U shape around an open center:
+- BACK ROW: three identical two-seat olive-green upholstered benches (the same channel-stitched banquette style as in the first image, each with one gray-blue cushion) standing side by side in one straight line against the back wall, facing the viewer. their centers are at about 26, 50 and 74 percent of the picture width, each bench about 21 percent of the picture width, with clear gaps between them. Each has its own small round stone-top table on a short black pedestal (low coffee-table height) directly in front of it. Nothing else stands on the floor along the back wall.
+- SIDES: one two-seat olive-green bench against the LEFT side wall and one against the RIGHT side wall, clearly closer to the viewer than the back row and clearly lower in the picture, hugging the left and right edges of the picture (the left one roughly 0 to 22 percent of the picture width, the right one roughly 78 to 100 percent). These two side benches face inward, toward the center of the room (so they are seen from the side / three-quarter view), each with its own small round low stone-top table on its inner side. There is a visible strip of floor between the back row and the side benches.
+- CENTER: the middle of the room is open floor of large matte stone tiles, clear for walking. No furniture, no rug, no chairs in the center.
+All seats are empty: no people. Nothing else is on the floor.
+
+Vertical placement in the picture (measured from the top edge; please follow closely, the same as the second image):
+- 0 to 12 percent: the exposed concrete ceiling with ducts and a few black pendant lamps (short, they stay high).
+- 10 to 28 percent: a short strip of the ochre plaster wall with one or two small steel-framed windows showing city buildings, calm; the blue-gray painted band runs along the lower part of the walls behind the benches.
+- Back-row seats: backrest top at about 29 percent, seat cushions at about 33 to 38 percent, their small tables at about 39 to 47 percent.
+- 47 to 92 percent: open floor.
+- Side seats: from about 50 percent (top of the backrest) to about 84 percent (front of the seat), with the seat cushions around 60 to 72 percent.
+- 92 to 100 percent: the plain top edge of the stone counter in the near foreground.
+
+Do not paint: people, animals, text, letters, logos, signs, posters, hookahs, shisha pipes, hoses, charcoal, smoke, bottles of alcohol, coffee machines, stacked cups. Tables hold only a small glass candle or nothing. No lens flare, no bloom glow, no light rays, no glossy or wet-looking floor (the tiles are matte). Daytime; soft sunlight from the windows is the single main light, the lamps are a weak secondary glow. Mid-range brightness, shadows keep their detail.
+```
+
+### 依頼文（ドバイ・昼。作り直し）
+
+```text
+Two reference images are attached.
+- FIRST image: the place and the painting style. It is a bright, luxurious cafe lounge in the center of Dubai: a white marble floor with thin gold inlay lines, cream-colored curved-back armchairs with blue-and-gold patterned cushions, small round white marble tables with gold bases, tall arched windows with slim gold frames and gold lattice screens showing the modern Dubai skyline and a blue sky, white-and-gold planters with palms, hanging gold lantern lamps, white marble walls and columns with gold trim.
+- SECOND image: a different shop. Use it ONLY for the camera position and the furniture layout. Do not copy its decoration, lamps, plants, sofas, rug, wood or colors.
+
+Paint a NEW view of the cafe from the FIRST image, to be used as the floor screen of a shop-management game. Keep the same hand-painted anime background style as the first image: visible brushwork, flat 2-3 step shading, no line art, no photo look, no 3D render look.
+
+Viewpoint (same as the second image): seen from above the service counter, camera fairly high (about 2.6 meters) and tilted down, so that the floor takes most of the picture and the back wall is short, straight at the back wall, one-point perspective, symmetrical room. Square composition. Vertical lines stay vertical.
+
+Furniture layout (most important, same arrangement as the second image). It must look like a real, sensibly arranged cafe lounge with exactly FIVE seating spots forming a U shape around an open center:
+- BACK ROW: three identical cream-colored two-seat curved-back loveseats (the same upholstery as the armchairs in the first image, each with one blue-and-gold cushion) standing side by side in one straight line along the back wall, facing the viewer. their centers are at about 26, 50 and 74 percent of the picture width, each loveseat about 21 percent of the picture width, with clear gaps between them. Each has its own small round white marble table with a gold base (low coffee-table height) directly in front of it. Nothing else stands on the floor along the back wall.
+- SIDES: one cream two-seat loveseat against the LEFT side wall and one against the RIGHT side wall, clearly closer to the viewer than the back row and clearly lower in the picture, hugging the left and right edges of the picture (the left one roughly 0 to 22 percent of the picture width, the right one roughly 78 to 100 percent). These two side loveseats face inward, toward the center of the room (so they are seen from the side / three-quarter view), each with its own small round low marble table on its inner side. There is a visible strip of floor between the back row and the side loveseats.
+- CENTER: the middle of the room is open white marble floor with thin gold inlay lines, clear for walking. No furniture and no planters in the center.
+All seats are empty: no people. Nothing else is on the floor.
+
+Vertical placement in the picture (measured from the top edge; please follow closely, the same as the second image):
+- 0 to 12 percent: the ceiling with a few hanging gold lantern lamps (short chains, they stay high).
+- 10 to 28 percent: a short band of arched gold-framed windows showing the blue sky and the distant Dubai skyline, simple and uncluttered.
+- Back-row seats: backrest top at about 29 percent, seat cushions at about 33 to 38 percent, their small tables at about 39 to 47 percent.
+- 47 to 92 percent: open floor.
+- Side seats: from about 50 percent (top of the backrest) to about 84 percent (front of the seat), with the seat cushions around 60 to 72 percent.
+- 92 to 100 percent: the plain top edge of the white marble service counter with a thin gold edge in the near foreground.
+
+Do not paint: people, animals, text, letters, logos, signs, hookahs, shisha pipes, hoses, charcoal, smoke, bottles of alcohol, pastry showcases, plates of food. Tables hold only a small glass candle or a tiny flower vase. No lens flare, no bloom glow, no light rays, no mirror-like or wet-looking reflections on the floor (the marble has only a soft matte sheen). Daytime; soft sunlight from the tall windows is the single main light, the lanterns are a weak secondary glow. Keep the picture bright and airy but not washed out: mid-range values, the cream seats and the marble keep visible shading and detail.
+```
+
+夜と、ドバイの明るさを落とす依頼文は、上の1回めと同じ。
