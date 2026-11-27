@@ -1039,8 +1039,8 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 @container phone (max-height: 71rem) { .phone[data-scene="steam"] .ctrl { --ring: 18.4rem; } }
 
 /* 蒸らしのタイマー（VPL105）: 上の画面に本編のキッチンタイマー（液晶・4つの物理ボタン）と、蒸らし後の温度の目安。下は早見とリセット、分・秒・スタート */
-.timer-a { position: absolute; left: 0; right: 5.6rem; top: 8.4rem; bottom: 5.6rem; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 1.4rem; } /* キッチンタイマーは一言のすぐ上へ寄せる（VPL122。下半分の空きをなくす） */
-.ktimer { position: relative; flex: none; width: min(32rem, calc((100cqh - var(--cp) - var(--band) - 24.4rem) / 0.9)); aspect-ratio: 1280 / 1150; container-type: inline-size; } /* 下の目安の札をなくした分、縦にも大きく（VPL116。絵を縦に約3割のばす）。背の低い画面では、後ろのはじめの頭と肩が見える所まで小さくする（VPL125） */
+.timer-a { position: absolute; left: 0; right: 5.6rem; top: 5.8rem; bottom: 3.2rem; z-index: 1; display: flex; flex-direction: column; align-items: center; } /* タイマーはランクのすぐ下から。その下から一言のすぐ上までを、空きを埋める案に使う（VPL126） */
+.ktimer { position: relative; z-index: 1; flex: none; width: 35rem; aspect-ratio: 1280 / 1150; container-type: inline-size; } /* 下の目安の札をなくした分、縦にも大きく（VPL116。絵を縦に約3割のばす）。VPL126 で 32rem→35rem（絵の左右の透明な縁を列の外へ出し、描いた所を温度計の手前まで広げる） */
 .ktimer > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 1.6rem #000b); pointer-events: none; }
 .ktimer .lcd { position: absolute; left: 13.6%; width: 72.8%; top: 22%; height: 33.4%; display: grid; place-items: center; color: #192e28; }
 .ktimer .lcd svg { width: 88%; height: 86%; }
@@ -1070,11 +1070,44 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .thermo.forecast .th-now { display: none; }
 .thermo.forecast[data-selected="false"] :is(.th-range, .th-pointer) { opacity: 0; }
 
-/* タイマーの場面の空きを埋める案（VPL124）。a＝はじめの待ち姿／b＝蒸らしの湯気／c＝上に寄せるだけ */
-/* タイマーの後ろに、本編の「蒸らしを待つはじめ」（VPL124・VPL125 で案Aに決定）。はじめのあごがタイマーの上の縁に来るよう、タイマーの高さに合わせて上下させる（背の低い画面では、帽子が工程の並びにかからない所まで上へ。縦長の画面では上の端に留め、あごとタイマーの間に胸元を見せる） */
-.t-wait { position: absolute; z-index: 0; width: 56rem; max-width: none; left: calc(50% - 2.8rem - 56rem * 0.565); top: clamp(-6rem, calc(100cqh - var(--cp) - var(--band) - 59.5rem), 0.5rem); pointer-events: none; filter: drop-shadow(0 1rem 2rem #000a) brightness(0.92); }
-.phone[data-scene="timer"] .timer-a { padding-bottom: 2rem; }
-.timer-a { z-index: 1; }
+/* タイマーの下の空きを埋める案（VPL126）。a＝蒸らし中の一台／b＝雑念よけの予告／c＝ここまでの一台。タイマーの絵の下の透明な縁（約3rem）に少し重ねる */
+.t-fill { position: relative; z-index: 0; flex: 1 1 0; min-height: 0; align-self: stretch; margin-top: -2.8rem; container-type: size; display: grid; place-items: center; }
+.t-fill > * { display: none; }
+.phone[data-scene="timer"] .veil { top: calc(100% - var(--cp) - 5rem); } /* 紫の幕は一言のすぐ上から下だけ（タイマーの下の案を暗くしない） */
+.phone[data-tfill="a"] .tf-a, .phone[data-tfill="c"] .tf-c { display: grid; }
+.phone[data-tfill="b"] .tf-b { display: grid; }
+/* 案A: 炭の上がタイマーのすぐ下に来るよう、上から置く（絵はトレーの少し下まで。脚の切れ目はぼかす）。湯気はタイマーの後ろまで立ちのぼる */
+.tf-a { position: absolute; left: -3rem; right: -3rem; top: -20rem; bottom: 0; pointer-events: none; -webkit-mask-image: linear-gradient(0deg, transparent 0, #000 2.2rem); mask-image: linear-gradient(0deg, transparent 0, #000 2.2rem); }
+.tf-bowl { position: absolute; left: 50%; top: 20.4rem; height: min(24rem, 100cqh - 0.6rem); aspect-ratio: 523 / 534; transform: translateX(-50%); }
+.tf-bowl img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; filter: drop-shadow(0 1rem 1.6rem #000c); }
+.tf-glow { position: absolute; z-index: 2; left: 10%; right: 10%; top: -3%; height: 24%; border-radius: 50%; background: radial-gradient(closest-side, #ff8a3d, #ff4d1f88 55%, transparent); mix-blend-mode: screen; opacity: calc(0.2 + var(--heat, 0) * 0.8); animation: tf-ember 1.8s ease-in-out infinite alternate; transition: opacity 0.4s; }
+@keyframes tf-ember { to { transform: scale(1.08); filter: brightness(1.25); } }
+.tf-smoke { position: absolute; z-index: 3; left: -60%; right: -60%; top: -100%; height: 110%; }
+/* 案B: 次の雑念よけの背景の窓。長さ（約○秒）と帯（最長20秒） */
+.tf-b { position: relative; overflow: hidden; justify-items: center; align-content: center; gap: 0.7rem; width: min(30rem, 100cqw - 1rem); height: min(18rem, 100cqh - 1rem); padding: 0.8rem 1.8rem; border: 0.14rem solid #c9a8ff59; border-radius: 1.8rem; background-size: cover; background-position: center; box-shadow: 0 1rem 2rem #000a, inset 0 0 2.4rem #000c; }
+.tf-b-head { position: relative; display: flex; align-items: center; gap: 0.5rem; font-size: 1.7rem; font-weight: 700; letter-spacing: 0.06em; color: #e3d2ff; }
+.tf-b-head .ic { width: 2.2rem; height: 2.2rem; fill: #ff6b9a; filter: drop-shadow(0 0 0.6rem #ff6b9a); animation: tf-beat 1.1s ease-in-out infinite; }
+@keyframes tf-beat { 0%, 60%, 100% { transform: scale(1); } 15% { transform: scale(1.22); } 30% { transform: scale(1.05); } 45% { transform: scale(1.15); } }
+.tf-b-sec { position: relative; font-size: 2.2rem; font-weight: 800; color: #fff; line-height: 1; }
+.tf-b-sec em { display: inline-block; margin: 0 0.3rem; font-style: normal; font-size: clamp(3.4rem, 26cqh, 6rem); font-variant-numeric: tabular-nums; text-shadow: 0 0 1.6rem #b48cff; }
+.tf-b-sec em.pop { animation: tf-pop 0.35s var(--ease-out); }
+@keyframes tf-pop { from { transform: scale(1.3); } }
+.tf-b-bar { position: relative; width: 100%; height: 1.1rem; border-radius: 0.55rem; background: #ffffff26; overflow: hidden; }
+.tf-b-bar i { display: block; width: calc(var(--len, 0) * 100%); height: 100%; border-radius: inherit; background: linear-gradient(90deg, #9b7bff, #ff7ab8); transition: width 0.4s var(--ease-out); }
+/* 雑念よけの玉の見本（右から左へゆっくり流れる） */
+.tf-b-dot { position: absolute; right: -2rem; width: 1.2rem; height: 1.2rem; border-radius: 50%; background: radial-gradient(circle, #fff 0 25%, #c9a8ff 45%, transparent 70%); opacity: 0.55; animation: tf-drift 6s linear infinite; pointer-events: none; }
+.tf-b-dot:nth-child(1) { top: 18%; } .tf-b-dot:nth-child(2) { top: 64%; animation-delay: -2.2s; animation-duration: 7.5s; } .tf-b-dot:nth-child(3) { top: 40%; animation-delay: -4.4s; animation-duration: 5.4s; width: 0.9rem; height: 0.9rem; }
+@keyframes tf-drift { to { transform: translateX(-36rem); } }
+@container (max-height: 9.6rem) { .tf-b { grid-template-columns: auto auto; column-gap: 1.4rem; align-items: center; } .tf-b-sec em { font-size: 3.4rem; } .tf-b-bar { grid-column: 1 / -1; } }
+/* 案C: ここまでの一台のメモ */
+.tf-c { align-content: center; gap: 0.7rem; width: min(30rem, 100cqw - 1rem); max-height: calc(100cqh - 1rem); padding: 1rem 1.4rem; border: 0.1rem solid #ffffff30; border-radius: 1.6rem; background: linear-gradient(180deg, #1e1632e6, #0e0a18f0); box-shadow: 0 1rem 2rem #000a, inset 0 0.1rem 0 #ffffff33; }
+.tf-c-head { font-size: 1.4rem; font-weight: 700; letter-spacing: 0.06em; color: #ffffffb3; }
+.tf-c-row { display: flex; align-items: center; gap: 0.8rem; white-space: nowrap; font-size: 1.8rem; font-weight: 700; color: #fff; }
+.tf-c-row small { font-size: 1.3rem; font-weight: 700; color: #ffffff99; }
+.tf-c-row small + span + small { margin-left: 0.6rem; }
+.tf-c-row i { font-style: normal; font-size: 1.2rem; color: #ffffff99; }
+.tf-c-pkg { display: flex; align-items: center; gap: 0.3rem; } .tf-c-pkg b { font-size: 1.7rem; }
+@container (max-height: 9.6rem) { .tf-c-head { display: none; } .tf-c { gap: 0.3rem; padding-block: 0.6rem; } .tf-c-pkg .pkg { zoom: 0.6; } .tf-c-row { font-size: 1.6rem; } }
 
 /* 温度計（VPL103）: 配合・詰め方・吸い出しで、上端・長さ・太さをそろえる。長さは、いちばん狭い配合の上の画面に合わせる（下の段の高さ --cp-mix から決める）。
    いちばん下の一言の段（配合の「この配合の適温」など）は、どの場面でも同じ高さを取っておく（空でも管の長さが変わらない） */
