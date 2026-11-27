@@ -1,10 +1,12 @@
 // コレクションの記録はセーブ枠と別。明示的なクリア・実際に受け取った写真だけを残す。
 import { parseCastSave } from "./legacy-cast-save.js";
+import { ALL_MINTO_CHEKIS } from "./minto-cheki-data.js";
 export const GALLERY_PROGRESS_KEY = "suien_remake_gallery_progress";
 export const PHOTO_KEEPSAKES = {
   minto_first_cheki: "cg_minto_first_cheki",
   ageha_first_purikura: "cg_ageha_first_purikura",
   ryuji_purikura: "cg_ryuji_purikura",
+  ...Object.fromEntries(ALL_MINTO_CHEKIS.map(c => [c.id, c.cg])),
 };
 
 const chapter = n => Number.isInteger(n) && n >= 1 && n <= 5;

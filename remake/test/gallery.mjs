@@ -217,13 +217,26 @@ for (const [id, chapter, char, title] of adoptedStills) {
   assert.equal(entry.unlocked, false, id);
   assert.equal(unlockedStills.find(item => item.id === id).unlocked, true, id);
 }
-assert.equal(actualManifest.cgs.length, 34 + adoptedStills.length);
-assert.equal(actualEntries.filter(e => e.cg).length, 31 + adoptedStills.length, "two alternate strips and the DAY3 sketch-in-progress are excluded");
-assert.equal(actualStats.total, 31 + adoptedStills.length, "current catalog has no approved additions");
+// PEPPERMINTで頼むチェキ（PFC14）。みんと・第1章・題名つきで、記念品として持てば解放される（見たCGの記録が無くても）。
+const { ALL_MINTO_CHEKIS } = modules.get(new URL("minto-cheki-data.js", root).href).namespace;
+assert.equal(ALL_MINTO_CHEKIS.length, 16);
+for (const c of ALL_MINTO_CHEKIS) {
+  const entry = actualEntries.find(item => item.id === c.cg);
+  assert(entry, c.cg);
+  assert.deepEqual({ chapter: entry.chapter, char: entry.char, kind: entry.kind, unlocked: entry.unlocked },
+    { chapter: 1, char: "minto", kind: "cheki", unlocked: false }, c.cg);
+  assert.equal(entry.title, (c.secret ? "ないしょのチェキ・" : "みんとのチェキ・") + c.label);
+  const owned = galleryEntries(actualManifest, actualCatalog, g.normalizeGalleryProgress({ keepsakes: [c.id] }), new Set());
+  assert.equal(owned.find(item => item.id === c.cg).unlocked, true, c.id);
+}
+const adoptedChekis = ALL_MINTO_CHEKIS.length;
+assert.equal(actualManifest.cgs.length, 34 + adoptedStills.length + adoptedChekis);
+assert.equal(actualEntries.filter(e => e.cg).length, 31 + adoptedStills.length + adoptedChekis, "two alternate strips and the DAY3 sketch-in-progress are excluded");
+assert.equal(actualStats.total, 31 + adoptedStills.length + adoptedChekis, "current catalog has no approved additions");
 assert.equal(actualStats.unlocked, 0);
 assert.equal(actualStats.rate, 0);
 const expectedChars = {
-  minto: 5, ageha: 3, tsumugi: 3, naru: 3, rio: 1, mashiro: 4, other: 12,
+  minto: 5 + adoptedChekis, ageha: 3, tsumugi: 3, naru: 3, rio: 1, mashiro: 4, other: 12,
 };
 for (const [, , char] of adoptedStills) expectedChars[char]++;
 for (const entry of actualEntries) assert(Object.hasOwn(CHAR_LABELS, entry.char), `${entry.id} has a character tag`);
@@ -232,7 +245,7 @@ for (const [char, total] of Object.entries(expectedChars)) assert.equal(actualSt
 assert.equal(Object.values(actualStats.byChar).reduce((sum, s) => sum + s.total, 0), actualStats.total);
 assert.equal(Object.values(actualStats.byKind).reduce((sum, s) => sum + s.total, 0), actualStats.total);
 const fullStats = galleryStats(galleryEntries(actualManifest, actualCatalog, empty, new Set(actualEntries.map(e => e.id))));
-assert.equal(fullStats.unlocked, 31 + adoptedStills.length);
+assert.equal(fullStats.unlocked, 31 + adoptedStills.length + adoptedChekis);
 assert.equal(fullStats.rate, 100);
 assert.equal(g.shouldAnnounceCompletion(actualStats, empty), false);
 assert.equal(g.shouldAnnounceCompletion({ total: 0, unlocked: 0 }, empty), false);
@@ -271,7 +284,7 @@ const adopted = galleryEntries(actualManifest, { items: [
   { ...comic, id: "not_explicitly_approved", approved: undefined },
 ] }, { ...empty, clearedChapters: [1] }, new Set([movie.id]));
 const adoptedStats = galleryStats(adopted);
-assert.equal(adoptedStats.total, 33 + adoptedStills.length, "only approved comics add to T");
+assert.equal(adoptedStats.total, 33 + adoptedStills.length + adoptedChekis, "only approved comics add to T");
 assert.equal(adoptedStats.unlocked, 1);
 assert.deepEqual(copy(adoptedStats.byKind.comic), { total: 2, unlocked: 1, rate: 50 });
 assert.equal(adoptedStats.byKind.movie, undefined);

@@ -25,6 +25,7 @@ import { AXE_BAR } from "./axe-bar-data.js";
 import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { fortuneHere, fortunePosition } from "./fortune-schedule.js";
 import { openingStatus, rioUnavailable } from "./spot-hours.js";
+import { offerMintoCheki } from "./minto-cheki.js";
 
 import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue, chapterRainScene } from "./spot-encounters.js";
 
@@ -757,12 +758,16 @@ export async function visitRival(spot, { expense = false } = {}) {
   // 相席予定の日には「一人占め」の昼挨拶を出さない。台詞正本・実遭遇の処理は維持する。
   const welcome = spot.charId === "minto" && state.slot === 0 && hiyoriShopEncounterDue(spot)
     ? null : `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;
+  // 初来店（台本の中に記念のチェキがある）と、正体がつながった日の来店では、チェキを頼む選択を出さない。
+  const chekiBefore = spot.charId === "minto" && !expense && storyCount("minto") >= 1 && !mintoRevealAtVisit("minto");
   const completed = await visitChar(spot.charId, { welcome });
   // 配達やチュートリアルの面識ではなく、自主来店の会話を終えてから地図に出す。
   if (completed && state === owner) {
     if (!expense) addMoney(-(spot.cost || 0));
     addStamina(spot.stamina || -16);
     state.flags[`_spot_guide_${spot.charId}`] = true;
+    // 来店の精算のあとで、チェキを頼むか選ぶ（PFC14）
+    if (chekiBefore) await offerMintoCheki();
   }
   return completed;
 }

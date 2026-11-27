@@ -62,6 +62,7 @@ const values = {
   "home-rig.js": { showSumiRigAtHome: async () => false },
   "shop.js": { openShop: async () => null, visitRio: async () => {}, ownsFlavor: () => true },
   "fortune.js": { doFortune: async () => {} },
+  "minto-cheki.js": { offerMintoCheki: async () => false }, // PEPPERMINTのチェキ（minto_cheki_collection.mjs で確かめる）
   "phone.js": { deliverMorning: () => 0, pushNotice: noop, hasUnread: () => false, unreadCount: () => 0,
     actionInviteNeedingReply: () => null, openLime: async () => {}, limeCoach: noop, expireInvitations: noop,
     rescheduleInvitation: noop, completeInvitation: noop, invitationReadBeforeMeeting: () => null },

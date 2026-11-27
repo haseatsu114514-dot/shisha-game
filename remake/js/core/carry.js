@@ -4,6 +4,7 @@
 // 好感度・恋愛のキーは構造的に混入しない。
 import { MAX_MONEY, KUJI_LIMITED_GRADES, KUJI_ONLY_EQUIPMENT } from "./rules.js";
 import { STAT_KEYS } from "./state.js";
+import { ALL_MINTO_CHEKIS } from "./minto-cheki-data.js";
 
 const clone = (v) => structuredClone(v);
 
@@ -91,11 +92,12 @@ export const GIFT_EQUIPMENT_IDS = [
 
 // 記念品の由来分類（core/keepsakes.js の KEEPSAKES と対応）。
 // "person" = 人物由来（撮影・贈答）→ リセット。それ以外 → 引き継ぐ。
-// 現在の3件はいずれも人物との写真・チェキで、CG はギャラリー層に残る。
+// いずれも人物との写真・チェキで、CG はギャラリー層に残る（PEPPERMINTで頼むチェキも同じ）。
 export const KEEPSAKE_ORIGINS = {
   ryuji_purikura: "person",
   ageha_first_purikura: "person",
   minto_first_cheki: "person",
+  ...Object.fromEntries(ALL_MINTO_CHEKIS.map(c => [c.id, "person"])),
 };
 
 // §2.3 の性質分類。unlock（恒久解放）と ui（UI・説明既読）だけが引き継ぐ。

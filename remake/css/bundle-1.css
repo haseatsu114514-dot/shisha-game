@@ -3794,8 +3794,8 @@ body[data-screen="trpg"] #hud { visibility: hidden; }
 }
 .vn-cg.show { opacity: 1; }
 .vn-skip .vn-cg { transition-duration: .14s; }
-/* 縦型チェキの余白・落書きも、下の台詞ボックスに隠さず一枚全体を見せる。 */
-.vn-cg[data-cg="cg_minto_first_cheki"] {
+/* 縦型チェキの余白・落書きも、下の台詞ボックスに隠さず一枚全体を見せる（PEPPERMINTで頼むチェキ・私服の一枚も同じ。PFC14）。 */
+.vn-cg[data-cg="cg_minto_first_cheki"], .vn-cg[data-cg^="cg_minto_cheki_"], .vn-cg[data-cg^="cg_minto_secret_cheki_"] {
   background-color: var(--ink);
   background-size: auto calc(100% - 230px);
   background-position: center 18px;
@@ -9524,8 +9524,8 @@ html:root[data-density="phone"] body:not(:root) .reel-note .rn-close { min-heigh
 }
 .gal-cell img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
 .gal-cell:hover img { transform: scale(1.05); }
-.gal-cell[data-cg="cg_minto_first_cheki"] img { object-fit: contain; padding: 4px; }
-.gal-cell[data-cg="cg_minto_first_cheki"]:hover img { transform: none; }
+.gal-cell[data-cg="cg_minto_first_cheki"] img, .gal-cell[data-cg^="cg_minto_cheki_"] img, .gal-cell[data-cg^="cg_minto_secret_cheki_"] img { object-fit: contain; padding: 4px; }
+.gal-cell[data-cg="cg_minto_first_cheki"]:hover img, .gal-cell[data-cg^="cg_minto_cheki_"]:hover img, .gal-cell[data-cg^="cg_minto_secret_cheki_"]:hover img { transform: none; }
 .gal-cell.locked { display: grid; place-items: center; cursor: default; background: repeating-linear-gradient(45deg, #120d1a 0 10px, #17111f 10px 20px); }
 .gal-cell.locked span { font-size: 18px; letter-spacing: 0.3em; color: rgba(244, 210, 122, 0.4); }
 .gal-empty, .gal-note { margin: 12px 0 0; font-size: 14px; color: var(--text-dim); }
