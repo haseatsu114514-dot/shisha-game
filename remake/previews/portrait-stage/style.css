@@ -26,6 +26,12 @@ html[data-view="gallery"] { font-size: clamp(4.6px, calc((100vw - 64px) / 172), 
 .g-note { margin: 0 0 32px; font-size: 13px; line-height: 1.8; color: #9a8fae; }
 .g-note a { color: #c9b6ff; }
 .g-grid { display: grid; grid-template-columns: repeat(auto-fill, 39rem); gap: 3.6rem 3rem; justify-content: start; }
+.g-sub { margin: 64px 0 6px; padding-top: 28px; border-top: 1px solid #ffffff1f; font-family: var(--mincho); font-size: 24px; letter-spacing: 0.06em; color: #f1d79a; }
+.g-aux { margin: 26px 0 12px; }
+.g-aux h3 { display: flex; align-items: baseline; gap: 12px; margin: 0 0 6px; font-family: var(--mincho); font-size: 20px; color: #fff; }
+.g-aux h3 small { font-size: 13px; letter-spacing: 0.2em; color: #f1d79a; }
+.g-aux h3 a { margin-left: 6px; padding: 4px 14px; border: 1px solid #f1d79a80; border-radius: 100px; font-family: var(--gothic); font-size: 12px; font-weight: 700; color: #f1d79a; text-decoration: none; }
+.g-aux p { margin: 0 0 18px; max-width: 62em; font-size: 13.5px; line-height: 1.8; color: #cfc6dd; }
 .g-cell { display: grid; gap: 10px; justify-items: center; margin: 0; }
 .g-cell figcaption { font-size: 13px; letter-spacing: 0.06em; color: #b7acc9; }
 .g-cell .phone { border-radius: 2.6rem; box-shadow: 0 0 0 0.1rem #ffffff2e, 0 2.4rem 6rem -1.8rem #000; }
@@ -35,28 +41,34 @@ html[data-view="play"], html[data-view="play"] body { height: 100%; overflow: hi
 html[data-view="play"] body { background: #000; }
 html[data-view="play"] #app { height: 100%; display: grid; place-items: center; }
 .frame { position: relative; }
-.switch { position: absolute; z-index: 60; left: 50%; bottom: calc(0.6rem + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: flex; align-items: center; gap: 1px; padding: 3px; border-radius: 100px; background: #0a0710e0; border: 1px solid #ffffff38; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); transition: opacity 0.6s; }
-.switch.idle { opacity: 0.32; }
-.switch button, .switch a { height: 26px; padding: 0 8px; display: grid; place-items: center; border-radius: 100px; font-size: 11px; font-weight: 700; white-space: nowrap; color: #d8cfe6; text-decoration: none; }
+.switch { position: absolute; z-index: 60; left: 50%; top: env(safe-area-inset-top, 0px); transform: translateX(-50%); display: grid; justify-items: center; font-size: 11px; }
+.switch .grip { width: 54px; height: 16px; display: grid; place-items: center; border-radius: 0 0 10px 10px; background: #0a0710b3; border: 1px solid #ffffff2e; border-top: 0; }
+.switch .grip i { width: 20px; height: 3px; border-radius: 3px; background: #ffffffa6; }
+.switch .panel { display: none; gap: 4px; margin-top: 4px; padding: 5px; border-radius: 14px; background: #0a0710f0; border: 1px solid #ffffff38; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: 0 10px 24px #000b; }
+.switch.open .panel { display: grid; }
+.switch .panel > div { display: flex; align-items: center; justify-content: center; gap: 2px; }
+.switch small { padding: 0 6px; font-size: 10px; font-weight: 700; color: #9a8fae; }
+.switch button:not(.grip), .switch a { height: 28px; padding: 0 9px; display: grid; place-items: center; border-radius: 100px; font-weight: 700; white-space: nowrap; color: #d8cfe6; text-decoration: none; }
 .switch button[aria-pressed="true"] { background: #f1d79a; color: #24160a; }
 
 /* ───────── スマホの枠 ───────── */
-.phone { --acc: #c3b0ff; --ctrl-h: 29.2rem; --ring: 19.4rem; --a: 14rem; --pad-top: 6.2rem; position: relative; width: 39rem; height: 84.4rem; overflow: hidden; container: phone / size; isolation: isolate; font-size: 1.4rem; line-height: 1.5; color: #fff; background: var(--deep); user-select: none; -webkit-user-select: none; }
+.phone { --acc: #c3b0ff; --ctrl-h: 29.2rem; --ring: 20.4rem; --a: 14.6rem; --pad-base: 7.1rem; position: relative; width: 39rem; height: 84.4rem; overflow: hidden; container: phone / size; isolation: isolate; font-size: 1.4rem; line-height: 1.5; color: #fff; background: var(--deep); user-select: none; -webkit-user-select: none; }
 .amb { position: absolute; left: -15%; top: -10%; width: 130%; height: 120%; object-fit: cover; filter: blur(3.2rem) brightness(0.44) saturate(1.4); }
-.pic { position: absolute; left: 0; right: 0; top: 0; height: calc(100% - var(--ctrl-h) - 5.6rem); overflow: hidden; -webkit-mask-image: linear-gradient(180deg, #000 0, #000 66%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 66%, transparent 100%); }
+.pic { position: absolute; left: 0; right: 0; top: 0; height: calc(100% - var(--ctrl-h) - var(--aux-h, 0rem) - 5.6rem); overflow: hidden; -webkit-mask-image: linear-gradient(180deg, #000 0, #000 66%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 66%, transparent 100%); }
 .pic::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 10rem; background: linear-gradient(180deg, #0b0812b8, transparent); pointer-events: none; }
 .pic > .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
 .veil { position: absolute; left: 0; right: 0; top: 32%; bottom: 0; background: linear-gradient(180deg, transparent 0%, #0b081280 32%, #0b0812b8 58%, #0b0812d9 100%); pointer-events: none; }
-.smoke { position: absolute; left: -30%; top: calc(100% - var(--ctrl-h) - 24rem); width: 160%; max-width: none; opacity: 0.18; mix-blend-mode: screen; filter: blur(0.3rem); pointer-events: none; animation: drift 16s ease-in-out infinite alternate; }
+.smoke { position: absolute; left: -30%; top: calc(100% - var(--ctrl-h) - var(--aux-h, 0rem) - 24rem); width: 160%; max-width: none; opacity: 0.18; mix-blend-mode: screen; filter: blur(0.3rem); pointer-events: none; animation: drift 16s ease-in-out infinite alternate; }
 @keyframes drift { from { transform: translateX(-4%) scale(1); } to { transform: translateX(5%) scale(1.08); } }
 
 /* 上の表示 */
 .hud { position: absolute; z-index: 5; left: 1.5rem; right: 1.4rem; top: max(1.3rem, env(safe-area-inset-top, 0px)); display: flex; align-items: flex-start; justify-content: space-between; pointer-events: none; }
-.where { display: grid; padding-left: 1rem; border-left: 0.3rem solid var(--acc); line-height: 1.25; text-shadow: 0 0.2rem 0.8rem #000, 0 0 0.3rem #000; }
+.where { display: grid; flex: none; white-space: nowrap; padding-left: 1rem; border-left: 0.3rem solid var(--acc); line-height: 1.25; text-shadow: 0 0.2rem 0.8rem #000, 0 0 0.3rem #000; }
 .where b { font-family: var(--mincho); font-size: 2.15rem; letter-spacing: 0.08em; }
-.where small { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.2em; color: #ffffffcc; }
+.where small { display: flex; align-items: center; gap: 0.6rem; font-size: 1.2rem; font-weight: 700; letter-spacing: 0.14em; color: #ffffffcc; font-variant-numeric: tabular-nums; }
+.where small i { width: 0.3rem; height: 0.3rem; border-radius: 50%; background: #ffffff80; }
 .stats { display: grid; justify-items: end; gap: 0.6rem; }
-.pill { display: flex; align-items: center; gap: 0.7rem; height: 3.1rem; padding: 0 1.3rem; border: 0.1rem solid #ffffff33; border-radius: 2rem; background: #120c1d8c; -webkit-backdrop-filter: blur(1rem) saturate(1.3); backdrop-filter: blur(1rem) saturate(1.3); box-shadow: 0 0.4rem 1rem #0006, inset 0 0.1rem 0 #ffffff33; line-height: 1; font-variant-numeric: tabular-nums; }
+.pill { display: flex; align-items: center; gap: 0.6rem; height: 3.3rem; padding: 0 1.3rem 0 0.5rem; border: 0.1rem solid #ffffff33; border-radius: 2rem; background: #120c1d8c; -webkit-backdrop-filter: blur(1rem) saturate(1.3); backdrop-filter: blur(1rem) saturate(1.3); box-shadow: 0 0.4rem 1rem #0006, inset 0 0.1rem 0 #ffffff33; line-height: 1; font-variant-numeric: tabular-nums; }
 .pill small { font-size: 1rem; font-weight: 700; letter-spacing: 0.14em; color: var(--acc); }
 .pill b { font-size: 1.55rem; }
 .pill em { font-style: normal; font-size: 1.2rem; font-weight: 700; color: #ffffffcc; padding-left: 0.7rem; border-left: 0.1rem solid #ffffff40; }
@@ -74,7 +86,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 @keyframes hop { 0% { translate: 0 0; } 38% { translate: 0 -1rem; } 100% { translate: 0 0; } }
 
 /* ───────── テロップと操作（下から積む） ───────── */
-.body { position: absolute; z-index: 6; left: 0; right: 0; bottom: 0; }
+.body { position: absolute; z-index: 6; left: 0; right: 0; bottom: 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
 .telop { position: relative; margin: 0 1.2rem; }
 .name { display: flex; align-items: baseline; gap: 1rem; min-height: 3rem; margin: 0 0.4rem 0.8rem 0.8rem; text-shadow: 0 0.2rem 1rem #000, 0 0 0.4rem #000; }
 .name b { font-family: var(--mincho); font-size: 2.6rem; letter-spacing: 0.1em; line-height: 1.2; white-space: nowrap; }
@@ -109,7 +121,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .packs .choice b { font-size: 1.76rem; white-space: nowrap; } .packs .choice small { font-size: 1.2rem; font-weight: 500; color: #ffffffb3; white-space: nowrap; }
 .choice.locked { color: #ffffff80; } .choice.locked > i { box-shadow: inset 0 0 0 0.18rem #ffffff40; border-radius: 0.3rem; }
 
-.ctrl { position: relative; height: var(--ctrl-h); }
+.ctrl { position: relative; height: calc(var(--ctrl-h) + var(--aux-h, 0rem)); --pad-top: calc(var(--pad-base) + var(--aux-pad, 0rem)); }
 .chips { display: flex; justify-content: center; gap: 0.7rem; padding: 1.2rem 1.2rem 0; }
 .chip { position: relative; height: 3.5rem; padding: 0 1.4rem; border: 0.1rem solid #ffffff2b; border-radius: 2rem; font-size: 1.22rem; font-weight: 700; letter-spacing: 0.12em; white-space: nowrap; color: #e7e0f2; background: #ffffff14; -webkit-backdrop-filter: blur(0.8rem); backdrop-filter: blur(0.8rem); }
 .chip.on { color: var(--deep); border-color: var(--acc); background: var(--acc); box-shadow: 0 0 1.4rem color-mix(in srgb, var(--acc) 60%, transparent); }
@@ -118,7 +130,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .ctrl.craft .chips { justify-content: flex-start; }
 
 /* 輪の十字キーとA（一回り大きく） */
-.dpad { position: absolute; left: 1.1rem; top: var(--pad-top); width: var(--ring); height: var(--ring); border-radius: 50%; overflow: hidden; border: 0.1rem solid #ffffff40; background: repeating-conic-gradient(from 44.3deg, #ffffff47 0 1.4deg, transparent 1.4deg 90deg), radial-gradient(circle, #ffffff0a 0%, #ffffff24 100%); -webkit-backdrop-filter: blur(1.4rem) saturate(1.4); backdrop-filter: blur(1.4rem) saturate(1.4); box-shadow: 0 1.2rem 2.6rem #000a, inset 0 0.1rem 0 #ffffff59, inset 0 0 2rem #ffffff14; }
+.dpad { position: absolute; left: 0.9rem; top: var(--pad-top); width: var(--ring); height: var(--ring); border-radius: 50%; overflow: hidden; border: 0.1rem solid #ffffff40; background: repeating-conic-gradient(from 44.3deg, #ffffff47 0 1.4deg, transparent 1.4deg 90deg), radial-gradient(circle, #ffffff0a 0%, #ffffff24 100%); -webkit-backdrop-filter: blur(1.4rem) saturate(1.4); backdrop-filter: blur(1.4rem) saturate(1.4); box-shadow: 0 1.2rem 2.6rem #000a, inset 0 0.1rem 0 #ffffff59, inset 0 0 2rem #ffffff14; }
 .dp { position: absolute; inset: 0; color: #ffffff3d; transition: background 0.12s; }
 .dp-up { clip-path: polygon(50% 50%, 1% 0, 99% 0); } .dp-down { clip-path: polygon(50% 50%, 1% 100%, 99% 100%); }
 .dp-left { clip-path: polygon(50% 50%, 0 1%, 0 99%); } .dp-right { clip-path: polygon(50% 50%, 100% 1%, 100% 99%); }
@@ -132,11 +144,10 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .dp.live { color: #fff; } .dp.live .tri { filter: drop-shadow(0 0 0.5rem var(--acc)); }
 .dp:active { background: color-mix(in srgb, var(--acc) 42%, transparent); }
 .dp-core { position: absolute; z-index: 1; left: 50%; top: 50%; width: 36%; height: 36%; transform: translate(-50%, -50%); border-radius: 50%; border: 0.1rem solid #ffffff40; background: radial-gradient(circle, var(--acc) 0 7%, transparent 9%), radial-gradient(circle at 50% 30%, #2a2040, #0b0812); box-shadow: 0 0.4rem 1rem #000a, inset 0 0.1rem 0 #ffffff33; pointer-events: none; }
-.btn-a { position: absolute; right: 1.5rem; top: calc(var(--pad-top) + (var(--ring) - var(--a)) / 2); width: var(--a); height: var(--a); border-radius: 50%; display: grid; place-items: center; border: 0.16rem solid color-mix(in srgb, var(--acc) 82%, #fff); background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--acc) 62%, transparent) 0%, color-mix(in srgb, var(--acc) 24%, transparent) 55%, #ffffff17 100%); -webkit-backdrop-filter: blur(1.4rem) saturate(1.5); backdrop-filter: blur(1.4rem) saturate(1.5); box-shadow: 0 0 0 0.8rem #ffffff12, 0 0 3.6rem color-mix(in srgb, var(--acc) 55%, transparent), 0 1.4rem 2.6rem #000b, inset 0 0.25rem 0.5rem #ffffff80, inset 0 -0.8rem 1.6rem #0b081266; transition: transform 0.1s; touch-action: none; }
+.btn-a { position: absolute; right: 1.3rem; top: calc(var(--pad-top) + (var(--ring) - var(--a)) / 2); width: var(--a); height: var(--a); border-radius: 50%; display: grid; place-items: center; border: 0.16rem solid color-mix(in srgb, var(--acc) 82%, #fff); background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--acc) 62%, transparent) 0%, color-mix(in srgb, var(--acc) 24%, transparent) 55%, #ffffff17 100%); -webkit-backdrop-filter: blur(1.4rem) saturate(1.5); backdrop-filter: blur(1.4rem) saturate(1.5); box-shadow: 0 0 0 0.8rem #ffffff12, 0 0 3.6rem color-mix(in srgb, var(--acc) 55%, transparent), 0 1.4rem 2.6rem #000b, inset 0 0.25rem 0.5rem #ffffff80, inset 0 -0.8rem 1.6rem #0b081266; transition: transform 0.1s; touch-action: none; }
 .btn-a::before { content: ""; position: absolute; inset: -0.16rem; border-radius: 50%; border: 0.12rem solid var(--acc); opacity: 0; animation: halo 2.4s ease-out infinite; pointer-events: none; }
 @keyframes halo { 0% { opacity: 0.7; transform: scale(1); } 100% { opacity: 0; transform: scale(1.3); } }
-.btn-a .t { font-family: var(--mincho); font-size: 3.4rem; letter-spacing: 0.1em; margin-right: -0.1em; color: #fff; text-shadow: 0 0.2rem 0.8rem #0b0812, 0 0 0.3rem #0b0812; pointer-events: none; }
-.btn-a .k { position: absolute; right: 0.2rem; top: 0.2rem; width: 3.1rem; height: 3.1rem; display: grid; place-items: center; border-radius: 50%; font-size: 1.5rem; font-weight: 700; color: #0b0812; background: #fff; box-shadow: 0 0.3rem 0.8rem #000a; pointer-events: none; }
+.btn-a .t { font-family: var(--mincho); font-size: 3.6rem; letter-spacing: 0.1em; margin-right: -0.1em; color: #fff; text-shadow: 0 0.2rem 0.8rem #0b0812, 0 0 0.3rem #0b0812; pointer-events: none; }
 .btn-a:active { transform: scale(0.94); }
 .btn-a[disabled] { filter: grayscale(1) brightness(0.7); } .btn-a[disabled]::before { animation: none; }
 .btn-a[disabled] .t { font-size: 2.1rem; }
@@ -153,28 +164,9 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .pin[aria-current="true"] { z-index: 3; }
 .pin[aria-current="true"] .pin-dot { background: var(--acc); box-shadow: 0 0 0 0.25rem #0b0812cc, 0 0 0 0.45rem var(--acc), 0 0 2rem var(--acc); }
 .pin-hit { position: absolute; left: -2.4rem; top: -2.4rem; width: 4.8rem; height: 4.8rem; border-radius: 50%; }
-.pin-flag { position: absolute; left: 0; bottom: 2.6rem; transform: translateX(-50%); padding: 0.3rem 1.2rem; border: 0.1rem solid #ffffff59; border-radius: 2rem; font-family: var(--mincho); font-size: 1.62rem; letter-spacing: 0.06em; white-space: nowrap; color: #fff; background: #120c1dd9; box-shadow: 0 0.5rem 1.2rem #000b; pointer-events: none; opacity: 0; transition: opacity 0.25s; }
-.pin[aria-current="true"] .pin-flag { opacity: 1; }
 .pin-ring { position: absolute; left: 0; top: 0; width: 4rem; height: 4rem; margin: -2rem 0 0 -2rem; border-radius: 50%; border: 0.22rem solid var(--acc); opacity: 0; pointer-events: none; }
 .pin[aria-current="true"] .pin-ring { animation: ring 1.8s ease-out infinite; }
 @keyframes ring { 0% { opacity: 0.9; transform: scale(0.45); } 100% { opacity: 0; transform: scale(1.3); } }
-/* 画面の外にある「！」の店への案内 */
-.beacons { position: absolute; inset: 0; pointer-events: none; }
-.beacon { position: absolute; pointer-events: auto; display: flex; align-items: center; gap: 0.6rem; height: 3.5rem; padding: 0 1rem; border: 0.1rem solid #ffe2a6b3; border-radius: 2rem; font-size: 1.28rem; font-weight: 700; white-space: nowrap; color: #fff; background: #120c1dd9; box-shadow: 0 0.5rem 1.2rem #000b; animation: beacon-in 0.4s var(--ease-out); }
-.beacon.l { transform: translate(-0.6rem, -50%); flex-direction: row; } .beacon.r { transform: translate(calc(-100% + 0.6rem), -50%); flex-direction: row-reverse; }
-.beacon i { width: 0; height: 0; border: 0.45rem solid transparent; border-left: 0.75rem solid #ffe2a6; border-right: 0; }
-.beacon em { width: 1.9rem; height: 1.9rem; display: grid; place-items: center; border-radius: 50%; font-style: normal; font-size: 1.2rem; font-weight: 900; color: #24160a; background: #ffe2a6; }
-@keyframes beacon-in { from { opacity: 0; } }
-/* 小さい全体図（押すと全体表示） */
-.mini { position: absolute; z-index: 5; left: 1.5rem; top: 8rem; width: 12rem; aspect-ratio: 16 / 9; overflow: hidden; border: 0.1rem solid #ffffff66; border-radius: 0.9rem; background: #120c1d; box-shadow: 0 0.6rem 1.4rem #000a; }
-.mini > img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.62) saturate(0.9); }
-.mini-view { position: absolute; border: 0.14rem solid var(--acc); border-radius: 0.3rem; background: color-mix(in srgb, var(--acc) 16%, transparent); transition: all 0.6s var(--ease-out); }
-.mini-pin { position: absolute; width: 0.6rem; height: 0.6rem; margin: -0.3rem 0 0 -0.3rem; border-radius: 50%; background: #fff; box-shadow: 0 0 0 0.1rem #0b0812; }
-.mini-pin.mark { background: #ffe2a6; } .mini-pin.sel { width: 0.8rem; height: 0.8rem; margin: -0.4rem 0 0 -0.4rem; background: var(--acc); box-shadow: 0 0 0.6rem var(--acc); }
-.mini.far { width: auto; aspect-ratio: auto; height: 3.5rem; padding: 0 1.5rem; display: grid; place-items: center; border-radius: 2rem; background: #120c1dd9; }
-.mini.far > img, .mini.far > i { display: none; }
-.mini.far > span { position: static; padding: 0; font-size: 1.25rem; letter-spacing: 0.1em; color: #fff; background: none; }
-.mini > span { position: absolute; right: 0.3rem; bottom: 0.3rem; padding: 0.05rem 0.7rem; border-radius: 1rem; font-size: 1.1rem; font-weight: 700; color: #0b0812; background: #ffffffe6; }
 /* 行き先の札 */
 .dest { display: grid; grid-template-columns: 1fr auto; grid-template-rows: 1fr auto; align-items: center; gap: 0.6rem 1rem; touch-action: pan-y; }
 .who { display: flex; align-items: center; gap: 1.1rem; font-size: 1.72rem; font-weight: 700; white-space: nowrap; }
@@ -188,7 +180,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .dots button.mark::before { background: #ffe2a6b3; }
 .dots button[aria-current="true"]::before { width: 2.3rem; background: var(--acc); box-shadow: 0 0 0.8rem var(--acc); }
 /* 行き先の一覧（上の絵とテロップの場所に重ねる。パッドは残す） */
-.sheet { position: absolute; z-index: 20; left: 1rem; right: 1rem; top: 7.6rem; bottom: calc(var(--ctrl-h) - 5rem); display: flex; flex-direction: column; border: 0.1rem solid #ffffff38; border-radius: 2rem; background: #120c1df0; -webkit-backdrop-filter: blur(1.6rem); backdrop-filter: blur(1.6rem); box-shadow: 0 2rem 4rem #000c; opacity: 0; transform: translateY(2rem); pointer-events: none; transition: opacity 0.25s, transform 0.4s var(--ease-out); }
+.sheet { position: absolute; z-index: 20; left: 1rem; right: 1rem; top: 7.6rem; bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) - 5rem); display: flex; flex-direction: column; border: 0.1rem solid #ffffff38; border-radius: 2rem; background: #120c1df0; -webkit-backdrop-filter: blur(1.6rem); backdrop-filter: blur(1.6rem); box-shadow: 0 2rem 4rem #000c; opacity: 0; transform: translateY(2rem); pointer-events: none; transition: opacity 0.25s, transform 0.4s var(--ease-out); }
 .sheet.open { opacity: 1; transform: none; pointer-events: auto; }
 .sheet header { display: flex; align-items: baseline; gap: 1rem; padding: 1.4rem 1.8rem 1rem; border-bottom: 0.1rem solid #ffffff1f; }
 .sheet header b { font-family: var(--mincho); font-size: 2.2rem; letter-spacing: 0.1em; } .sheet header small { flex: 1; font-size: 1.2rem; color: #ffffffa6; }
@@ -207,6 +199,11 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 
 .toast { position: absolute; z-index: 45; left: 50%; top: 42%; transform: translateX(-50%); max-width: 32rem; padding: 1rem 1.6rem; border: 0.1rem solid #ffffff40; border-radius: 1.4rem; font-size: 1.34rem; font-weight: 700; text-align: center; color: #fff; background: #120c1df0; box-shadow: 0 1rem 2.4rem #000b; animation: toast 2.2s ease-out forwards; pointer-events: none; }
 @keyframes toast { 0% { opacity: 0; } 10% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+.rain { position: absolute; inset: 0; pointer-events: none; opacity: 0.55; mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='90' height='140'><g stroke='white' stroke-opacity='0.6' stroke-width='1.1' stroke-linecap='round'><line x1='12' y1='4' x2='8' y2='24'/><line x1='54' y1='38' x2='50' y2='58'/><line x1='82' y1='84' x2='78' y2='104'/><line x1='30' y1='98' x2='26' y2='118'/><line x1='68' y1='122' x2='65' y2='136'/></g></svg>"), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='130' height='200'><g stroke='white' stroke-opacity='0.35' stroke-width='0.9' stroke-linecap='round'><line x1='20' y1='20' x2='17' y2='36'/><line x1='96' y1='70' x2='93' y2='86'/><line x1='60' y1='140' x2='57' y2='156'/></g></svg>");
+  background-size: 9rem 14rem, 13rem 20rem; animation: rain 0.7s linear infinite; }
+@keyframes rain { from { background-position: 0 0, 0 0; } to { background-position: 0 14rem, 0 20rem; } }
+.pin { transition: opacity 0.3s; } .pin.under { opacity: 0.28; } .pin.under .pin-hit { pointer-events: none; }
 /* 地図から店へ・店に着いた時 */
 .phone.leaving::after { content: ""; position: absolute; z-index: 40; inset: 0; background: radial-gradient(circle at 50% 34%, #ffffff, #e6dcff 55%, #b9a5ff); opacity: 0; animation: flash 0.62s ease-in forwards; pointer-events: none; }
 .phone.leaving .map-pan { transition: transform 0.62s cubic-bezier(0.5, 0, 0.9, 0.4); }
@@ -228,8 +225,8 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .stepchip { position: absolute; z-index: 5; left: 1.5rem; top: 8rem; display: flex; align-items: center; gap: 0.8rem; height: 3.4rem; padding: 0 1.3rem; border: 0.1rem solid color-mix(in srgb, var(--acc) 70%, transparent); border-radius: 2rem; background: #120c1db3; -webkit-backdrop-filter: blur(1rem); backdrop-filter: blur(1rem); }
 .stepchip small { font-size: 1rem; font-weight: 700; letter-spacing: 0.2em; color: var(--acc); } .stepchip b { font-family: var(--mincho); font-size: 1.8rem; letter-spacing: 0.1em; }
 .pic.craft > .bg { filter: brightness(0.5) blur(0.25rem); transform: scale(1.06); object-position: 30% 50%; }
-.bowl { position: absolute; left: 50%; top: 17.5%; height: 60%; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 2rem 2.4rem #000c); }
-.foil { position: absolute; left: 50%; top: 16.5%; width: 30.5rem; aspect-ratio: 1; transform: translateX(-50%); filter: drop-shadow(0 1.6rem 2.4rem #000c); }
+.bowl { position: absolute; left: 46%; top: 18%; height: 56%; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 2rem 2.4rem #000c); }
+.foil { position: absolute; left: 46%; top: 17%; width: 27.6rem; aspect-ratio: 1; transform: translateX(-50%); filter: drop-shadow(0 1.6rem 2.4rem #000c); }
 .foil img { width: 100%; height: 100%; } .foil-marks { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .foil-marks .todo { fill: #0b08128c; }
 .foil-marks .target rect { fill: none; stroke: #fff; stroke-width: 1.6; filter: drop-shadow(0 0 2px #ffcf6b); }
@@ -240,12 +237,8 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .puff { position: absolute; max-width: none; width: 60%; left: 34%; top: 14%; opacity: 0; pointer-events: none; mix-blend-mode: screen; }
 .phone.puffing .puff { animation: puff 1.5s var(--ease-out); }
 @keyframes puff { 0% { opacity: 0; transform: translate(0, 12%) scale(0.5); } 22% { opacity: 0.85; } 100% { opacity: 0; transform: translate(-6%, -22%) scale(1.25); } }
-.thermo { position: absolute; right: 1.8rem; top: 22%; bottom: 30%; display: grid; grid-template-rows: auto 1fr; justify-items: center; gap: 0.4rem; }
-.thermo small { font-size: 1.12rem; font-weight: 700; letter-spacing: 0.08em; color: #9df0b7; white-space: nowrap; text-shadow: 0 0.1rem 0.3rem #000, 0 0 0.6rem #000; }
-.thermo span { position: relative; width: 1.2rem; border-radius: 1rem; background: linear-gradient(180deg, #d92f27 0%, #f0822c 20%, #ffd0a0 30%, #a9f0cf 36%, #a8d8ff 43%, #d7c2ff 48%, #ffd94a 60%, #fff0b8 82%, #fffbe9 100%); box-shadow: 0 0 0 0.18rem #1a1024, 0 0 0 0.28rem #ffffff80, 0 0.3rem 0.8rem #000a; }
-.thermo i { position: absolute; left: 150%; top: 41%; border: 0.5rem solid transparent; border-right: 0.8rem solid #fff; border-left: 0; transform: translateY(-50%); filter: drop-shadow(0 0 0.3rem #000); }
 /* 穴あけ: 押している長さの輪 */
-.dial { position: absolute; left: 1.1rem; top: var(--pad-top); width: var(--ring); height: var(--ring); border-radius: 50%; display: grid; align-content: center; justify-items: center; border: 0.1rem solid #ffffff40; background: radial-gradient(circle, #ffffff0a, #ffffff1f); -webkit-backdrop-filter: blur(1.4rem); backdrop-filter: blur(1.4rem); box-shadow: 0 1.2rem 2.6rem #000a, inset 0 0.1rem 0 #ffffff59; }
+.dial { position: absolute; left: 0.9rem; top: var(--pad-top); width: var(--ring); height: var(--ring); border-radius: 50%; display: grid; align-content: center; justify-items: center; border: 0.1rem solid #ffffff40; background: radial-gradient(circle, #ffffff0a, #ffffff1f); -webkit-backdrop-filter: blur(1.4rem); backdrop-filter: blur(1.4rem); box-shadow: 0 1.2rem 2.6rem #000a, inset 0 0.1rem 0 #ffffff59; }
 .dial svg { position: absolute; inset: 0; transform: rotate(-90deg); }
 .dial-bg { fill: none; stroke: #ffffff26; stroke-width: 7; }
 .dial-just { fill: none; stroke: #ffffffb3; stroke-width: 7; stroke-dasharray: 32 68; stroke-dashoffset: -30; }
@@ -254,7 +247,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .dial span { margin-top: 0.5rem; font-size: 1.22rem; font-weight: 700; letter-spacing: 0.1em; color: #ffffffb3; }
 .dial em { margin-top: 0.3rem; font-style: normal; font-size: 1.22rem; font-weight: 700; color: var(--acc); }
 /* 吸い出し: メーターの中心に「吸う」 */
-.gauge { position: absolute; left: 3.2rem; right: 3.2rem; top: 5.9rem; }
+.gauge { position: absolute; left: 3.2rem; right: 3.2rem; top: calc(6.6rem + var(--aux-g, 0rem)); }
 .gauge .lab { position: absolute; top: 0.2rem; font-size: 1.22rem; font-weight: 700; letter-spacing: 0.1em; text-shadow: 0 0.1rem 0.5rem #000; }
 .gauge .lab.l { left: -2.1rem; color: #8cc8ff; } .gauge .lab.r { right: -2.1rem; color: #ffb27a; }
 .meter { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 1rem 1.6rem #0009); }
@@ -263,23 +256,18 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .meter .z-cold { fill: #4aa3ff; } .meter .z-hot { fill: #ff5a3c; } .meter .z-keep { fill: #ffffffe6; } .meter .z-just { fill: #fff; filter: drop-shadow(0 0 4px #fff); }
 .meter .z-cool { fill: color-mix(in oklab, #4aa3ff var(--mix), #ffffff3d); } .meter .z-warm { fill: color-mix(in oklab, #ff9a4a var(--mix), #ffffff3d); }
 .meter .needle path { fill: #fff; filter: drop-shadow(0 0 3px var(--acc)); }
-.btn-a.center { left: 50%; right: auto; top: 15.3rem; width: 12.4rem; height: 12.4rem; margin-left: -6.2rem; }
-.lamps { position: absolute; left: 1.4rem; right: 1.4rem; top: 23.6rem; display: flex; justify-content: space-between; pointer-events: none; }
-.lamps > span { display: grid; gap: 0.3rem; } .lamps > span:last-child { justify-items: end; }
-.lamps small { font-size: 1.12rem; font-weight: 700; letter-spacing: 0.08em; color: #ffffffb3; text-shadow: 0 0.1rem 0.4rem #000; }
-.leaves { display: flex; gap: 0.1rem; } .leaves img { width: 2.1rem; height: 2.1rem; object-fit: contain; }
-.pulls { display: flex; align-items: center; gap: 0.4rem; height: 1.9rem; }
-.pulls i { width: 1.15rem; height: 1.15rem; border-radius: 50%; box-shadow: inset 0 0 0 0.16rem #ffffff80; } .pulls i.on { background: var(--acc); box-shadow: 0 0 0.8rem var(--acc); }
-.pulls b { margin-left: 0.4rem; font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.btn-a.center { left: 50%; right: auto; top: calc(15.7rem + var(--aux-g, 0rem)); width: 13rem; height: 13rem; margin-left: -6.5rem; }
 .serve { position: absolute; right: 1.2rem; top: 1.2rem; height: 3.5rem; padding: 0 1.4rem; display: flex; align-items: center; gap: 0.7rem; border: 0.1rem solid color-mix(in srgb, var(--acc) 70%, transparent); border-radius: 2rem; background: color-mix(in srgb, var(--acc) 18%, #120c1d99); }
-.serve b { font-size: 1.28rem; letter-spacing: 0.1em; } .serve small { font-size: 1.05rem; color: #ffffffb3; }
 
 /* ───────── 文字を減らす: 絵記号・顔・光で伝える部品 ───────── */
 .ic { flex: none; width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 .ic .f { fill: currentColor; stroke: none; }
 /* 上の表示: 地図は絵記号つき、会話は場所の名前だけ */
-.pill .ic { font-size: 1.8rem; color: #ffffffd9; } .pill .ic:first-of-type { color: var(--acc); }
-.pill .sep { width: 0.1rem; height: 1.4rem; background: #ffffff40; }
+.pill .ic { font-size: 1.7rem; color: #ffffffd9; } .pill .ic:first-of-type { color: #ff8fb1; }
+.pill .sep { width: 0.1rem; height: 1.4rem; margin: 0 0.2rem; background: #ffffff40; }
+.lv { display: flex; align-items: baseline; gap: 0.15rem; height: 2.5rem; padding: 0 0.85rem; border-radius: 2rem; line-height: 2.5rem; color: var(--deep); background: var(--acc); }
+.lv small { font-size: 0.95rem; letter-spacing: 0.02em; color: inherit; } .lv b { font-size: 1.6rem; }
+.bar.xp { width: 3.4rem; } .bar.xp > i { background: linear-gradient(90deg, #a98bff, #e1d6ff); box-shadow: 0 0 0.6rem #a98bff; }
 .hud.slim .where { border-left-width: 0.2rem; opacity: 0.92; } .hud.slim .where b { font-size: 1.7rem; }
 /* 補助の札: 丸い絵記号 */
 .chips { gap: 1.1rem; padding: 1.1rem 1.2rem 0; }
@@ -299,13 +287,9 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .pin-dot em.off { font-size: 1rem; color: #fff; background: #b54a45; }
 .pin.closed .pin-dot { color: #fff; background: #1a1228; font-size: 2rem; } .pin.closed .pin-dot img { filter: grayscale(1) brightness(0.65); }
 .pin[aria-current="true"] .pin-dot { background: #1a1228; border-color: var(--acc); transform: translate(-50%, -50%) scale(1.2); box-shadow: 0 0 0 0.3rem color-mix(in srgb, var(--acc) 45%, transparent), 0 0 2.2rem var(--acc); }
-.pin-flag { bottom: 3.3rem; } .pin-ring { width: 5.6rem; height: 5.6rem; margin: -2.8rem 0 0 -2.8rem; }
-.beacon { height: 4.2rem; padding: 0 0.5rem; gap: 0.4rem; }
+.pin-ring { width: 5.6rem; height: 5.6rem; margin: -2.8rem 0 0 -2.8rem; }
 .ava { position: relative; flex: none; display: grid; place-items: center; border-radius: 50%; color: var(--acc); background: #1a1228; }
 .ava img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-.beacon .ava { width: 3.2rem; height: 3.2rem; font-size: 1.8rem; }
-.mini > span { right: 0.3rem; bottom: 0.3rem; width: 2.2rem; height: 2.2rem; padding: 0; display: grid; place-items: center; border-radius: 50%; font-size: 1.4rem; }
-.mini.far { width: 4.3rem; height: 4.3rem; padding: 0; border-radius: 50%; } .mini.far > span { width: auto; height: auto; font-size: 2.1rem; }
 /* 行き先の札: 顔・名前・絵記号つきの数字だけ */
 .dest { grid-template-columns: 1fr auto; }
 .who .ava { width: 5.6rem; height: 5.6rem; font-size: 2.8rem; box-shadow: 0 0 0 0.15rem var(--acc), 0 0.4rem 1rem #000a; }
@@ -327,7 +311,6 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .steps span.done { color: var(--acc); }
 .steps span.now { width: auto; display: flex; gap: 0.6rem; padding: 0 1.3rem 0 1rem; color: var(--deep); background: var(--acc); box-shadow: 0 0 1.6rem color-mix(in srgb, var(--acc) 55%, transparent); }
 .steps span.now b { font-family: var(--mincho); font-size: 1.75rem; letter-spacing: 0.08em; white-space: nowrap; }
-.thermo .ic { font-size: 2rem; color: #9df0b7; filter: drop-shadow(0 0.1rem 0.3rem #000); }
 /* スミさんの一言: 小さな吹き出し。少しすると顔だけになる */
 .coach { display: flex; align-items: flex-end; gap: 1rem; width: 100%; margin-bottom: 0.2rem; text-align: left; }
 .coach img { flex: none; width: 5.2rem; height: 5.2rem; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 0.15rem var(--acc), 0 0.4rem 1rem #000a; }
@@ -347,26 +330,105 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .want { fill: none; stroke: #ffffff38; stroke-width: 7.4; } .grow { fill: var(--acc); opacity: 0.92; }
 .dial.ok .grow { fill: #ffe2a6; filter: drop-shadow(0 0 4px #ffcf6b); } .dial.ok .want { stroke: #ffe2a680; }
 .foil-marks .tip.ok { stroke: #ffe2a6; filter: drop-shadow(0 0 4px #ffcf6b); }
+/* 熱ゲージ: 右に大きく。本編（remake/css/craft.css の .thermo-*）と同じ色の意味。緑の帯＝適温の目安（両端に白い刻み）、
+   真ん中の虹＝合わせやすい範囲（中央に白線）、一番上＝焦げる帯（炎の印）。今の温度は外から指す矢印と管を横切る線。今より上は少し暗い */
+.thermo { position: absolute; z-index: 5; right: 1.1rem; top: 7.4rem; bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 10.2rem); width: 5.4rem; display: grid; grid-template-rows: auto 1fr; justify-items: center; gap: 0.6rem; pointer-events: none; }
+.th-icon { width: 3.6rem; height: 3.6rem; display: grid; place-items: center; border-radius: 50%; font-size: 2.3rem; color: #fff; background: #120c1dcc; box-shadow: 0 0 0 0.12rem #ffffff40, 0 0.4rem 1rem #0009; transition: color 0.3s, background 0.3s, box-shadow 0.3s; }
+.th-bar { position: relative; width: 3rem; height: 100%; border-radius: 1.6rem; overflow: hidden; box-shadow: 0 0 0 0.25rem #120c1dd9, 0 0 0 0.38rem #ffffff59, 0 1rem 2rem #000b; }
+.th-bar::before { content: ""; position: absolute; inset: 0; z-index: 4; pointer-events: none; background: repeating-linear-gradient(0deg, transparent 0 calc(10% - 0.1rem), #0b081233 calc(10% - 0.1rem) 10%), linear-gradient(90deg, transparent 14%, #ffffff40 22%, transparent 34%); }
+.th-zone { position: absolute; left: 0; right: 0; z-index: 3; }
+.th-zone::before, .th-zone::after { content: ""; position: absolute; left: 0; right: 0; height: 0.25rem; background: linear-gradient(90deg, #fff 0 30%, transparent 30% 70%, #fff 70%); filter: drop-shadow(0 0 0.1rem #0008); }
+.th-zone::before { top: -0.12rem; } .th-zone::after { bottom: -0.12rem; }
+.th-best { position: absolute; left: 0; right: 0; z-index: 5; overflow: hidden; background: linear-gradient(90deg, #ff6c85, #ffb554, #ffef72, #71ffc6, #69dfff, #a59bff, #e89bf4);
+  -webkit-mask-image: linear-gradient(0deg, transparent, #000 15% 85%, transparent); mask-image: linear-gradient(0deg, transparent, #000 15% 85%, transparent); filter: brightness(1.07); }
+.th-best::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 0.12rem; background: #fff; box-shadow: 0 0 0.2rem #fff; }
+.th-best::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 45%; background: linear-gradient(90deg, #fff0, #ffffff70, #fff0); transform: translateX(-120%); animation: th-sheen 4s ease-in-out infinite; }
+@keyframes th-sheen { 60%, 100% { transform: translateX(260%); } }
+.th-danger { position: absolute; left: 0; right: 0; top: 0; z-index: 3; display: grid; place-items: center; border-bottom: 0.2rem solid #fff6e0cc; font-size: 1.8rem; color: #fff6e0; }
+.th-danger .ic { filter: drop-shadow(0 0 0.3rem #ff3a00) drop-shadow(0 0 0.1rem #000); }
+.th-dim { position: absolute; left: 0; right: 0; top: 0; bottom: calc(var(--t) * 100%); z-index: 2; background: #0b08124d; transition: bottom 0.6s var(--ease-out); }
+.th-now { position: absolute; left: 0; right: 0; z-index: 6; bottom: calc(var(--t) * 100%); height: 0.42rem; margin-bottom: -0.21rem; background: #fff; box-shadow: 0 0 0 0.12rem #120a10, 0 0 0.8rem #fff; transition: bottom 0.6s var(--ease-out); }
+.th-tube { position: relative; display: flex; justify-content: center; }
+.th-pointer { position: absolute; z-index: 7; left: -1.5rem; bottom: calc(var(--t) * 100%); width: 0; height: 0; margin-bottom: -1.05rem; border: 1.05rem solid transparent; border-left: 1.6rem solid #fff; border-right: 0; filter: drop-shadow(0 0 0.1rem #120a10) drop-shadow(0 0.2rem 0.4rem #000a); transition: bottom 0.6s var(--ease-out); }
+.thermo.ok .th-icon { color: #0b2a1c; background: #74e0b0; box-shadow: 0 0 0 0.12rem #fff, 0 0 1.8rem #4fcf98; }
+.thermo.best .th-icon { color: #24160a; background: linear-gradient(135deg, #ff9ab0, #ffe27a, #7cf0c8, #8fc8ff, #d2a6ff); box-shadow: 0 0 0 0.12rem #fff, 0 0 2.2rem #fff; }
+.thermo.best .th-best { filter: brightness(1.25); }
+.thermo.burn .th-icon { color: #fff; background: #c81e1e; box-shadow: 0 0 0 0.12rem #fff, 0 0 2rem #ff3a00; }
+.phone[data-scene="pack"] .thermo { bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 22.2rem); }
+/* 葉（フレーバーの持ち）は上の段の真ん中、吸った回数は「吸う」の中の点 */
+.ctrl .leaves { position: absolute; left: 50%; top: 1.1rem; height: 4.3rem; transform: translateX(-50%); display: flex; align-items: center; gap: 0.15rem; padding: 0 1rem; border-radius: 3rem; background: #ffffff0d; pointer-events: none; }
+.ctrl .leaves img { width: 2.2rem; height: 2.2rem; object-fit: contain; filter: drop-shadow(0 0.1rem 0.3rem #000a); }
+.pips { position: absolute; left: 50%; bottom: 2rem; transform: translateX(-50%); display: flex; gap: 0.45rem; pointer-events: none; }
+.pips i { width: 0.95rem; height: 0.95rem; border-radius: 50%; box-shadow: inset 0 0 0 0.16rem #ffffffa6; } .pips i.on { background: #fff; box-shadow: 0 0 0.7rem var(--acc); }
+.btn-a.center .t { margin-top: -1rem; }
 /* 合った時は A が光る（説明の文字の代わり） */
 .btn-a.hot { border-color: #fff; box-shadow: 0 0 0 0.8rem #ffffff2e, 0 0 4.6rem #fff, 0 0 2rem var(--acc), 0 1.4rem 2.6rem #000b, inset 0 0.25rem 0.5rem #ffffffb3, inset 0 -0.8rem 1.6rem #0b081240; }
 /* 吸い出し: 両端は矢印の絵記号、葉と回数は点だけ */
 .gauge .end { position: absolute; top: 0; font-size: 2.6rem; filter: drop-shadow(0 0.1rem 0.4rem #000); } .gauge .end.l { left: -2.4rem; color: #8cc8ff; } .gauge .end.r { right: -2.4rem; color: #ffb27a; }
-.lamps { align-items: center; pointer-events: none; top: 24.4rem; } .lamps > .leaves, .lamps > .pulls { display: flex; align-items: center; gap: 0.3rem; } .lamps > .pulls { gap: 0.5rem; } .lamps .pulls i { width: 1.4rem; height: 1.4rem; } .lamps .leaves img { width: 2.3rem; height: 2.3rem; }
 .serve { width: auto; gap: 0.5rem; padding: 0 1.2rem; height: 4.3rem; top: 1.1rem; font-size: 2.2rem; }
 .serve i { width: 1rem; height: 1rem; border-radius: 50%; box-shadow: inset 0 0 0 0.16rem #ffffff99; }
 
+/* ───────── 補助ボタン（LIME・MENU・LOG など）の配置案 ───────── */
+.chips .chip span, .tab span, .sh span { pointer-events: none; }
+/* 案1: 名前つきの段（今の位置のまま、横いっぱいに大きく） */
+.phone[data-aux="1"] { --aux-h: 1rem; --aux-pad: 1.1rem; --aux-g: 1.1rem; }
+.chips.labeled { gap: 0.7rem; padding: 1rem 1.2rem 0; }
+.chips.labeled .chip { flex: 1 1 0; width: auto; height: 5.4rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; border-radius: 1.6rem; font-size: 2.1rem; }
+.chips.labeled .chip span { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.06em; line-height: 1; }
+.ctrl.craft .chips.labeled .chip { flex: none; width: 5.2rem; }
+.phone[data-aux="1"] .ctrl .leaves { gap: 0.05rem; padding: 0 0.8rem; } .phone[data-aux="1"] .ctrl .leaves img { width: 1.95rem; height: 1.95rem; }
+.serve span { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.08em; }
+.phone[data-aux="1"] .serve, .phone[data-aux="3"] .serve { height: 5.4rem; top: 1rem; border-radius: 1.6rem; }
+.phone[data-aux="1"] .ctrl .leaves { top: 1.55rem; }
+/* 案2: 肩の大ボタン（よく使う2つだけ。残りは「その他」） */
+.phone[data-aux="2"] { --aux-h: 0.8rem; --aux-pad: 0.9rem; --aux-g: 0.9rem; }
+.shoulders { position: absolute; left: 1rem; right: 1rem; top: 1rem; display: flex; justify-content: space-between; pointer-events: none; }
+.shoulders > span { display: flex; pointer-events: auto; }
+.sh { position: relative; min-width: 13.4rem; height: 5.2rem; padding: 0 1.6rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem; border: 0.1rem solid #ffffff38; border-radius: 2.6rem; font-size: 2.3rem; color: #f0eaf8; background: linear-gradient(180deg, #ffffff1f, #ffffff0d); -webkit-backdrop-filter: blur(1rem); backdrop-filter: blur(1rem); box-shadow: 0 0.6rem 1.4rem #0008, inset 0 0.1rem 0 #ffffff33; }
+.sh span { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.08em; }
+.sh em { position: absolute; right: -0.2rem; top: -0.4rem; min-width: 2rem; height: 2rem; display: grid; place-items: center; border-radius: 1rem; font-style: normal; font-size: 1.1rem; font-weight: 700; color: #fff; background: #ff5a6e; }
+.sh.on { color: var(--deep); border-color: var(--acc); background: var(--acc); }
+.sh:active { transform: scale(0.96); }
+.phone[data-aux="2"] .ctrl.craft .sh { min-width: 11rem; }
+.phone[data-aux="2"] .serve { top: 1rem; right: 1rem; min-width: 11rem; height: 5.2rem; justify-content: center; border-radius: 2.6rem; }
+.phone[data-aux="2"] .ctrl .leaves { top: 1.45rem; }
+.more { position: absolute; z-index: 30; bottom: calc(100% - 0.4rem); display: grid; grid-template-columns: repeat(2, 9.6rem); gap: 0.8rem; padding: 1rem; border: 0.1rem solid #ffffff38; border-radius: 2rem; background: #120c1df2; -webkit-backdrop-filter: blur(1.6rem); backdrop-filter: blur(1.6rem); box-shadow: 0 1.6rem 3.2rem #000c; opacity: 0; transform: translateY(1rem) scale(0.96); pointer-events: none; transition: opacity 0.2s, transform 0.3s var(--ease-out); }
+.more.from-l { left: 1rem; transform-origin: 20% 100%; } .more.from-r { right: 1rem; transform-origin: 80% 100%; }
+.more.open { opacity: 1; transform: none; pointer-events: auto; }
+.more .chip { width: auto; height: 5.4rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; border-radius: 1.6rem; font-size: 2.1rem; }
+.more .chip span { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.06em; line-height: 1; }
+/* 案3: いちばん下の帯 */
+.phone[data-aux="3"] { --aux-h: 3.4rem; --aux-pad: -4.4rem; --aux-g: -0.4rem; }
+.tabbar { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; height: 5.8rem; display: flex; padding: 0 0.6rem; border-top: 0.1rem solid #ffffff1f; background: linear-gradient(180deg, #120c1de6, #0b0812f2); }
+.tab { position: relative; flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; font-size: 2.2rem; color: #e7e0f2; }
+.tab span { font-size: 1.12rem; font-weight: 700; letter-spacing: 0.06em; line-height: 1; }
+.tab em { position: absolute; left: calc(50% + 0.6rem); top: 0.5rem; min-width: 1.8rem; height: 1.8rem; display: grid; place-items: center; border-radius: 1rem; font-style: normal; font-size: 1rem; font-weight: 700; color: #fff; background: #ff5a6e; }
+.tab.on { color: var(--acc); } .tab.on::before { content: ""; position: absolute; top: 0; left: 30%; right: 30%; height: 0.25rem; border-radius: 0 0 0.3rem 0.3rem; background: var(--acc); }
+.tab:active { background: #ffffff14; }
+.phone[data-aux="3"] .btn-a.center { scale: 0.88; transform-origin: 50% 0; }
+.phone[data-aux="3"] .sheet { bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) - 1.6rem); }
+
 /* ───────── 背の低い画面 ───────── */
 @container phone (max-height: 80rem) {
-  .body, .pic, .smoke, .sheet { --ctrl-h: 26.2rem; } .ctrl { --ctrl-h: 26.2rem; --ring: 17.2rem; --a: 12.4rem; --pad-top: 5.8rem; } .chip { width: 3.9rem; height: 3.9rem; font-size: 1.9rem; } .chips { padding-top: 1rem; }
-  .btn-a.center { top: 13.9rem; width: 11.2rem; height: 11.2rem; margin-left: -5.6rem; } .gauge { left: 4.6rem; right: 4.6rem; top: 5.9rem; } .ctrl .lamps { top: 22rem; } .foil { width: 27rem; }
+  .body, .pic, .smoke, .sheet, .thermo { --ctrl-h: 26.2rem; } .ctrl { --ctrl-h: 26.2rem; --ring: 18.2rem; --a: 13.2rem; --pad-base: 6.3rem; } .chip { width: 3.9rem; height: 3.9rem; font-size: 1.9rem; } .chips { padding-top: 1rem; }
+  .btn-a.center { top: calc(14.2rem + var(--aux-g, 0rem)); width: 11.6rem; height: 11.6rem; margin-left: -5.8rem; } .gauge { left: 4.6rem; right: 4.6rem; top: calc(6.2rem + var(--aux-g, 0rem)); } .foil { width: 25rem; } .ctrl .leaves { top: 1rem; height: 3.9rem; }
+  .phone[data-scene="pack"] .thermo { bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 19rem); } .thermo { top: 6.8rem; }
+}
+@container phone (max-height: 80rem) {
+  .chips.labeled .chip { height: 4.8rem; font-size: 1.9rem; } .phone[data-aux="1"] .serve, .phone[data-aux="3"] .serve { height: 4.8rem; } .sh { height: 4.6rem; } .phone[data-aux="2"] .serve { height: 4.6rem; }
+  .tabbar { height: 5.2rem; } .phone[data-aux="3"] .btn-a.center { scale: 0.86; }
 }
 @container phone (max-height: 71rem) {
-  .body, .pic, .smoke, .sheet { --ctrl-h: 22.6rem; } .ctrl { --ctrl-h: 22.6rem; --ring: 14.8rem; --a: 10.8rem; --pad-top: 5rem; }
+  .body, .pic, .smoke, .sheet, .thermo { --ctrl-h: 22.6rem; } .ctrl { --ctrl-h: 22.6rem; --ring: 15.4rem; --a: 11.2rem; --pad-base: 5.4rem; }
   .chips { padding-top: 0.8rem; gap: 0.9rem; } .chip { width: 3.5rem; height: 3.5rem; font-size: 1.7rem; } .serve { height: 3.5rem; top: 0.8rem; font-size: 1.8rem; }
-  .btn-a .t { font-size: 2.8rem; } .btn-a.center { top: 11.7rem; width: 9.6rem; height: 9.6rem; margin-left: -4.8rem; } .gauge { left: 7rem; right: 7rem; top: 5.1rem; } .ctrl .lamps { top: 18.8rem; } .lamps .leaves img { width: 1.9rem; height: 1.9rem; }
+  .btn-a .t { font-size: 3rem; } .btn-a.center { top: calc(12.2rem + var(--aux-g, 0rem)); width: 9.8rem; height: 9.8rem; margin-left: -4.9rem; } .pips { bottom: 1.4rem; } .pips i { width: 0.8rem; height: 0.8rem; }
+  .gauge { left: 7rem; right: 7rem; top: calc(5.4rem + var(--aux-g, 0rem)); } .ctrl .leaves { top: 0.8rem; height: 3.5rem; } .ctrl .leaves img { width: 1.8rem; height: 1.8rem; }
   .glass { min-height: 9.8rem; padding: 1.2rem 1.6rem 1.3rem; } .text { font-size: 1.74rem; line-height: 1.68; } .name b { font-size: 2.2rem; } .name { margin-bottom: 0.6rem; min-height: 2.6rem; }
-  .choice { height: 4.3rem; font-size: 1.6rem; } .choices { gap: 0.6rem; margin-top: 0.7rem; } .packs .choice { height: 3.9rem; } .foil { width: 22rem; top: 17%; } .row { height: 5.6rem; } .mini { width: 9.6rem; top: 7.4rem; }
+  .choice { height: 4.3rem; font-size: 1.6rem; } .choices { gap: 0.6rem; margin-top: 0.7rem; } .packs .choice { height: 3.9rem; } .foil { width: 20rem; top: 17%; } .row { height: 5.6rem; }
   .who .ava { width: 4.6rem; height: 4.6rem; } .card img { width: 5.4rem; height: 5.4rem; } .card { padding: 0.5rem 0.4rem 0.8rem; } .coach img { width: 4.4rem; height: 4.4rem; } .coach .say { font-size: 1.62rem; padding: 0.9rem 1.3rem 1rem; } .steps span { width: 2.8rem; height: 2.8rem; }
+  .chips.labeled .chip { height: 4.3rem; font-size: 1.7rem; } .chips.labeled .chip span { font-size: 1rem; } .phone[data-aux="1"] .serve, .phone[data-aux="3"] .serve { height: 4.3rem; } .sh { height: 4.2rem; font-size: 2rem; } .sh span { font-size: 1.3rem; } .phone[data-aux="2"] .serve { height: 4.2rem; }
+  .tabbar { height: 4.7rem; } .tab { font-size: 1.9rem; } .phone[data-aux="3"] .btn-a.center { scale: 0.84; }
+  .phone[data-scene="pack"] .thermo { bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 15.6rem); } .thermo { top: 6.4rem; width: 4.4rem; } .th-bar { width: 2.4rem; } .th-icon { width: 3rem; height: 3rem; font-size: 1.9rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
