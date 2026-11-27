@@ -80,7 +80,7 @@ await suite('ch1-feedback', async check => {
         }, id);
         assert.deepEqual(before.saved.kuji[id].order, before.order);
         assert.deepEqual(before.saved.kuji[id].prizes, before.oldPrizes);
-        assert.match(await page.locator('.kuji-row').filter({ has: page.locator(`[data-test="kuji-${id}"]`) }).textContent(), new RegExp(`1 / ${before.size}`));
+        assert.match(await page.locator('.kuji-row').filter({ has: page.locator(`[data-test="kuji-${id}"]`) }).textContent(), new RegExp(`残り 1/${before.size}枚`)); // 表記は pack22（4788bd94）の「残り 1/12枚」
         await tap(page, `[data-test="kuji-${id}"]`, touch); await page.locator('.kuji-card.reveal').waitFor();
         await tap(page, '[data-test="kuji-reveal"]', touch);
         await page.locator('[data-test="kuji-reveal"]').waitFor({ state: 'detached' });

@@ -31,6 +31,7 @@ await suite('minto-delivery',async check=>{
    await page.evaluate(async scene=>{
     window.D={core:await import('./js/core/state.js'),vn:await import('./js/vn/engine.js'),ch1:await import('./js/chapters/ch1.js')};
     const s=D.core.state;
+    D.core.config.skipSeenOnly=false; // 未読の台詞も SKIP で送る（既定は既読のみ・#4194）
     D.ch1.setupHooks(); D.trace=[]; D.frames=[]; D.mutations=[]; D.inHandoff=false;
     const snapshot=()=>Array.from(document.querySelectorAll('#bg .bg-img')).map(n=>({bg:n.dataset.sceneBg||n.style.backgroundImage,opacity:getComputedStyle(n).opacity}));
     const tick=()=>{if(D.inHandoff) D.frames.push({time:performance.now(),bg:snapshot(),text:document.querySelector('.vn-text')?.textContent});requestAnimationFrame(tick)}; requestAnimationFrame(tick);

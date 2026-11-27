@@ -22,6 +22,7 @@ async function setup(page, { day = 3, manual = false, fresh = true, auto = "good
     } else P.core.load();
     P.ch1.setupHooks(); P.ui.clearScreen();
     P.vn.vnTest.turbo = !manual; P.vn.vnTest.choose = () => 2;
+    P.core.config.skipSeenOnly = false; // 手動SKIPで未読の台詞も送る（既定は既読のみ・#4194）
     P.craft.craftTest.auto = auto;
     P.entries = []; P.steps = []; P.benches = 0; P.earlyChoices = []; P.practiceTips = [];
     const choose = P.vn.hooks.onChoice;

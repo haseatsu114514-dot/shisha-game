@@ -15,6 +15,8 @@ const stepText = {
 };
 
 async function selectScene(page) {
+  // 未読の台詞も SKIP で送る（既定は既読のみ・#4194）
+  await page.evaluate(async () => { (await import("./js/core/state.js")).config.skipSeenOnly = false; });
   await page.selectOption("#preview-scene", "shisha");
   await page.waitForFunction(() =>
     document.querySelector(".vn-text")?.textContent.includes("客足の引いた店内"));

@@ -61,6 +61,7 @@ try {
       const intro = await import("./js/vn/intro.js");
       for (const id of Object.keys(Q.data.DB.characters)) intro.markIntroSeen(id);
       Q.core.config.textSpeed = 1;
+      Q.core.config.skipSeenOnly = false; // 未読の台詞も SKIP で送る（既定は既読のみ・#4194）
       Q.core.state.owned.push("cube_charcoal"); Q.core.state.equip.charcoal = "cube_charcoal";
       Q.core.state.affinity.sumi = 0; Q.core.state.flags.ch1_sumi_training = true; // シフト後のスミとの会話で好感度が上がっても♥2（20）に届かない値（#2279 で会話の伸びが大きくなったので 9 → 0）
       Q.vn.vnTest.turbo = true;

@@ -70,6 +70,7 @@ async function toTalk(page) {
     core.newGame();
     Object.assign(core.state, { phase: "daily", chapter: 1, day: 5, slot: 1 });
     core.config.textSpeed = 4;
+    core.config.skipSeenOnly = false; // SKIP の点灯を見る。未読の台詞も SKIP で送る（既定は既読のみ・#4194）
     for (const id of ["sumi", "tsumugi"]) core.state.met[id] = true;
     (await import("./js/core/ui.js")).clearScreen();
     void (await import("./js/vn/engine.js")).play("ch1_tsumugi_second", { bg: "res://assets/backgrounds/bg_tonari_inside_night.png" });

@@ -47,13 +47,15 @@ const IMG = {
   bowl_normal: `${OWN_IMG}ui-bowl-normal.webp`,
   bowl_firm: `${OWN_IMG}ui-bowl-firm.webp`,
   pullHajime: `${OWN_IMG}craft-pull-hajime.webp`, // 人物だけ（背景なし）。場所の背景に重ねる（VPL41）
-  // 炭焼き（VPL54・VPL55）: 本編の電熱コンロ・炭（黒い面・赤）・炭壺・トングを持つはじめ。HMD は生成
-  stove: `${REMAKE_IMG}ui/making/heat_stove.webp`,
+  // 炭焼き（VPL54・VPL55・VPL57）: 本編の電熱コンロ・炭（黒い面・赤）
+  // 寄りで写したコンロ（本編の heat_stove.webp を入力にした生成・VPL65）。コイルが画面いっぱい
+  stove: `${OWN_IMG}ui-stove-zoom.webp`,
   coalCold: `${REMAKE_IMG}ui/making/heat_flat_cold.webp`,
   coalLit: `${REMAKE_IMG}ui/making/heat_flat_lit.webp`,
-  carrier: `${REMAKE_IMG}ui/making/heat_carrier.webp`,
-  hajimeTongs: `${REMAKE_IMG}ui/making/hajime_craft_heat.webp`,
-  hmd: `${OWN_IMG}ui-hmd.webp`,
+  // 炭壺とトングを持ち、コンロの熱の明かりに下から照らされたはじめ（生成・背景なし。会場の背景に重ねる・VPL57）
+  coalHajime: `${OWN_IMG}craft-coal-hajime.webp`,
+  // 会場の背景（作る場面の背景は会場で替わる・VPL57）: tonari・PEPPERMINT（shop）・大会の会場
+  stage: `${REMAKE_IMG}backgrounds/bg_tournament_stage.webp`,
   // 配合のはかり（VPL37）
   scale: `${OWN_IMG}ui-scale.webp`,
   // 葉のパッケージは本編の店の絵（remake/img/shop/heaven10/ の10種・VPL39）
@@ -134,6 +136,8 @@ const PACKS = [
 const STEPS = [["water", "水入れ"], ["mix", "配合"], ["pack", "詰め方"], ["holes", "穴あけ"], ["coal", "炭焼き"], ["steam", "蒸らし"], ["pull", "吸い出し"], ["care", "調整"]];
 // この試作で遊べる作る場面（本編と同じ順。炭と調整は省く）
 const CRAFT_SCENES = ["water", "mix", "pack", "holes", "coal", "steam", "pull"];
+// 温度ゲージを出す場面（VPL61）。穴あけ・炭焼き・雑念よけの間は消し、吸い出しで戻す
+const THERMO_ON = new Set(["pack", "pull"]);
 const COACH = {
   water: "線のあいだまで注げ",
   coal: "全面が赤くなったら取れ",
@@ -226,7 +230,7 @@ const pkgHtml = (f, h) => {
   const [x, y, w, hh] = f.box, k = h / hh, r = (v) => `${(v * k).toFixed(2)}rem`;
   return `<span class="pkg" style="width:${r(w)};height:${h}rem"><img src="${IMG[`pkg_${f.id}`]}" alt="" style="width:${r(512)};left:${r(-x)};top:${r(-y)}"></span>`;
 };
-const genreHtml = (id, named = true) => `<i class="genre" style="--g:${GENRES[id].color}"><svg viewBox="0 0 24 24" aria-hidden="true">${GENRES[id].icon}</svg>${named ? `<b>${GENRES[id].name}</b>` : ""}</i>`;
+const genreHtml = (id, named = true) => `<i class="genre" style="--g:${GENRES[id].color}"${named ? "" : ` role="img" aria-label="${GENRES[id].name}"`}><svg viewBox="0 0 24 24" aria-hidden="true">${GENRES[id].icon}</svg>${named ? `<b>${GENRES[id].name}</b>` : ""}</i>`;
 const MIX_CAP = 12;
 // 弾幕＝蒸らしの雑念よけ（VPL36）。本編 steam.js の runSteamDodge と steam-patterns.js の calm（第1章）。3分蒸らし＝9秒。
 // 弾は4辺からハートを狙い、5つに4つが雑念の言葉。2.8秒ごとに0.75秒の予告（縁が金に光る）のあと波が来る。
@@ -239,14 +243,42 @@ const DODGE_WORDS = [
   "香り、飛んでないか", "手が、汗ばむ", "時間ばかり気になる", "深呼吸、わすれてた",
   "熱、強すぎないかな", "煙、ちゃんと出るかな", "さっきの手順、大丈夫か", "吸い出しで崩したくない",
 ];
+// アタック（本編 steam-slash.js）: 上前方の扇形で言葉の弾を斬る。届く距離80、待ち1.8秒。斬った言葉の数だけ心が落ち着く
+const ATTACK = { reach: 92, half: 0.95, cool: 1800, calm: 300 };
+// 心の状態（本編 steam-mind.js）: 被弾の衝撃は4秒で引き、被弾の数だけ少し残る。6秒落ち着いていると無心
+const MIND_LV = ["clear", "steady", "unsteady", "shaken"];
+const MIND_INK = { clear: "#a8e6ff", steady: "#86d6c5", unsteady: "#e4bc77", shaken: "#ef8795" };
 const DODGE = { time: 9000, ready: 1200, every: 460, speed: [105, 145], wave: 2800, warn: 750, invuln: 900, bombCool: 8000, bombR: 120, move: 220, slow: 95, core: 4 };
 // 炭焼き（VPL54・VPL55）: 本編 remake/js/craft/heat_logic.js の値。炭は3個、取り頃は4.2〜7.4秒の抽選（隣の炭と0.75秒以上ずらす）、
 // ジャストの幅は0.5秒（試作はレッスンと同じ×1.5）。p＝経過÷取り頃で判定し、1.75倍で灰になって落ちる。窓が開く0.3秒前に一度だけ瞬く
 const HEAT = { count: 3, ready: [4200, 7400], gap: 750, just: 750, drop: 1.75, blink: 300, lead: 900 };
 const heatJudge = (p, jw) => p < 0.35 ? ["raw", 15, "MISS"] : p < 0.7 ? ["early", 45, "MISS"] : p < 1 ? ["pre", 78, "GOOD"] : p < 1 + jw ? ["just", 100, "EXCELLENT"] : p < 1.3 + jw ? ["hot", 80, "GOOD"] : ["over", 68, "MISS"];
-// コンロの上の炭の中心（コンロの絵 1280×853 に対する割合）
-const COAL_AT = [[0.44, 0.3], [0.32, 0.55], [0.56, 0.55]];
-const LOOKS_COAL_SLOTS = { b: [[0.5, 0.42], [0.36, 0.6], [0.64, 0.6]], c: [[0.5, 0.12], [0.34, 0.2], [0.66, 0.2]] };
+// コンロの上の炭の中心（寄りのコンロの絵 1536×1024 に対する割合）。コイルの上に三角に置く（VPL65）
+const COAL_AT = [[0.5, 0.32], [0.33, 0.62], [0.67, 0.62]];
+// 取った炭の置き場所（はじめの絵 1024×1536 に対する割合）: 左手に持った炭壺の口の中
+const POT_SLOTS = [[0.735, 0.8], [0.835, 0.8], [0.785, 0.84]];
+// 大会の観客のニコ動風コメント（VPL68）。文面は本編の remake/data/broadcast.json（broadcast.js が読むもの）をそのまま使う。
+// 1枚の HTML の試作ページでは、組み立て時に同じ中身を PORTRAIT_STAGE_BROADCAST に入れる
+let BROADCAST = globalThis.PORTRAIT_STAGE_BROADCAST || null;
+const BROADCAST_READY = BROADCAST ? Promise.resolve(BROADCAST) : fetch(new URL("../../data/broadcast.json", import.meta.url)).then((r) => r.json()).then((d) => (BROADCAST = d)).catch(() => null);
+// 試作の工程 → broadcast.json の completion の工程名
+const NICO_STEP = { holes: "holes", coal: "heat", steam: "steam", pull: "pull" };
+// ニコニコ動画のコメントの色（一般会員の色）と、出来ごとに色が付く割合。ほかは白
+const NICO_COLOR = { red: "#ff0000", pink: "#ff8080", orange: "#ffc000", yellow: "#ffff00", green: "#00ff00", cyan: "#00ffff", purple: "#c000ff" };
+// 1回に流れる本数（VPL76。毎行が埋まらない程度）と、赤以外の色が付く時の色
+const NICO_COUNT = { perfect: 11, great: 10, good: 7, miss: 8 };
+const NICO_TINT = { perfect: ["yellow", "orange", "pink", "cyan", "green"], good: ["cyan", "green", "yellow"], miss: ["pink", "cyan", "purple"] };
+// たまに混ざる変わり種（1本ごとの見込み）: 赤文字の人・ほかの色・太字・大きい・小さい
+const NICO_ODD = { red: 0.09, color: 0.06, futo: 0.1, big: 0.07, small: 0.1 };
+// 止まる大きな一言が出る見込み（出来ごと）。出る時は多くが赤
+const NICO_FIXED = { perfect: 0.55, great: 0.45, good: 0.2, miss: 0.35 };
+const NICO_SPAN = 3.2; // 秒。この間に出し切る。最初にどっと来て、あとはぽつぽつ
+const NICO_FLY = 4; // 秒。画面を横切る時間（ニコ動と同じく、長さによらず一定。長い文ほど速い）
+// 点（0〜100）→ 観客の反応の段階（本編 broadcast.js の judgeOf と同じ境目）
+const nicoJudge = (score) => score >= 88 ? "perfect" : score >= 74 ? "great" : score >= 55 ? "good" : "miss";
+
+// 会場（作る場面の背景）
+const VENUES = { tonari: "tonari", shop: "PEPPERMINT", stage: "大会の会場" };
 
 // 本編の心と弾の絵（remake/js/craft/steam-art.js の HEART_ART・BULLET_ART の写し）。心は水色・白い縁、当たるのは真ん中の白い丸だけ
 const HEART = typeof Path2D === "function" ? new Path2D("M14 24C9 20 2.5 15.5 2.5 9.5a6 6 0 0 1 11.5-2 6 6 0 0 1 11.5 2C25.5 15.5 19 20 14 24Z") : null;
@@ -262,20 +294,6 @@ const MIND = ["#a8e6ff", "#86d6c5", "#e4bc77", "#ef8795"];
 const SEG7 = { a: "M6 2h28l4 4-4 4H6L2 6Z", b: "m38 8 4 4v20l-4 4-4-4V12Z", c: "m38 38 4 4v20l-4 4-4-4V42Z", d: "M6 64h28l4 4-4 4H6l-4-4Z", e: "m2 38 4 4v20l-4 4-4-4V42Z", f: "m2 8 4 4v20l-4 4-4-4V12Z", g: "M6 33h28l4 4-4 4H6l-4-4Z" };
 const SEG7_ON = ["abcdef", "bc", "abdeg", "abcdg", "bcfg", "acdfg", "acdefg", "abc", "abcdefg", "abcdfg"];
 const SEG7_PATH = typeof Path2D === "function" ? Object.fromEntries(Object.entries(SEG7).map(([k, d]) => [k, new Path2D(d)])) : {};
-
-// 専用の見た目（VPL37）: 水入れ・配合・雑念よけを3案ずつ。?look=a|b|c、1台表示の右上のつまみ →「見た目」で切り替える
-const LOOKS = {
-  coal: {
-    a: { name: "トングを持つはじめ", lead: "上にトングを構えたはじめ。下のコンロで炭をタッチすると、炭がトングの先へ移り、判定の札が出る" },
-    b: { name: "炭壺へ入れる", lead: "上に本編の炭壺を真上から。タッチした炭が壺の中へ落ちて並び、取った数と焼け具合がひと目でわかる" },
-    c: { name: "HMDへ載せる", lead: "上にハガルとHMD。タッチした炭がHMDの中へ並んでいく（取った炭はこの後HMDに載せる）" },
-  },
-  mix: {
-    a: { name: "はかりで量る", lead: "はかりの上に器を載せ、表示窓の数字が1gずつ増える。器ははかりに見合う大きさ。下の札は本編のパッケージと店番と同じジャンルの印" },
-    b: { name: "パッケージから注ぐ", lead: "選んだ葉のパッケージが器の上で傾き、1gごとに葉がこぼれ落ちる。器の下の12の枠はジャンルの色で埋まる" },
-    c: { name: "本編の配合を縦に", lead: "本編（横画面）の葉の行（パッケージ・名前・比率・−／＋・g）を縦に並べ、上に器と合計の帯。上下で葉を選び、左右で1gずつ" },
-  },
-};
 
 const SCENES = ["map", "minto", "tonari", "water", "mix", "pack", "holes", "coal", "steam", "pull", "cutin"];
 const SCENE_LABEL = { map: "地図", minto: "1人", tonari: "2人", water: "水", mix: "配合", pack: "詰め", holes: "穴あけ", coal: "炭焼き", steam: "弾幕", pull: "吸う", cutin: "登場" }; // 1台表示の切り替え
@@ -300,10 +318,13 @@ const GALLERY = [
   { scene: "mix", caption: "作る・配合（葉を詰める）", mix: [7, 3, 2] },
   { scene: "pack", caption: "作る・詰め方" },
   { scene: "holes", caption: "作る・穴あけ" },
-  { scene: "coal", caption: "作る・炭焼き" },
+  { scene: "coal", caption: "作る・炭焼き（tonari）" },
+  { scene: "coal", caption: "作る・炭焼き（大会の会場に替えた例）", venue: "stage" },
+  { scene: "holes", caption: "大会でランクが出る瞬間（観客のコメントが流れる）", venue: "stage", nico: true, grade: 3 },
   { scene: "steam", caption: "作る・蒸らし（雑念よけ）" },
+  { scene: "steam", caption: "作る・蒸らし（アタックを覚えた後）", attack: true },
   { scene: "pull", caption: "作る・吸い出し（tonari）" },
-  { scene: "pull", caption: "作る・吸い出し（PEPPERMINT の背景に替えた例）", pullBg: "shop" },
+  { scene: "pull", caption: "作る・吸い出し（PEPPERMINT に替えた例）", venue: "shop" },
 ];
 
 /** 登場カットインの名前（ふりがなは ruby。縦書きでも同じ書き方で右に付く） */
@@ -393,14 +414,14 @@ const BTN = {
   puff: { label: "吸う", tool: "mouthpiece" },
   pour: { label: "注ぐ", tool: "pour" },
   drain: { label: "少しこぼす", tool: "drain" },
-  bomb: { label: "雑念を払う", tool: "bomb" },
+  bomb: { label: "リフレッシュ（心の周りの雑念を払う）", tool: "bomb" },
 };
-// ボタンいっぱいの 100×100 で描く。刺す: 大きな穴あけの針（持ち手・口金・太い針）と、その下のアルミ。押し具合（--level）で針が下がってアルミを突き、満ちた所で金の火花
+// ボタンいっぱいの 100×100 で描く
 // 吸う: マウスピース（ホースの切れ端・金具・先へ細くなる持ち手・吸い口のチップ）を斜めに。吸うたびに少し動いて光る
 const TOOL_SVG = {
-  needle: `<svg class="tool-svg tool-needle" viewBox="0 0 100 100" aria-hidden="true">
-    <g class="gl-needle"><path d="M40.5 17.5C40.5 11 44.6 6.5 50 6.5S59.5 11 59.5 17.5V28c0 4-2.2 6.4-4.4 7.5H44.9c-2.2-1.1-4.4-3.5-4.4-7.5z"/><rect x="43.5" y="37.5" width="13" height="5.5" rx="1.2"/><path d="M47.3 44.5h5.4l-.7 25.5L50 77.5 48 70z"/></g>
-    <path class="gl-foil" d="M14 82H42.5M57.5 82H86"/><path class="gl-dent" d="M42.5 82q7.5 6.5 15 0"/><path class="gl-spark" d="M35 72.5l4.5 4.5M65 72.5l-4.5 4.5M50 88v5"/></svg>`,
+  // 刺す（VPL58）: ドライバーのような穴あけの道具を少し斜めに置くだけ。押すと、道具の向き（先の方）へ突き出て、離すと戻る
+  needle: `<svg class="tool-svg tool-needle" viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(32 50 50)"><g class="gl-needle">
+    <path d="M39.5 22C39.5 13.5 44 8 50 8S60.500 13.5 60.500 22V35C60.500 39.5 58 42 55.500 43H44.500C42 42 39.500 39.500 39.500 35Z"/><rect x="43" y="45.500" width="14" height="6" rx="1.500"/><path d="M46.800 53.500H53.200L52.300 82 50 92 47.700 82Z"/></g></g></svg>`,
   mouthpiece: `<svg class="tool-svg tool-mouthpiece" viewBox="0 0 100 100" aria-hidden="true"><g class="gl-mp"><g transform="translate(0 -5) rotate(-45 50 50) translate(50 50) scale(0.74) translate(-50 -50)">
     <rect x="-4" y="45" width="16" height="10" rx="4"/><rect x="13.5" y="43.3" width="7.5" height="13.4" rx="1.6"/>
     <path d="M22.5 42.8L78 45Q82 45.3 82 48.2V51.8Q82 54.7 78 55L22.5 57.2Z"/><path class="gl-ring" d="M31 43.6V56.4M72 45V55"/>
@@ -413,10 +434,16 @@ const TOOL_SVG = {
   drain: `<svg class="tool-svg tool-drain" viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(-38 50 52)">
     <rect x="43" y="14" width="14" height="22" rx="3"/><path d="M42 36H58L70 54A21 21 0 1 1 30 54Z"/></g>
     <path class="gl-drop" d="M24 50C24 50 17 60 17 64A7 7 0 0 0 31 64C31 60 24 50 24 50Z"/></svg>`,
-  // 雑念を払う: 本編のリフレッシュ（青い渦）と同じく、渦で雑念を吹き払う形（VPL45）。使ったあと8秒で戻る。戻るまでの残りは影で示す
+  // リフレッシュ（VPL62）: 真ん中の心と、そこから広がる波で雑念の粒を外へ払う形。効果（心の周りを払う）がそのまま見える
   bomb: `<svg class="tool-svg tool-bomb" viewBox="0 0 100 100" aria-hidden="true">
-    <path class="gl-swirl" d="M52 50a3.5 3.5 0 1 1-6 2.5 9 9 0 1 1 17-4.5 15.5 15.5 0 1 1-29 8 22 22 0 1 1 41-12"/>
-    <circle cx="26" cy="24" r="5"/><circle cx="17" cy="35" r="3.2"/></svg>`,
+    <path class="gl-heart" d="M50 60C42.500 54.500 37 50 37 44.500A6.500 6.500 0 0 1 50 41.500 6.500 6.500 0 0 1 63 44.500C63 50 57.500 54.500 50 60Z"/>
+    <circle class="gl-wave" cx="50" cy="50" r="23"/><circle class="gl-wave2" cx="50" cy="50" r="34"/>
+    <g class="gl-out"><circle cx="13" cy="17" r="4"/><circle cx="88" cy="16" r="3.400"/><circle cx="10" cy="84" r="3.400"/><circle cx="89" cy="85" r="4"/>
+    <path d="M19 23l5 5M82 22l-5 5M16 78l5-5M83 79l-5-5"/></g></svg>`,
+  // 精密（VPL62）: 照準。遅く細かく動く切り替え
+  slow: `<svg class="tool-svg tool-slow" viewBox="0 0 100 100" aria-hidden="true"><circle class="gl-ring" cx="50" cy="50" r="22"/><circle cx="50" cy="50" r="6"/><path class="gl-ticks" d="M50 14v14M50 72v14M14 50h14M72 50h14"/></svg>`,
+  // アタック（VPL62）: 上へ振る斬撃の弧。習得すると精密と入れ替えられる
+  attack: `<svg class="tool-svg tool-attack" viewBox="0 0 100 100" aria-hidden="true"><path class="gl-arc" d="M18 70C26 38 52 20 84 18"/><path d="M84 18L70 14 76 28Z"/><path class="gl-arc2" d="M30 80C38 58 54 44 76 38"/></svg>`,
 };
 const btnFace = (kind) => {
   const b = BTN[kind];
@@ -456,7 +483,7 @@ function meterHtml() {
 /* ───────── 1台ぶん ───────── */
 
 class Phone {
-  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", grade = 0, gradeP = 0, water = 0, mix = null, look = "a", pullBg = "tonari", ...ext } = {}) {
+  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", grade = 0, gradeP = 0, water = 0, mix = null, venue = "tonari", attack = false, ...ext } = {}) {
     this.el = el;
     this.extOpts = ext; // 別ファイルの場面の見せ方（店番の営業の種類・一覧に並べる場面 shot など。1台表示では URL の値がそのまま入る）
     el.lang = "ja";
@@ -467,12 +494,10 @@ class Phone {
     this.uid = (Phone.seq = (Phone.seq || 0) + 1); // SVG の id を台ごとに分ける
     this.keys = new Set();
     this.rankAt = RANK_PLACES[rank] ? rank : "d"; // ランクの置き場所の案
-    this.lookAt = ["a", "b", "c"].includes(look) ? look : "a"; // 水入れ・配合・雑念よけの見た目の案
-    this.pullBg = IMG[pullBg] ? pullBg : "tonari"; // 吸い出しの背景（その場所の絵）
-    el.dataset.look = this.lookAt;
-    el.dataset.rank = this.rankAt;
+    this.venue = VENUES[venue] ? venue : "tonari"; // 作る場面の会場（背景）
+    this.attackLearned = !!attack; // 雑念よけのアタックを覚えたか（覚えると精密と入れ替える切り替えが出る・VPL62）
     this.st = { scene, sel: DEFAULT_SPOT, step, page: 0, grade: Math.max(0, Math.min(6, Number(grade) || 0)), gradeP: Number(gradeP) || 0, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0, temp: 0.4,
-      water: Number(water) || 0, mix: MIX.map((f, i) => (Array.isArray(mix) ? mix[i] : 0) || 0), mixSel: 0, slow: false,
+      water: Number(water) || 0, mix: MIX.map((f, i) => (Array.isArray(mix) ? mix[i] : 0) || 0), mixSel: 0, mixSort: null, slow: false, sub: attack ? "attack" : "slow",
       ci: ["a", "b", "c"].includes(ci) ? ci : "a", who: CUTINS[who] ? who : "minto", ciPhase: "off" };
     this.cam = null;      // 地図をドラッグした時の位置（選び直すと選んだ店へ戻る）
     this.t0 = performance.now();
@@ -524,10 +549,12 @@ class Phone {
     el.dataset.kind = this.talk || st.scene === "cutin" ? "talk" : st.scene === "map" ? "map" : "craft";
     el.style.setProperty("--acc", st.scene === "map" ? "#c3b0ff" : this.talk ? this.talk.acc : st.scene === "cutin" ? CUTINS[st.who].acc : "#ffc978");
     clearTimeout(this.ciTimer);
+    const lane = el.querySelector(".nico-lane"); // 流れているコメントは場面が替わっても流れ切るまで残す
     if (st.scene === "map") el.innerHTML = this.mapHtml();
     else if (this.talk) el.innerHTML = this.talkHtml();
     else if (st.scene === "cutin") { el.innerHTML = this.cutinSceneHtml(); this.playCutin(); return; }
     else el.innerHTML = this.craftHtml();
+    if (lane?.children.length) el.append(lane);
     if (st.scene === "map") { this.cam = null; this.camera(false); this.syncMap(); }
     if (this.talk) { this.cast = {}; this.applyLine({ instant, delay }); }
     if (st.scene === "holes") this.drawHoles();
@@ -862,16 +889,17 @@ class Phone {
 
   craftHtml() {
     const { st } = this, at = STEPS.findIndex(([id]) => id === st.scene);
-    const pic = st.scene === "pack" ? `<img class="bg" src="${IMG.tonari}" alt=""><img class="bowl" src="${IMG[`bowl_${PACKS[st.pack].id}`]}" alt="">`
-      : st.scene === "holes" ? `<img class="bg" src="${IMG.tonari}" alt=""><div class="foil"><img src="${IMG.foil}" alt=""><svg viewBox="-100 -100 200 200" class="foil-marks"></svg></div>`
+    const bg = `<img class="bg" src="${IMG[this.venue]}" alt="">`;
+    const pic = st.scene === "pack" ? `${bg}<img class="bowl" src="${IMG[`bowl_${PACKS[st.pack].id}`]}" alt="">`
+      : st.scene === "holes" ? `${bg}<div class="foil"><img src="${IMG.foil}" alt=""><svg viewBox="-100 -100 200 200" class="foil-marks"></svg></div>`
       : st.scene === "water" ? this.waterPic() : st.scene === "mix" ? this.mixPic() : st.scene === "steam" ? this.steamPic() : st.scene === "coal" ? this.coalPic()
-      : `<img class="bg" src="${IMG[this.pullBg || "tonari"]}" alt=""><img class="pull-cg" src="${IMG.pullHajime}" alt=""><img class="puff" src="${IMG.smoke}" alt="">`;
+      : `${bg}<img class="pull-cg" src="${IMG.pullHajime}" alt=""><img class="puff" src="${IMG.smoke}" alt="">`;
     // 日付・体力・お金は出さない。上は工程の並びだけ。名前の文字は出さず、今の工程は光る丸で示す（VPL31）
     return `
-      <img class="amb" src="${IMG.tonari}" alt="">
+      <img class="amb" src="${IMG[this.venue]}" alt="">
       <div class="pic craft craft-${st.scene}">${pic}</div>
       <i class="veil"></i>
-      ${["water", "mix", "coal"].includes(st.scene) ? "" : this.thermoHtml()}
+      ${THERMO_ON.has(st.scene) ? this.thermoHtml(this.thermoWas === false ? "fade-in" : "") : this.thermoWas ? this.thermoHtml("fade-out") : ""}
       <button class="help-q" data-act="fn" data-fn="help" aria-label="説明">?</button>
       <div class="steps" aria-label="工程">${STEPS.map(([id, name], i) => `<span class="${i === at ? "now" : i < at ? "done" : ""}" aria-label="${name}"${i === at ? ` aria-current="step"` : ""}>${icon(id)}</span>`).join("")}</div>
       ${this.rankAt === "a" ? "" : this.rankHtml()}
@@ -905,6 +933,7 @@ class Phone {
   /** 工程を終えたら1段上げる。舞台の真ん中に大きく出し（下の英語まで読める）、置き場所へ縮めて収める（本編の burstRank と同じ流れ）。 */
   rankUp({ loop = false } = {}) {
     const { st, el } = this;
+    if (this.venue === "stage") this.nicoBurst(this.stepJudge || "great");
     if (st.grade >= GRADES.length - 1) { if (!loop) return; st.grade = -1; }
     st.grade += 1; st.gradeP = 0;
     const place = el.querySelector(".rank");
@@ -955,7 +984,7 @@ class Phone {
 
   /** 水入れ（VPL46）: 大会仕様のボトルへ直接注ぐ。水位計は出さない。ステムの先と二本の線が目安 */
   waterPic() {
-    return `<img class="bg" src="${IMG.tonari}" alt=""><div class="water-a" data-zone="empty"><div class="bottle pro"><img src="${IMG.bottle}" alt="">${this.bottleSvg()}</div></div>`;
+    return `<img class="bg" src="${IMG[this.venue]}" alt=""><div class="water-a" data-zone="empty"><div class="bottle pro"><img src="${IMG.bottle}" alt="">${this.bottleSvg()}</div></div>`;
   }
 
   syncWater() {
@@ -1007,35 +1036,40 @@ class Phone {
       <img class="b-full brown" src="${IMG.bowl_normal_brown}" alt=""><img class="b-full red" src="${IMG.bowl_normal}" alt=""></div>`;
   }
 
+  /** 上の画面: はかりの上に器。器ははかりの台の半分ほどの幅（VPL56）。前の表示窓（横30〜63%・縦82〜96%）に重さ */
   mixPic() {
-    const look = this.lookAt, { st } = this;
-    if (look === "a") {
-      // はかり: 器ははかりの台に見合う大きさ（VPL43）。前の表示窓（横30〜63%・縦82〜96%）に重さ
-      return `<img class="bg" src="${IMG.tonari}" alt=""><div class="mix-a"><div class="scale"><img src="${IMG.scale}" alt="">${this.mixBowl("on-scale")}<b class="digits" aria-hidden="true"><span class="d-num">00</span><span class="d-unit">g</span></b></div></div>`;
-    }
-    if (look === "b") {
-      // パッケージから注ぐ: 選んだ葉のパッケージが器の上で傾く
-      const f = MIX[st.mixSel];
-      return `<img class="bg" src="${IMG.tonari}" alt=""><div class="mix-b"><div class="pour-pkg" data-i="${st.mixSel}">${pkgHtml(f, 15)}</div>${this.mixBowl()}</div>`;
-    }
-    // 本編の配合を縦に: 上は器と合計の帯、葉の行はテロップの所に並ぶ
-    return `<img class="bg" src="${IMG.tonari}" alt=""><div class="mix-c">${this.mixBowl()}</div>`;
+    return `<img class="bg" src="${IMG[this.venue]}" alt=""><div class="mix-a"><div class="scale"><img src="${IMG.scale}" alt="">${this.mixBowl("on-scale")}<b class="digits" aria-hidden="true"><span class="d-num">00</span><span class="d-unit">g</span></b></div></div>`;
   }
 
-  /** 下の画面のフレーバーの一覧（VPL52）。案A・B は横にスライドする札、案C は縦にスライドする本編の葉の行。どれも −／＋ で1gずつ。 */
+  /** 下の画面のフレーバーの一覧（VPL52・VPL56）: 画面の下半分を縦に広く使い、縦にスライドする行（パッケージ・名前・ジャンル・−／＋・g）。 */
   mixCardsHtml() {
-    const { st } = this, total = this.mixTotal(), rows = this.lookAt === "c";
+    const { st } = this, total = this.mixTotal();
     const btn = (i, by, f) => `<button class="mr-btn" data-act="mixadd" data-i="${i}" data-by="${by}" aria-label="${f.name}を1g${by > 0 ? "増やす" : "減らす"}">${by > 0 ? "＋" : "−"}</button>`;
-    const need = (f, i) => f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : "";
-    const tags = (f, named) => `${genreHtml(f.genre, named)}${f.sub ? genreHtml(f.sub, false) : ""}`;
-    if (rows) {
-      return `<div class="picker rows" role="listbox" aria-label="フレーバー">${MIX.map((f, i) => `<div class="mixrow${i === st.mixSel ? " on" : ""}" data-act="mixsel" data-i="${i}" role="option" aria-selected="${i === st.mixSel}">
-        ${pkgHtml(f, 5.4)}<span class="mr-name"><b>${f.name}</b><span class="mr-tags">${tags(f, true)}${need(f, i)}</span><small class="ratio">比率 ${total ? Math.round(st.mix[i] / total * 100) : 0}%</small></span>
-        ${btn(i, -1, f)}<span class="mr-g"><em>${st.mix[i]}</em>g</span>${btn(i, 1, f)}</div>`).join("")}</div>`;
-    }
-    return `<div class="picker strip" role="listbox" aria-label="フレーバー">${MIX.map((f, i) => `<div class="pcard${i === st.mixSel ? " on" : ""}" data-act="mixsel" data-i="${i}" role="option" aria-selected="${i === st.mixSel}">
-      ${need(f, i)}${pkgHtml(f, 4.8)}<b class="pc-name">${f.name}</b><span class="pc-tags">${tags(f, false)}</span>
-      <span class="pc-g">${btn(i, -1, f)}<span class="mr-g"><em>${st.mix[i]}</em>g</span>${btn(i, 1, f)}</span></div>`).join("")}</div>`;
+    // 上に店番と同じ4つのジャンルのボタン。押すとそのジャンルの葉が上に並ぶ（もう一度押すと元の順）（VPL66）
+    const chips = `<div class="genre-bar" role="group" aria-label="ジャンルで並べ替え">${Object.entries(GENRES).map(([id, g]) => `<button class="gchip${st.mixSort === id ? " on" : ""}" data-act="mixsort" data-g="${id}" style="--g:${g.color}" aria-pressed="${st.mixSort === id}"><svg viewBox="0 0 24 24" aria-hidden="true">${g.icon}</svg><b>${g.name}</b></button>`).join("")}</div>`;
+    const rows = this.mixOrder().map((i) => {
+      const f = MIX[i], match = !st.mixSort || f.genre === st.mixSort || f.sub === st.mixSort;
+      return `<div class="mixrow${i === st.mixSel ? " on" : ""}${match ? "" : " dim"}" data-act="mixsel" data-i="${i}" role="option" aria-selected="${i === st.mixSel}">
+      ${pkgHtml(f, 7)}<span class="mr-name"><b>${f.name}${f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : ""}</b><span class="mr-tags">${genreHtml(f.genre, false)}${f.sub ? genreHtml(f.sub, false) : ""}</span></span>
+      ${btn(i, -1, f)}<span class="mr-g"><em>${st.mix[i]}</em>g</span>${btn(i, 1, f)}</div>`;
+    }).join("");
+    return `${chips}<div class="picker rows" role="listbox" aria-label="フレーバー">${rows}</div>`;
+  }
+
+  /** 一覧の並び。ジャンルを選んでいる時は、そのジャンルが主の葉 → 副の葉 → ほか の順（それぞれ元の順のまま）。 */
+  mixOrder() {
+    const g = this.st.mixSort, rank = (f) => !g ? 0 : f.genre === g ? 0 : f.sub === g ? 1 : 2;
+    return MIX.map((f, i) => i).sort((a, b) => rank(MIX[a]) - rank(MIX[b]) || a - b);
+  }
+
+  /** ジャンルのボタン: 一覧を並べ替え、先頭へ戻す。 */
+  sortMix(g) {
+    const { st } = this;
+    st.mixSort = st.mixSort === g ? null : g;
+    const ctrl = this.el.querySelector('[data-slot="ctrl"]');
+    if (ctrl) { ctrl.innerHTML = this.craftCtrlHtml(); this.syncMix(); }
+    const list = this.el.querySelector(".picker.rows");
+    if (list) { list.scrollTop = 0; list.classList.remove("resort"); void list.offsetWidth; list.classList.add("resort"); }
   }
 
   mixTotal() { return this.st.mix.reduce((a, b) => a + b, 0); }
@@ -1052,34 +1086,24 @@ class Phone {
       bowl.querySelector(".b-airy.brown").style.opacity = part.toFixed(2); bowl.querySelector(".b-airy.red").style.opacity = (part * red).toFixed(2);
       bowl.querySelector(".b-full.brown").style.opacity = full.toFixed(2); bowl.querySelector(".b-full.red").style.opacity = (full * red).toFixed(2);
     }
-    // 12の枠はジャンルの色。葉が替わる所に細い区切り
-    const fill = MIX.flatMap((f, i) => Array.from({ length: st.mix[i] }, (_, k) => ({ c: GENRES[f.genre].color, first: k === 0 })));
-    const slots = el.querySelector(".mixbar .slots");
-    if (slots) slots.innerHTML = Array.from({ length: MIX_CAP }, (_, i) => `<i${fill[i] ? ` style="--c:${fill[i].c}"${fill[i].first && i ? ` class="cut"` : ""}` : ""}></i>`).join("");
-    el.querySelectorAll(".mixsum").forEach((sum) => { sum.innerHTML = `${total}<small>/${MIX_CAP}g</small>`; });
-    el.querySelector(".mixbar")?.classList.toggle("full", total === MIX_CAP);
     const num = el.querySelector(".digits .d-num");
     if (num) { num.textContent = String(total).padStart(2, "0"); el.querySelector(".digits").classList.toggle("full", total === MIX_CAP); }
-    const total2 = total;
     el.querySelectorAll(".picker [data-i]").forEach((card) => {
       const i = Number(card.dataset.i), on = i === st.mixSel;
       if (card.classList.contains("mr-btn")) return;
       card.classList.toggle("on", on); card.setAttribute("aria-selected", String(on));
       const em = card.querySelector(".mr-g em"); if (em) em.textContent = String(st.mix[i]);
       card.querySelector(".need")?.classList.toggle("met", st.mix[i] >= (MIX[i].need || 0));
-      const ratio = card.querySelector(".ratio"); if (ratio) ratio.textContent = `比率 ${total2 ? Math.round(st.mix[i] / total2 * 100) : 0}%`;
     });
     const ok = el.querySelector(".btn-a.mix-ok");
     if (ok) { ok.disabled = !this.mixOk(); ok.classList.toggle("hot", this.mixOk()); }
-    const pour = el.querySelector(".pour-pkg");
-    if (pour && Number(pour.dataset.i) !== st.mixSel) { pour.dataset.i = String(st.mixSel); pour.innerHTML = pkgHtml(MIX[st.mixSel], 15); }
   }
 
   addMix(by) {
     const { st, el } = this, i = st.mixSel;
     if ((by > 0 && this.mixTotal() >= MIX_CAP) || (by < 0 && st.mix[i] <= 0)) {
-      const bar = el.querySelector(".mixbar");
-      bar?.classList.remove("nudge"); void bar?.offsetWidth; bar?.classList.add("nudge");
+      const digits = el.querySelector(".digits"); // 下の段の重さの表示は外した（VPL74）。はかりの表示を揺らす
+      digits?.classList.remove("nudge"); void digits?.offsetWidth; digits?.classList.add("nudge");
       return;
     }
     st.mix[i] += by;
@@ -1091,7 +1115,7 @@ class Phone {
   dropLeaf() {
     const bowl = this.el.querySelector(".mixbowl");
     if (!bowl || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const from = this.lookAt === "b" ? -1.4 : -2.6;
+    const from = -2.6;
     for (let n = 0; n < 4; n++) {
       const bit = document.createElement("i");
       bit.className = "leaf-bit";
@@ -1102,7 +1126,6 @@ class Phone {
       bit.animate([{ transform: `translate(-50%, ${from * 100}%) rotate(${Math.random() * 90}deg)`, opacity: 0 }, { opacity: 1, offset: 0.2 }, { transform: `translate(${-50 + (Math.random() - 0.5) * 120}%, 260%) rotate(${Math.random() * 200}deg)`, opacity: 0 }],
         { duration: 520 + n * 70, delay: n * 60, easing: "cubic-bezier(0.5, 0, 0.9, 0.6)", fill: "backwards" }).finished.then(() => bit.remove()).catch(() => bit.remove());
     }
-    if (this.lookAt === "b") { const pkg = this.el.querySelector(".pour-pkg"); pkg?.classList.remove("tip"); void pkg?.offsetWidth; pkg?.classList.add("tip"); }
   }
 
   decideMix() {
@@ -1132,7 +1155,7 @@ class Phone {
     const size = this.dodgeSize();
     if (!size || this.st.scene !== "steam") return;
     const now = performance.now();
-    this.dodge = { t0: now + DODGE.ready, heart: { x: 195, y: size.H * 0.7 }, bullets: [], hits: 0, safeUntil: 0, bombAt: -1e9, rings: [],
+    this.dodge = { t0: now + DODGE.ready, heart: { x: 195, y: size.H * 0.7 }, bullets: [], hits: 0, safeUntil: 0, bombAt: -1e9, atkAt: -1e9, slashes: [], lastHit: -1e9, calmSince: 0, beat: 0, beatAt: now, rings: [],
       nextSpawn: 0, nextWave: 1600, warn: null, over: false, H: size.H };
     if (this.fixed) {
       // 一覧は途中の一コマ: 言葉と炭・玉が四方から迫り、上から扇の波が来る
@@ -1206,8 +1229,7 @@ class Phone {
         const h = d.heart, c = DODGE.core;
         const hit = d.bullets.find((b) => b.word ? Math.abs(h.x - b.x) < b.hw + c && Math.abs(h.y - b.y) < 6 + c : Math.hypot(h.x - b.x, h.y - b.y) < b.r + c);
         if (hit) {
-          d.hits += 1; d.safeUntil = now + DODGE.invuln;
-          field.style.setProperty("--mind", MIND[Math.min(3, d.hits)]); field.dataset.mind = String(Math.min(3, d.hits));
+          d.hits += 1; d.safeUntil = now + DODGE.invuln; d.lastHit = now; d.calmSince = now;
           d.bullets.splice(d.bullets.indexOf(hit), 1);
           this.el.querySelector(".pic")?.animate([{ translate: "0 0" }, { translate: "-0.5rem 0.3rem" }, { translate: "0.4rem -0.2rem" }, { translate: "0 0" }], { duration: 240 });
         }
@@ -1215,6 +1237,11 @@ class Phone {
       field.querySelector(".d-time i").style.transform = `scaleX(${Math.max(0, 1 - t / DODGE.time).toFixed(3)})`;
       if (t >= DODGE.time) this.endDodge();
     }
+    // 心の状態（VPL64）: 場の縁の暗がりと、奥の時計・心拍線の色に出す
+    const lv = this.mindLevel(now);
+    if (field.dataset.level !== lv) { field.dataset.level = lv; field.dataset.mind = String(MIND_LV.indexOf(lv)); }
+    const sub = this.el.querySelector(".act-sub.attack");
+    if (sub) { const c = Math.max(0, 1 - (now - d.atkAt) / ATTACK.cool); sub.style.setProperty("--cool", c.toFixed(3)); sub.classList.toggle("ready", c <= 0); }
     const btn = this.el.querySelector(".btn-a.bomb");
     if (btn) {
       const cool = Math.max(0, 1 - (now - d.bombAt) / DODGE.bombCool);
@@ -1226,18 +1253,30 @@ class Phone {
     this.drawDodge(now);
   }
 
+  /** 心の状態（本編 steam-mind.js の式を写したもの）。 */
+  mindTension(now) {
+    const d = this.dodge;
+    const struck = Math.max(0, 1 - (now - d.lastHit) / 4000 + Math.min(0.2, d.hits * 0.025));
+    return d.hits ? Math.min(1, struck) : 0;
+  }
+  mindLevel(now) {
+    const d = this.dodge, t = this.mindTension(now);
+    return t > 0.65 ? "shaken" : t > 0.25 ? "unsteady" : t < 0.05 && now - Math.max(d.t0, d.calmSince) >= 6000 ? "clear" : "steady";
+  }
+
   drawDodge(now) {
     const size = this.dodgeSize(), d = this.dodge;
     if (!size || !d) return;
     const { ctx, u, field } = size;
-    const mind = MIND[Math.min(3, d.hits)];
+    const lv = this.fixed ? "steady" : this.mindLevel(now), mind = MIND_INK[lv], stress = this.fixed ? 0.1 : this.mindTension(now);
     ctx.setTransform(u, 0, 0, u, 0, 0);
     ctx.clearRect(0, 0, 390, d.H);
-    // 奥の時計（本編: 場の中央奥に不透明度 .16、色は心の状態）
+    // 奥の時計（本編: 場の中央奥に不透明度 .16、色は心の状態）。場の真ん中より少し下（VPL63）
+    const cy = d.H * 0.6;
     const left = Math.max(0, Math.ceil((DODGE.time - Math.max(0, now - d.t0)) / 1000));
     const text = `0${Math.floor(left / 60)}${String(left % 60).padStart(2, "0")}`.slice(-3);
     ctx.save(); ctx.globalAlpha = 0.16; ctx.fillStyle = mind;
-    const k = 1.25, w = 44 * k, x0 = 195 - (w * 3 + 14) / 2, y0 = d.H * 0.42 - 38 * k;
+    const k = 1.25, w = 44 * k, x0 = 195 - (w * 3 + 14) / 2, y0 = cy - 38 * k;
     [...text].forEach((digit, i) => {
       ctx.save(); ctx.translate(x0 + i * w + (i > 0 ? 14 : 0), y0); ctx.scale(k, k);
       for (const seg of SEG7_ON[Number(digit)]) ctx.fill(SEG7_PATH[seg]);
@@ -1245,6 +1284,21 @@ class Phone {
     });
     ctx.beginPath(); ctx.arc(x0 + w + 7, y0 + 26 * k, 3.4, 0, Math.PI * 2); ctx.arc(x0 + w + 7, y0 + 50 * k, 3.4, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
+    // 心拍線（VPL64・本編 mental.js）: 時計の高さを横切る脈の線。無心はゆっくり小さく、緊張するほど速く大きく乱れる
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduce && !this.fixed) d.beat += Math.max(0, now - d.beatAt) / 1000 * (lv === "clear" ? 42 : 58 + stress * 62);
+    d.beatAt = now;
+    const tt = reduce ? 0 : now / 1000;
+    ctx.save(); ctx.beginPath();
+    for (let x = 0; x <= 390; x += 3) {
+      const phase = (x + d.beat) % 104;
+      const pulse = -24 * Math.exp(-(((phase - 38) / 3.4) ** 2)) + 12 * Math.exp(-(((phase - 43) / 4.2) ** 2)) - 5 * Math.exp(-(((phase - 28) / 6) ** 2));
+      const noise = stress * 6 * Math.sin(x * 0.2 + tt * 21) * Math.sin(x * 0.07 - tt * 13);
+      const y = cy + pulse * (lv === "clear" ? 0.4 : 0.5 + stress * 1.4) + noise;
+      if (x) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+    }
+    ctx.strokeStyle = mind; ctx.globalAlpha = lv === "shaken" ? 0.42 : 0.3; ctx.lineWidth = lv === "shaken" ? 2.2 : 1.6;
+    ctx.shadowColor = mind; ctx.shadowBlur = 6; ctx.stroke(); ctx.restore();
     // 予告: 通り道の帯を点線で（本編 steam-art.js の色）
     if (d.warn) {
       const { top, h } = this.laneOf(d);
@@ -1304,6 +1358,44 @@ class Phone {
     }
     ctx.fillStyle = "#ffffff"; ctx.shadowColor = "#ffffff"; ctx.shadowBlur = 4;
     ctx.beginPath(); ctx.arc(h.x, h.y - 2, DODGE.core, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+    // リフレッシュが使える間は、届く範囲を心の周りに薄い点線の輪で見せる（何が起きるボタンかを場で伝える・VPL62）
+    if (!d.over && now - d.bombAt >= DODGE.bombCool) {
+      ctx.save(); ctx.setLineDash([4, 8]); ctx.lineDashOffset = -now / 60; ctx.strokeStyle = "rgba(168, 230, 255, 0.3)"; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.arc(h.x, h.y, DODGE.bombR, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+    }
+    // アタックの斬撃: 上前方の扇
+    for (const sl of d.slashes) {
+      const q = (now - sl.at) / 260;
+      if (q > 1) continue;
+      ctx.save(); ctx.globalAlpha = 1 - q; ctx.strokeStyle = "#fff3d6"; ctx.shadowColor = "#ffcf6b"; ctx.shadowBlur = 12; ctx.lineWidth = 5 * (1 - q) + 1;
+      ctx.beginPath(); ctx.arc(sl.x, sl.y, ATTACK.reach * (0.55 + 0.45 * q), -Math.PI / 2 - ATTACK.half, -Math.PI / 2 + ATTACK.half); ctx.stroke(); ctx.restore();
+    }
+  }
+
+  /** 精密（遅く細かく動く）を切り替える。 */
+  toggleSlow() {
+    const { st } = this;
+    st.slow = !st.slow;
+    const b = this.el.querySelector(".act-sub.slow");
+    if (b) { b.classList.toggle("on", st.slow); b.setAttribute("aria-pressed", String(st.slow)); }
+  }
+
+  /** アタック（VPL62）: 上前方の扇の中の弾を斬る。斬った言葉の数だけ心が落ち着く。待ちは1.8秒。 */
+  attack() {
+    const d = this.dodge, now = performance.now();
+    if (!this.attackLearned || !d || d.over || this.fixed || now < d.t0 || now - d.atkAt < ATTACK.cool) return;
+    d.atkAt = now;
+    d.slashes.push({ x: d.heart.x, y: d.heart.y, at: now });
+    d.bits = d.bits || [];
+    let words = 0;
+    d.bullets = d.bullets.filter((b) => {
+      const dx = b.x - d.heart.x, dy = b.y - d.heart.y, dist = Math.hypot(dx, dy) - (b.word ? b.hw * 0.5 : 0);
+      const ang = Math.abs(Math.atan2(dx, -dy));
+      const cut = dist <= ATTACK.reach && ang <= ATTACK.half && dy < 8;
+      if (cut) { d.bits.push({ x: b.x, y: b.y, word: b.word, at: now, seed: Math.random() * 6 }); if (b.word) words += 1; }
+      return !cut;
+    });
+    if (words) { d.lastHit -= words * ATTACK.calm; d.calmSince -= words * ATTACK.calm; }
   }
 
   /** 雑念を払う（本編のリフレッシュ）: 周りの雑念を消す。使ったあと8秒で戻る。 */
@@ -1335,12 +1427,13 @@ class Phone {
     const stamp = field?.querySelector(".d-stamp");
     if (stamp) {
       stamp.textContent = d.hits === 0 ? "無心" : d.hits <= 2 ? "持ちこたえた" : "雑念まみれ";
+      this.stepJudge = nicoJudge(100 - 14 * d.hits); // 本編の点（100−14×被弾）
       stamp.dataset.kind = d.hits === 0 ? "good" : d.hits <= 2 ? "ok" : "bad";
       stamp.hidden = false;
     }
     this.st.gradeP = 1; this.syncRank();
     setTimeout(() => this.rankUp(), 1000);
-    setTimeout(() => { if (this.st.scene === "steam") this.setScene("pull"); }, 4100);
+    setTimeout(() => { if (this.st.scene === "steam") this.setScene("pull"); }, this.venue === "stage" ? 5400 : 4100);
   }
 
   /** 十字キーをスティックとして使う: 押した所の向きと、真ん中からの距離で動く。 */
@@ -1365,10 +1458,7 @@ class Phone {
 
   /* ── 炭焼き（VPL54・VPL55）: 下のコンロの炭が黒から赤へ焼けていく。全面が赤くなった「取り頃」でタッチして取り出す ── */
   coalPic() {
-    const look = this.lookAt, bg = `<img class="bg" src="${IMG.tonari}" alt="">`;
-    if (look === "b") return `${bg}<div class="coal-up up-b"><div class="carrier"><img src="${IMG.carrier}" alt=""><div class="slots"></div></div><div class="judges"></div></div>`;
-    if (look === "c") return `${bg}<div class="coal-up up-c"><div class="hmdbowl"><img src="${IMG.hmd}" alt=""><div class="slots"></div></div><div class="judges"></div></div>`;
-    return `${bg}<div class="coal-up up-a"><div class="tongs"><img src="${IMG.hajimeTongs}" alt=""><i class="tip"></i></div><div class="judges"></div></div>`;
+    return `<img class="bg" src="${IMG[this.venue]}" alt=""><div class="coal-up"><i class="heat-glow"></i><div class="coal-hero"><img src="${IMG.coalHajime}" alt=""><div class="slots"></div></div><div class="judges"></div></div>`;
   }
 
   startCoals() {
@@ -1383,6 +1473,7 @@ class Phone {
       const h = this.heat;
       h.t0 = now - 4000; h.coals = [{ ready: 3000, taken: true, judge: heatJudge(1.05, 0.15) }, { ready: 4000, taken: false }, { ready: 7000, taken: false }];
       this.placeTaken(0, h.coals[0].judge, false);
+      const first = this.el.querySelector('.coal[data-i="0"]'); if (first) first.style.visibility = "hidden";
       this.stepCoals(now);
     }
   }
@@ -1390,8 +1481,9 @@ class Phone {
   stepCoals(now) {
     const h = this.heat;
     if (!h) return;
-    const t = now - h.t0;
+    const t = this.fixed ? 4000 : now - h.t0; // 一覧の見本は途中の一コマで止める
     this.el.querySelector(".stove")?.classList.toggle("on", t >= 0);
+    this.el.querySelector(".coal-up")?.classList.toggle("on", t >= 0);
     h.coals.forEach((c, i) => {
       const btn = this.el.querySelector(`.coal[data-i="${i}"]`);
       if (!btn || c.taken) return;
@@ -1418,25 +1510,20 @@ class Phone {
     this.checkCoalsDone();
   }
 
-  /** 取った炭を上の画面へ: トングの先・炭壺の中・HMDの中。判定の札も出す。 */
+  /** 取った炭を上の画面へ: はじめが持つ炭壺の中へ並ぶ。判定の札も出す。 */
   placeTaken(i, judge, dropped) {
     const up = this.el.querySelector(".coal-up");
     if (!up) return;
-    const look = this.lookAt, [kind, , label] = judge;
-    const piece = `<span class="tcoal ${kind}${dropped ? " ash" : ""}"><img src="${IMG.coalCold}" alt=""><img class="lit" src="${IMG.coalLit}" alt=""></span>`;
-    if (look === "a") {
-      const tip = up.querySelector(".tip");
-      tip.innerHTML = dropped ? "" : piece;
-      tip.classList.remove("got"); void tip.offsetWidth; if (!dropped) tip.classList.add("got");
-    } else {
-      const slots = up.querySelector(".slots"), [x, y] = LOOKS_COAL_SLOTS[look][slots.children.length] || [0.5, 0.5];
+    const [kind, , label] = judge;
+    if (!dropped) {
+      const slots = up.querySelector(".slots"), [x, y] = POT_SLOTS[slots.children.length] || POT_SLOTS[2];
       const el = document.createElement("span");
-      el.className = "slot"; el.style.left = `${x * 100}%`; el.style.top = `${y * 100}%`; el.innerHTML = piece;
-      if (!dropped) slots.append(el);
+      el.className = "slot"; el.style.left = `${x * 100}%`; el.style.top = `${y * 100}%`;
+      el.innerHTML = `<span class="tcoal ${kind}"><img src="${IMG.coalCold}" alt=""><img class="lit" src="${IMG.coalLit}" alt=""></span>`;
+      slots.append(el);
     }
     const tag = document.createElement("b");
     tag.className = `jtag ${label.toLowerCase()}`; tag.textContent = dropped ? "MISS" : label;
-    tag.style.setProperty("--k", String(i));
     up.querySelector(".judges").append(tag);
     if (!this.fixed) setTimeout(() => tag.classList.add("out"), 1200);
   }
@@ -1447,15 +1534,108 @@ class Phone {
     h.done = true;
     this.st.gradeP = 1; this.syncRank();
     const score = Math.round(h.coals.reduce((n, c) => n + c.judge[1], 0) / h.coals.length);
+    this.stepJudge = nicoJudge(score);
     this.say(score >= 90 ? "火が素直だ。いい焼け具合" : score >= 70 ? "まあまあだ。次は色をよく見ろ" : "早すぎか遅すぎだ。全面の赤を待て");
     setTimeout(() => this.rankUp(), 700);
-    setTimeout(() => { if (this.st.scene === "coal") this.setScene("steam"); }, 3600);
+    setTimeout(() => { if (this.st.scene === "coal") this.setScene("steam"); }, this.venue === "stage" ? 5000 : 3600);
+  }
+
+  /**
+   * 大会の観客のコメントを右から左へ流す（VPL68・VPL72・VPL73・VPL76）。ニコニコ動画の流れ方に寄せる。
+   * 文面は本編 broadcast.json（工程に触れた3本＋短い歓声。同じ短い一言は何人かが重ねて打つ）。
+   * 出る間隔はばらばら（最初にどっと来て、あとはぽつぽつ）。行は上の方の空いている所から散らして選ぶので、毎行は埋まらない。
+   * 白い文字に黒い縁が基本で、たまに赤文字の人・ほかの色・太字・大きい・小さいが混ざる。止まる大きな一言（多くは赤）は出る時と出ない時がある。
+   * frozen（一覧の見本）は流れの途中で止め、変わり種を一通り見せる。
+   */
+  nicoBurst(kind, { frozen = false } = {}) {
+    const B = BROADCAST;
+    if (!B) return;
+    const gk = kind === "great" ? "perfect" : kind, step = NICO_STEP[this.st.scene];
+    const used = new Set();
+    const draw = (list, n) => {
+      const rest = [...new Set(list || [])].filter((t) => !used.has(t)), out = [];
+      while (out.length < n && rest.length) out.push(...rest.splice(Math.floor(Math.random() * rest.length), 1));
+      out.forEach((t) => used.add(t));
+      return out;
+    };
+    const shuffle = (list) => { for (let i = list.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [list[i], list[j]] = [list[j], list[i]]; } return list; };
+    const pool = [...(B.nico?.[gk] || []), ...(B.chapter1?.nico?.[gk] || [])];
+    const short = (t, n) => [...t].length <= n;
+    // 止まる一言（上出来は上・失敗は下・まずまずは上）
+    const fixedPos = gk === "miss" ? "shita" : "ue";
+    const fixed = frozen || Math.random() < (NICO_FIXED[kind] ?? 0.3) ? draw(pool.filter((t) => short(t, 10)), 1)[0] : null;
+    const n = NICO_COUNT[kind] ?? 8;
+    const told = draw(B.completion?.[step]?.[kind] || [], 3);
+    const echoOne = shuffle(pool.filter((t) => short(t, 6)))[0];
+    const echo = echoOne && Math.random() < 0.6 ? [echoOne, echoOne] : [];
+    const cheers = draw(pool, Math.max(0, n - told.length - echo.length));
+    const lines = [...told.slice(0, 1), ...shuffle([...told.slice(1), ...cheers, ...echo])].slice(0, n);
+    let lane = this.el.querySelector(".nico-lane");
+    if (!lane) { lane = document.createElement("div"); lane.className = "nico-lane"; lane.setAttribute("aria-hidden", "true"); this.el.append(lane); }
+    // 1本ずつの見た目（変わり種）。見本では赤・太字・大きいを必ず1本ずつ混ぜる
+    const forced = frozen ? { 1: "red", 3: "futo", 5: "big", 7: "small" } : {};
+    const looks = lines.map((_, i) => {
+      if (forced[i]) return forced[i];
+      const r = Math.random(), o = NICO_ODD;
+      return r < o.red ? "red" : r < o.red + o.color ? "color" : r < o.red + o.color + o.futo ? "futo" : r < o.red + o.color + o.futo + o.big ? "big" : r < o.red + o.color + o.futo + o.big + o.small ? "small" : "";
+    });
+    const make = (text, look) => {
+      const c = document.createElement("div");
+      c.className = `nico ${look === "futo" || look === "big" || look === "small" ? look : ""}`.trim(); c.textContent = text;
+      if (look === "red") c.style.color = NICO_COLOR.red;
+      else if (look === "color") { const tints = NICO_TINT[gk] || NICO_TINT.good; c.style.color = NICO_COLOR[tints[Math.floor(Math.random() * tints.length)]]; }
+      return c;
+    };
+    // 出る時刻: 最初の数本は間が短く、あとは長い（指数分布の間隔）。NICO_SPAN 秒に収める
+    let t = 0.08 + Math.random() * 0.15;
+    const times = lines.map((_, i) => { const at = t; t += -Math.log(1 - Math.random()) * (i < 3 ? 0.2 : 0.42); return at; });
+    const squeeze = t > NICO_SPAN ? NICO_SPAN / t : 1;
+    const W = lane.clientWidth, H = lane.clientHeight;
+    const comments = lines.map((text, i) => {
+      const c = make(text, looks[i]);
+      c.style.visibility = "hidden"; lane.append(c);
+      return { c, t: times[i] * squeeze, big: looks[i] === "big" };
+    });
+    // 行の高さは普通の文字（2.3rem）から決める。止まる一言の行（上は一番上・下は一番下）は流れる分に使わない
+    const rowH = parseFloat(getComputedStyle(document.documentElement).fontSize) * 2.3 * 1.36;
+    const rows = Math.max(5, Math.floor(H / rowH)), last = Array(rows).fill(null);
+    if (fixed) (fixedPos === "ue" ? [0, 1] : [rows - 1, rows - 2]).forEach((row) => { last[row] = { t: Infinity }; }); // 大きい字は1行半ほどあるので2行とっておく
+    const T = 2.4; // 一覧の見本で止める時刻（秒）
+    let prevRow = -9;
+    comments.forEach((m) => {
+      m.w = m.c.offsetWidth; m.v = (W + m.w) / NICO_FLY;
+      // 前のコメントの尻尾が画面に入りきって少し間があき、前が抜けるまで追いつかない行
+      const free = (p) => !p || (p.t !== Infinity && m.t >= p.t + (p.w + rowH * 2.2) / p.v && m.t >= p.t + NICO_FLY - W / m.v);
+      const span = m.big ? 2 : 1;
+      const open = [];
+      for (let r = 0; r + span <= rows; r++) if (Array.from({ length: span }, (_, k) => free(last[r + k])).every(Boolean)) open.push(r);
+      // 空いている行から、少し上寄りに散らして選ぶ。すぐ前のコメントの隣の行は避ける（縦にきれいに並ばないように）。空きが無ければ重なる（ニコ動の弾幕と同じ）
+      const apart = open.filter((row) => Math.abs(row - prevRow) > 1), cand = apart.length ? apart : open;
+      const r = cand.length ? cand[Math.floor(Math.random() ** 1.25 * cand.length)] : (fixedPos === "ue" && fixed ? 2 : 0) + Math.floor(Math.random() * (rows - span - (fixed ? 2 : 0)));
+      prevRow = r;
+      for (let k = 0; k < span; k++) last[r + k] = m;
+      const c = m.c; c.style.top = `${r * rowH + (m.big ? rowH * 0.15 : 0)}px`; c.style.visibility = "";
+      if (frozen) {
+        const x = W - m.v * (T - m.t);
+        if (m.t > T || x < -m.w) { c.remove(); return; }
+        c.classList.add("still"); c.style.transform = `translateX(${x}px)`;
+      } else {
+        c.style.animationDelay = `${m.t.toFixed(2)}s`; c.style.animationDuration = `${NICO_FLY}s`;
+        c.addEventListener("animationend", () => c.remove(), { once: true });
+      }
+    });
+    if (fixed) {
+      const c = make(fixed, frozen || Math.random() < 0.65 ? "red" : "color");
+      c.classList.add(fixedPos, "big");
+      if (frozen) c.classList.add("still"); else { c.style.animationDelay = `${(0.3 + Math.random() * 1.2).toFixed(2)}s`; c.addEventListener("animationend", () => c.remove(), { once: true }); }
+      lane.append(c);
+    }
   }
 
   /** 熱ゲージ（温度帯）。シーシャ作りの間ずっと右に大きく出す。色の意味は本編と同じ（緑＝適温の目安、虹＝合わせやすい範囲、炎＝焦げる）。 */
-  thermoHtml() {
+  thermoHtml(fade = "") {
     const t = this.st.temp, pc = (v) => `${(v * 100).toFixed(1)}%`;
-    return `<div class="thermo ${tempState(t)}" style="--t:${t}" role="meter" aria-label="煙の温度" aria-valuemin="0" aria-valuemax="1" aria-valuenow="${t.toFixed(2)}">
+    return `<div class="thermo ${tempState(t)} ${fade}" style="--t:${t}" role="meter" aria-label="煙の温度" aria-valuemin="0" aria-valuemax="1" aria-valuenow="${t.toFixed(2)}">
       <span class="th-icon">${icon("thermo")}</span>
       <span class="th-tube"><span class="th-bar" style="background:${SCALE}">
         <i class="th-zone" style="bottom:${pc(TEMP_ZONE[0])};height:${pc(TEMP_ZONE[1] - TEMP_ZONE[0])}"></i>
@@ -1484,16 +1664,18 @@ class Phone {
     }
     if (st.scene === "mix") {
       // 十字キーは出さず、下の画面にフレーバーの一覧（案A・B は横、案C は縦にスライド）。各札の −／＋ で1gずつ。合わせて12gで課題を満たすと「決定」（VPL52）
-      return `${this.mixCardsHtml()}<div class="mixfoot"><div class="mixbar" aria-hidden="true"><span class="slots"></span><b class="mixsum"></b></div></div>${aHtml("ok", { cls: "mix-ok", disabled: !this.mixOk() })}`;
+      return `${this.mixCardsHtml()}${aHtml("ok", { cls: "mix-ok", disabled: !this.mixOk() })}`;
     }
     if (st.scene === "coal") {
       // 下の画面はコンロ。炭を直接タッチして取り出す（VPL55）
-      return `<div class="stove"><img src="${IMG.stove}" alt="">${COAL_AT.map(([x, y], i) => `<button class="coal" data-act="coal" data-i="${i}" style="left:${x * 100}%;top:${y * 100}%" aria-label="炭 ${i + 1}"><img class="c-cold" src="${IMG.coalCold}" alt=""><img class="c-lit" src="${IMG.coalLit}" alt=""><i class="c-ash"></i></button>`).join("")}</div>`;
+      return `<div class="stove"><img src="${IMG.stove}" alt="">${COAL_AT.map(([x, y], i) => `<button class="coal" data-act="coal" data-i="${i}" style="left:${x * 100}%;top:${y * 100}%" aria-label="炭 ${i + 1}"><i class="c-seat"></i><img class="c-cold" src="${IMG.coalCold}" alt=""><img class="c-lit" src="${IMG.coalLit}" alt=""><i class="c-ash"></i></button>`).join("")}</div>`;
     }
     if (st.scene === "steam") {
-      // 十字キーはスティック（押した向きと強さで動く）。Aで雑念を払う。精密は遅く細かく動く切り替え
-      // 精密（遅く細かく動く）はパッドの右上の小さな丸（VPL51）
-      return `<button class="slowbtn${st.slow ? " on" : ""}" data-act="fn" data-fn="slow" aria-label="精密に動く" aria-pressed="${st.slow}">${icon("target")}</button>${dpadHtml("up down left right")}${aHtml("bomb", { cls: "bomb", extra: `<i class="cool"></i>` })}`;
+      // 十字キーはスティック（押した向きと強さで動く）。右下の大きな丸がリフレッシュ、その左上が精密（アタックを覚えたら切り替えで入れ替わる）（VPL62）
+      const sub = this.attackLearned && st.sub === "attack" ? "attack" : "slow";
+      const subBtn = `<button class="act-sub ${sub}${sub === "slow" && st.slow ? " on" : ""}" data-act="sub" aria-label="${sub === "slow" ? "精密に動く" : "アタック"}"${sub === "slow" ? ` aria-pressed="${st.slow}"` : ""}>${TOOL_SVG[sub]}<small>${sub === "slow" ? "精密" : "アタック"}</small><i class="cool"></i></button>`;
+      const swap = this.attackLearned ? `<button class="act-swap" data-act="swap" aria-label="精密とアタックを入れ替える"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9h12l-3.5-3.5M19 15H7l3.5 3.5"/></svg></button>` : "";
+      return `${dpadHtml("up down left right")}${subBtn}${swap}${aHtml("bomb", { cls: "bomb", extra: `<small class="act-label">リフレッシュ</small><i class="cool"></i>` })}`;
     }
     if (st.scene === "pack") {
       return `${dpadHtml("left right")}${aHtml("ok", { disabled: !!PACKS[st.pack].locked })}`;
@@ -1551,7 +1733,10 @@ class Phone {
     else if (act === "pack") { st.pack = Number(hit.dataset.pack); this.patch(); }
     else if (act === "decide") this.decideWater();
     else if (act === "coal") this.takeCoal(Number(hit.dataset.i));
+    else if (act === "sub") { if (hit.classList.contains("attack")) this.attack(); else this.toggleSlow(); }
+    else if (act === "swap") { st.sub = st.sub === "attack" ? "slow" : "attack"; if (st.sub === "attack") st.slow = false; this.patch(); }
     else if (act === "mixsel") { st.mixSel = Number(hit.dataset.i); this.syncMix(); }
+    else if (act === "mixsort") this.sortMix(hit.dataset.g);
     else if (act === "mixadd") { st.mixSel = Number(hit.dataset.i); this.addMix(Number(hit.dataset.by)); }
     else if (act === "more") {
       this.moreOpen = !this.moreOpen;
@@ -1563,7 +1748,7 @@ class Phone {
     else if (act === "serve") { if (!this.fixed) this.setScene("map"); }
     else if (act === "fn") {
       const id = hit.dataset.fn;
-      if (id === "slow") { st.slow = !st.slow; hit.classList.toggle("on", st.slow); hit.setAttribute("aria-pressed", String(st.slow)); }
+      if (id === "slow") this.toggleSlow();
       else if (id === "list") { st.list = !st.list; this.patch(); }
       else if (id === "next") { // 「！」の付いた店を順に回る
         const marks = ORDER.filter((i) => SPOTS[i].mark), after = marks.find((i) => ORDER.indexOf(i) > ORDER.indexOf(st.sel));
@@ -1632,10 +1817,9 @@ class Phone {
     } else if (st.scene === "pack" && (dir === "left" || dir === "right")) {
       st.pack = (st.pack + (dir === "right" ? 1 : PACKS.length - 1)) % PACKS.length; this.patch();
     } else if (st.scene === "mix") {
-      // 左右で葉を選び、上下で1gずつ
-      const rows = this.lookAt === "c", pick = rows ? (dir === "up" || dir === "down") : (dir === "left" || dir === "right");
-      if (pick) { st.mixSel = (st.mixSel + (dir === (rows ? "down" : "right") ? 1 : MIX.length - 1)) % MIX.length; this.syncMix(); this.el.querySelector(`.picker [data-i="${st.mixSel}"]`)?.scrollIntoView({ block: "nearest", inline: "nearest" }); }
-      else this.addMix(dir === (rows ? "right" : "up") ? 1 : -1);
+      // キーボード: 上下で葉を選び、左右で1gずつ（画面では各行の −／＋）
+      if (dir === "up" || dir === "down") { const order = this.mixOrder(), k = order.indexOf(st.mixSel); st.mixSel = order[(k + (dir === "down" ? 1 : order.length - 1)) % order.length]; this.syncMix(); this.el.querySelector(`.picker [data-i="${st.mixSel}"]`)?.scrollIntoView({ block: "nearest" }); }
+      else this.addMix(dir === "right" ? 1 : -1);
     }
   }
 
@@ -1677,7 +1861,7 @@ class Phone {
       if (this.hold || st.pulls >= 5) return;
       st.pulls = Math.min(5, st.pulls + 1);
       st.gradeP = st.pulls / 5; this.syncRank();
-      if (st.pulls >= 5) setTimeout(() => this.rankUp(), 500);
+      if (st.pulls >= 5) { this.stepJudge = "great"; setTimeout(() => this.rankUp(), 500); }
       // 吸うたびに温度が動く（上げ吸いで上がり、下げ吸いで下がる）
       st.temp = Math.min(0.95, Math.max(0.06, st.temp + 0.05 + ((this.needleT ?? 0.5) - 0.5) * 0.32));
       this.hold = performance.now();
@@ -1685,7 +1869,7 @@ class Phone {
       this.patch();
       this.syncThermo();
       setTimeout(() => { this.hold = 0; if (st.pulls >= 5 && this.fixed) { st.pulls = 0; st.temp = 0.4; st.gradeP = 0; this.patch(); this.syncThermo(); this.syncRank(); } }, 700);
-      if (st.pulls >= 5 && !this.fixed) setTimeout(() => this.setScene("map"), 3300);
+      if (st.pulls >= 5 && !this.fixed) setTimeout(() => this.setScene("map"), this.venue === "stage" ? 4800 : 3300);
     }
   }
 
@@ -1745,8 +1929,9 @@ class Phone {
     btn?.classList.add(zone === "good" ? "res-good" : "res-off");
     setTimeout(() => btn?.classList.remove("res-good", "res-off"), 520);
     // 10個開け終えたら穴あけの工程が済み、ランクが1段上がる。大きく出たランクが収まってから次の工程へ
+    if (st.holes.length >= HOLE_COUNT) { const g = st.holes.filter((x) => x.good).length / HOLE_COUNT; this.stepJudge = g >= 0.9 ? "perfect" : g >= 0.7 ? "great" : g >= 0.4 ? "good" : "miss"; }
     if (st.holes.length >= HOLE_COUNT) setTimeout(() => this.rankUp(), 500);
-    if (st.holes.length >= HOLE_COUNT) setTimeout(() => { if (this.fixed) { st.holes = []; st.gradeP = 0; this.patch(); this.drawHoles(); this.syncRank(); } else this.setScene("coal"); }, 3300);
+    if (st.holes.length >= HOLE_COUNT) setTimeout(() => { if (this.fixed) { st.holes = []; st.gradeP = 0; this.patch(); this.drawHoles(); this.syncRank(); } else this.setScene("coal"); }, this.venue === "stage" ? 4800 : 3300);
   }
 
   /** 地図から店へ: 選んだ店へ寄ってから、煙の幕で店内へ替える。 */
@@ -1767,7 +1952,9 @@ class Phone {
     const crafting = (id) => CRAFT_SCENES.includes(id);
     if (!crafting(this.st.scene) && crafting(scene)) Object.assign(this.st, { grade: 0, gradeP: 0 });
     else if (crafting(scene)) this.st.gradeP = 0;
-    Object.assign(this.st, { water: 0, mix: MIX.map(() => 0), mixSel: 0 });
+    Object.assign(this.st, { water: 0, mix: MIX.map(() => 0), mixSel: 0, mixSort: null });
+    // 前の場面で温度ゲージが出ていたか（出ていた→消える場面ならふっと消し、出ていなかった→出る場面ならふっと出す）
+    this.thermoWas = crafting(this.st.scene) ? THERMO_ON.has(this.st.scene) : undefined;
     Object.assign(this, { dodge: null, heat: null, pouring: false, draining: false, deciding: false, coachSay: null, stick: null, dragTo: null });
     this.keys.clear();
     Object.assign(this.st, { scene, step: 0, page: 0, choosing: false, pick: 0, list: false, overview: false, holes: [], pulls: 0, pack: 1, temp: 0.4 });
@@ -1874,7 +2061,7 @@ function showGallery() {
       <li><b>補助ボタン</b>案1「名前つきの段」で確定（絵記号に短い名前を添えて横いっぱいに大きく）</li>
       <li><b>登場カットイン</b>案A「縦のポスター」で確定</li>
       <li><b>出すもの</b>地図は章・日付・レベル・体力・お金（天気は降る雨で見せる）。会話は場所の名前だけ、シーシャ作りは工程の並び（絵記号だけ）・熱ゲージ・ランクだけ</li>
-      <li><b>作る場面の見た目</b>水入れ・配合・雑念よけに専用の見た目を3案ずつ（下）。ボトル・ハガル・吸い出しのはじめは作り直した絵</li>
+      <li><b>作る場面</b>水入れは大会仕様のボトルへ直接、配合ははかりと縦に広いフレーバーの一覧、炭焼きはコンロの炭をタッチ、雑念よけは本編の見た目を縦に。説明は右上の薄い「？」。背景は会場（tonari・PEPPERMINT・大会の会場）で替わる</li>
       <li><b>ランク</b>工程を終えた時に上の絵へどかっと出て、右上へ移る（案D・オーナー案）。見比べ用に案A〜Cも残す（下）</li>
     </ul>
     <p class="g-note">絵・立ち絵・台詞は本編の素材、配置と動きが今回の案です。本編の進行や保存には触れません。<a href="?view=play" data-go="play">1台で通して触る</a></p>
@@ -1882,10 +2069,6 @@ function showGallery() {
     ${EXT_CLASSES.map((cls) => `<h2 class="g-sub">${cls.META.gallery.title}</h2>
     <p class="g-note">${cls.META.gallery.note} <a href="?view=play&scene=${cls.META.id}">1台で触る</a></p>
     <div class="g-grid">${cls.META.gallery.shots.map((item, i) => `<figure class="g-cell"><article class="phone" data-ext="${cls.META.id}" data-shot-i="${i}"></article><figcaption>${item.caption}</figcaption></figure>`).join("")}</div>`).join("")}
-    <h2 class="g-sub">水入れ・配合・雑念よけの見た目（3案ずつ）</h2>
-    <p class="g-note">シーシャ作りの3つの工程に、それぞれ専用の見た目を3案。ボトル・ハガル・水位計・はかり・缶・背景は画像生成（gpt-image-2.6-sunburst）で作り、水や葉の量・数字・弾はコードで重ねる。遊び方は3案とも同じ。1台表示の右上のつまみ →「見た目」で案を替えて触れる。</p>
-    ${Object.keys(LOOKS).map((scene) => `<section class="g-aux"><h3>${{ water: "水入れ", mix: "配合（グラム決め）", steam: "蒸らし（雑念よけ）" }[scene]}<a href="?view=play&scene=${scene}">1台で動きを見る</a></h3>
-      <div class="g-grid">${Object.entries(LOOKS[scene]).map(([v, look]) => `<figure class="g-cell"><article class="phone" data-lk="${v}" data-scene="${scene}"></article><figcaption><b>案${v.toUpperCase()} ${look.name}</b><br>${look.lead}</figcaption></figure>`).join("")}</div></section>`).join("")}
     <h2 class="g-sub">ランクの出し場所</h2>
     <p class="g-note">本編の制作ランク（D〜SSS の絵）を縦画面のどこに置くか。どの案も、工程を終えてランクが上がった瞬間は舞台の真ん中に大きく出し（下の英語まで読める）、置き場所へ縮めて収める。1台表示の右上のつまみ →「ランク」で案を替え、「↑」で上がる動きを何度でも見られる。</p>
     ${Object.entries(RANK_PLACES).map(([v, place]) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}${v === "d" ? "（オーナー案）" : ""}</small>${place.name}<a href="?view=play&scene=holes&rank=${v}">1台で動きを見る</a></h3><p>${place.lead}</p>
@@ -1894,10 +2077,17 @@ function showGallery() {
     ${["a"].map((v) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}で決定</small>${CUT_VARIANTS[v].name}<a href="?view=play&scene=cutin&ci=${v}" data-go="play" data-ci="${v}">1台で動きを見る</a></h3><p>${CUT_VARIANTS[v].lead}</p>
       <div class="g-grid">${["minto", "sumi"].map((who) => `<figure class="g-cell"><article class="phone" data-ci="${v}" data-who="${who}"></article><figcaption>${who === "minto" ? "みんと" : "スミさん"}</figcaption></figure>`).join("")}</div></section>`).join("")}
   </main>`;
-  app.querySelectorAll(".phone[data-i]").forEach((el) => { const item = GALLERY[Number(el.dataset.i)]; phones.push(new Phone(el, item.scene, { fixed: true, ...item })); });
+  app.querySelectorAll(".phone[data-i]").forEach((el) => {
+    const item = GALLERY[Number(el.dataset.i)], phone = new Phone(el, item.scene, { fixed: true, ...item });
+    phones.push(phone);
+    // 大会のコメントの見本: ランクの絵を真ん中に大きく出し、コメントを流れの途中で止めて見せる
+    if (item.nico) {
+      const show = () => { const img = document.createElement("img"); img.className = "rank-burst still"; img.alt = ""; img.src = IMG[`rank${GRADES[phone.st.grade]}`]; el.append(img); phone.nicoBurst("perfect", { frozen: true }); };
+      BROADCAST_READY.then(show);
+    }
+  });
   app.querySelectorAll(".phone[data-ci]").forEach((el) => phones.push(new Phone(el, "cutin", { fixed: true, ci: el.dataset.ci, who: el.dataset.who })));
   app.querySelectorAll(".phone[data-ext]").forEach((el) => phones.push(new Phone(el, el.dataset.ext, { fixed: true, ...EXT[el.dataset.ext].META.gallery.shots[Number(el.dataset.shotI)] })));
-  app.querySelectorAll(".phone[data-lk]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, look: el.dataset.lk, water: 0.5, mix: [7, 3, 2], grade: 1, gradeP: 0.4 })));
   app.querySelectorAll(".phone[data-gp]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, rank: el.dataset.rank, grade: Number(el.dataset.grade), gradeP: Number(el.dataset.gp) })));
   scrollTo(0, 0);
 }
@@ -1922,13 +2112,14 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
       <div>${EXT_SCENES.map((id) => `<button data-scene="${id}" aria-pressed="${id === scene}">${SCENE_LABEL[id]}</button>`).join("")}</div>
       ${EXT_CLASSES.filter((cls) => cls.META.options).map((cls) => `<div><small>${cls.META.label}</small>${Object.entries(cls.META.options.values).map(([value, name]) => `<button data-opt="${cls.META.id}:${cls.META.options.name}:${value}" aria-pressed="${value === (params.get(cls.META.options.name) || cls.META.options.default)}">${name}</button>`).join("")}</div>`).join("")}
       <div><small>登場</small>${[["minto", "みんと"], ["sumi", "スミ"]].map(([id, name]) => `<button data-who="${id}" aria-pressed="${id === who}">${name}</button>`).join("")}<a href="?view=gallery" data-go="gallery">一覧</a></div>
-      <div><small>見た目</small>${["a", "b", "c"].map((v) => `<button data-look="${v}" aria-pressed="${v === (params.get("look") || "a")}">案${v.toUpperCase()}</button>`).join("")}</div>
+      <div><small>雑念よけ</small><button data-attack aria-pressed="${params.has("attack")}">アタック習得</button></div>
+      <div><small>会場</small>${Object.entries(VENUES).map(([v, name]) => `<button data-venue="${v}" aria-pressed="${v === (params.get("venue") || "tonari")}">${name}</button>`).join("")}</div>
       <div><small>ランク</small>${Object.keys(RANK_PLACES).map((v) => `<button data-rank="${v}" aria-pressed="${v === (params.get("rank") || "d")}">案${v.toUpperCase()}</button>`).join("")}<button data-rankup aria-label="ランクを上げる">↑</button></div></div></nav>`}</div>`;
   const el = app.querySelector(".phone");
   // 先に大きさを決めてから描く（立ち絵と地図の位置は絵の大きさから決まる）
   const box = app.getBoundingClientRect(), rem = Math.min(box.width / 39, box.height / 66);
   root.style.fontSize = `${rem}px`; el.style.height = `${Math.min(box.height, rem * 92)}px`;
-  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { ...Object.fromEntries(params), step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", look: params.get("look") || "a", grade: params.get("grade"), ...opts });
+  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { ...Object.fromEntries(params), step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", venue: params.get("venue") || "tonari", attack: params.has("attack"), grade: params.get("grade"), ...opts });
   current = make(scene);
   const nav = app.querySelector(".switch");
   if (!nav) return;
@@ -1946,11 +2137,18 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
     open(true);
     if (button.dataset.scene) current.setScene(button.dataset.scene);
     else if (button.dataset.opt) { const [id, name, value] = button.dataset.opt.split(":"); current.extOpts[name] = value; current.extOpts.shot = null; syncOpt(); current.setScene(id); } // 選び方を替えて、その場面を最初から
-    else if (button.dataset.look) {
-      // 水入れ・配合・雑念よけの見た目の案を替える。その3場面でなければ水入れへ
-      current.lookAt = button.dataset.look; current.el.dataset.look = button.dataset.look;
-      nav.querySelectorAll("[data-look]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.look === current.lookAt)));
-      if (["water", "mix", "steam"].includes(current.st.scene)) current.setScene(current.st.scene); else current.setScene("water");
+    else if ("attack" in button.dataset) {
+      // アタックを覚えた状態を切り替える（覚えると、精密の隣に入れ替えのボタンが出る）
+      current.attackLearned = !current.attackLearned;
+      if (!current.attackLearned) current.st.sub = "slow";
+      button.setAttribute("aria-pressed", String(current.attackLearned));
+      current.setScene("steam");
+    }
+    else if (button.dataset.venue) {
+      // 作る場面の会場（背景）を替える。作る場面でなければ炭焼きへ
+      current.venue = button.dataset.venue;
+      nav.querySelectorAll("[data-venue]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.venue === current.venue)));
+      current.setScene(CRAFT_SCENES.includes(current.st.scene) ? current.st.scene : "coal");
     }
     else if (button.dataset.rank || "rankup" in button.dataset) {
       // ランクの置き場所の案を替える／上がる動きを見る。作る場面でなければ穴あけへ
@@ -1987,9 +2185,10 @@ addEventListener("keydown", (event) => {
   if (scene === "steam" && (dir || event.key === "Shift")) {
     event.preventDefault();
     if (dir) current.keys.add(dir);
-    else if (!event.repeat) { current.st.slow = !current.st.slow; current.el.querySelector('[data-fn="slow"]')?.classList.toggle("on", current.st.slow); }
+    else if (!event.repeat) current.toggleSlow();
     return;
   }
+  if (scene === "steam" && (event.key === "z" || event.key === "x")) { event.preventDefault(); if (event.key === "z" && current.attackLearned) current.attack(); else current.pressA(); return; }
   // 水入れ: Enter・Space を押している間は注ぐ、↓を押している間は少しこぼす、→で決定
   if (scene === "water" && (enter || dir === "down" || dir === "right")) {
     event.preventDefault();
