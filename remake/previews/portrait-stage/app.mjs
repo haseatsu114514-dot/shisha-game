@@ -178,7 +178,7 @@ const TIMER_LOOKS = {
 // 液晶の7つの区画（本編 remake/js/craft/digital-clock.js と同じ形。数字を絵に焼き込まない）
 const SEG_DIGITS = ["abcdef", "bc", "abdeg", "abcdg", "bcfg", "acdfg", "acdefg", "abc", "abcdefg", "abcdfg"];
 const SEG_PATHS = { a: "M6 2h28l4 4-4 4H6L2 6Z", b: "m38 8 4 4v20l-4 4-4-4V12Z", c: "m38 38 4 4v20l-4 4-4-4V42Z", d: "M6 64h28l4 4-4 4H6l-4-4Z", e: "m2 38 4 4v20l-4 4-4-4V42Z", f: "m2 8 4 4v20l-4 4-4-4V12Z", g: "M6 33h28l4 4-4 4H6l-4-4Z" };
-const lcdSvg = (sec, { units = false } = {}) => { const d = clockTime(sec).replace(":", ""); return `<svg viewBox="-4 -2 223 ${units ? 106 : 80}" aria-hidden="true">${[2, 52, 122, 172].map((x, i) => `<g transform="translate(${x} 0)">${Object.entries(SEG_PATHS).map(([k, p]) => `<path class="${SEG_DIGITS[Number(d[i])].includes(k) ? "on" : ""}" d="${p}"/>`).join("")}</g>`).join("")}<circle class="on" cx="108" cy="25" r="3"/><circle class="on" cx="108" cy="50" r="3"/>${units ? `<text class="on" x="47" y="100">分</text><text class="on" x="167" y="100">秒</text>` : ""}</svg>`; };
+const lcdSvg = (sec) => { const d = clockTime(sec).replace(":", ""); return `<svg viewBox="-4 -2 223 80" aria-hidden="true">${[2, 52, 122, 172].map((x, i) => `<g transform="translate(${x} 0)">${Object.entries(SEG_PATHS).map(([k, p]) => `<path class="${SEG_DIGITS[Number(d[i])].includes(k) ? "on" : ""}" d="${p}"/>`).join("")}</g>`).join("")}<circle class="on" cx="108" cy="25" r="3"/><circle class="on" cx="108" cy="50" r="3"/></svg>`; };
 // 温度ゲージを出す場面（VPL61）。穴あけ・炭焼き・雑念よけの間は消し、吸い出しで戻す
 // 吐く時のはじめの口元（img/craft-pull-hajime-exhale.webp の中の、開いた唇の前。横・縦の割合）。絵には煙を描かず、吐いた時だけ動く煙を出す（VPL96・VPL100）
 const PULL_MOUTH = [0.55, 0.287];
@@ -2250,7 +2250,7 @@ class Phone {
     const { el, st } = this, sec = this.steamSec, set = sec >= 10;
     const lcd = el.querySelector(".timer-a .lcd");
     if (!lcd) return;
-    lcd.innerHTML = lcdSvg(sec, { units: true }); lcd.setAttribute("aria-label", `蒸らし時間 ${Math.floor(sec / 60)}分${sec % 60}秒`);
+    lcd.innerHTML = lcdSvg(sec); lcd.setAttribute("aria-label", `蒸らし時間 ${Math.floor(sec / 60)}分${sec % 60}秒`);
     el.querySelectorAll(".presets .preset[data-key^='p']").forEach((b) => b.setAttribute("aria-pressed", String(sec === Number(b.dataset.key.slice(1)) * 60)));
     el.querySelectorAll(".t-start, .kt-start").forEach((b) => { b.disabled = !set; });
     el.querySelectorAll(".t-min, .kt-min, .t-sec, .kt-sec").forEach((b) => { b.disabled = sec >= STEAM_MAX; });

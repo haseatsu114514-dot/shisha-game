@@ -1076,7 +1076,6 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .phone[data-scene="timer"] .timer-a { top: 9.4rem; bottom: 2.4rem; justify-content: center; container-type: size; }
 .phone[data-scene="timer"] .ktimer { width: min(31.4rem, 100cqh * var(--ar)); }
 .phone[data-scene="timer"] .ktimer .lcd svg { width: 90%; height: 88%; }
-.ktimer .lcd text { font: 700 15px var(--gothic); text-anchor: middle; }
 .phone[data-scene="timer"] .kt-key { border-radius: 3cqw; }
 .ktimer.round .kt-key { border-radius: 50%; }
 
