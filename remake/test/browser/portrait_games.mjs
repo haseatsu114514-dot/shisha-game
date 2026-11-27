@@ -186,14 +186,53 @@ await suite("portrait-games", async check => {
     }, { ...options, pageEntry: `${baseURL}previews/dj/index.html?set=1&layout=portrait&mute=1`, pageReadySelector: "#play-a" });
   }
 
-  await check("dj-landscape-default-is-untouched", async page => {
-    assert.equal(await page.evaluate(() => document.documentElement.dataset.layout ?? null), null);
-    assert.equal(await page.locator("#nudge-back").isVisible() || await page.locator("#nudge-fwd").isVisible(), false, "the nudge buttons are portrait only");
-    assert.equal(await page.evaluate(() => document.getElementById("dj-stage").dataset.focus ?? null), null);
-    const stage = await page.evaluate(() => document.getElementById("dj-stage").offsetWidth);
-    assert(stage >= 1280, `landscape stage keeps its width: ${stage}`);
-    assert.equal(await page.evaluate(() => [...document.styleSheets].some(sheet => /portrait\.css/.test(sheet.href || ""))), false, "portrait.css is not loaded");
-  }, { pageEntry: `${baseURL}previews/dj/index.html?set=1&mute=1`, pageReadySelector: "#play-a" });
+  // 横（既定）: 縦の印は付かず、portrait.css も読まない。ズレ直しのボタン（VPG15）は横にも出る（2026-11-27「横にも出す」）:
+  // ビートメーターのすぐ左右（横フェーダーの真上）にあり、つなぎの間だけ押せる。ズレたら直す向きが光り、押し続けると入れた曲の皿が戻る向きに回って拍が戻る。
+  // 押す所は PC でも、スマホ横持ち（844×390・phone density）でも実寸 44px 以上
+  const LANDSCAPE = [["pc", { viewport: { width: 1280, height: 720 } }, ""], ["phone", { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true }, "&phone=1"]];
+  for (const [suffix, options, query] of LANDSCAPE) {
+    await check(`dj-landscape-nudge-buttons-${suffix}`, async page => {
+      const touch = !!options.hasTouch, press = selector => touch ? page.locator(selector).tap() : page.locator(selector).click();
+      assert.equal(await page.evaluate(() => document.documentElement.dataset.layout ?? null), null);
+      assert.equal(await page.evaluate(() => document.getElementById("dj-stage").dataset.focus ?? null), null);
+      const stage = await page.evaluate(() => document.getElementById("dj-stage").offsetWidth);
+      assert(stage >= 1280, `landscape stage keeps its width: ${stage}`);
+      assert.equal(await page.evaluate(() => [...document.styleSheets].some(sheet => /portrait\.css/.test(sheet.href || ""))), false, "portrait.css is not loaded");
+      // 置き場所: ビートメーターの左が ◀、右が ▶。どちらも横フェーダーの真上（台座の幅の中）。ランプ（QUANTIZE・AUTO EQ）はその外側に残る
+      const box = selector => page.locator(selector).boundingBox();
+      const [back, fwd, beat, fader, quantize, autoEq] = await Promise.all(["#nudge-back", "#nudge-fwd", "#beat", "#crossfader", "#led-quantize", "#led-autoeq"].map(box));
+      assert(back.x + back.width <= beat.x + 1 && fwd.x >= beat.x + beat.width - 1, `◀ left of the beat meter, ▶ right of it: ${JSON.stringify({ back, fwd, beat })}`);
+      assert(back.y + back.height <= fader.y && fwd.y + fwd.height <= fader.y && back.x >= fader.x - 12 && fwd.x + fwd.width <= fader.x + fader.width + 12, `right above the crossfader: ${JSON.stringify({ back, fwd, fader })}`);
+      assert(quantize.x + quantize.width <= back.x + 1 && autoEq.x >= fwd.x + fwd.width - 1, "the lamps stay outside the buttons");
+      assert(await page.locator("#nudge-back").isDisabled() && await page.locator("#nudge-fwd").isDisabled(), "nothing to fix before the mix");
+      // つなぎに入ると押せる
+      await press("#play-a");
+      await page.waitForFunction(() => !document.getElementById("point-play-b").hidden, null, { timeout: 60000 });
+      await press("#play-b");
+      await page.waitForFunction(() => !document.getElementById("guide").hidden && !document.getElementById("nudge-back").disabled, null, { timeout: 30000 });
+      await boxesInside(page, ["#nudge-back", "#nudge-fwd"], { tap: 44 });
+      // 入れた曲が先へ走った: ◀ が光る。押し続けると、その皿が左回り（戻す向き）に回って拍が戻る
+      assert.equal(await page.evaluate(() => window.__dj.slip(0.22)), true);
+      await page.waitForFunction(() => document.getElementById("beat").dataset.state === "off", null, { timeout: 8000 });
+      await page.waitForTimeout(300);
+      assert.equal(await page.locator("#nudge-back.go").count(), 1, "the button that fixes it glows");
+      assert.equal(await page.locator("#nudge-fwd.go").count(), 0);
+      assert.match(await page.locator("#coach-sub").innerText(), /光る ◀/, "the navi tells the button works too");
+      const spin = () => page.evaluate(() => Number.parseFloat(document.getElementById("platter-b").style.getPropertyValue("--spin")) || 0);
+      const before = await spin();
+      let fixed;
+      if (touch) fixed = await hold(page, "#nudge-back", 2500, () => window.__dj.fx.fixes);
+      else {
+        const b = await box("#nudge-back");
+        await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.mouse.down();
+        await page.waitForTimeout(2500); fixed = await page.evaluate(() => window.__dj.fx.fixes); await page.mouse.up();
+      }
+      assert(fixed > 0, "holding the button brings the track back in time");
+      const after = await spin();
+      assert(after < before - 30, `the incoming platter turned back (counter-clockwise): ${before} -> ${after}`);
+      assert.notEqual(await page.locator("#beat").getAttribute("data-state"), "off", "the beat meter is out of the slip");
+    }, { ...options, pageEntry: `${baseURL}previews/dj/index.html?set=1&mute=1${query}`, pageReadySelector: "#play-a" });
+  }
 
   // ボドゲカフェの調べる場面（VPG23→VPG27）: 部屋の絵を、画面の上から下の段の上まで縦いっぱいに見せ（上下に空きを残さない）、
   // 左・中・右の3つの範囲を「◀ ▶」・範囲の札・横に払うので切り替える。今の範囲に無い印は隠れ、そこでしか見えない数が範囲の札に出る。
