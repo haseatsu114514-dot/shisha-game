@@ -753,13 +753,9 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .help-q { display: grid; place-items: center; width: 3.2rem; height: 3.2rem; padding: 0; border: 0.1rem solid #ffffff4d; border-radius: 50%; background: #120c1dcc; color: #ffffffd9; font-size: 1.7rem; font-weight: 700; line-height: 1; box-shadow: 0 0.3rem 0.8rem #000a; -webkit-backdrop-filter: blur(1rem); backdrop-filter: blur(1rem); }
 .help-q:active { background: var(--acc); color: var(--deep); }
 .phone:not([data-kind="craft"]) .help-q { display: none; }
-/* 案A: スミさんの一言と同じ段の右端。一言の吹き出しはその手前で折り返す */
-.phone[data-help="a"] .coach { padding-right: 4.2rem; }
+/* スミさんの一言と同じ段の右端（下の画面の右上。VPL99・VPL109 で決定）。一言の吹き出しはその手前で折り返す */
+.phone[data-kind="craft"] .coach { padding-right: 4.2rem; }
 .help-a { position: absolute; right: 0; bottom: 0.6rem; z-index: 2; }
-/* 案B: スミさんの顔の右上の札 */
-.help-b { position: absolute; left: 3rem; bottom: 3.3rem; z-index: 2; width: 2.4rem; height: 2.4rem; font-size: 1.35rem; border-color: var(--acc); background: #1e1632; color: var(--acc); }
-/* 案C: 工程の並びの帯の右端（帯の中。細い仕切りの右） */
-.steps .help-c { width: 2.6rem; height: 2.6rem; margin-left: 0.4rem; border: 0; border-left: 0.1rem solid #ffffff2e; border-radius: 0 50% 50% 0; background: none; box-shadow: none; font-size: 1.5rem; color: #ffffffb3; }
 
 /* 炭焼き（VPL54・VPL57）: 下の画面は本編の電熱コンロを幅いっぱいに。炭は大きくし、押せる範囲も絵より広い。
    炭は黒い面（cold）と赤（lit）の絵を重ね、--red で焼け、--ash で灰をまとう */
