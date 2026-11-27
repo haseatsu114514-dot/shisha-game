@@ -904,56 +904,78 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
   .phone[data-scene="mix"] > * { --ok: 7rem; --tile: 7.7rem; --sel: 6rem; --pkz: 0.78; --selz: 0.82; } .mix-a .scale { top: calc(5.8rem + var(--sw) * 0.3); } .genre-bar { gap: 0.4rem; bottom: calc(0.5rem + (var(--ok) - 4rem) / 2); } .gchip { height: 4rem; gap: 0.15rem; } .gchip svg { width: 1.5rem; height: 1.5rem; } .gchip b { font-size: 1.05rem; } .mr-name b { font-size: 1.5rem; } .mr-btn { width: 4.2rem; height: 4.2rem; font-size: 2rem; } .mr-g em { font-size: 2.4rem; } .btn-a.mix-ok { bottom: 0.5rem; } .btn-a.mix-ok .t { font-size: 2.2rem; } .mt-name { font-size: 0.9rem; } .mixtile .mr-tags .genre, .mixtile .mr-tags .genre + .genre { width: 1.5rem; height: 1.5rem; }
   .judges { top: 6.6rem; } .jtag { font-size: 1.5rem; } }
 
-/* ───────── シーシャ作りの手の置き場をそろえる（VPL83・VPL84） ─────────
-   雑念よけ以外は、下の操作パネルの高さを同じにする（--cp）。スミさんの一言はいつもパネルのすぐ上。
-   右下＝決定（どの場面も同じ位置・同じ大きさ。雑念よけはリフレッシュ）、真ん中＝押し続ける大きな丸（注ぐ・刺す・吸う。同じ高さ・同じ大きさ）、左下＝補助（こぼす）。
-   雑念よけは場（弾幕）を広く取るため、パネルだけ低い（ボタンの角はほかと同じ）。 */
-.phone[data-kind="craft"] > * { --cp: 34rem; --hold: 18rem; --hold-y: 14rem; --ok: 9.6rem; --edge: 1.4rem; --low: 1.6rem; }
+/* ───────── シーシャ作りの手の置き場をそろえる（VPL83・VPL84・VPL86・VPL87） ─────────
+   下の操作パネルの高さは同じ（--cp。844 で 30rem）。例外は2つだけ: 配合は葉の棚の分だけ高く（--cp-mix）、水入れはボタン1段だけなので低い（--cp-water）。
+   雑念よけは場（弾幕）を広く取るため、パネルが低いまま。
+   右下＝決定（どの場面も同じ位置・同じ大きさ --ok。雑念よけのリフレッシュ・吸い出しの提供も同じ角・同じ大きさ）、
+   真ん中＝押し続ける大きな丸（刺す・吸う。中心はパネルの下から --hold-y）、左下＝補助。
+   同じ画面に並ぶ丸いボタンは同じ大きさ（水入れの こぼす・注ぐ・決定、雑念よけの 精密・リフレッシュ。VPL86）。
+   スミさんの一言は一回り小さく、一言のために空ける帯も詰めて、上の画面を広くする（VPL87）。 */
+.phone[data-kind="craft"] > * { --cp: var(--cp-std); --cp-std: 30rem; --cp-mix: 34rem; --cp-water: 14.4rem; --hold: 18rem; --hold-y: 14rem; --ok: 11.2rem; --edge: 1.4rem; --low: 1.6rem; --band: 3rem; }
+.phone[data-scene="mix"] > * { --cp: var(--cp-mix); }
+.phone[data-scene="water"] > * { --cp: var(--cp-water); }
 .phone[data-kind="craft"]:not([data-scene="steam"]) :is(.body, .pic, .ctrl, .thermo, .smoke, .veil, .nico-lane) { --ctrl-h: var(--cp); --aux-h: 0rem; --aux-pad: 0rem; --aux-g: 0rem; }
 .phone[data-kind="craft"]:not([data-scene="steam"]) .ctrl { height: var(--cp); }
-.phone[data-kind="craft"]:not([data-scene="steam"]) .pic { height: calc(100% - var(--cp) - 5.6rem); }
-/* 右下の決定 */
-.phone[data-kind="craft"] :is(.btn-a.sub.r, .btn-a.mix-ok, .btn-a.pack-ok) { left: auto; top: auto; right: var(--edge); bottom: var(--low); width: var(--ok); height: var(--ok); margin: 0; }
-.phone[data-kind="craft"] :is(.btn-a.sub.r, .btn-a.mix-ok, .btn-a.pack-ok) .t { font-size: calc(var(--ok) * 0.3); }
-.phone[data-scene="steam"] .btn-a.bomb { top: auto; right: var(--edge); bottom: var(--low); }
-/* 左下の補助 */
-.phone[data-kind="craft"] .btn-a.sub.l { right: auto; top: auto; left: var(--edge); bottom: var(--low); width: var(--ok); height: var(--ok); }
-/* 真ん中の押し続ける丸: 中心はパネルの下から --hold-y */
-.phone[data-scene="water"] .btn-a.center.pour { top: calc(var(--cp) - var(--hold-y) - var(--hold) / 2); width: var(--hold); height: var(--hold); margin-left: calc(var(--hold) / -2); }
+.phone[data-kind="craft"]:not([data-scene="steam"]) .pic { height: calc(100% - var(--cp) - var(--band)); }
+.phone[data-kind="craft"] .coach .say { font-size: 1.6rem; padding: 0.75rem 1.3rem 0.85rem; } .phone[data-kind="craft"] .coach img { width: 4.4rem; height: 4.4rem; }
+/* 右下の決定（と同じ角のリフレッシュ・提供） */
+.phone[data-kind="craft"] :is(.btn-a.sub.r, .btn-a.mix-ok, .btn-a.pack-ok, .btn-a.serve-ok, .btn-a.bomb) { left: auto; top: auto; right: var(--edge); bottom: var(--low); width: var(--ok); height: var(--ok); margin: 0; }
+.phone[data-kind="craft"] :is(.btn-a.sub.r, .btn-a.mix-ok, .btn-a.pack-ok) .t { font-size: calc(var(--ok) * 0.28); }
+/* 水入れ: こぼす・注ぐ・決定を同じ大きさで1段に並べる（左下・真ん中・右下） */
+.phone[data-kind="craft"] .btn-a.sub.l { right: auto; top: auto; left: var(--edge); bottom: var(--low); width: var(--ok); height: var(--ok); margin: 0; }
+.phone[data-scene="water"] .btn-a.center.pour { top: auto; bottom: var(--low); width: var(--ok); height: var(--ok); margin-left: calc(var(--ok) / -2); }
+.phone[data-scene="water"] .water-a .bottle { bottom: 5.6rem; }
+/* 雑念よけ: 精密（アタック）も同じ大きさ */
+.phone[data-scene="steam"] .act-sub { width: var(--ok); height: var(--ok); }
+.phone[data-scene="steam"] .act-sub small { font-size: calc(var(--ok) * 0.12); }
+.phone[data-scene="steam"] .act-swap { left: calc(2.6rem + var(--ring) + var(--ok)); top: calc(0.9rem + var(--ok) / 2 - var(--ring) * 0.11); }
+/* 真ん中の押し続ける丸（刺す・吸う） */
 .phone[data-scene="holes"] .ctrl > * { --hb: var(--hold); --hp: calc(var(--hold) * 1.45); --hy: calc(var(--cp) - var(--hold-y) - var(--hp) / 2); }
-.phone[data-scene="pull"] > * { --puff: calc(var(--hold) * 0.86); }
+.pic.craft-holes .foil { bottom: 9rem; }
+.phone[data-scene="pull"] > * { --puff: calc(var(--hold) * 0.86); --hold-y: 15rem; --g-side: 4.4rem; --g-up: 14.45rem; }
 .phone[data-scene="pull"] .btn-a.center { top: calc(var(--cp) - var(--hold-y) - var(--puff) / 2); width: var(--puff); height: var(--puff); margin-left: calc(var(--puff) / -2); }
-.phone[data-scene="pull"] .gauge { left: 3.2rem; right: 3.2rem; top: calc(var(--cp) - var(--hold-y) - 15.6rem); }
-.phone[data-scene="pull"] .serve, .phone[data-scene="pull"] .ctrl .leaves { top: 0.6rem; }
+.phone[data-scene="pull"] .gauge { left: var(--g-side); right: var(--g-side); top: calc(var(--cp) - var(--hold-y) - var(--g-up)); }
+.phone[data-scene="pull"] .ctrl .leaves { top: auto; left: var(--edge); bottom: calc(var(--low) + var(--ok) / 2 - 2.15rem); transform: none; }
+.btn-a.serve-ok .pips { bottom: 11%; gap: 0.35rem; } .btn-a.serve-ok .pips i { width: 0.8rem; height: 0.8rem; }
 /* 配合: 上にジャンルのボタン、真ん中に葉の棚、下の段に選んだ葉の −／＋ と決定 */
-.phone[data-scene="mix"] > * { --mix-h: var(--cp); --tile: 8rem; --pkz: 0.8; }
+.phone[data-scene="mix"] > * { --mix-h: var(--cp); --tile: 7.3rem; --pkz: 0.72; }
 .phone[data-scene="mix"] .genre-bar { top: 0.6rem; bottom: auto; left: 1rem; right: 1rem; }
 .phone[data-scene="mix"] .picker.shelf { top: 5.6rem; }
 .phone[data-scene="mix"] .mixsel { top: auto; bottom: var(--low); left: 1rem; right: calc(var(--ok) + var(--edge) + 0.8rem); height: var(--ok); grid-template-columns: minmax(0, 1fr) auto 3.8rem auto; gap: 0.6rem; padding: 0 0.9rem 0 1.2rem; }
 .mixsel .mr-name { gap: 0.2rem; } .mixsel .mr-name b { font-size: 1.6rem; } .mixsel .mr-name b.long { font-size: 1.3rem; letter-spacing: -0.02em; } .mixsel .mr-btn { width: 4.6rem; height: 4.6rem; } .mixsel .mr-g em { font-size: 2.6rem; }
-/* 詰め方: 札は上、選んだ詰め方の温まり方は下の段で決定の左 */
+/* 詰め方: 札は上、選んだ詰め方の温まり方は下の段で決定の左。器は一言にかからない大きさ */
 .phone[data-scene="pack"] .ctrl > * { --card-h: min(18.4rem, calc(var(--cp) - var(--ok) - var(--low) - 2.2rem)); --pok: var(--ok); }
 .phone[data-scene="pack"] .packinfo { left: var(--edge); bottom: var(--low); right: calc(var(--ok) + var(--edge) + 1rem); }
-/* 炭焼き: コンロは下の端にそろえて大きく */
+.pic.craft-pack .bowl { top: 13%; height: 66%; }
+/* 炭焼き: コンロは下の端にそろえ、パネルの高さに収める（絵は 3:2） */
 .phone[data-scene="coal"] .veil { top: calc(100% - var(--cp) - 12.2rem); }
-.phone[data-scene="coal"] .stove { top: auto; bottom: -1rem; width: calc((var(--cp) - 0.6rem) * 1.5); } /* コンロの絵は 3:2。パネルの高さに収める */
-.coal-hero { --hw: min(35rem, calc((100cqh - var(--cp) - 12.6rem) * 0.7)); }
+.phone[data-scene="coal"] .stove { top: auto; bottom: -1rem; width: calc((var(--cp) - 0.6rem) * 1.5); }
+.coal-hero { --hw: min(35rem, calc((100cqh - var(--cp) - 11.8rem) * 0.7)); }
 /* ボタンは白い図形＋短い言葉（VPL84）。言葉は図形の下 */
 .btn-a:has(.btn-lab) { container-type: size; }
 .btn-a:has(.btn-lab) .tool-svg { inset: 9% 21% 31% 21%; width: 58%; height: 60%; }
+.btn-a:has(.btn-lab) :is(.tool-pour, .tool-drain) { inset: 8% 17% 30% 17%; width: 66%; height: 62%; } /* 注ぐ・こぼすはボトルを大きく見せる */
+.tool-pour .gl-pipe { fill: none; stroke: currentColor; stroke-width: 7; stroke-linecap: round; }
+.tool-svg .gl-glass { fill: none; stroke: currentColor; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; } .tool-svg .gl-glass.thin { stroke-width: 3; opacity: 0.8; }
 .btn-lab { position: absolute; z-index: 4; left: 0; right: 0; bottom: 15%; text-align: center; font-size: 12cqw; line-height: 1.1; font-weight: 800; letter-spacing: 0.06em; color: #fff; text-shadow: 0 0.1rem 0.4rem #0b0812, 0 0 0.2rem #0b0812; pointer-events: none; }
 .btn-a:has(.pips) .tool-svg { inset: 5% 23% 41% 23%; width: 54%; height: 54%; } .btn-a:has(.pips) .btn-lab { bottom: 27%; }
-.tool-pour .gl-pipe { fill: none; stroke: currentColor; stroke-width: 8; stroke-linecap: round; }
 @container phone (max-height: 80rem) {
-  .phone[data-kind="craft"] > * { --cp: 30rem; --hold: 15.6rem; --hold-y: 12.2rem; --ok: 8.6rem; --edge: 1.2rem; --low: 1.2rem; }
-  .phone[data-scene="mix"] > * { --tile: 7rem; --pkz: 0.68; } .phone[data-scene="mix"] .picker.shelf { top: 5.2rem; }
-  .phone[data-scene="pull"] .gauge { left: 4.6rem; right: 4.6rem; top: calc(var(--cp) - var(--hold-y) - 14.6rem); }
+  .phone[data-kind="craft"] > * { --cp-std: 26.6rem; --cp-mix: 30.4rem; --cp-water: 12.6rem; --hold: 15.6rem; --hold-y: 12.4rem; --ok: 10rem; --edge: 1.2rem; --low: 1.2rem; --band: 2.6rem; }
+  .phone[data-scene="mix"] > * { --tile: 6.5rem; --pkz: 0.64; } .phone[data-scene="mix"] .picker.shelf { top: 5.2rem; }
+  .phone[data-scene="pull"] > * { --hold-y: 13.2rem; --g-side: 6rem; --g-up: 12.9rem; }
+  .phone[data-kind="craft"] .coach .say { font-size: 1.5rem; }
 }
 @container phone (max-height: 71rem) {
-  .phone[data-kind="craft"] > * { --cp: 27rem; --hold: 13.4rem; --hold-y: 10.6rem; --ok: 7.6rem; --edge: 1rem; --low: 1rem; }
-  .phone[data-scene="mix"] > * { --tile: 6.4rem; --pkz: 0.6; } .phone[data-scene="mix"] .picker.shelf { top: 4.8rem; } .phone[data-scene="mix"] .mixtile .mt-name { display: none; }
-  .phone[data-scene="pull"] .gauge { left: 7rem; right: 7rem; top: calc(var(--cp) - var(--hold-y) - 12.6rem); }
+  .phone[data-kind="craft"] > * { --cp-std: 24rem; --cp-mix: 27.4rem; --cp-water: 11.2rem; --hold: 13.4rem; --hold-y: 11rem; --ok: 8.8rem; --edge: 1rem; --low: 1rem; --band: 2.4rem; }
+  .phone[data-scene="mix"] > * { --tile: 5.9rem; --pkz: 0.56; } .phone[data-scene="mix"] .picker.shelf { top: 4.8rem; } .phone[data-scene="mix"] .mixtile .mt-name { display: none; }
+  .phone[data-scene="pull"] > * { --hold-y: 11.8rem; --g-side: 8rem; --g-up: 11rem; }
+  .phone[data-kind="craft"] .coach .say { font-size: 1.4rem; }
 }
+
+/* 場面ごとのパネルの高さ（画面の高さ別の値を読んだ後で決める） */
+.phone[data-kind="craft"] > * { --cp: var(--cp-std); }
+.phone[data-scene="mix"] > * { --cp: var(--cp-mix); }
+.phone[data-scene="water"] > * { --cp: var(--cp-water); }
 
 @media (prefers-reduced-motion: reduce) {
   .phone *, .phone *::before, .phone *::after, .phone::after { animation-duration: 0.01s !important; animation-iteration-count: 1 !important; transition-duration: 0.01s !important; }
