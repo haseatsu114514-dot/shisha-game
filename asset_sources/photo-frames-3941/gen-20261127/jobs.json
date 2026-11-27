@@ -617,23 +617,25 @@
       "id": "P60",
       "title": "凛想と記録更新",
       "with": "rio",
-      "top": "Rio checking the photo-booth screen with a serious, analytical look, Hajime waiting",
+      "top": "Rio looking straight at the camera with a calm, analytical expression, one finger at her chin as if evaluating the shot; Hajime stiff beside her",
       "bottom": "Rio caught off guard and laughing quietly behind her hand, Hajime grinning",
       "text": [
         "記録 更新"
       ],
-      "theme": "slate blue and white frame with small graph lines, leaf and star stamps"
+      "theme": "slate blue and white frame with small graph lines, leaf and star stamps",
+      "redone": "1回目は、プリ機の画面がコマの中に写っていた"
     },
     {
       "id": "P61",
       "title": "ひよりと会社帰り",
       "with": "hiyori",
-      "top": "Hiyori just off work with a work tote bag on her shoulder and a company ID lanyard still around her neck, a weary, fragile sigh pose",
+      "top": "Hiyori after work with a work tote bag on her shoulder (NO ID card, NO lanyard, nothing around her neck), a weary, fragile sigh pose toward the camera",
       "bottom": "Hiyori suddenly full of energy, a big grin and a fist pump, Hajime laughing",
       "text": [
         "きょうも おつかれ .｡oO"
       ],
-      "theme": "pale aqua frame with soap bubbles, a tiny clock and star stamps"
+      "theme": "pale aqua frame with soap bubbles, a tiny clock and star stamps",
+      "redone": "1回目は、仕事の後なのに首から社員証を下げていた"
     },
     {
       "id": "P62",
@@ -652,12 +654,13 @@
       "title": "つむぎの落書き",
       "with": "tsumugi",
       "petite": true,
-      "top": "Tsumugi drawing on the purikura with the booth's stylus, very focused, Hajime watching",
-      "bottom": "Tsumugi proudly showing that she drew cat ears and whiskers on Hajime in the photo, Hajime laughing",
+      "top": "Tsumugi and Hajime both posing with cat-paw hands toward the camera, Tsumugi a little shy",
+      "bottom": "both smiling at the camera; cat ears and whiskers are DOODLED over Hajime in glitter pen on top of the photo (drawn lines, not real ears), Tsumugi giving a small peace sign",
       "text": [
         "はじめさん ネコ化"
       ],
-      "theme": "lavender and white frame with pencil, paw and small flower stamps"
+      "theme": "lavender and white frame with pencil, paw and small flower stamps",
+      "redone": "1回目は、プリ機のペンで落書きしている姿そのものが写っていた"
     }
   ]
 }
