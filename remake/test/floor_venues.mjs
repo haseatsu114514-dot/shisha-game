@@ -337,6 +337,12 @@ test("レア来店者（mukai・ドバイ・同行恋人）: 固有口調17種�
   ds = act(ds, { type: "order", tableId: tid, mix: liked });
   ds = until(ds, (x) => at(x, tid).phase === "enjoy", 60);
   ds = until(ds, (x) => !!at(x, tid).call, at(ds, tid).stayEnd - ds.t);
+  // 先に、その人だけの雑談で話しかけてくる（TFL70）
+  assert.equal(at(ds, tid).call.type, "chatty");
+  assert.ok(FLOOR_VENUES.dubai.visitorChats.da_silva.some((c) => c.said === floorCallLine(ds, tid).said));
+  ds = act(ds, { type: "care", tableId: tid, verb: "chat" });
+  at(ds, tid).nextCall = ds.t;
+  ds = until(ds, (x) => !!at(x, tid).call, at(ds, tid).stayEnd - ds.t);
   assert.equal(at(ds, tid).call.type, "thirsty");
   assert.equal(floorCallLine(ds, tid).said, DUBAI_VISITORS.da_silva.lines.calls.thirsty.said);
 });

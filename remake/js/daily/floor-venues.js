@@ -7,6 +7,7 @@ import { floorShiftBasePay, floorShiftPay, FLOOR_COMMISSION_PERCENT } from "../c
 import {
   PRICE, HAND_SIZE, GUESTS, VISITORS, NIGHTS, RANKS, SERVE_LINES, SEND_LINES,
 } from "./tonari-floor-data.js";
+import { CHAT_COMMON, CHAT_TONARI, CHAT_MUKAI, CHAT_DUBAI, VISITOR_CHATS } from "./floor-chats.js";
 
 export const FLOOR_RANK_ORDER = Object.freeze(["C", "B", "A", "S"]);
 
@@ -248,19 +249,19 @@ export const DUBAI_VISITORS = Object.freeze(Object.fromEntries([
       bye: "楽しかった！ また砂丘の方にも遊びに来てね", byeLow: "ごちそうさま、ハジメ。お疲れさま", mad: "すごく忙しそうだね。また今度ゆっくり来るよ",
     }),
   visitor("da_silva", "太陽", [4, 5], "normal", "keen", 2,
-    { wish: "fruit", label: "パッションフルーツ", has: ["passion_fruit"], quote: "オラ、はじめ！ パッションフルーツで明るくいこうぜ！" },
+    { wish: "fruit", label: "パッションフルーツ", has: ["passion_fruit"], quote: "オラ、ハジメ！ パッションフルーツで明るくいこうぜ！" },
     { wish: "fruit", label: "マンゴー・パイン", has: ["mango", "pineapple"], quote: "まだまだこれからだ！ 次はマンゴーかパインを頼むぜ" }, {
       best: "ハハッ、最高だ！ 南国の風が吹き抜けるみたいだな！", good: "いい果実だ！ 次はパッションフルーツでも頼むぜ！", off: "おっと、もう少し陽気な果物が欲しかったな",
       calls: {
-        thin: { said: "ヘイはじめ、煙の勢いが落ちてきたぞ！ 炭を見てくれ", good: "オッケー、また祭りの煙になったぜ！" },
+        thin: { said: "ヘイ、ハジメ、煙の勢いが落ちてきたぞ！ 炭を見てくれ", good: "オッケー、また祭りの煙になったぜ！" },
         harsh: { said: "おっと、ちょっと熱が強いな！ 風を通してくれるか", good: "よし、これで笑顔のまま吸えるぜ！" },
-        thirsty: { said: "冷たい水を一杯くれ！ 喋りすぎちまったな", good: "サンキュー！ いい仕事だぜはじめ！" },
+        thirsty: { said: "冷たい水を一杯くれ！ 喋りすぎちまったな", good: "サンキュー！ いい仕事だぜ、ハジメ！" },
       },
       miss: "ハハッ、そっちじゃないぜ、相棒", check: "よし、会計を頼むぜ！", skip: "いいさ、続きはまたFESTAでな！",
       bye: "最高の一杯だったぜ！ また遊びに来るからな！", byeLow: "サンキューな、はじめ。また会おうぜ", mad: "おお、大盛況だな！ また空いてる時に来るぜ！",
     }),
   visitor("master_hookah", "王煙楼", [4, 5], "long", "keen", 2,
-    { wish: "deep", label: "ジャスミン", has: ["jasmine"], quote: "…お前が立つのか。ジャスミンを一台、頼もう" },
+    { wish: "deep", label: "ジャスミン", has: ["jasmine"], quote: "…君が立つのか。ジャスミンを一台、頼もう" },
     { wish: "deep", label: "お茶の葉", has: ["black_tea", "absal_earlgrey"], quote: "もう一服いただく。次はお茶の葉が香る一台を" }, {
       best: "…うむ。花の息が澄んでいて、雑味がない", good: "静かな一台だ。次はジャスミンも味わいたいものだな", off: "…今の客が求めた香りを、もう一度確かめなさい",
       calls: {
@@ -272,7 +273,7 @@ export const DUBAI_VISITORS = Object.freeze(Object.fromEntries([
       bye: "よい手際を見せてもらった。また寄ろう", byeLow: "ごちそうさま。精進しなさい", mad: "卓が追いついておらんな。また日に改めよう",
     }),
   visitor("sheikh", "シェイク", [5], "long", "keen", 2,
-    { wish: "fresh", label: "カルダモン", has: ["cardamom"], quote: "…いい店だな、はじめ。カルダモンを一台、頼めるか" },
+    { wish: "fresh", label: "カルダモン", has: ["cardamom"], quote: "…いい店だな、ハジメ。カルダモンを一台、頼めるか" },
     { wish: "sweet", label: "コーヒー・ハニー", has: ["coffee", "honey"], quote: "もう少し話していこう。次はコーヒーか蜂蜜の一台を" }, {
       best: "…実にいい。スパイスが丸く開いて、余韻まで静かだ", good: "整った一台だ。次はカルダモンも頼もうかな", off: "…今日は少し違う風が欲しかったな",
       calls: {
@@ -281,7 +282,7 @@ export const DUBAI_VISITORS = Object.freeze(Object.fromEntries([
         thirsty: { said: "水を一つもらえるかな", good: "助かるよ。心遣いに感謝する" },
       },
       miss: "…落ち着いていい。私が頼んだのは別のことだ", check: "お会計を頼もうか", skip: "構わないよ。十分にくつろげた",
-      bye: "いい時間をもらった。また顔を見せに来るよ", byeLow: "ありがとう、はじめ。また会おう", mad: "盛況なようだね。また静かな折に寄らせてもらうよ",
+      bye: "いい時間をもらった。また顔を見せに来るよ", byeLow: "ありがとう、ハジメ。また会おう", mad: "盛況なようだね。また静かな折に寄らせてもらうよ",
     }),
 ].map((v) => [v.id, v])));
 
@@ -313,16 +314,16 @@ export const COMPANION_VISITORS = Object.freeze(Object.fromEntries([
       bye: "…頑張ってる姿、見られてよかった。またあとでね", byeLow: "…お疲れさま、はじめくん", mad: "…忙しそうね。私は先に宿へ戻ってるね",
     }),
   visitor("rio", "凛想", [4], "long", "keen", 1,
-    { wish: "deep", label: "アールグレイ", has: ["absal_earlgrey"], quote: "お疲れさま、はじめ。アールグレイの一台をお願いできる？" },
-    { wish: "deep", label: "ローズ・ムスク", has: ["rose", "white_musk"], quote: "もう一台だけいただくわ。次はローズかムスクで" }, {
-      best: "…ベルガモットの立ち方がきれいね。よく仕上げたわ", good: "悪くないわね。次はアールグレイも試させてちょうだい", off: "…注文とは別の系統が出たみたいね",
+    { wish: "deep", label: "アールグレイ", has: ["absal_earlgrey"], quote: "お疲れ、モルモットくん。アールグレイの一台、お願い" },
+    { wish: "deep", label: "ローズ・ムスク", has: ["rose", "white_musk"], quote: "もう一台だけ。次はローズかムスクでね" }, {
+      best: "…ベルガモットの立ち方、きれいね。よく仕上げた", good: "悪くないね。次はアールグレイも試させて", off: "…注文とは別の系統が出たみたいね",
       calls: {
-        thin: { said: "煙が少し落ちてきたわ。炭を見てもらえる？", good: "戻ったわね。手際がいいじゃない" },
-        harsh: { said: "少し熱が勝っているわ。炭を引いてちょうだい", good: "ええ、これで香りが整ったわ" },
-        thirsty: { said: "お水を一杯お願いできるかしら", good: "ありがとう。よく気が回るわね" },
+        thin: { said: "煙、少し落ちてきたね。炭を見てくれる？", good: "戻ったね。手際いいじゃない" },
+        harsh: { said: "少し熱が勝ってる。炭を引いて", good: "うん、香りが整った" },
+        thirsty: { said: "お水、一杯もらえる？", good: "ありがと。よく気が回るね" },
       },
-      miss: "…落ち着いて。私が頼んだのは別のことよ", check: "お会計をお願いするわ", skip: "構わないわ。ここまでにしましょう",
-      bye: "いい接客だったわ。仕事が終わったら教えてね", byeLow: "お疲れさま。無理は禁物よ", mad: "ずいぶん混んでいるわね。またあとにするわ",
+      miss: "…落ち着いて。私が頼んだのは別のことよ", check: "お会計、お願い", skip: "いいよ。ここまでにしよう",
+      bye: "いい接客だったよ。仕事が終わったら教えてね", byeLow: "お疲れさま。無理は禁物よ", mad: "ずいぶん混んでるね。またあとにする",
     }),
 ].map((v) => [v.id, v])));
 
@@ -371,6 +372,9 @@ export const FLOOR_VENUES = Object.freeze({
     ranks: RANKS,
     serveLines: SERVE_LINES,
     sendLines: SEND_LINES,
+    // 雑談（TFL68〜70）: どの店でも通る味の話＋その店の客の話。visitorChats＝本編の人物がレアで来た時だけの話（floor-chats.js）
+    chats: freezeObj([...CHAT_COMMON, ...CHAT_TONARI]),
+    visitorChats: VISITOR_CHATS.tonari,
   }),
 
   mukai: freezeObj({
@@ -428,6 +432,8 @@ export const FLOOR_VENUES = Object.freeze({
     ranks: MUKAI_RANKS,
     serveLines: SERVE_LINES,
     sendLines: SEND_LINES,
+    chats: freezeObj([...CHAT_COMMON, ...CHAT_MUKAI]),
+    visitorChats: VISITOR_CHATS.mukai,
   }),
 
   dubai: freezeObj({
@@ -488,6 +494,8 @@ export const FLOOR_VENUES = Object.freeze({
     ranks: DUBAI_RANKS,
     serveLines: SERVE_LINES,
     sendLines: SEND_LINES,
+    chats: freezeObj([...CHAT_COMMON, ...CHAT_DUBAI]),
+    visitorChats: VISITOR_CHATS.dubai,
   }),
 });
 
