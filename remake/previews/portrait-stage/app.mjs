@@ -29,6 +29,10 @@ const IMG = {
   pullActor: `${REMAKE_IMG}ui/making/hajime_craft_pull.webp`,
   leaf: `${REMAKE_IMG}ui/making/ui_mockup_flavor_leaf.webp`,
   smoke: `${REMAKE_IMG}ui/making/smoke_thick.webp`,
+  ciMinto: `${REMAKE_IMG}ui/character_intros/graphic/minto.webp`,
+  ciBgMinto: `${REMAKE_IMG}ui/character_intros/graphic/bg_minto.webp`,
+  ciSumi: `${REMAKE_IMG}ui/character_intros/graphic/sumi.webp`,
+  ciBgSumi: `${REMAKE_IMG}ui/character_intros/graphic/bg_sumi.webp`,
   ...(globalThis.PORTRAIT_STAGE_ASSETS || {}),
 };
 
@@ -95,6 +99,10 @@ const COACH = {
   pull: "手元を見ているぞ。落ち着いていけ",
 };
 const HOLE_COUNT = 10;
+// 穴あけ: 押している長さで穴の大きさが決まる。HOLD_FULL で最大、GOOD_PRESS の間がちょうどいい大きさ
+const HOLD_FULL = 900;
+const GOOD_PRESS = [0.3, 0.62];
+const pressZone = (fill) => fill <= 0 ? "" : fill < GOOD_PRESS[0] ? "under" : fill <= GOOD_PRESS[1] ? "good" : "over";
 // 熱ゲージ: 本編（remake/js/craft/thermometer.js・temperature-model.js）と同じ色の意味。
 // 管は一本のグラデーション（クリーム→黄→適温のミント緑→橙→赤→深紅）。緑が適温の目安、真ん中の虹が合わせやすい範囲、一番上が焦げる帯（炎）
 const TEMP_ZONE = [0.42, 0.66];
@@ -106,8 +114,25 @@ const SCALE_COLORS = [[0, "#fff4d2"], [.13, "#ffedb0"], [.26, "#ffe270"], [.37, 
 const SCALE = `linear-gradient(0deg, ${SCALE_COLORS.map(([at, color]) => `${color} ${at * 100}%`).join(", ")})`;
 const tempState = (t) => t >= TEMP_BEST[0] && t <= TEMP_BEST[1] ? "best" : t >= TEMP_ZONE[0] && t <= TEMP_ZONE[1] ? "ok" : t >= TEMP_DANGER ? "burn" : "";
 
-const SCENES = ["map", "minto", "tonari", "pack", "holes", "pull"];
-const SCENE_LABEL = { map: "地図", minto: "1人", tonari: "2人", pack: "詰め", holes: "穴あけ", pull: "吸う" }; // 1台表示の下の切り替え
+// 登場カットイン（縦画面の案）。文言は data/characters.json の intro_cutin、色は remake/data/manifest.json の introArt、
+// 好きなフレーバーは remake/js/vn/intro-flavors.js の写し。name は [字, ふりがな] の並び（null は苗字と名前の小さな空き）
+const CUTINS = {
+  minto: { name: [["みんと"]], title: "PEPPERMINT人気No.1キャスト", line: ["みんとでーす♪", "全員まとめてライバルね？"], flavor: "ミント",
+    color: "#36c59c", secondary: "#ffdbeb", shadow: "#042f22", motion: "bounce", art: "ciMinto", bg: "ciBgMinto", backdrop: "shop", acc: "#8ff0c9",
+    focus: 0.53, after: { id: "minto", face: "smile", text: "あらためて♡ はじめくん、初ご来店ありがとっ！" }, before: "（チェキ？ 推し？ ……tonariとは、ずいぶん違うな）" },
+  sumi: { name: [["炭吉", "すみよし"], null, ["丈一郎", "じょういちろう"]], title: "はじめの師匠", line: ["客が満足したなら、", "それでいい"], flavor: "カルダモン",
+    color: "#ad603b", secondary: "#f0c79f", shadow: "#351608", motion: "soft", art: "ciSumi", bg: "ciBgSumi", backdrop: "tonari", acc: "#ffc978",
+    focus: 0.5, after: { id: "sumi", face: "normal", text: "構わん。客の顔を載せる時は、本人に聞けよ" }, before: "（スミさん。いつもの、店の奥の定位置だ）" },
+};
+const CUT_VARIANTS = {
+  a: { name: "縦のポスター", lead: "画面いっぱいの一枚絵。上に人物、真ん中に斜めの帯と名前、下に一言。横画面の今の組み方を縦に組み替えたもの" },
+  b: { name: "縦書きの名札", lead: "人物を大きく画面いっぱいに置き、右に縦長の帯で名前を縦書き。一言は下の斜めの帯に。アニメの登場紹介のような見せ方" },
+  c: { name: "上の舞台だけ", lead: "絵の場所（上）だけが紹介に変わり、テロップとパッドは残る。一言はテロップに出て、Aで次へ。会話の流れを止めない軽い見せ方" },
+};
+const CUT_HOLD = 3800; // 紹介を見せる長さ（ms）。横画面の今の版とほぼ同じ
+
+const SCENES = ["map", "minto", "tonari", "pack", "holes", "pull", "cutin"];
+const SCENE_LABEL = { map: "地図", minto: "1人", tonari: "2人", pack: "詰め", holes: "穴あけ", pull: "吸う", cutin: "登場" }; // 1台表示の切り替え
 // 一覧（PC）に並べる場面
 const GALLERY = [
   { scene: "map", caption: "地図（選んだ店へ画面が動く）" },
@@ -123,13 +148,11 @@ const GALLERY = [
   { scene: "pull", caption: "作る・吸い出し" },
 ];
 
-// 補助ボタンの配置案を見比べる場面
-const AUX_SHOTS = (aux) => [
-  { scene: "map", caption: "地図" },
-  { scene: "minto", step: 3, caption: "会話" },
-  ...(aux === 2 ? [{ scene: "minto", step: 3, more: true, caption: "会話・「その他」を開いた所" }] : []),
-  { scene: "pull", caption: "作る・吸い出し" },
-];
+/** 登場カットインの名前（ふりがなは ruby。縦書きでも同じ書き方で右に付く） */
+const ciName = (parts) => parts.map((part) => part === null ? `<i class="cv-gap"></i>`
+  : part[1] ? `<ruby>${part[0]}<rt>${part[1]}</rt></ruby>` : `<span>${part[0]}</span>`).join("");
+/** 名前の字数（ふりがな・空きは数えない）。字の大きさを決めるのに使う */
+const ciNameLen = (parts) => parts.reduce((n, part) => n + (part === null ? 0.35 : [...part[0]].length), 0);
 
 const esc = (value) => String(value).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const tri = () => `<svg viewBox="0 0 24 24" aria-hidden="true" class="tri"><path d="M12 5l8 13H4z" fill="currentColor"/></svg>`;
@@ -224,14 +247,15 @@ function meterHtml() {
 /* ───────── 1台ぶん ───────── */
 
 class Phone {
-  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false } = {}) {
+  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto" } = {}) {
     this.el = el;
     el.lang = "ja";
     this.fixed = fixed; // 一覧では場面を固定し、その場面の中の操作だけ動かす
     this.aux = [1, 2, 3].includes(aux) ? aux : 1; // 補助ボタンの配置案
     this.moreOpen = !!more;
     el.dataset.aux = String(this.aux);
-    this.st = { scene, sel: DEFAULT_SPOT, step, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0, temp: 0.4 };
+    this.st = { scene, sel: DEFAULT_SPOT, step, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0, temp: 0.4,
+      ci: ["a", "b", "c"].includes(ci) ? ci : "a", who: CUTINS[who] ? who : "minto", ciPhase: "off" };
     this.cam = null;      // 地図をドラッグした時の位置（選び直すと選んだ店へ戻る）
     this.t0 = performance.now();
     this.typedAt = 0;
@@ -269,10 +293,12 @@ class Phone {
   render({ instant = false, delay = 0 } = {}) {
     const { el, st } = this;
     el.dataset.scene = st.scene;
-    el.dataset.kind = this.talk ? "talk" : st.scene === "map" ? "map" : "craft";
-    el.style.setProperty("--acc", st.scene === "map" ? "#c3b0ff" : this.talk ? this.talk.acc : "#ffc978");
+    el.dataset.kind = this.talk || st.scene === "cutin" ? "talk" : st.scene === "map" ? "map" : "craft";
+    el.style.setProperty("--acc", st.scene === "map" ? "#c3b0ff" : this.talk ? this.talk.acc : st.scene === "cutin" ? CUTINS[st.who].acc : "#ffc978");
+    clearTimeout(this.ciTimer);
     if (st.scene === "map") el.innerHTML = this.mapHtml();
     else if (this.talk) el.innerHTML = this.talkHtml();
+    else if (st.scene === "cutin") { el.innerHTML = this.cutinSceneHtml(); this.playCutin(); return; }
     else el.innerHTML = this.craftHtml();
     if (st.scene === "map") { this.cam = null; this.camera(false); this.syncMap(); }
     if (this.talk) { this.cast = {}; this.applyLine({ instant, delay }); }
@@ -486,6 +512,84 @@ class Phone {
     });
   }
 
+  /* ── 登場カットイン（縦画面の案 a・b・c） ── */
+
+  /** 会話の背景の上に紹介を重ねる。紹介の前の行（心の声）を出しておき、紹介が引くと本人が立って最初の台詞を言う。 */
+  cutinSceneHtml() {
+    const ci = CUTINS[this.st.who];
+    return `
+      <img class="amb" src="${IMG[ci.backdrop]}" alt="">
+      <div class="pic stage"><img class="bg" src="${IMG[ci.backdrop]}" alt=""><div class="actors"></div></div>
+      <i class="veil"></i><img class="smoke" src="${IMG.smoke}" alt="">
+      ${hudHtml("talk", ci.backdrop === "shop" ? TALKS.minto.place : TALKS.tonari.place)}
+      <div class="body">
+        <div class="telop" data-slot="telop"></div>
+        <div class="ctrl" data-slot="ctrl">${this.auxHtml("talk", TALK_CHIPS(this.st))}${dpadHtml("")}${aHtml("次へ")}</div>
+      </div>`;
+  }
+
+  /** 紹介の一枚。v は案、who は人物。 */
+  cutinHtml() {
+    const { ci: v, who } = this.st, ci = CUTINS[who];
+    const len = ciNameLen(ci.name);
+    // 名前の大きさ: 横書きは幅に、縦書きは帯の高さに収まる大きさ（rem）
+    const size = v === "b" ? Math.min(7.6, 40 / len) : v === "c" ? Math.min(6, 28 / len) : Math.min(8.4, 31 / len);
+    const quote = `「${ci.line.join(v === "c" ? "" : "<br>")}」`;
+    return `<div class="cv cv-${v}" data-m="${ci.motion}" role="dialog" aria-label="${ci.name.filter(Boolean).map((p) => p[0]).join("")}の紹介"
+        style="--ci:${ci.color};--ci2:${ci.secondary};--ci-shadow:${ci.shadow};--name-size:${size.toFixed(2)}rem;--focus:${ci.focus}">
+      <i class="cv-flash"></i>
+      <img class="cv-bg" src="${IMG[ci.bg]}" alt="">
+      <i class="cv-veil"></i>
+      <img class="cv-art" src="${IMG[ci.art]}" alt="">
+      <div class="cv-band"><i class="cv-accent"></i><div class="cv-name">${ciName(ci.name)}</div></div>
+      <div class="cv-tag">${ci.title}</div>
+      ${v === "c" ? "" : `<div class="cv-say"><p class="cv-quote">${quote}</p><p class="cv-flavor"><small>好きなフレーバー</small><b>${ci.flavor}</b></p></div><i class="cv-next"></i>`}
+    </div>`;
+  }
+
+  /** 紹介を出して、少し見せてから引く。一覧（fixed）では見せ終わりの姿で止める。 */
+  playCutin() {
+    const { el, st } = this, ci = CUTINS[st.who];
+    clearTimeout(this.ciTimer);
+    this.cast = {};
+    el.querySelector(".actors").innerHTML = "";
+    el.querySelector(".cv")?.remove();
+    // 紹介の前は、心の声の行を出しておく（紹介が重なるのは名乗りの直後）
+    const telop = el.querySelector('[data-slot="telop"]');
+    if (st.ci === "c") {
+      telop.innerHTML = `<div class="name narr"></div>
+        <div class="glass"><p class="text say cv-telop">「${ci.line.join("<br>")}」</p><p class="cv-telop-flavor"><small>好きなフレーバー</small><b>${ci.flavor}</b></p><i class="next"></i></div>`;
+    } else {
+      telop.innerHTML = `<div class="name inner">${icon("think")}<b>はじめ</b></div><div class="glass"><p class="text inner">${esc(ci.before)}</p><i class="next"></i></div>`;
+    }
+    const wrap = document.createElement("div");
+    wrap.innerHTML = this.cutinHtml();
+    const card = wrap.firstElementChild;
+    if (this.fixed) card.classList.add("still");
+    el.append(card);
+    st.ciPhase = "on";
+    el.classList.add("cutin-on");
+    if (!this.fixed) this.ciTimer = setTimeout(() => this.endCutin(), CUT_HOLD);
+  }
+
+  /** 紹介を引いて、本人を立たせて最初の台詞を出す。 */
+  endCutin() {
+    const { el, st } = this, ci = CUTINS[st.who];
+    if (st.ciPhase !== "on") return;
+    clearTimeout(this.ciTimer);
+    st.ciPhase = "after";
+    const card = el.querySelector(".cv");
+    card?.classList.add("out");
+    setTimeout(() => card?.remove(), 420);
+    el.classList.remove("cutin-on");
+    this.cast = { [ci.after.id]: ci.after.face };
+    this.layoutActors({ speaking: ci.after.id, entering: true });
+    el.querySelector('[data-slot="telop"]').innerHTML = `<div class="name"><b>${CAST[ci.after.id].name}</b></div>
+      <div class="glass"><p class="text say">${typed(ci.after.text, 260)}</p><i class="next"></i></div>`;
+    this.typedAt = performance.now() + 260 + [...ci.after.text].length * TYPE_MS + 120;
+    el.classList.add("typing");
+  }
+
   /* ── シーシャ作り ── */
 
   craftHtml() {
@@ -534,14 +638,21 @@ class Phone {
       return `${this.auxHtml("craft", CRAFT_CHIPS)}${dpadHtml("left right")}${aHtml("決める", { disabled: !!PACKS[st.pack].locked })}`;
     }
     if (st.scene === "holes") {
-      // 輪の10個の点＝開けた穴（金はぴったり）。真ん中の丸が押している間ふくらみ、薄い輪に重なる大きさで離す
+      // 左の輪: 10個の点＝開けた穴（金はちょうどいい大きさ）。真ん中は直前の穴の大きさと、ちょうどいい大きさの薄い輪
       const pips = Array.from({ length: HOLE_COUNT }, (_, i) => {
         const a = (i * 360 / HOLE_COUNT - 90) * Math.PI / 180, hole = st.holes[i];
         return `<circle class="pip${hole ? (hole.good ? " good" : " done") : ""}" cx="${(41 * Math.cos(a)).toFixed(1)}" cy="${(41 * Math.sin(a)).toFixed(1)}" r="3.4"/>`;
       }).join("");
+      const last = st.holes.at(-1);
+      const lastDot = last ? `<circle class="last ${pressZone(last.size)}" r="${(4 + last.size * 24).toFixed(1)}"/>` : "";
+      // 「刺す」ボタンの縁の輪: 押している間だけ伸びる。金の区間がちょうどいい長さ、越えると赤
+      const ring = `<svg class="press" viewBox="0 0 100 100" aria-hidden="true">
+          <circle class="pr-track" cx="50" cy="50" r="46" pathLength="100"/>
+          <circle class="pr-good" cx="50" cy="50" r="46" pathLength="100" stroke-dasharray="${((GOOD_PRESS[1] - GOOD_PRESS[0]) * 100).toFixed(1)} 100" stroke-dashoffset="${(-GOOD_PRESS[0] * 100).toFixed(1)}"/>
+          <circle class="pr-fill" cx="50" cy="50" r="46" pathLength="100" stroke-dasharray="0 100"/></svg>`;
       return `${this.auxHtml("craft", CRAFT_CHIPS)}
-        <div class="dial"><svg viewBox="-50 -50 100 100">${pips}<circle class="want" r="15.5"/><circle class="grow" r="4"/></svg></div>
-        ${aHtml("刺す", { cls: "hold" })}`;
+        <div class="dial"><svg viewBox="-50 -50 100 100">${pips}<circle class="want" r="15.5"/>${lastDot}</svg></div>
+        ${aHtml("刺す", { cls: "hold", extra: ring })}`;
     }
     // 葉（フレーバーの持ち）は上の段の真ん中、吸った回数は「吸う」の中の点。ボタンに重ねない
     return `${this.auxHtml("craft", CRAFT_CHIPS)}
@@ -564,7 +675,7 @@ class Phone {
         : `<circle class="todo" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.2"/>`;
     }).join("");
     const holes = this.st.holes.map((hole) => { const [x, y] = at(hole.deg); return `<circle class="hole${hole.good ? " good" : ""}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${hole.r.toFixed(1)}"/>`; }).join("");
-    svg.innerHTML = `${holes}${marks}<circle class="tip" r="7"/>`;
+    svg.innerHTML = `${holes}${marks}<circle class="grow-hole" r="0"/><circle class="tip" r="7"/>`;
   }
 
   /* ── 入力 ── */
@@ -573,6 +684,7 @@ class Phone {
     const hit = event.target.closest("[data-act]");
     if (this.dragged) { this.dragged = false; return; }
     if (!hit || !this.el.contains(hit)) {
+      if (this.st.scene === "cutin" && (event.target.closest(".cv") || event.target.closest('[data-slot="telop"]'))) { this.pressA(); return; }
       if (this.talk && event.target.closest('[data-slot="telop"]')) this.pressA();
       return;
     }
@@ -606,7 +718,7 @@ class Phone {
 
   onDown(event) {
     const { st } = this;
-    if (st.scene === "holes" && event.target.closest('.btn-a[data-act="a"]')) { this.holdAt = performance.now(); event.target.closest(".btn-a").setPointerCapture?.(event.pointerId); return; }
+    if (st.scene === "holes" && event.target.closest('.btn-a[data-act="a"]')) { event.target.closest(".btn-a").setPointerCapture?.(event.pointerId); this.startHold(); return; }
     const map = event.target.closest("[data-map]");
     if (map && !st.overview && this.view) { this.drag = { id: event.pointerId, x: event.clientX, y: event.clientY, ox: this.view.x, oy: this.view.y, moved: false }; return; }
     const card = event.target.closest("[data-swipe]");
@@ -624,7 +736,7 @@ class Phone {
   }
 
   onUp(event) {
-    if (this.holdAt) { const held = performance.now() - this.holdAt; this.holdAt = 0; this.punch(held); return; }
+    if (this.holdAt) { this.endHold(); return; }
     if (this.drag) { this.dragged = this.drag.moved; this.drag = null; if (this.dragged) setTimeout(() => { this.dragged = false; }, 0); return; }
     if (this.swipe) {
       const dx = event.clientX - this.swipe.x; this.swipe = null;
@@ -649,6 +761,12 @@ class Phone {
 
   pressA() {
     const { st, el } = this;
+    if (st.scene === "cutin") {
+      if (st.ciPhase === "on") this.endCutin();
+      else if (this.typedAt && performance.now() < this.typedAt) { this.typedAt = 0; el.classList.remove("typing"); el.querySelector(".type")?.classList.add("all"); }
+      else this.playCutin();
+      return;
+    }
     if (st.scene === "map") {
       if (st.list) { st.list = false; this.patch(); return; }
       if (SPOTS[st.sel].closed || this.fixed) return;
@@ -707,14 +825,34 @@ class Phone {
     setTimeout(() => note.remove(), 2200);
   }
 
+  /** 穴あけ: 押し始め。ボタンが沈み始め、縁の輪が伸び始める */
+  startHold() {
+    if (this.st.scene !== "holes" || this.holdAt || this.st.holes.length >= HOLE_COUNT) return;
+    this.holdAt = performance.now();
+    this.el.querySelector(".btn-a.hold")?.classList.add("pressing");
+  }
+
+  /** 穴あけ: 離した。押していた長さで穴を開ける */
+  endHold() {
+    if (!this.holdAt) return;
+    const held = performance.now() - this.holdAt;
+    this.holdAt = 0;
+    this.punch(held);
+  }
+
   /** 穴あけ: 押していた長さで穴の大きさ、針先の位置で当たりを決める。 */
   punch(heldMs) {
     const { st } = this;
     if (st.scene !== "holes" || st.holes.length >= HOLE_COUNT) return;
     const target = st.holes.length * 360 / HOLE_COUNT;
-    const size = Math.min(1, heldMs / 900);
-    st.holes.push({ deg: this.tipDeg ?? target, r: 2.2 + size * 4.2, good: Math.abs((this.tipDeg ?? target) - target) < 5 && size > 0.3 && size < 0.62 });
+    const size = Math.min(1, heldMs / HOLD_FULL), zone = pressZone(size);
+    const good = Math.abs((this.tipDeg ?? target) - target) < 5 && zone === "good";
+    st.holes.push({ deg: this.tipDeg ?? target, r: 2.2 + size * 4.2, size, good });
     this.patch(); this.drawHoles();
+    // 結果を「刺す」に返す: ちょうどいい大きさなら金の光、小さすぎ・大きすぎは小さく揺れる
+    const btn = this.el.querySelector(".btn-a.hold");
+    btn?.classList.add(zone === "good" ? "res-good" : "res-off");
+    setTimeout(() => btn?.classList.remove("res-good", "res-off"), 520);
     if (st.holes.length >= HOLE_COUNT) setTimeout(() => { if (this.fixed) { st.holes = []; this.patch(); this.drawHoles(); } else this.setScene("pull"); }, 900);
   }
 
@@ -731,6 +869,8 @@ class Phone {
   }
 
   setScene(scene, { arrive = false } = {}) {
+    clearTimeout(this.ciTimer);
+    this.el.classList.remove("cutin-on");
     Object.assign(this.st, { scene, step: 0, choosing: false, pick: 0, list: false, overview: false, holes: [], pulls: 0, pack: 1, temp: 0.4 });
     this.quiet = false;
     this.render({ delay: arrive ? 1200 : 0 }); // 店に着いた時は、店名の札が出てから文字を送る
@@ -762,17 +902,29 @@ class Phone {
         tip.classList.toggle("ok", aligned);   // 針先が目印に重なると金色
         el.querySelector(".btn-a")?.classList.toggle("hot", aligned && !this.holdAt);
       }
-      // 押している間、真ん中の丸がふくらむ。薄い輪に重なる大きさで金色
-      const fill = this.holdAt ? Math.min(1, (now - this.holdAt) / 900) : 0, dial = el.querySelector(".dial");
-      dial?.querySelector(".grow")?.setAttribute("r", (4 + fill * 24).toFixed(1));
-      dial?.classList.toggle("ok", fill > 0.3 && fill < 0.62);
+      // 押している間: 「刺す」が沈み、縁の輪が伸びる（金の区間＝ちょうどいい、赤＝押しすぎ）。針先では穴が育っていく
+      const fill = this.holdAt ? Math.min(1, (now - this.holdAt) / HOLD_FULL) : 0, zone = pressZone(fill);
+      const btn = el.querySelector(".btn-a.hold");
+      if (btn) {
+        btn.style.setProperty("--fill", fill.toFixed(3));
+        if (btn.dataset.zone !== zone) btn.dataset.zone = zone;
+        if (!this.holdAt) btn.classList.remove("pressing");
+        btn.querySelector(".pr-fill")?.setAttribute("stroke-dasharray", `${(fill * 100).toFixed(1)} 100`);
+      }
+      const grow = el.querySelector(".foil-marks .grow-hole");
+      if (grow && tip) {
+        grow.setAttribute("cx", tip.getAttribute("cx")); grow.setAttribute("cy", tip.getAttribute("cy"));
+        grow.setAttribute("r", fill ? (2.2 + fill * 4.2).toFixed(2) : "0");
+        grow.setAttribute("class", `grow-hole ${zone}`);
+      }
     }
-    if (this.talk && this.typedAt && now >= this.typedAt) { this.typedAt = 0; el.classList.remove("typing"); }
+    if ((this.talk || st.scene === "cutin") && this.typedAt && now >= this.typedAt) { this.typedAt = 0; el.classList.remove("typing"); }
     requestAnimationFrame(this.tick);
   }
 
   relayout() {
     if (this.st.scene === "map") this.camera(false);
+    else if (this.st.scene === "cutin" && this.cast && Object.keys(this.cast).length) this.layoutActors({ speaking: this.st.who, instant: true });
     else if (this.talk) this.layoutActors({ speaking: this.line.kind === "say" ? this.line.id : null, instant: true });
   }
 }
@@ -796,16 +948,17 @@ function showGallery() {
       <li><b>立ち位置</b>1人は中央で少し寄り、2人は左右で身長差そのまま。話している側が手前で明るい</li>
       <li><b>地図</b>左右キーで隣の店へ画面が送られる。上で全体、下で一覧。指でずらす・「！」の店へ飛ぶ</li>
       <li><b>パッド</b>輪の十字キーとAを大きく（幅の約半分と1/3強）。作る場面は工程ごとの操作に替わる</li>
+      <li><b>補助ボタン</b>案1「名前つきの段」で確定（絵記号に短い名前を添えて横いっぱいに大きく）</li>
       <li><b>出すもの</b>地図は章・日付・レベル・体力・お金（天気は降る雨で見せる）。会話は場所の名前だけ、シーシャ作りは工程の並びと熱ゲージだけ</li>
     </ul>
     <p class="g-note">絵・立ち絵・台詞は本編の素材、配置と動きが今回の案です。本編の進行や保存には触れません。<a href="?view=play" data-go="play">1台で通して触る</a></p>
     <div class="g-grid">${GALLERY.map((item, i) => `<figure class="g-cell"><article class="phone" data-i="${i}"></article><figcaption>${item.caption}</figcaption></figure>`).join("")}</div>
-    <h2 class="g-sub">補助ボタン（LIME・MENU・LOG など）の配置案</h2>
-    ${[1, 2, 3].map((aux) => `<section class="g-aux"><h3><small>案${aux}</small>${AUX[aux].name}<a href="?view=play&aux=${aux}" data-go="play" data-aux="${aux}">1台で触る</a></h3><p>${AUX[aux].lead}</p>
-      <div class="g-grid">${AUX_SHOTS(aux).map((item, i) => `<figure class="g-cell"><article class="phone" data-aux="${aux}" data-j="${i}"></article><figcaption>${item.caption}</figcaption></figure>`).join("")}</div></section>`).join("")}
+    <h2 class="g-sub">登場カットイン（縦画面）の案</h2>
+    ${["a", "b", "c"].map((v) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}</small>${CUT_VARIANTS[v].name}<a href="?view=play&scene=cutin&ci=${v}" data-go="play" data-ci="${v}">1台で動きを見る</a></h3><p>${CUT_VARIANTS[v].lead}</p>
+      <div class="g-grid">${["minto", "sumi"].map((who) => `<figure class="g-cell"><article class="phone" data-ci="${v}" data-who="${who}"></article><figcaption>${who === "minto" ? "みんと" : "スミさん"}</figcaption></figure>`).join("")}</div></section>`).join("")}
   </main>`;
   app.querySelectorAll(".phone[data-i]").forEach((el) => { const item = GALLERY[Number(el.dataset.i)]; phones.push(new Phone(el, item.scene, { fixed: true, ...item })); });
-  app.querySelectorAll(".phone[data-j]").forEach((el) => { const aux = Number(el.dataset.aux), item = AUX_SHOTS(aux)[Number(el.dataset.j)]; phones.push(new Phone(el, item.scene, { fixed: true, aux, ...item })); });
+  app.querySelectorAll(".phone[data-ci]").forEach((el) => phones.push(new Phone(el, "cutin", { fixed: true, ci: el.dataset.ci, who: el.dataset.who })));
   scrollTo(0, 0);
 }
 
@@ -820,18 +973,18 @@ function fit() {
   } else phones.forEach((phone) => phone.relayout());
 }
 
-function showPlay(scene = "map", aux = Number(params.get("aux")) || 1) {
+function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = params.get("ci") || "a", who = params.get("who") || "minto") {
   root.dataset.view = "play"; phones.length = 0;
   const bare = params.has("bare");
   app.innerHTML = `<div class="frame"><article class="phone"></article>${bare ? "" : `<nav class="switch" aria-label="場面と案の切り替え">
     <button class="grip" data-grip aria-expanded="false" aria-label="切り替えを開く"><i></i></button>
     <div class="panel"><div>${SCENES.map((id) => `<button data-scene="${id}" aria-pressed="${id === scene}">${SCENE_LABEL[id]}</button>`).join("")}</div>
-      <div><small>補助</small>${[1, 2, 3].map((n) => `<button data-aux="${n}" aria-pressed="${n === aux}">案${n}</button>`).join("")}<a href="?view=gallery" data-go="gallery">一覧</a></div></div></nav>`}</div>`;
+      <div><small>登場</small>${["a", "b", "c"].map((v) => `<button data-ci="${v}" aria-pressed="${v === ci}">${v.toUpperCase()}</button>`).join("")}<i class="sep"></i>${[["minto", "みんと"], ["sumi", "スミ"]].map(([id, name]) => `<button data-who="${id}" aria-pressed="${id === who}">${name}</button>`).join("")}<a href="?view=gallery" data-go="gallery">一覧</a></div></div></nav>`}</div>`;
   const el = app.querySelector(".phone");
   // 先に大きさを決めてから描く（立ち絵と地図の位置は絵の大きさから決まる）
   const box = app.getBoundingClientRect(), rem = Math.min(box.width / 39, box.height / 66);
   root.style.fontSize = `${rem}px`; el.style.height = `${Math.min(box.height, rem * 92)}px`;
-  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ...opts });
+  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, ...opts });
   current = make(scene);
   const nav = app.querySelector(".switch");
   if (!nav) return;
@@ -845,14 +998,13 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1) {
     if ("grip" in button.dataset) return open(!nav.classList.contains("open"));
     open(true);
     if (button.dataset.scene) current.setScene(button.dataset.scene);
-    else if (button.dataset.aux) {
-      aux = Number(button.dataset.aux);
-      nav.querySelectorAll("[data-aux]").forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
-      // 同じ場面のまま、補助ボタンの案だけを替えて描き直す
-      const old = current, fresh = old.el.cloneNode(false);
-      old.dead = true; old.el.replaceWith(fresh);
-      current = new Phone(fresh, old.st.scene, { aux });
-      current.onScene = sync;
+    else if (button.dataset.ci || button.dataset.who) {
+      // 登場カットインの案・人物を替えて、その場で流す
+      if (button.dataset.ci) current.st.ci = button.dataset.ci;
+      if (button.dataset.who) current.st.who = button.dataset.who;
+      nav.querySelectorAll("[data-ci]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.ci === current.st.ci)));
+      nav.querySelectorAll("[data-who]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.who === current.st.who)));
+      current.setScene("cutin");
     }
   });
 }
@@ -861,13 +1013,16 @@ app.addEventListener("click", (event) => {
   const go = event.target.closest("[data-go]");
   if (!go) return;
   event.preventDefault();
-  if (go.dataset.go === "play") showPlay("map", Number(go.dataset.aux) || 1); else showGallery();
+  if (go.dataset.go === "play") showPlay(go.dataset.ci ? "cutin" : "map", 1, go.dataset.ci || "a"); else showGallery();
 });
 addEventListener("keydown", (event) => {
   if (!current) return;
   const dir = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" }[event.key];
   if (dir) { event.preventDefault(); current.move(dir); }
-  else if (event.key === "Enter" || event.key === " " || event.key === "z") { event.preventDefault(); if (current.st.scene === "holes") current.punch(400); else current.pressA(); }
+  else if (event.key === "Enter" || event.key === " " || event.key === "z") { event.preventDefault(); if (current.st.scene === "holes") { if (!event.repeat) current.startHold(); } else current.pressA(); }
+});
+addEventListener("keyup", (event) => {
+  if (current?.st.scene === "holes" && (event.key === "Enter" || event.key === " " || event.key === "z")) { event.preventDefault(); current.endHold(); }
 });
 addEventListener("resize", fit);
 addEventListener("load", fit);
