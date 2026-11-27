@@ -17,6 +17,14 @@ import {
 } from "../../js/daily/tonari-floor-model.js";
 import { MIXES, WISHES, VERBS, CALLS, MOODS, TUTORIAL, PRICE } from "../../js/daily/tonari-floor-data.js";
 import { floorVenue } from "../../js/daily/floor-venues.js";
+// 心得の盤の効き目（VPM19・SBD157）: 1台表示で縦の盤に灯したマス（phone.boardPlay）を本編と同じ式（growthFloorPerks）で読み、店番に効かせる
+//   （仕事が早い＝シャッフル1秒・売り上手＝歩合13%・波に乗る＝フィーバー3卓・フロアを読む＝ほかの卓の注文も読む・能力のマスの恩恵）。
+//   営業の種類「盤のスキルあり」は、店番に効くマスとスキルを全部灯した形で開く。効いている心得は開店前の札に並べる。
+import { floorVenueShuffleTime, floorFeverTargets } from "../../js/daily/tonari-floor-model.js";
+import { floorVenueCommissionPercent } from "../../js/daily/floor-venues.js";
+import { NODES, NODE_BY_ID } from "../../js/core/growth-board-layout.js";
+import { SQUARE_PERKS, perkIcon } from "../../js/core/growth-board-data.js";
+import { growthFloorPerks } from "../../js/core/growth-effects.js";
 
 const VENUE = floorVenue("tonari");
 const RULES = VENUE.rules;
@@ -38,8 +46,13 @@ export const FLOOR_SHIFTS = {
   usual: { name: "いつもの昼", opts: { level: 1, kind: "usual", visitor: true } },
   first: { name: "はじめて", opts: { level: 0, kind: "first" } },
   full: { name: "満席の日", opts: { level: 6, kind: "full" } },
+  skilled: { name: "盤のスキルあり", opts: { level: 6, kind: "full", skills: true } },
   tutorial: { name: "遊び方", opts: { tutorial: true } },
 };
+// 店番に効く盤のマスとスキル（能力のマスの恩恵 レア客・トップ替え・注文の読み と、店番のスキル4つ）。「盤のスキルあり」で全部灯す
+const FLOOR_PERK_KEYS = ["floorRare", "floorTop", "floorMatch"];
+const FLOOR_SKILL_IDS = ["K27", "K28", "K29", "K30"];
+const FLOOR_NODES = [...NODES.filter((n) => FLOOR_PERK_KEYS.includes(n.perk) && n.kind === "stat").map((n) => n.id), ...FLOOR_SKILL_IDS];
 // 第1章で遊びに来る本編の人物（本編の VISITORS のうち、第1章に来られる3人）
 const CH1_VISITORS = ["tsumugi", "naru", "adam"];
 
@@ -99,6 +112,8 @@ export class FloorScene {
         { caption: "注文を聞く（下が、その卓のミックス5つに）", shot: "order" },
         { caption: "頼みを聞く（下が、5つの手に）", shot: "care" },
         { caption: "フィーバー", shot: "fever" },
+        { caption: "盤のスキルあり（開店前に、効いている心得）", shot: "intro", shift: "skilled" },
+        { caption: "盤のスキルあり（波に乗る: フィーバーが3卓に）", shot: "fever", shift: "skilled" },
         { caption: "精算（1枚め・評価と売上）", shot: "result" },
         { caption: "精算（2枚め・内訳と日当）", shot: "result2" },
         { caption: "遊び方（スミさんと一通り）", shot: "coach", shift: "tutorial" },
@@ -130,9 +145,12 @@ export class FloorScene {
     const { opts } = FLOOR_SHIFTS[this.shiftId];
     const seed = this.phone.fixed ? 20261127 : (Date.now() >>> 0);
     this.tutorial = !!opts.tutorial;
+    // 心得の盤: 「盤のスキルあり」は店番に効くものを全部。ほかは、1台表示で縦の盤に灯したマス（無ければ盤なし）
+    const lit = opts.skills ? FLOOR_NODES : !this.phone.fixed ? this.phone.boardPlay?.g.nodes : null;
+    this.perks = !this.tutorial && lit?.length ? growthFloorPerks({ growth: { nodes: lit } }) : null;
     this.s = this.tutorial ? createFloorTutorial({ chapter: 1, daytime: true })
       : createFloorNight({ seed, level: opts.level, chapter: 1, daytime: true, dusk: true, night: opts.kind,
-        visitor: opts.visitor ? CH1_VISITORS[seed % CH1_VISITORS.length] : null });
+        visitor: opts.visitor ? CH1_VISITORS[seed % CH1_VISITORS.length] : null, floorPerks: this.perks });
     // ?fast=8 で店の時間を速める（動きの確認用。遊ぶ時は使わない）
     const fast = Number(new URLSearchParams(location.search).get("fast")) || 1;
     Object.assign(this, { mode: "intro", sel: 1, panel: null, pausePick: 0, speed: 1, fast, carry: 0, lastAt: 0, coach: null, band: false,
@@ -639,7 +657,7 @@ export class FloorScene {
     // 入れ替えの最中は、ミックスを出せない（一覧を隠して、進みを出す）
     const wait = floorShuffleLeft(s);
     deck.dataset.busy = String(wait > 0 && kind === "mix");
-    busy.querySelector(".fl-busy-bar i").style.width = `${Math.round((1 - wait / RULES.shuffle) * 100)}%`;
+    busy.querySelector(".fl-busy-bar i").style.width = `${Math.round((1 - wait / floorVenueShuffleTime(s)) * 100)}%`; // 仕事が早い（盤）で1秒
     busy.querySelector("small").textContent = wait > 0 ? `あと${seconds(wait)}秒` : "";
     const chip = this.el.querySelector(".fl-chip-shuffle");
     if (chip) {
@@ -1051,7 +1069,26 @@ export class FloorScene {
       <h2 class="fl-title" style="background-image:url(${this.art("deco-ribbon")})"><span>${esc(this.tutorial ? "段取りのおさらい" : this.plan.title)}</span></h2>
       <p class="fl-forecast">${this.tutorial ? "スミさんと、一通りやってみる" : `今日の予報：${esc(this.plan.forecast)}`}</p>
       <p class="fl-wishes">${WISHES.map((w) => this.wishChip({ wish: w.id })).join("")}</p>
+      ${this.perksHtml()}
     </section>`;
+  }
+
+  /** 開店前の札に並べる、効いている心得の盤（VPM19）。何も灯していなければ出さない。アイコンは盤と同じ絵。 */
+  perksHtml() {
+    const p = this.perks;
+    if (!p || this.tutorial) return "";
+    const { esc, REMAKE_IMG } = this.kit;
+    const rows = [
+      p.shuffleScale < 1 && [`skill_K27`, NODE_BY_ID.K27.name, `シャッフル${seconds(floorVenueShuffleTime(this.s))}秒`],
+      p.commission && [`skill_K28`, NODE_BY_ID.K28.name, `歩合${floorVenueCommissionPercent(VENUE, p.commission)}%`],
+      p.feverTables && [`skill_K29`, NODE_BY_ID.K29.name, `フィーバー${floorFeverTargets(this.s)}卓`],
+      p.floorRead && [`skill_K30`, NODE_BY_ID.K30.name, "ほかの卓の注文も"],
+      p.floorMatch && [perkIcon("floorMatch"), SQUARE_PERKS.wisdom.perks.floorMatch.name, `◎が並ぶ＋${p.floorMatch}`],
+      p.floorTop && [perkIcon("floorTop"), SQUARE_PERKS.sense.perks.floorTop.name, `おかわり＋${p.floorTop}`],
+    ].filter(Boolean);
+    if (!rows.length) return "";
+    return `<div class="fl-perks" aria-label="効いている心得の盤"><small>心得の盤</small>
+      <ul>${rows.map(([icon, name, text]) => `<li><img src="${REMAKE_IMG}ui/growth_board/icons/${icon}.webp" alt=""><span>${esc(name)}</span><b>${esc(text)}</b></li>`).join("")}</ul></div>`;
   }
 
   start() {
@@ -1150,7 +1187,7 @@ export class FloorScene {
         <em aria-label="${floorStage(m.avg).label}・${m.n}台"><img src="${this.art(MOOD_ART[floorStage(m.avg).id])}" alt="">${m.n}台</em></li>`).join("") : `<li class="none">提供できた一台がありませんでした</li>`}</ul>
       <p class="fl-counts">${counts.map(([name, label, value, unit]) => `<span aria-label="${label} ${value}${unit}">${icon(name)}<b>${value}</b></span>`).join("")}</p>
       <div class="coach fl-boss"><img src="${this.face("sumi")}" alt="スミさん"><span class="say"><span class="say-text">${esc(result.comment)}</span></span></div>
-      <p class="fl-pay"><span>基本給 <b>${yen(pay.base)}</b></span><span>歩合 <b>${yen(pay.commission)}</b></span><strong>支給額 <b>${yen(pay.total)}</b></strong></p>
+      <p class="fl-pay"><span>基本給 <b>${yen(pay.base)}</b></span><span>歩合${result.commissionBonus ? `（${floorVenueCommissionPercent(VENUE, result.commissionBonus)}%）` : ""} <b>${yen(pay.commission)}</b></span><strong>支給額 <b>${yen(pay.total)}</b></strong></p>
       <i class="fl-pages"><i></i><i class="on"></i></i>
     </section>`;
   }

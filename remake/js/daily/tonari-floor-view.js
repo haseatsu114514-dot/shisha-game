@@ -7,7 +7,6 @@
 // 炭の調整（頼まれる前に自分から）と会計は、卓を押すだけ。客からの頼み（ケア）は、卓へ寄って5つの手から選ぶ。
 // 状態と金額は tonari-floor-model.js から読むだけで、本編の所持金・在庫・日付には触れない。
 import { el, yen } from "../core/util.js";
-import { FLOOR_COMMISSION_PERCENT } from "../core/shift-pay.js";
 import { dirhamText } from "../chapters/ch4-dubai-local.js";
 import { showScreen, clearScreen, retire, toast } from "../core/ui.js";
 import { SE, playBgm, preloadBgm, requestedBgm } from "../core/audio.js";
@@ -19,12 +18,12 @@ import {
   createFloorNight, floorTick, floorAct, floorTap, floorOrderTarget, floorHint, floorResult, floorUrgency, floorWaitLeft,
   floorStayLeft, floorCoalLeft, floorTendDue, floorMaking, floorHand, floorShuffleLeft, floorTimeLeft, floorStage, floorBill, floorFeverReady,
   mixName, mixNameParts, mixFlavorParts, mixFullName, floorOutlook, floorPlan, floorFeverMax, floorFeverCost, floorFeverLength, FLOOR_TICK_MS,
-  floorCallLine, floorDusk, createFloorTutorial, floorTutorialCue,
+  floorCallLine, floorDusk, createFloorTutorial, floorTutorialCue, floorVenueShuffleTime,
 } from "./tonari-floor-model.js";
 import {
   MIXES, WISHES, VERBS, CALLS, MOODS, VISITORS, TUTORIAL,
 } from "./tonari-floor-data.js";
-import { floorVenue } from "./floor-venues.js";
+import { floorVenue, floorVenueCommissionPercent } from "./floor-venues.js";
 import { glyph, guestArt } from "./tonari-floor-art.js";
 import { FLOOR_ART, artUrl, currentStage, floorArtPath, spotCenter } from "./tonari-floor-stage.js";
 
@@ -145,7 +144,6 @@ export function runTonariFloor({
   const v = floorVenue(venue);
   const r = v.rules;
   const venueSlots = r.slots;
-  const venueShuffle = r.shuffle;
   const venueLastCall = r.lastCall;
   const venuePrice = v.price;
   const venueRanks = v.ranks;
@@ -168,6 +166,8 @@ export function runTonariFloor({
   const shishaArt = artUrl(props?.shisha);
   const daytime = !night;
   let state = tutorial ? createFloorTutorial({ chapter, daytime }) : openNight();
+  // シャッフルにかかる刻み（店舗の長さ。心得の盤の「仕事が早い」で短くなる。SBD157）
+  const venueShuffle = floorVenueShuffleTime(state);
   const plan = floorPlan(state);
   // 客の絵は、どこでも「丸の中の顔」（全身は描かない）。本編の人物は顔アイコン
   const artOf = (guest, { happy = false } = {}) => {
@@ -1277,7 +1277,7 @@ export function runTonariFloor({
     function renderResult() {
       const result = floorResult(state, getAllowances());
       const pay = result.pay;
-      const commissionPercent = v.entry?.commissionPercent ?? FLOOR_COMMISSION_PERCENT;
+      const commissionPercent = floorVenueCommissionPercent(v, result.commissionBonus); // 売り上手（K28。SBD157）の分を含む
       const record = topSales > 0 && result.sales > topSales; // これまでの売上の最高を超えた
       const drinks = result.groups.reduce((sum, row) => sum + Math.round((row.drink || 0) / venuePrice.drink), 0);
       const items = [

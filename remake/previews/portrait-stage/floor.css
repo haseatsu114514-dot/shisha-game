@@ -338,6 +338,14 @@
 .fl-forecast { margin: 0; font-size: 1.6rem; letter-spacing: 0.04em; text-align: center; color: #efe8fa; }
 .fl-wishes { margin: 0.4rem 0 0; display: grid; grid-template-columns: auto auto; justify-content: center; gap: 0.8rem 1rem; } .fl-wishes .fl-wish { justify-content: center; }
 .fl-wishes .fl-wish { height: 3rem; font-size: 1.5rem; padding: 0 1.2rem 0 0.9rem; } .fl-wishes .fl-wish .ic { font-size: 1.7rem; }
+/* 開店前の札: 効いている心得の盤（VPM19）。盤と同じ線画のアイコン・スキル名・店番での数字 */
+.fl-perks { width: 100%; display: grid; gap: 0.6rem; margin-top: 0.2rem; padding-top: 1rem; border-top: 0.1rem solid #f1d79a40; }
+.fl-perks > small { justify-self: center; font-size: 1.2rem; letter-spacing: 0.24em; color: #f1d79a; }
+.fl-perks ul { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 0.8rem; }
+.fl-perks li { display: grid; grid-template-columns: 2.6rem 1fr; grid-template-rows: auto auto; column-gap: 0.6rem; align-items: center; min-width: 0; padding: 0.5rem 0.8rem; border-radius: 1.2rem; background: #ffffff0f; box-shadow: inset 0 0 0 0.1rem #f1d79a2e; }
+.fl-perks img { grid-row: 1 / 3; width: 2.6rem; height: 2.6rem; filter: drop-shadow(0 0 0.4rem #ffe9b866); }
+.fl-perks span { font-size: 1.1rem; line-height: 1.2; color: #cfc3e6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fl-perks b { font-size: 1.36rem; line-height: 1.25; color: #fff4d6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fl-pause .fl-eyebrow { margin-top: 2.2rem; } .fl-pause .fl-title.plain { margin-top: 0; } .fl-pause .choices { width: 100%; margin-top: 0.6rem; }
 
 

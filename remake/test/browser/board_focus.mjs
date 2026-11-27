@@ -110,7 +110,7 @@ await suite("board-focus", async (check) => {
       assert(await note.isVisible(), "The overlap note is visible in the side panel");
       const box = await note.boundingBox(), side = await page.locator(t("board-preview")).boundingBox();
       assert(box.x >= side.x - 1 && box.x + box.width <= side.x + side.width + 1, `The note stays inside the panel ${JSON.stringify({ box, side })}`);
-      assert.match(await page.locator(t("board-preview")).innerText(), /火種7/, "K13 keeps its fire cost");
+      assert.match(await page.locator(t("board-preview")).innerText(), /火種6/, "K13 keeps its fire cost (7→6 in v16, SBD157)");
       await page.screenshot({ path: shot(`${label}-overlap`) });
 
       // 閉じる（Escape）: 開く前の MENU のボタンへ戻る

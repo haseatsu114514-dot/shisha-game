@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import vm from "node:vm";
 import { VISITORS } from "../js/daily/tonari-floor-data.js";
 import * as game from "../js/core/state.js";
-import { growthPerks } from "../js/core/growth-effects.js";
+import { growthFloorPerks } from "../js/core/growth-effects.js";
 
 // 本物のセーブAPI: 長い勤務の途中で既存の会話がsaveしても、体力等の一部だけを保存しない。
 const memory = new Map();
@@ -51,7 +51,7 @@ const sliced = (context, importModuleDynamically) => new vm.SourceTextModule(tex
 async function floorBoundary(mode) {
   const account = { day: 4, chapter: 1, slot: 0, weatherSeed: 18, flags: { _shift_mix_citrus: 1 }, money: 30000, inventory: { mint: 3 },
     met: { tsumugi: true }, affinity: { tsumugi: 9, adam: 30 } };
-  const context = vm.createContext({ state: account, TONARI_BG: "tonari", growthPerks, isRainy: () => false,
+  const context = vm.createContext({ state: account, TONARI_BG: "tonari", growthFloorPerks, isRainy: () => false,
     bgUrl: (_, time) => `bg-${time}`, toast: () => {}, affinityLevel: (id) => ((account.affinity[id] || 0) >= 9 ? 1 : 0) });
   const calls = [];
   const view = new vm.SyntheticModule(["runTonariFloor", "FLOOR_VISITORS"], function () {
@@ -146,7 +146,7 @@ for (const mode of ["done", "load", "abandon", "again"]) await floorBoundary(mod
 {
   const account = { day: 4, chapter: 1, slot: 0, weatherSeed: 18, flags: {}, money: 30000 };
   const toasts = [];
-  const context = vm.createContext({ state: account, TONARI_BG: "tonari", growthPerks, isRainy: () => false, bgUrl: () => "bg",
+  const context = vm.createContext({ state: account, TONARI_BG: "tonari", growthFloorPerks, isRainy: () => false, bgUrl: () => "bg",
     toast: (text) => toasts.push(text), affinityLevel: () => 0 });
   const module = sliced(context, async () => { throw Error("offline"); });
   await module.link(() => { throw Error("unexpected import"); });
