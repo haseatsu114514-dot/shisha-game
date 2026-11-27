@@ -152,7 +152,7 @@
 @keyframes fl-pop { 0% { opacity: 0; transform: translateY(0.6rem) scale(0.8); } 12% { opacity: 1; transform: none scale(1.06); } 20% { transform: scale(1); } 84% { opacity: 1; } 100% { opacity: 0; } }
 /* カードの札の大きさ（下の画面の札は、別に大きさを決めている） */
 .fl-table .fl-wish, .fl-table .fl-need, .fl-table .fl-pop:not([data-kind="say"]) { height: 2.1rem; padding: 0 0.8rem 0 0.6rem; font-size: 1.16rem; } .fl-table .fl-wish .ic, .fl-table .fl-need .ic { font-size: 1.3rem; }
-.fl-table .fl-wish.long { height: auto; min-height: 2.1rem; font-size: 1.02rem; }
+.fl-table .fl-wish.long { height: 2.1rem; white-space: nowrap; font-size: 1.04rem; line-height: 1; } .fl-table .fl-wish.long b { overflow: hidden; text-overflow: ellipsis; word-break: normal; } /* 名指しの長い名前も、1行に（切れる分は下の画面に全部出る） */
 /* 来店した客の一言（吹き出し）は、2行まで（上へ伸びる。全文は、席を押すと下の画面に出る） */
 .fl-table .fl-pop[data-kind="say"] { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; max-width: 100%; min-height: 2.1rem; padding: 0.25rem 0.7rem; font-size: 1.08rem; text-align: left; }
 .fl-pop[data-kind="rep"] { color: #2a1a06; background: #ffd84d; box-shadow: 0 0.3rem 0.8rem #000a, 0 0 1rem #ffcf6b; }
@@ -361,7 +361,7 @@
 .fl-title { width: 31rem; max-width: 100%; aspect-ratio: 1000 / 162; margin: 0; display: grid; place-items: center; background: center / 100% 100% no-repeat; font-family: var(--mincho); font-size: 2.6rem; letter-spacing: 0.14em; line-height: 1; text-shadow: 0 0.2rem 0.6rem #000; }
 .fl-title span { margin-right: -0.14em; }
 .fl-title.plain { aspect-ratio: auto; margin: 2.2rem 0 0; font-size: 3rem; }
-.fl-forecast { margin: 0; font-size: 1.6rem; letter-spacing: 0.04em; text-align: center; color: #efe8fa; }
+.fl-forecast { margin: 0; font-size: 1.6rem; letter-spacing: 0.04em; text-align: center; color: #efe8fa; word-break: auto-phrase; text-wrap: balance; }
 .fl-wishes { margin: 0.4rem 0 0; display: grid; grid-template-columns: auto auto; justify-content: center; gap: 0.8rem 1rem; } .fl-wishes .fl-wish { justify-content: center; }
 .fl-wishes .fl-wish { height: 3rem; font-size: 1.5rem; padding: 0 1.2rem 0 0.9rem; } .fl-wishes .fl-wish .ic { font-size: 1.7rem; }
 .fl-repnote { margin: 0.2rem 0 0; display: flex; align-items: center; justify-content: center; gap: 0.8rem; font-size: 1.26rem; line-height: 1.5; color: #ffffffd9; text-align: left; } .fl-repnote .ic { flex: none; font-size: 2.6rem; color: #ffd84d; }
