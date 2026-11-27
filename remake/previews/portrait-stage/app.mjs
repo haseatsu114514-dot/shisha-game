@@ -95,6 +95,7 @@ const COACH = {
   pull: "手元を見ているぞ。落ち着いていけ",
 };
 const HOLE_COUNT = 10;
+const TEMP_OK = [0.52, 0.7]; // 熱ゲージの適温の帯（下から）
 
 const SCENES = ["map", "minto", "tonari", "pack", "holes", "pull"];
 const SCENE_LABEL = { map: "地図", minto: "1人", tonari: "2人", pack: "詰め", holes: "穴あけ", pull: "吸う" }; // 1台表示の下の切り替え
@@ -134,8 +135,6 @@ const ICONS = {
   help: '<path d="M8.500 9a3.500 3.500 0 1 1 5.600 2.800c-1.200.900-2.100 1.600-2.100 3.200"/><circle cx="12" cy="19" r="1.300" class="f"/>',
   coin: '<circle cx="12" cy="12" r="8.500"/><path d="M8.500 7.500l3.500 5 3.500-5M12 12.500V17M9 12.500h6M9 15h6"/>',
   heart: '<path d="M12 20s-7.500-4.600-7.500-10A4.300 4.300 0 0 1 12 7.600 4.300 4.300 0 0 1 19.500 10c0 5.400-7.500 10-7.500 10z" class="f"/>',
-  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.500v3M12 18.500v3M2.500 12h3M18.500 12h3M5.300 5.300l2.100 2.100M16.600 16.600l2.100 2.100M5.300 18.700l2.100-2.100M16.600 7.400l2.100-2.100"/>',
-  rain: '<path d="M7.500 14.500a4.500 4.500 0 0 1 .300-9 5.500 5.500 0 0 1 10.500 1.800 3.700 3.700 0 0 1-.800 7.200z"/><path d="M8.500 17.500l-1 3M12.500 17.500l-1 3M16.500 17.500l-1 3"/>',
   bed: '<path d="M3 18.500V7M3 14.500h18v4M21 14.500V12a2.500 2.500 0 0 0-2.500-2.500H10v5"/><circle cx="6.500" cy="11.300" r="1.700"/>',
   cart: '<path d="M3 5h2.500l2.200 10h10l2-7H7"/><circle cx="9.500" cy="19" r="1.400"/><circle cx="16.500" cy="19" r="1.400"/>',
   work: '<rect x="3.500" y="8" width="17" height="11" rx="2"/><path d="M9 8V6a1.500 1.500 0 0 1 1.500-1.500h3A1.500 1.500 0 0 1 15 6v2M3.500 13h17"/>',
@@ -162,13 +161,14 @@ const perkHtml = (spot) => spot.closed ? `<em class="stamp">休</em>` : spot.fee
 
 /* ───────── 部品 ───────── */
 
-/** 上の表示。地図だけ日付・体力・お金を出す。会話は場所の名前だけ、シーシャ作りは何も出さない（工程の並びだけ）。 */
+/** 上の表示。地図だけ日付・レベル・体力・お金を出す。会話は場所の名前だけ、シーシャ作りは何も出さない（工程の並びだけ）。
+ *  地図: 左に章と日付（小さく）、右に一列でレベル・体力・お金。町は地図の絵で分かるので出さない。天気は文字や絵記号にせず、地図に降る雨で見せる。 */
 function hudHtml(kind, place) {
   if (kind === "talk") return `<div class="hud slim"><div class="where"><b>${place[0]}</b></div></div>`;
   return `<div class="hud">
-    <div class="where"><b>${place[0]}</b><small>${place[1]}</small></div>
-    <div class="stats"><span class="pill"><small>DAY</small><b>5</b>${icon("sun")}${icon("rain")}</span>
-      <span class="pill">${icon("heart")}<span class="bar" style="--v:80%"><i></i></span><i class="sep"></i>${icon("coin")}<b>42,000</b></span></div>
+    <div class="where"><b>${place[0]}</b><small>DAY 5</small></div>
+    <div class="stats"><span class="pill"><span class="lv" aria-label="レベル2"><small>Lv</small><b>2</b></span><span class="bar xp" style="--v:45%"><i></i></span>
+      <i class="sep"></i>${icon("heart")}<span class="bar" style="--v:80%"><i></i></span><i class="sep"></i>${icon("coin")}<b>42,000</b></span></div>
   </div>`;
 }
 
@@ -176,7 +176,7 @@ function dpadHtml(live, marks = {}) {
   const key = (dir, label) => `<button class="dp dp-${dir}${live.includes(dir) ? " live" : ""}" data-act="dir" data-dir="${dir}" aria-label="${marks[dir]?.[1] || label}">${tri()}${marks[dir] ? icon(marks[dir][0]) : ""}</button>`;
   return `<div class="dpad${live ? "" : " idle"}" role="group" aria-label="十字キー">${key("up", "上")}${key("left", "左")}${key("right", "右")}${key("down", "下")}<i class="dp-core"></i></div>`;
 }
-const aHtml = (label, { disabled = false, cls = "" } = {}) => `<button class="btn-a ${cls}" data-act="a" ${disabled ? "disabled" : ""}><span class="t">${label}</span><span class="k">A</span></button>`;
+const aHtml = (label, { disabled = false, cls = "", extra = "" } = {}) => `<button class="btn-a ${cls}" data-act="a" ${disabled ? "disabled" : ""}><span class="t">${label}</span>${extra}</button>`;
 /** 補助の札は絵記号だけ（読み上げ用の名前は aria-label に持つ） */
 const chipsHtml = (chips) => `<div class="chips">${chips.map(([id, name, label, badge, on]) => `<button class="chip${on ? " on" : ""}" data-act="fn" data-fn="${id}" aria-label="${label}">${icon(name)}${badge ? `<em>${badge}</em>` : ""}</button>`).join("")}</div>`;
 const TALK_CHIPS = (st) => [["log", "log", "LOG"], ["auto", "auto", "AUTO", "", st.auto], ["skip", "skip", "SKIP", "", st.skip], ["terms", "book", "用語"], ["config", "gear", "設定"]];
@@ -204,7 +204,7 @@ class Phone {
     this.el = el;
     el.lang = "ja";
     this.fixed = fixed; // 一覧では場面を固定し、その場面の中の操作だけ動かす
-    this.st = { scene, sel: DEFAULT_SPOT, step, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0 };
+    this.st = { scene, sel: DEFAULT_SPOT, step, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0, temp: 0.4 };
     this.cam = null;      // 地図をドラッグした時の位置（選び直すと選んだ店へ戻る）
     this.t0 = performance.now();
     this.typedAt = 0;
@@ -245,15 +245,13 @@ class Phone {
       <div class="pic map${st.overview ? " overview" : ""}" data-map>
         <div class="map-pan"><img src="${IMG.map}" alt="橙須の地図" draggable="false">
           ${SPOTS.map((spot, i) => `<div class="pin${spot.closed ? " closed" : ""}" style="--mx:${spot.x}%;--my:${spot.y}%" data-spot="${i}">
-            <i class="pin-ring"></i><span class="pin-dot">${avatar(spot)}${spot.closed ? `<em class="off">休</em>` : spot.mark ? `<em>!</em>` : ""}</span><span class="pin-flag">${esc(spot.label)}</span>
+            <i class="pin-ring"></i><span class="pin-dot">${avatar(spot)}${spot.closed ? `<em class="off">休</em>` : spot.mark ? `<em>!</em>` : ""}</span>
             <button class="pin-hit" data-act="spot" data-spot="${i}" aria-label="${esc(spot.label)}"></button></div>`).join("")}
         </div>
-        <div class="beacons"></div>
+        <i class="rain" aria-hidden="true"></i>
       </div>
       <i class="veil"></i>
       ${hudHtml("map", ["第1章", "橙須"])}
-      <button class="mini${st.overview ? " far" : ""}" data-act="overview" aria-label="全体を見る・寄る"><img src="${IMG.map}" alt=""><i class="mini-view"></i>
-        ${SPOTS.map((spot, i) => `<i class="mini-pin${spot.mark ? " mark" : ""}" style="left:${spot.x}%;top:${spot.y}%" data-spot="${i}"></i>`).join("")}<span>${icon(st.overview ? "near" : "wide")}</span></button>
       <div class="body">
         <div class="telop" data-slot="telop">${this.destHtml()}</div>
         <div class="ctrl" data-slot="ctrl">${this.mapCtrlHtml()}</div>
@@ -274,7 +272,7 @@ class Phone {
   mapCtrlHtml() {
     const { st } = this, spot = SPOTS[st.sel];
     const marks = SPOTS.filter((s) => s.mark).length;
-    return `${chipsHtml([["lime", "chat", "LIME", "1"], ["menu", "menu", "MENU"], ["next", "bang", "用事のある店へ", String(marks)]])}
+    return `${chipsHtml([["lime", "chat", "LIME", "1"], ["menu", "menu", "MENU"], ["next", "bang", "用事のある店へ", String(marks)], ["wide", st.overview ? "near" : "wide", st.overview ? "寄る" : "全体を見る", "", st.overview]])}
       ${dpadHtml(st.list ? "up down" : "up down left right", st.list ? {} : { up: st.overview ? ["near", "寄る"] : ["wide", "全体を見る"], down: ["list", "一覧"] })}${aHtml(st.list ? "決定" : spot.closed ? "休み" : "行く", { disabled: !st.list && spot.closed })}`;
   }
 
@@ -313,38 +311,16 @@ class Phone {
     this.syncMap();
   }
 
-  /** ピンの選択・画面の外の「！」の案内・小さい全体図の枠を、今の地図の位置に合わせる。 */
+  /** ピンの選択を地図へ反映し、上の表示の下に入ったピンは薄くする（重なって読みにくくならないように）。 */
   syncMap() {
     const { el, st, view } = this;
-    el.querySelectorAll(".pin").forEach((pin) => pin.setAttribute("aria-current", String(Number(pin.dataset.spot) === st.sel)));
-    el.querySelectorAll(".mini-pin").forEach((pin) => pin.classList.toggle("sel", Number(pin.dataset.spot) === st.sel));
-    if (!view) return;
-    const frame = el.querySelector(".mini-view");
-    if (frame) {
-      const { x, y, scale, w, h, mw, mh } = view;
-      Object.assign(frame.style, { left: `${Math.max(0, -x / (mw * scale)) * 100}%`, top: `${Math.max(0, -y / (mh * scale)) * 100}%`,
-        width: `${Math.min(1, w / (mw * scale)) * 100}%`, height: `${Math.min(1, h * 0.8 / (mh * scale)) * 100}%`, display: st.overview ? "none" : "" });
-    }
-    const layer = el.querySelector(".beacons");
-    if (!layer) return;
-    const { x, y, scale, w, h, mw, mh } = view, top = Math.max(h * 0.2, w * 0.215), bottom = h * 0.74;
-    const list = [];
-    if (!st.overview) SPOTS.forEach((spot, i) => {
-      if (!spot.mark || i === st.sel) return;
-      const px = x + mw * scale * spot.x / 100, py = y + mh * scale * spot.y / 100;
-      if (px > 18 && px < w - 18 && py > top && py < bottom) return;
-      const cx = Math.min(w - 14, Math.max(14, px)), cy = Math.min(bottom, Math.max(top, py));
-      list.push({ i, spot, px, py, cx, cy, side: px < w / 2 ? "l" : "r" });
+    el.querySelectorAll(".pin").forEach((pin) => {
+      const i = Number(pin.dataset.spot);
+      pin.setAttribute("aria-current", String(i === st.sel));
+      if (!view) return;
+      const py = view.y + view.mh * view.scale * SPOTS[i].y / 100;
+      pin.classList.toggle("under", i !== st.sel && py < view.w * 0.2);
     });
-    const gap = w * 0.118; // 案内1つぶんの高さ
-    for (const side of ["l", "r"]) {
-      const group = list.filter((b) => b.side === side).sort((a, b) => a.py - b.py);
-      group.forEach((b, n) => { if (n && b.cy < group[n - 1].cy + gap) b.cy = group[n - 1].cy + gap; });
-    }
-    layer.innerHTML = list.map((b) => {
-      const angle = Math.atan2(b.py - b.cy, b.px - b.cx) * 180 / Math.PI;
-      return `<button class="beacon ${b.side}" data-act="spot" data-spot="${b.i}" aria-label="${esc(b.spot.label)}" style="left:${b.cx}px;top:${b.cy}px"><i style="transform:rotate(${angle.toFixed(0)}deg)"></i><span class="ava">${avatar(b.spot)}</span><em>!</em></button>`;
-    }).join("");
   }
 
   select(index, { keepList = false, keepView = false } = {}) {
@@ -366,12 +342,9 @@ class Phone {
     this.syncView(); this.patch(); this.camera(true);
   }
 
-  /** 寄り／全体の切り替えを、地図と小さい全体図の見た目へ反映する。 */
+  /** 寄り／全体の切り替えを地図へ反映する。 */
   syncView() {
-    const { el, st } = this;
-    el.querySelector("[data-map]")?.classList.toggle("overview", st.overview);
-    const mini = el.querySelector(".mini");
-    if (mini) { mini.classList.toggle("far", st.overview); mini.querySelector("span").innerHTML = icon(st.overview ? "near" : "wide"); }
+    this.el.querySelector("[data-map]")?.classList.toggle("overview", this.st.overview);
   }
 
   /** 場面の中の変化は、テロップ・操作・一覧だけ描き直す（絵は動きを見せるために残す）。 */
@@ -476,18 +449,26 @@ class Phone {
     const { st } = this, at = STEPS.findIndex(([id]) => id === st.scene);
     const pic = st.scene === "pack" ? `<img class="bg" src="${IMG.tonari}" alt=""><img class="bowl" src="${IMG[`bowl_${PACKS[st.pack].id}`]}" alt="">`
       : st.scene === "holes" ? `<img class="bg" src="${IMG.tonari}" alt=""><div class="foil"><img src="${IMG.foil}" alt=""><svg viewBox="-100 -100 200 200" class="foil-marks"></svg></div>`
-      : `<img class="bg" src="${IMG.tonari}" alt=""><img class="pull-actor" src="${IMG.pullActor}" alt=""><img class="puff" src="${IMG.smoke}" alt="">
-         <div class="thermo">${icon("thermo")}<span><i></i></span></div>`;
+      : `<img class="bg" src="${IMG.tonari}" alt=""><img class="pull-actor" src="${IMG.pullActor}" alt=""><img class="puff" src="${IMG.smoke}" alt="">`;
     // 日付・体力・お金は出さない。上は工程の並びだけ（今の工程だけ名前を出す）
     return `
       <img class="amb" src="${IMG.tonari}" alt="">
       <div class="pic craft craft-${st.scene}">${pic}</div>
       <i class="veil"></i>
+      ${this.thermoHtml()}
       <div class="steps" aria-label="工程">${STEPS.map(([id, name], i) => `<span class="${i === at ? "now" : i < at ? "done" : ""}" aria-label="${name}">${icon(id)}${i === at ? `<b>${name}</b>` : ""}</span>`).join("")}</div>
       <div class="body">
         <div class="telop" data-slot="telop">${this.craftTelopHtml()}</div>
         <div class="ctrl craft" data-slot="ctrl">${this.craftCtrlHtml()}</div>
       </div>`;
+  }
+
+  /** 熱ゲージ（温度帯）。シーシャ作りの間ずっと右に大きく出す。下がぬるい・上が熱い、光る帯が適温。 */
+  thermoHtml() {
+    const t = this.st.temp;
+    return `<div class="thermo${t >= TEMP_OK[0] && t <= TEMP_OK[1] ? " ok" : ""}" style="--t:${t}" role="img" aria-label="温度">
+      <span class="th-icon">${icon("thermo")}</span>
+      <span class="th-bar"><i class="th-zone"></i><i class="th-now"></i></span></div>`;
   }
 
   /** スミさんの一言は小さな吹き出しで出し、少しすると顔だけになる（顔を押すとまた出る）。 */
@@ -513,12 +494,12 @@ class Phone {
         <div class="dial"><svg viewBox="-50 -50 100 100">${pips}<circle class="want" r="15.5"/><circle class="grow" r="4"/></svg></div>
         ${aHtml("刺す", { cls: "hold" })}`;
     }
+    // 葉（フレーバーの持ち）は上の段の真ん中、吸った回数は「吸う」の中の点。ボタンに重ねない
     return `${chipsHtml(CRAFT_CHIPS)}
+      <span class="leaves" role="img" aria-label="フレーバーの持ち 5">${`<img src="${IMG.leaf}" alt="">`.repeat(5)}</span>
       <button class="serve" data-act="serve" aria-label="提供する（あと2口）">${icon("bell")}<i></i><i></i></button>
       <div class="gauge"><span class="end l">${icon("cool")}</span><span class="end r">${icon("heat")}</span>${meterHtml()}</div>
-      <div class="lamps"><span class="leaves">${`<img src="${IMG.leaf}" alt="">`.repeat(5)}</span>
-        <span class="pulls">${Array.from({ length: 5 }, (_, i) => `<i class="${i < st.pulls ? "on" : ""}"></i>`).join("")}</span></div>
-      ${aHtml("吸う", { cls: "center" })}`;
+      ${aHtml("吸う", { cls: "center", extra: `<span class="pips" aria-label="吸った回数 ${st.pulls}/5">${Array.from({ length: 5 }, (_, i) => `<i class="${i < st.pulls ? "on" : ""}"></i>`).join("")}</span>` })}`;
   }
 
   /** 穴あけ: 目印（ひし形）・開けた穴・針先（水色の輪）を描く。 */
@@ -563,7 +544,8 @@ class Phone {
       else if (id === "next") { // 「！」の付いた店を順に回る
         const marks = ORDER.filter((i) => SPOTS[i].mark), after = marks.find((i) => ORDER.indexOf(i) > ORDER.indexOf(st.sel));
         this.select(after ?? marks[0]);
-      } else if (id === "auto" || id === "skip") { st[id] = !st[id]; hit.classList.toggle("on", st[id]); }
+      } else if (id === "wide") this.toggleOverview();
+      else if (id === "auto" || id === "skip") { st[id] = !st[id]; hit.classList.toggle("on", st[id]); }
     }
   }
 
@@ -635,11 +617,22 @@ class Phone {
     if (st.scene === "pull") {
       if (this.hold) return;
       st.pulls = Math.min(5, st.pulls + 1);
+      // 吸うたびに温度が動く（上げ吸いで上がり、下げ吸いで下がる）
+      st.temp = Math.min(0.95, Math.max(0.06, st.temp + 0.05 + ((this.needleT ?? 0.5) - 0.5) * 0.32));
       this.hold = performance.now();
       el.classList.remove("puffing"); void el.offsetWidth; el.classList.add("puffing");
       this.patch();
-      setTimeout(() => { this.hold = 0; if (st.pulls >= 5) { if (this.fixed) { st.pulls = 0; this.patch(); } else this.setScene("map"); } }, 700);
+      this.syncThermo();
+      setTimeout(() => { this.hold = 0; if (st.pulls >= 5) { if (this.fixed) { st.pulls = 0; st.temp = 0.4; this.patch(); this.syncThermo(); } else this.setScene("map"); } }, 700);
     }
+  }
+
+  /** 熱ゲージの針と、適温の帯に入った時の光を今の温度に合わせる（作り直さずに動かす）。 */
+  syncThermo() {
+    const thermo = this.el.querySelector(".thermo"), t = this.st.temp;
+    if (!thermo) return;
+    thermo.style.setProperty("--t", String(t));
+    thermo.classList.toggle("ok", t >= TEMP_OK[0] && t <= TEMP_OK[1]);
   }
 
   /** シーシャ作り: スミさんの一言は3秒ほどで畳み、手元の操作だけを残す（一覧では出したまま）。 */
@@ -682,7 +675,7 @@ class Phone {
   }
 
   setScene(scene, { arrive = false } = {}) {
-    Object.assign(this.st, { scene, step: 0, choosing: false, pick: 0, list: false, overview: false, holes: [], pulls: 0, pack: 1 });
+    Object.assign(this.st, { scene, step: 0, choosing: false, pick: 0, list: false, overview: false, holes: [], pulls: 0, pack: 1, temp: 0.4 });
     this.quiet = false;
     this.render({ delay: arrive ? 1200 : 0 }); // 店に着いた時は、店名の札が出てから文字を送る
     this.hushCoach();
@@ -696,6 +689,7 @@ class Phone {
       const meter = el.querySelector(".meter");
       if (meter && !this.hold) {
         const deg = Math.sin((now - this.t0) / 620) * 76, t = (deg + 90) / 180;
+        this.needleT = t;
         meter.style.setProperty("--needle", `${deg.toFixed(1)}deg`);
         // 針が白い帯に入っている間、「吸う」が光る
         el.querySelector(".btn-a")?.classList.toggle("hot", (t > 0.44 && t < 0.56) || (t > 0.13 && t < 0.2) || (t > 0.8 && t < 0.87));
@@ -745,7 +739,7 @@ function showGallery() {
       <li><b>立ち位置</b>1人は中央で少し寄り、2人は左右で身長差そのまま。話している側が手前で明るい</li>
       <li><b>地図</b>左右キーで隣の店へ画面が送られる。上で全体、下で一覧。指でずらす・「！」の店へ飛ぶ</li>
       <li><b>パッド</b>輪の十字キーとAを大きく（幅の約半分と1/3強）。作る場面は工程ごとの操作に替わる</li>
-      <li><b>出すもの</b>日付・体力・お金は地図だけ。会話は場所の名前だけ、シーシャ作りは工程の並びだけ</li>
+      <li><b>出すもの</b>地図は章・日付・レベル・体力・お金（天気は降る雨で見せる）。会話は場所の名前だけ、シーシャ作りは工程の並びと熱ゲージだけ</li>
     </ul>
     <p class="g-note">絵・立ち絵・台詞は本編の素材、配置と動きが今回の案です。本編の進行や保存には触れません。<a href="?view=play" data-go="play">1台で通して触る</a></p>
     <div class="g-grid">${GALLERY.map((item, i) => `<figure class="g-cell"><article class="phone" data-i="${i}"></article><figcaption>${item.caption}</figcaption></figure>`).join("")}</div>
