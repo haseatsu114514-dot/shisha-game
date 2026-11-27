@@ -9,6 +9,7 @@
         {"speaker": "kumicho", "face": "normal", "text": "兄弟、例のハガルは持ってきたかい"},
         {"speaker": "hajime", "face": "normal", "text": "はい。今日は、これで一台作らせてください"},
         {"speaker": "", "face": "", "text": "包みをほどく。水だけで洗ってきた素焼きは、まだかすかに甘い匂いがした。"},
+        { "type": "sfx", "id": "coal_place" },
         {"speaker": "", "face": "", "text": "葉を詰めて、炭を置く。神崎さんは腕を組んだまま、一度も口を挟まなかった。"},
         {"speaker": "kumicho", "face": "serious", "text": "……吸わせてもらいやす"},
         {"speaker": "", "face": "", "text": "長い一口。煙が天井へほどけるまで、神崎さんは目を閉じていた。"},
@@ -558,6 +559,7 @@
         {"speaker": "sumi", "face": "normal", "text": "……聞こえてるぞ"},
         {"speaker": "tsumugi", "face": "surprise", "text": "……っ"},
         {"speaker": "sumi", "face": "smile", "text": "描くなら、詰める時の手にしとけ。そっちの方が、まだ見られる"},
+        { "type": "sfx", "id": "page" },
         {"speaker": "", "face": "", "text": "つむぎは小さくお辞儀をして、新しいページをめくった。"}
       ]
     },
@@ -1455,6 +1457,7 @@
       "dialogue_id": "bond_after_steve_3",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。東京の Smoke & Glory（第3章の通い・第5章の東京の店）。はじめは「スティーブさん」と敬語、スティーブは「ハジメ」。タイマーは一つ（予備ははじめに貸したもの）。看板のマウンテンミスト（葉と秒数）は渡さない。体格や食べ物の好みを笑いの種にしない（character_profiles）。タイマーに頼りすぎて香りの山を逃すスティーブが、タイマー無しで客の顔を見て待つ。",
       "lines": [
+        { "type": "sfx", "id": "tick" },
         {"speaker": "", "face": "", "text": "ピッ、と小さく鳴って、スティーブのタイマーの画面が消えた。"},
         {"speaker": "steve", "face": "surprise", "text": "……オーノー。電池だ"},
         {"speaker": "hajime", "face": "normal", "text": "俺の予備、使いますか"},

@@ -119,10 +119,11 @@ for (const [,base,,rest] of cases) for (const suffix of revisits(rest)) {
   for (const id of calls) {
     const scene = DB.dialogues[id];
     assert(loaded.has(id) && scene?.lines?.length, `${id}: in the real chapter load list`);
-    assert(!scene.metadata && scene.lines.every(line => !line.type), `${id}: no rewards, flags or branches in the script`);
-    assert(scene.lines.some(line => line.speaker === 'sumi'), `${id}: Sumi talks`);
-    assert(scene.lines.every(line => ['', 'hajime', 'sumi'].includes(line.speaker)), `${id}: only Sumi and Hajime on the phone`);
-    assert(!scene.lines.some(line => /大会|審査|優勝|シェイク|路地裏/.test(line.text)), `${id}: no tournament or Sumi's Dubai past`);
+    const lines = scene.lines.filter(line => line.type !== 'sfx');
+    assert(!scene.metadata && lines.every(line => !line.type), `${id}: no rewards, flags or branches in the script`);
+    assert(lines.some(line => line.speaker === 'sumi'), `${id}: Sumi talks`);
+    assert(lines.every(line => ['', 'hajime', 'sumi'].includes(line.speaker)), `${id}: only Sumi and Hajime on the phone`);
+    assert(!lines.some(line => /大会|審査|優勝|シェイク|路地裏/.test(line.text)), `${id}: no tournament or Sumi's Dubai past`);
   }
   const innVisit = cases[2][2], restKey = '_spot_turn_ch4_dubai_inn';
   const rest = async (slot) => {
@@ -165,12 +166,13 @@ for (const [,base,,rest] of cases) for (const suffix of revisits(rest)) {
   assert.equal(homeCalls.length, 20);
   for (const { scene: id, from } of local.HOME_DAY_CALLS) {
     const scene = DB.dialogues[id];
-    assert(scene?.lines?.length >= 10 && !scene.metadata && scene.lines.every(line => !line.type), `${id}: a full scene without rewards`);
-    assert(scene.lines.filter(line => line.speaker === from).length >= 4, `${id}: ${from} talks`);
+    const lines = scene?.lines?.filter(line => line.type !== 'sfx') || [];
+    assert(lines.length >= 10 && !scene.metadata && lines.every(line => !line.type), `${id}: a full scene without rewards`);
+    assert(lines.filter(line => line.speaker === from).length >= 4, `${id}: ${from} talks`);
     const extra = local.HOME_DAY_CALL_EXTRA_SPEAKERS[id] || [];
-    assert(scene.lines.every(line => ['', 'hajime', from, ...extra].includes(line.speaker)), `${id}: only the caller and Hajime`);
-    assert(!scene.lines.some(line => /大会|審査|優勝|順位/.test(line.text)), `${id}: nothing about the world tournament`);
-    for (const line of scene.lines) assert([...line.text].reduce((n,c)=>n+(c.codePointAt(0)<=255?0.5:1),0)<=48);
+    assert(lines.every(line => ['', 'hajime', from, ...extra].includes(line.speaker)), `${id}: only the caller and Hajime`);
+    assert(!lines.some(line => /大会|審査|優勝|順位/.test(line.text)), `${id}: nothing about the world tournament`);
+    for (const line of lines) assert([...line.text].reduce((n,c)=>n+(c.codePointAt(0)<=255?0.5:1),0)<=48);
   }
   const innVisit = cases[2][2], restKey = '_spot_turn_ch4_dubai_inn';
   const rest = async (slot) => {

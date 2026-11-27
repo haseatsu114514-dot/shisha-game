@@ -297,6 +297,10 @@
           "text": "いろんな手、描きたいので"
         },
         {
+          "type": "sfx",
+          "id": "page"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "ページをめくると、働く手と休む手が並んでいた。"
@@ -315,6 +319,10 @@
         "bg": "res://assets/backgrounds/bg_tonari_inside.png"
       },
       "lines": [
+        {
+          "type": "sfx",
+          "id": "outdoor_birds"
+        },
         {
           "speaker": "",
           "face": "",
@@ -3446,6 +3454,10 @@
         "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
       },
       "lines": [
+        {
+          "type": "sfx",
+          "id": "door"
+        },
         {
           "speaker": "",
           "face": "",

@@ -11,7 +11,7 @@ import { AFFINITY_RANK_PTS } from "./stats.js";
 import { gainSeenKey, bannerHold } from "./gain-notice.js";
 import { nextStepProgress } from "./stat-progress.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
-import { rainScene, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
+import { rainScene, weatherOf, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
 import { syncShopHaze } from "./shop-haze.js";
 import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival, takeParkedCover, smokeArt, smokeIn, smokeOut, dateTypeReady, plainDateType } from "./transitions.js";
 import { allStoreLogoUrls } from "./store-logos.js";
@@ -244,6 +244,21 @@ export function uiArtReady(ms = 2000) {
 
 // 余白のぼかし（#backdrop）の差し替えは共通部品 core/stage-fit.js の syncBackdrop（#3076 で共通化）。
 
+const BIRD_ARRIVALS = {
+  kannon: "bg_kannon_day",
+  ch3_tokyo_park: "bg_tokyo_park_day",
+  ch5_tokyo_park: "bg_tokyo_park_day",
+  ch3_tokyo_shrine: "bg_tokyo_benten_day",
+  ch5_tokyo_shrine: "bg_tokyo_benten_day",
+};
+
+function playOutdoorArrival(cued, url, tint) {
+  if (cued?.kind !== "place" || tint === "night") return;
+  const expected = BIRD_ARRIVALS[cued.opts.spotId];
+  const file = String(url || "").split(/[?#]/)[0].split("/").pop();
+  if (expected && (file === `${expected}.png` || file === `${expected}.webp`) && weatherOf() === "sun") SE.outdoorBirds?.();
+}
+
 /**
  * 背景を差し替える。新しい絵が読み込めてからクロスフェードする（読み込み中に黒や前の絵のまま
  * 新しい場面が始まって見えるのを防ぐ）。戻り値は画像の用意と幕が開き終わるまで待つ。
@@ -299,6 +314,7 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
     curtain?.commitArrival?.(url);
     if (!curtain) sceneArrival.commitArrival(url);
     if (keep) return; // 背景・余白のぼかし・雨は前の場面のまま
+    playOutdoorArrival(sceneArrival.cued, shownUrl, tint);
     weatherBg = shownUrl || "";
     weatherTint = tint || "";
     refreshWeather();

@@ -894,6 +894,10 @@
           "type": "hide_cg"
         },
         {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "数日後のtonari。ドアベルが鳴り、見覚えのある客が友達を連れて入ってきた。"
@@ -962,6 +966,10 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（また、この顔が見たい）"
+        },
+        {
+          "type": "sfx",
+          "id": "doorbell"
         },
         {
           "speaker": "",
@@ -1313,6 +1321,10 @@
       ],
       "branches": {
         "omote_note": [
+          {
+            "type": "sfx",
+            "id": "page"
+          },
           {
             "speaker": "",
             "face": "",

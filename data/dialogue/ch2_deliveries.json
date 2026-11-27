@@ -1441,6 +1441,10 @@
       "dialogue_id": "remake_ch2_kuraudo_melty_greeting",
       "lines": [
         {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
           "speaker": "",
           "face": "normal",
           "text": "入口のベルが鳴った。ピンクと豹柄の店内に、黒いロングコートの裾が入ってくる。"

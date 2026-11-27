@@ -505,6 +505,10 @@
       },
       "lines": [
         {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "昼下がりのPEPPERMINT。ドアベルを鳴らすと、カウンターの奥から声が飛んできた。"
@@ -1120,6 +1124,10 @@
         "bg": "res://assets/backgrounds/bg_tonari_inside.png"
       },
       "lines": [
+        {
+          "type": "sfx",
+          "id": "doorbell"
+        },
         {
           "speaker": "",
           "face": "",

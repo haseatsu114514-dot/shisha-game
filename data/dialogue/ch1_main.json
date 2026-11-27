@@ -486,6 +486,10 @@
           "char_id": "tsumugi"
         },
         {
+          "type": "sfx",
+          "id": "door"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "いつもの時間。いつもの足音。ドアが開くと、外の空気と一緒にコンビニコーヒーの匂いが入ってきた。"
@@ -528,6 +532,10 @@
           "text": "炭をコンロに並べて、赤くなるのを待つ。"
         },
         {
+          "type": "sfx",
+          "id": "crackle"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "蒸らしの間、店内には炭が静かに弾ける音だけが鳴っている。"
@@ -546,6 +554,10 @@
           "speaker": "",
           "face": "",
           "text": "鉄仮面さんは無言でホースを手に取り、ゆっくりと吸い始めた。"
+        },
+        {
+          "type": "sfx",
+          "id": "bubbling"
         },
         {
           "speaker": "",
@@ -1188,6 +1200,10 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "……はい"
+          },
+          {
+            "type": "sfx",
+            "id": "bubbling"
           },
           {
             "speaker": "",

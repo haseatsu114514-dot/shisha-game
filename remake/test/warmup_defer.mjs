@@ -84,7 +84,7 @@ async function loadUi({ loadImage = image => image.onload?.(), imageSize = 0, no
     "gain-notice.js": { gainSeenKey: () => null, bannerHold: () => 2200 },
     "stat-progress.js": { nextStepProgress: () => ({}), stepOfValue: () => 1 },
     "scene-art.js": { renderSceneArt: () => {}, sceneArtUrls: () => [] },
-    "weather.js": { rainScene: () => {}, weatherSkyTone: () => "", weatherViewKind: () => "", renderWeatherLayer: () => {} },
+    "weather.js": { rainScene: () => {}, weatherOf: () => null, weatherSkyTone: () => "", weatherViewKind: () => "", renderWeatherLayer: () => {} },
     "shop-haze.js": { syncShopHaze: () => {} },
     "transitions.js": { createSceneCurtain: () => {}, nightToMorning: () => {}, isCovering: () => false, takeSceneArrival: () => null, takeParkedCover: () => null, smokeArt: () => ({}), smokeIn: async () => {}, smokeOut: async () => {}, dateTypeReady: async () => true, plainDateType: () => {} },
     "store-logos.js": { allStoreLogoUrls: () => STORE_URLS },

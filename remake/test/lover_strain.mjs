@@ -287,10 +287,11 @@ for (const id of STRAIN_IDS) {
   assert.match(allLines(ask).map(l => l.text || "").join(""), /友達に、戻|友に、戻/, `${id}: she says what she is asking for`);
   // やり直しの場面: はじめが申し込み、彼女が受ける（選択肢は無い。申し込むかどうかは再生側の一拍で選ぶ）
   const reunion = dialogues[`strain_reunion_${id}`];
-  assert.ok(reunion.lines.every(line => !line.type && !line.stats && !line.money && !line.affinity), `${id}: no choice and no reward in the reunion`);
-  assert.deepEqual([...new Set(reunion.lines.filter(line => line.speaker).map(line => line.speaker))].sort(), ["hajime", id].sort());
-  assert.match(reunion.lines.find(line => line.speaker === "hajime").text, /もう一度、付き合って/, `${id}: hajime is the one who asks`);
-  assert.equal(reunion.lines.at(-2).speaker, id, `${id}: she gives the answer`);
+  assert.ok(reunion.lines.every(line => (!line.type || line.type === "sfx") && !line.stats && !line.money && !line.affinity), `${id}: no choice and no reward in the reunion`);
+  const textLines = reunion.lines.filter(line => !line.type);
+  assert.deepEqual([...new Set(textLines.filter(line => line.speaker).map(line => line.speaker))].sort(), ["hajime", id].sort());
+  assert.match(textLines.find(line => line.speaker === "hajime").text, /もう一度、付き合って/, `${id}: hajime is the one who asks`);
+  assert.equal(textLines.at(-2).speaker, id, `${id}: she gives the answer`);
   // 予兆のLIME
   const sign1 = strainSignMessage(lover, id, 1, 12), sign2 = strainSignMessage(lover, id, 2, 12);
   assert.equal(sign1.id, `_lover_strain_${id}_s1_t12`);

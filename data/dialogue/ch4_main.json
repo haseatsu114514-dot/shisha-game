@@ -50,6 +50,10 @@
           "text": "（炭の温度より念入りに、全身を測られている）"
         },
         {
+          "type": "sfx",
+          "id": "coal_snip"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "最後に係員がトングを開いた。刃が二枚に分かれるのを見て、ようやく眉がゆるむ。"
@@ -2025,6 +2029,10 @@
           "text": "二人で椅子を上げた。カウンターの端の写真は、立てかけたままだ。"
         },
         {
+          "type": "sfx",
+          "id": "phone_receive"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "最後の一脚で、スマホが震えた。スミさんは椅子を持ったまま、表に返した。"
@@ -3362,6 +3370,10 @@
     {
       "dialogue_id": "ch4_hiyori_dubai_evening",
       "lines": [
+        {
+          "type": "sfx",
+          "id": "phone_receive"
+        },
         {
           "speaker": "",
           "face": "",

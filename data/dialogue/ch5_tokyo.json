@@ -217,6 +217,7 @@
         { "speaker": "hajime", "face": "normal", "text": "福岡のお店は、大丈夫なんですか" },
         { "speaker": "ayatori", "face": "normal", "text": "バイトの子が回してくれてる。たまに「店長、いつ帰るんですか」って来るけど" },
         { "speaker": "ayatori", "face": "normal", "text": "それより、これ。君の分の空欄" },
+        { "type": "sfx", "id": "page" },
         { "speaker": "", "face": "", "text": "綾取がノートを開く。優勝の日の欄の隣に、新しい字が一行だけ増えていた。" },
         { "speaker": "ayatori", "face": "smile", "text": "「予想、外れ。本人は、もっと先まで行った」。……世界の後に書くって、約束したからね" },
         { "speaker": "hajime", "face": "normal", "text": "（予想が外れたことを、嬉しそうに書く人だ）" },

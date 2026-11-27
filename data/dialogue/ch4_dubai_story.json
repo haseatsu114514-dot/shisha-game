@@ -304,6 +304,10 @@
       "comment": "DAY7の夜。tonariで留守番中のスミさんとのビデオ通話（日本は夜中の一時）。スミさんの過去（ドバイの路地裏の店・シェイク）には触れない。第4章ドバイの本筋の夜（SPC27・2026-11-15 オーナー「本筋の補充」で採用）。ch4-progress.js の CH4_STORY_NIGHTS の日以降の夜に、前のものから一つずつ読む（ch4-dubai-daily.js）。好感度・能力・お金は付けない。",
       "lines": [
         {
+          "type": "sfx",
+          "id": "phone"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "夜、宿の部屋でスマホが鳴った。画面に「tonari」と出ている。"
@@ -550,6 +554,10 @@
       "dialogue_id": "ch4_story_yosegaki",
       "comment": "DAY11の夜。tonariの常連さんたちの色紙の写真が、スミさんから届く。鉄仮面さんは「二十分」だけ（ch4_sumi_training の二十分の休憩）。スミさんの「飯」は第3章の出発の朝（ch3_train_departure）と同じ一言。スミさんの過去（ドバイの路地裏の店・シェイク）には触れない。他の選手・審査員の名前を出さない。第4章ドバイの本筋の夜（SPC27 の続き・RLS09 本編・大会を第1章の量に）。ch4-progress.js の CH4_STORY_NIGHTS の日以降の夜に、前のものから一つずつ読む（ch4-dubai-daily.js）。好感度・能力・お金は付けない。",
       "lines": [
+        {
+          "type": "sfx",
+          "id": "phone_receive"
+        },
         {
           "speaker": "",
           "face": "",

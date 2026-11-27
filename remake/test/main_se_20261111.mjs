@@ -1,7 +1,7 @@
 // 本編の効果音 第1弾（2026-11-11）: 録音が読めたら録音で鳴ること、台帳・クレジットがそろっていること。
 // node --experimental-vm-modules remake/test/main_se_20261111.mjs
 import assert from "node:assert/strict";
-import { createHash } from "node:crypto";
+import { createHash, webcrypto } from "node:crypto";
 import fs from "node:fs/promises";
 import vm from "node:vm";
 
@@ -37,7 +37,7 @@ async function boot({ fail = false } = {}) {
     async decodeAudioData(buffer) { return { file: bytes.get(buffer), duration: 4.2 }; }
     addEventListener() {}
   }
-  const context = vm.createContext({ document: { hidden: false, addEventListener() {} }, window: { AudioContext }, console, Math, Promise,
+  const context = vm.createContext({ document: { hidden: false, addEventListener() {} }, window: { AudioContext }, console, Math, Promise, TextDecoder, crypto: webcrypto,
     Date: { now: () => clock.now }, AbortController, setTimeout: () => 0, clearTimeout() {}, setInterval: () => 0, clearInterval() {},
     fetch: async url => {
       if (fail) return { ok: false, status: 404 };

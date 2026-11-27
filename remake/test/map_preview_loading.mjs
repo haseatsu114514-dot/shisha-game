@@ -137,7 +137,7 @@ const overrides = {
   "bus.js": { on: noop },
   "dom-write.js": { setData: noop },
   "stage-fit.js": { syncBackdrop: noop },
-  "weather.js": { isRainy: () => false, tomorrowForecast: () => null, rainScene: () => null, weatherSkyTone: () => "", weatherViewKind: () => "", renderWeatherLayer: noop },
+  "weather.js": { isRainy: () => false, tomorrowForecast: () => null, rainScene: () => null, weatherOf: () => null, weatherSkyTone: () => "", weatherViewKind: () => "", renderWeatherLayer: noop },
   "shop-haze.js": { syncShopHaze: noop },
   "transitions.js": { cueTransition: noop, createSceneCurtain: () => null, nightToMorning: noop, isCovering: () => false, takeSceneArrival: () => ({ commitArrival: noop }), takeParkedCover: () => null, smokeArt: () => ({}), smokeIn: async () => {}, smokeOut: async () => {}, dateTypeReady: async () => true, plainDateType: noop },
   "store-logos.js": { hasStoreLogo: () => false, storeLogo: noop, allStoreLogoUrls: () => [] },

@@ -147,8 +147,8 @@ export function layoutIntro(host, id, variant, intro) {
 }
 
 /** 型ごとの登場。戻り値は止めるための Animation の配列 */
-export function animateIntro(host, id, motion = "sharp", { sound = () => {}, skip = new Set() } = {}) {
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { sound("reduced"); return []; }
+export function animateIntro(host, id, motion = "sharp", { skip = new Set() } = {}) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return [];
   const animations = [];
   // skip: つなぎ（intro-transition.js）が先に見せた部品は動かさない（"background" / "portrait"）
   const skipped = { ".ci-art-background": "background", ".ci-portrait": "portrait" };
@@ -157,7 +157,6 @@ export function animateIntro(host, id, motion = "sharp", { sound = () => {}, ski
     const node = host.querySelector(selector);
     if (node) animations.push(node.animate(frames, { duration: 600, easing: "cubic-bezier(.2,.8,.2,1)", fill: "both", ...options }));
   };
-  const at = (ms, fn) => { const t = setTimeout(fn, ms); animations.push({ cancel: () => clearTimeout(t) }); };
   const textIn = (from, delays, duration, easing) => [".ci-title", ".ci-line", ".ci-flavor"].forEach((selector, i) =>
     animate(selector, from === "none" ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: from }, { opacity: 1, transform: "none" }],
       { duration, delay: delays[i], ...(easing ? { easing } : {}) }));
@@ -183,7 +182,6 @@ export function animateIntro(host, id, motion = "sharp", { sound = () => {}, ski
     }
     animate(".ci-portrait", [{ opacity: 0 }, { opacity: 1 }], { duration: 800, delay: 200, easing: "ease-out" });
     animate(".ci-name-line", [{ opacity: 0 }, { opacity: 1 }], { duration: 1, delay: 600 });
-    at(600, () => sound("name"));
     textIn("none", [700, 900, 1100], 500, "ease-out");
     return animations;
   }
@@ -196,7 +194,6 @@ export function animateIntro(host, id, motion = "sharp", { sound = () => {}, ski
       { opacity: 1, transform: "none" }], { duration: 620, delay: 160 });
     animate(".ci-name-line", [{ opacity: 0, transform: "rotate(-2deg) scale(1.2)" }, { opacity: 1, transform: "rotate(1deg)", offset: .7 },
       { opacity: 1, transform: "none" }], { duration: 360, delay: 420 });
-    at(420, () => sound("name"));
     [".ci-title", ".ci-line", ".ci-flavor"].forEach((selector, i) => animate(selector, [{ opacity: 0, transform: "translateY(26px)" },
       { opacity: 1, transform: "translateY(-6px)", offset: .7 }, { opacity: 1, transform: "none" }], { duration: 440, delay: [480, 700, 900][i] }));
     return animations;
@@ -207,7 +204,6 @@ export function animateIntro(host, id, motion = "sharp", { sound = () => {}, ski
   const ribbonDelay = 130;
   animate(".ci-ribbon", [{ transform: "translateX(1480px) rotate(4deg)" }, { transform: "translateX(-6px) rotate(4deg)", offset: .85 },
     { transform: "rotate(4deg)" }], { duration: fast ? 260 : 300, delay: ribbonDelay });
-  at(ribbonDelay, () => sound("enter"));
   animate(".ci-accent-line", [{ transform: "translateX(-1480px) rotate(4deg)" }, { transform: "rotate(4deg)" }], { duration: 420, delay: 180 });
   animate(".ci-flash", [{ opacity: 0 }, { opacity: .5, offset: .3 }, { opacity: 0 }], { duration: 120, delay: 400, easing: "linear" });
   for (const selector of [".ci-art-background", ".ci-ribbon"]) {

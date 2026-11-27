@@ -737,6 +737,10 @@
           "text": "うん。俺の手に合うやつを、ひとつ"
         },
         {
+          "type": "sfx",
+          "id": "pour"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "ローテーブルに、形の違うカップが二つ並ぶ。ましろちゃんが、ゆっくり紅茶を注いだ。"
@@ -1780,6 +1784,10 @@
           "flag": "_lime_contact_noor"
         },
         {
+          "type": "sfx",
+          "id": "phone_receive"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "夕日の中で、二人のスマホが小さく鳴った。"
@@ -1852,6 +1860,10 @@
         {
           "type": "set_flag",
           "flag": "_lime_contact_noor"
+        },
+        {
+          "type": "sfx",
+          "id": "phone_receive"
         },
         {
           "speaker": "",

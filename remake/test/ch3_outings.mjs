@@ -223,7 +223,7 @@ function nextWindow(value) {
   assert.deepEqual(Object.keys(byId).sort(), [...OUTING_DIALOGUE_IDS].sort());
   for (const dialogue of data.dialogues) {
     const lines = [...dialogue.lines, ...Object.values(dialogue.branches || {}).flat()];
-    assert(lines.every(line => line.type === "condition" || line.type === "choice" || !line.type),
+    assert(lines.every(line => !line.type || ["condition", "choice", "sfx"].includes(line.type)),
       `${dialogue.dialogue_id}: no reward/meeting control lines`);
     assert(!lines.some(line => line.type === "set_flag" || line.type === "apply"));
   }
@@ -532,10 +532,11 @@ function nextWindow(value) {
   for (const id of [...rainIds, "ch3_tokyo_room_rest_rain"]) {
     const scene = byId[id];
     assert(scene, id);
-    assert(scene.lines.length >= 12, `${id}: a full scene, not a stub`);
-    assert(scene.lines.every(line => !line.type && typeof line.text === "string" && line.text.length > 0));
+    const lines = scene.lines.filter(line => line.type !== "sfx");
+    assert(lines.length >= 12, `${id}: a full scene, not a stub`);
+    assert(lines.every(line => !line.type && typeof line.text === "string" && line.text.length > 0));
     assert.equal(scene.metadata, undefined, `${id}: no extra reward or background override`);
-    assert.match(scene.lines.map(line => line.text).join("\n"), /雨|傘/, `${id}: reads as a rainy day`);
+    assert.match(lines.map(line => line.text).join("\n"), /雨|傘/, `${id}: reads as a rainy day`);
   }
   for (const id of ["ch3_outing_mukai_help_rain", "ch3_outing_mukai_help_rain_b", "ch3_tokyo_room_rest_rain"]) {
     assert(byId[id].lines.filter(line => line.speaker === "mukai_master").length >= 3, `${id}: Mukai speaks`);
@@ -708,11 +709,12 @@ console.log("PASS: park day/night rotation, old saves, SAVE/LOAD and duplicate c
   assert.deepEqual(Object.keys(byId).sort(), [...HOME_CALL_IDS].sort());
   for (const { scene: id, from } of HOME_CALLS) {
     const scene = byId[id];
-    assert(scene.lines.length >= 12, `${id}: a full scene, not a stub`);
-    assert(scene.lines.every(line => !line.type && typeof line.text === "string" && line.text.length > 0));
+    const lines = scene.lines.filter(line => line.type !== "sfx");
+    assert(lines.length >= 12, `${id}: a full scene, not a stub`);
+    assert(lines.every(line => !line.type && typeof line.text === "string" && line.text.length > 0));
     assert.equal(scene.metadata, undefined, `${id}: no reward or background override`);
-    if (id !== "ch3_home_call_sumi_pocket") assert(scene.lines.filter(line => line.speaker === from).length >= 4, `${id}: ${from} speaks`);
-    const text = scene.lines.map(line => line.text).join("\n");
+    if (id !== "ch3_home_call_sumi_pocket") assert(lines.filter(line => line.speaker === from).length >= 4, `${id}: ${from} speaks`);
+    const text = lines.map(line => line.text).join("\n");
     assert.doesNotMatch(text, /大会|ダブルアップル|舌|なるさん/, `${id}: readable before and after the taste returns, apart from the story`);
     assert.match(text, /スマホ|電話|通話/, `${id}: reads as a call`);
   }
