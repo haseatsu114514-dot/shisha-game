@@ -96,10 +96,11 @@ async function revisitPurikura(background, spot, { live, read, stamp }) {
   if (shoot) {
     const guests = purikuraGuests(spot);
     if (!await read(guests.length ? "remake_ch2_purikura_match" : "remake_ch2_purikura_choose")) return false;
-    const partner = await modal({ title: "誰と撮る？", body: guests.length ? "あげはのおすすめは、居合わせた知り合いとの2ショット。あげはとも、一人でも撮れます。" : "あげはと2ショットか、一人で撮るか。", options: [
+    // ソロは、あげはから勧めない。はじめが言い出して驚かれる（2回目からは「ソロプリハマっちゃったんだね」と笑われる・PFC23）。
+    const partner = await modal({ title: "誰と撮る？", body: guests.length ? "あげはのおすすめは、居合わせた知り合いとの2ショット。あげはとも撮れます。" : "あげはは、2ショットのつもりでいる。", options: [
       ...guests.map((person, i) => ({ label: `${person.name}と撮る`, value: person.id, test: `purikura-with-${person.id}`, primary: i === 0 })),
       { label: "あげはと撮る", value: "pair", test: "purikura-pair", primary: !guests.length },
-      { label: "一人で撮る", value: "solo", test: "purikura-solo" },
+      { label: "一人で撮りたい", value: "solo", test: "purikura-solo" },
       { label: "やっぱり撮らない", value: null, test: "purikura-guest-back" },
     ] });
     if (!live()) return false;
@@ -117,10 +118,11 @@ async function revisitPurikura(background, spot, { live, read, stamp }) {
     // 神崎と初めて撮る回は、職人プリ（記念品）の場面。2回目からは、神崎の写真（あげはが入る3人の一枚も）から選ぶ。
     const ryuji = people.includes("kumicho") && !(state.keepsakes || []).includes("ryuji_purikura");
     const pick = ryuji ? null : pickPurikuraPhoto(mode === "solo" ? "solo" : people[1]);
-    const scene = ryuji ? "remake_ch2_purikura_ryuji" : pick?.trio ? "remake_ch2_purikura_trio" : `remake_ch2_purikura_${mode}`;
+    const firstSolo = mode === "solo" && !(state.flags._ageha_purikura_history || []).some(row => row?.mode === "solo");
+    const scene = ryuji ? "remake_ch2_purikura_ryuji" : pick?.trio ? "remake_ch2_purikura_trio"
+      : mode === "solo" && !firstSolo ? "remake_ch2_purikura_solo_again" : `remake_ch2_purikura_${mode}`;
     if (!await read(scene)) return false;
     const cg = ryuji ? "cg_ryuji_purikura" : pick?.cg || null;
-    const firstSolo = mode === "solo" && !(state.flags._ageha_purikura_history || []).some(row => row?.mode === "solo");
     const title = mode === "solo" ? (firstSolo ? "一人で初挑戦！" : "今日のソロぷり") : pick?.trio ? "3人ぷり☆" : "今日のプリクラ";
     const received = await modal({ title, body: purikuraPhoto(cg, people, mode, id => displayName(id, state)), options: [
       { label: "受け取る（400円）", value: true, test: "purikura-receive", primary: true },

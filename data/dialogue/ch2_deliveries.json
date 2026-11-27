@@ -1242,7 +1242,7 @@
     },
     {
       "dialogue_id": "remake_ch2_purikura_match",
-      "comment": "撮ると決めた後、居合わせた知り合いがいる時の、あげはのおすすめ（PFC19）。相手は呼出元の選択肢で選ぶ（知り合い／あげは／一人）。",
+      "comment": "撮ると決めた後、居合わせた知り合いがいる時の、あげはのおすすめ（PFC19）。相手は呼出元の選択肢で選ぶ（知り合い／あげは／一人）。ソロは、あげはから勧めず、はじめが言い出して驚かれる（PFC23）。",
       "lines": [
         {
           "speaker": "ageha",
@@ -1252,18 +1252,18 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "せっかくだし、一緒に撮ってけばいいじゃん。もちろん、うちとでもソロでもいいよ♡"
+          "text": "せっかくだし、一緒に撮ってけばいいじゃん。もちろん、うちとでもいいよ♡"
         }
       ]
     },
     {
       "dialogue_id": "remake_ch2_purikura_choose",
-      "comment": "撮ると決めた後、居合わせた知り合いがいない時（PFC19）。相手は呼出元の選択肢で選ぶ（あげは／一人）。",
+      "comment": "撮ると決めた後、居合わせた知り合いがいない時（PFC19）。あげはは自分と撮るつもりで、ソロは勧めない（はじめが言い出す・PFC23）。相手は呼出元の選択肢で選ぶ（あげは／一人）。",
       "lines": [
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "おっけー！ 今日はうちと撮る？ それとも、ソロで攻める？"
+          "text": "おっけー！ じゃ、今日もうちと撮ろ♡"
         }
       ]
     },
@@ -1289,6 +1289,37 @@
           "speaker": "ageha",
           "face": "smile",
           "text": "プリクラの自主練って何！ じゃ、落書きはうちが盛っとくね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_purikura_solo_again",
+      "comment": "2回目からのソロ（PFC23 オーナー「2回目以降はソロプリハマっちゃったんだねって笑われる」）。初回は remake_ch2_purikura_solo（はじめが言い出して驚かれる）。",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……今日も、一人で撮ってきていいですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "またソロプリ！？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "あはは、ハジメっち、ソロプリハマっちゃったんだね！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "画面に追いつけるようになってきたら、つい……"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "いいじゃんいいじゃん。落書きは、今日もうちが盛っとくね♡"
         }
       ]
     },

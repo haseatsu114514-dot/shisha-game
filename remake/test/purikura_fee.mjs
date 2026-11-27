@@ -266,5 +266,19 @@ await check('PFC22 judges are never offered as purikura partners; other acquaint
  assert.equal(tests(f.log.filter(l=>l.title==='誰と撮る？').at(-1)),'purikura-pair,purikura-solo,purikura-guest-back','only judges present: Ageha offers herself or solo');
  assert.equal(f.log.filter(l=>l.id==='remake_ch2_purikura_choose').length,1);
 });
+// PFC23: ソロはあげはから勧めない。はじめが言い出して驚かれ、2回目からは「ソロプリハマっちゃったんだね」と笑われる。
+await check('PFC23 solo is Hajime’s idea: Ageha never suggests it; first solo surprises her, later ones make her laugh',async f=>{
+ const dialogue=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch2_deliveries.json',import.meta.url),'utf8')).dialogues;
+ const text=id=>dialogue.find(d=>d.dialogue_id===id).lines.map(l=>l.speaker+':'+l.text).join('\n');
+ for(const id of ['remake_ch2_purikura_invite','remake_ch2_purikura_match','remake_ch2_purikura_choose'])assert.doesNotMatch(text(id),/ソロ|一人/,id);
+ assert.match(text('remake_ch2_purikura_solo'),/^hajime:.*一人で撮って/m);assert.match(text('remake_ch2_purikura_solo'),/ageha:.*ソロプリ！？/);
+ assert.match(text('remake_ch2_purikura_solo_again'),/ハマっちゃったんだね/);
+ f.state.money=999999;f.setMode('solo');
+ for(let n=0;n<3;n++){assert.equal(await f.offer(),true);f.next();}
+ const scenes=f.log.filter(l=>/^remake_ch2_purikura_solo/.test(l.id||'')).map(l=>l.id);
+ assert.equal(scenes.join(','),'remake_ch2_purikura_solo,remake_ch2_purikura_solo_again,remake_ch2_purikura_solo_again');
+ const solo=f.log.find(l=>l.title==='誰と撮る？').options.find(o=>o.test==='purikura-solo');
+ assert.equal(solo.label,'一人で撮りたい');assert.notEqual(solo.primary,true,'Ageha never recommends solo');
+});
 console.log(JSON.stringify({groups,failures,scope:'actual offer/keepsakes/travel/photo and actual addMoney; controlled VM/state/VN/UI/Map-JSON, not browser/menu LOAD'}));
 if(failures)process.exitCode=1;
