@@ -354,11 +354,14 @@ export function runDesertRide(options = {}) {
 
 function startDesertRide({ host = document.getElementById("stage"), signal = null, tutorial = false, startRival = null, best = null, legacyBest = null, seed, courseId, rivals = ["noor"],
   tiers = TIERS, tier = "normal", cleared = [], tierNotes = null, easyBest = null, bests = null, onTier = null,
-  reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = "ヌール", speedUp = 1 } = {}) {
+  reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = "ヌール", speedUp = 1, layout = "landscape" } = {}) {
+  // layout: "portrait" は縦画面の試作（remake/previews/portrait-stage/frame/desert.html）だけが渡す。画面の並べ方は data-layout を見るCSSが決め、
+  // 規則・採点・描く中身は横と同じ。縦では横向きの案内（回転ガード）を見張らない。既定（横）の動きは変えない。
+  const portrait = layout === "portrait";
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   if (signal?.aborted) return Promise.resolve({ results: [], practiced: false });
-  installRotateGuard(); // 本編では起動時、単体試遊ではここで回転案内を見張る。
+  if (!portrait) installRotateGuard(); // 本編では起動時、単体試遊ではここで回転案内を見張る。
   const bgmBefore = currentBgm();
   let rideBgm = null;
   const restoreBgm = () => { if (rideBgm && currentBgm() === rideBgm) playBgm(bgmBefore); };
@@ -380,7 +383,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     let chosenTier = openTiers.includes(tier) ? tier : openTiers[openTiers.length - 1];
     const clearedTiers = new Set(Array.isArray(cleared) ? cleared.filter(t => TIERS.includes(t)) : []);
     const freshTiers = new Set();
-    const root = el("section.desert-ride", { dataset: { test: "desert-ride", phase: "menu", reducedMotion: String(!!reducedMotion) }, tabindex: "-1", "aria-label": "DESERT RIDE" });
+    const root = el("section.desert-ride", { dataset: { test: "desert-ride", phase: "menu", reducedMotion: String(!!reducedMotion), ...(portrait ? { layout: "portrait" } : {}) }, tabindex: "-1", "aria-label": "DESERT RIDE" });
     const canvas = el("canvas.dr-canvas", { width: W, height: H, "aria-hidden": "true" });
     const ctx = canvas.getContext("2d");
     // HUD の上に重ねる面: ゲージへ飛ぶ光の粒（2026-11-13）。画面の砂・人物は下の canvas
@@ -423,7 +426,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       input.left = input.right = false;
       for (const release of releaseButtons) release();
     };
-    const isInterrupted = () => document.hidden || rotateGuarded();
+    const isInterrupted = () => document.hidden || (!portrait && rotateGuarded());
     let pose = "rider";
     let paused = false, pauseDialog = null;
     const isPaused = () => paused || pauseDialog?.open;
@@ -455,6 +458,12 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     // show: 切り込んでいる間 1 へ、離すと 0 へなめらかに（押したり離したりで砂の幕がぱっと消えないように）
     let carveFx = { heat: 0, chain: 0, off: 9, maxed: false, glints: [], runs: [], show: 0 };
     const view = { depth: CAM.depth, back: CAM.back, roll: 0, kick: 0, rise: 0 };
+    // 縦では、横長の絵の左右を切って真ん中だけを見せる（css の側）。見えている幅の半分（絵の画素）を持ち、人物の横の字をその内側に置く。横は絵の幅いっぱい
+    let safeHalf = W / 2;
+    if (portrait && typeof ResizeObserver !== "undefined") {
+      const watch = new ResizeObserver(() => { const shown = canvas.clientWidth; safeHalf = shown > 0 ? W / 2 * Math.min(1, root.clientWidth / shown) : W / 2; });
+      watch.observe(root); watch.observe(canvas);
+    }
     let fxShots = [];                       // 一度きりの絵の演出（踏み切りの砂の柱・着地の砂）。人物の足元の点に置く
     const riderPx = { unit: 120, lift: 0 }; // 人物の 1m の画素と、地面から持ち上げて描いている量（drawPlayerBody が毎コマ更新）
     let fxDt = 1 / 60;                      // 砂を出す量の計算に使う、直前のコマの長さ // 速さで広がる視界。back を depth に比例させ、人物の大きさは変えない
@@ -2102,7 +2111,8 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     }
     function drawGround(dusk, painted = false) {
       const camZ = game.z - view.back;
-      const camX = game.x * 0.6; // カメラは人物の横位置の6割だけ追う（端へ行くと画面も少し寄る）
+      // カメラは人物の横位置の6割だけ追う（端へ行くと画面も少し寄る）。縦は見える幅が狭いので、人物が端で切れないよう多めに追う
+      const camX = game.x * (portrait ? 0.75 : 0.6);
       if (!painted) {
         ctx.fillStyle = mixColor([238, 210, 160], [238, 170, 112], dusk);
         ctx.fillRect(-GROUND_BLEED, HORIZON, W + GROUND_BLEED * 2, H - HORIZON + GROUND_BLEED);
@@ -3233,14 +3243,16 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       ctx.textBaseline = "middle"; ctx.lineJoin = "round";
       const colors = { trick: "#ffe27a", perfect: "#fff1a8", good: "#c6f0ff", near: "#ffd4a8", smash: "#ffb07a", gauge: "#ffcf5a", race: "#ffe27a", jump: "#ffffff", recover: "#9dffb0", carve: "#ffd75a", behind: "#d6dcf0" };
       // 人物の右上に、新しいものほど下へ積む（真ん中の大きな文字と HUD に重ねない）
-      const left = p.x > W * 0.62;
-      ctx.textAlign = left ? "right" : "left";
+      // 縦は横に字を置く幅が無いので、人物と反対の側の、見えている端に寄せて出す（端で切れない）
+      const left = portrait ? p.x > W / 2 : p.x > W * 0.62;
+      const edge = portrait ? W / 2 + (left ? -1 : 1) * (safeHalf - 30) : null;
+      ctx.textAlign = portrait ? (left ? "left" : "right") : left ? "right" : "left";
       floaters.forEach((f, i) => {
         const k = f.age / f.life, size = f.kind === "trick" || f.kind === "race" || f.kind === "carve" ? 32 : 24;
         ctx.globalAlpha = k < 0.15 ? k / 0.15 : 1 - Math.max(0, (k - 0.6) / 0.4);
         ctx.font = `900 ${size}px ${fontFamily()}`;
         const row = floaters.length - 1 - i;
-        const x = p.x + (left ? -1 : 1) * unit * 0.9, y = Math.max(190, p.y - unit * 1.2 - row * 34 - k * 40);
+        const x = edge ?? p.x + (left ? -1 : 1) * unit * 0.9, y = Math.max(190, p.y - unit * 1.2 - row * 34 - k * 40);
         ctx.lineWidth = 6; ctx.strokeStyle = "rgba(70,34,20,0.75)"; ctx.strokeText(f.text, x, y);
         ctx.fillStyle = colors[f.kind] || "#fff"; ctx.fillText(f.text, x, y);
       });

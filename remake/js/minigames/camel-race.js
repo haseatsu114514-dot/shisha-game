@@ -7,7 +7,7 @@
 // ラクダ・ロボット騎手・SUV・車輪は Codex の絵（assets/ui/camel_race・2026-11-02 採用。原画は asset_sources/ch4-camel-race）。
 // 絵が読めない環境では Canvas の描画に戻す。砂漠・柵・砂煙・合図の輪・HUD は Canvas で描く。
 import { withMinigameStyles } from "./minigame-styles.js";
-import { installRotateGuard, rotateGuarded } from "../core/rotate-guard.js";
+import { installRotateGuard, rotateGuarded as rotateGuardedNow } from "../core/rotate-guard.js";
 import { el } from "../core/util.js";
 import { TIER_LABEL, TIER_RULE_LINE, PLAY_RULES } from "../core/play-tiers.js";
 import { SE, currentBgm, playBgm, preloadBgm, unlockAudio, playCamelRaceSe, preloadCamelRaceSe, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
@@ -542,7 +542,12 @@ export function runCamelRace(options = {}) {
 }
 
 function startCamelRace({ host = document.getElementById("stage"), signal = null, seed = null, tutorial = true, allowRetry = true,
-  pilot = null, timeScale = 1, best = null, cups = null, cupRecords = {}, debugTools = false, reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches } = {}) {
+  pilot = null, timeScale = 1, best = null, cups = null, cupRecords = {}, debugTools = false, reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches,
+  layout = "landscape" } = {}) {
+  // layout: "portrait" は縦画面の試作（remake/previews/portrait-stage/frame/camel.html）だけが渡す。並べ方は data-layout を見るCSSが決め、
+  // 規則・採点・描く中身は横と同じ。縦では横向きの案内（回転ガード）を見張らない。既定（横）の動きは変えない。
+  const portrait = layout === "portrait";
+  const rotateGuarded = () => !portrait && rotateGuardedNow();
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   const pilotPolicy = typeof pilot === "function" ? pilot : pilot ? POLICIES[pilot] : null;
@@ -557,7 +562,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     return { completed, cancelled: !completed, runs: runs.map(run => ({ ...run })), best: bestRun ? { ...bestRun } : null, last: runs.length ? { ...runs.at(-1) } : null };
   };
   if (signal?.aborted) return Promise.resolve(summary(false));
-  installRotateGuard();
+  if (!portrait) installRotateGuard();
   let finish;
   const promise = new Promise(resolve => { finish = resolve; });
   active.set(host, promise);
@@ -625,7 +630,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   const stageNode = el("div.camel-stage", [canvas, flashNode, hudNode, callNode, feedback, banner, countdownNode, boostLabel, controls, closeButton, pauseButton]);
   const sheet = el("div.camel-sheet", { hidden: true });
   const root = el("section.camel-game", { role: "dialog", "aria-modal": "true", "aria-label": CAMEL_RACE_TITLE, tabindex: "-1",
-    dataset: { test: "camel-game", phase: "loading", reducedMotion: String(reducedMotion) } }, [stageNode, live, sheet]);
+    dataset: { test: "camel-game", phase: "loading", reducedMotion: String(reducedMotion), ...(portrait ? { layout: "portrait" } : {}) } }, [stageNode, live, sheet]);
   host.append(root);
   // 音の解禁はユーザー操作が起点（自動再生制限）。本編は main.js が全体で受けているが、
   // 試遊ページ等の単独表示でも BGM・SE が鳴るよう、レース画面自身の操作でも解禁する（#3065）。
