@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ja" data-ui-theme="paper">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f2a2a">
+  <title>ボドゲカフェ・小さな卓の冒険（縦画面の試作）｜水煙前線 -EN:CODE-</title>
+  <!-- 本編の音（assets/audio/…）はページからの相対で読むので、基準を本編のページと同じ remake/ に置く -->
+  <base href="../../../">
+  <link rel="icon" href="../icon.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/trpg.css">
+  <link rel="stylesheet" href="css/ui-paper.css">
+  <link rel="stylesheet" href="css/settings.css">
+  <link rel="stylesheet" href="css/phone-density.css">
+  <link rel="stylesheet" href="previews/portrait-stage/frame/frame.css">
+  <link rel="stylesheet" href="previews/portrait-stage/frame/trpg.css">
+</head>
+<body>
+  <!-- 縦画面の試作: 本編のボドゲカフェ（短編TRPG）を縦の画面で動かす。物語・台詞・判定・絵は本編のまま、並べ方だけ trpg.css で縦にする。進行・保存には触れない。 -->
+  <div id="viewport"><div id="stage"><main id="trpg-app" aria-label="小さな卓の冒険・短編TRPG" tabindex="-1"><p class="trpg-loading">小さな卓を用意しています……</p></main></div></div>
+  <script type="module" src="previews/portrait-stage/frame/trpg.mjs"></script>
+</body>
+</html>
