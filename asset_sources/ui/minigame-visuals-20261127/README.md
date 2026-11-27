@@ -40,3 +40,35 @@ OpenAI の画像 API（`gpt-image-2.6-sunburst`）で生成した原画と、送
 - **組み込み**: `remake/css/tonari-floor.css` の「開店前・休止・精算の窓の見た目」（TFL67）。
 - 原画の SHA-256（先頭16桁）: `frame` 942047f941c64e6c, `ornament` e60626ea4815baa7, `ribbon` 883cfbdaf9987a4a
 
+## 斧投げ — `axe/`
+
+採用 4 枚（生成 4 枚）。オーナー「斧投げとボドゲも頼む」（AXV01）。
+
+| 原画（`axe/originals/`） | 使う所 | ゲームの絵 |
+|---|---|---|
+| `how_aim.png` | 遊び方の図解「ねらう」（横と縦の線が赤い中心で交わる） | `remake/img/ui/axe_throw/howto/how_aim.webp` |
+| `how_throw.png` | 遊び方の図解「投げる」（手元の斧と、上へ弾く矢印） | `…/how_throw.webp` |
+| `how_score.png` | 遊び方の図解「得点」（刃が赤い中心に刺さる） | `…/how_score.webp` |
+| `how_killshot.png` | 遊び方の図解「キルショット」（青い点に刺さる） | `…/how_killshot.webp` |
+
+- **変換**: 1536×1024 → 768×512 の WebP（quality 86）。
+- **参照画像**: 斧投げの実画面（レーンと的）・的の切り出し・斧の絵を渡して、木のレーン・的の輪と赤青の点・斧の形をそろえた（`axe/prompts.md`）。
+- **検品**: 人物は手だけ（顔なし）／文字・数字なし（実物の的にある 1〜4 の数字は入れていない）／的の輪・赤い点・青い点の並びは実物と同じ／斧の刃と柄のつながりに崩れなし／実画面のレーンと並べて確認。シーシャの機材は写っていない。
+- **組み込み**: `remake/js/minigames/axe-rules.js` の `HOW_CARDS`、`remake/css/axe-throw.css` の「遊び方の図解」。
+- 原画の SHA-256（先頭16桁）: `how_aim` 2d01e9a07476156a, `how_throw` 9544f0db51cc9902, `how_score` 654bef0b970bffe6, `how_killshot` e7b5b50ed827170a
+
+## ボドゲカフェ（TRPG）— `trpg/`
+
+採用 2 枚（生成 2 枚）。オーナー「斧投げとボドゲも頼む」（TRP10）。
+
+| 原画（`trpg/originals/`） | 使う所 | ゲームの絵 |
+|---|---|---|
+| `book_locked.png` | 本棚の未解放の本の札（鎖と錠の掛かった本） | `remake/img/ui/trpg/book-locked.webp` |
+| `dice_icon.png` | マイダイスを買う札の絵（透過） | `remake/img/ui/trpg/icon-dice.webp` |
+
+- **変換**: 本は 768×512 の WebP（quality 86）。ダイスは透過の余白を切り落として 256×256 の WebP（quality 92）。
+- **参照画像**: 本棚の実画面と TRPG の場面絵を渡して、深い青緑と真鍮の配色・背景の描き方をそろえた（`trpg/prompts.md`）。
+- **検品**: 文字・数字なし（本の表紙に題字なし。ダイスの面は星と点だけで、数字は入れていない）／鎖と錠のつながりに崩れなし／透過の縁に色のにじみなし／実画面で他の本の札と並べて確認。
+- **組み込み**: `remake/css/trpg-theme.css` の「本棚の文字を減らし、印と顔で見せる」（TRP10）。
+- 原画の SHA-256（先頭16桁）: `book_locked` f2dd53fffecad4d0, `dice_icon` c4ae0219c3887db9
+

@@ -207,7 +207,18 @@ await suite("axe-throw", async run => {
     const help=page.locator('[data-test="axe-rules-panel"]');await help.waitFor();
     assert.match(await help.textContent(),/外れ・落下でも1回/);assert.match(await help.textContent(),/外側4か所にも5のリングと赤い6点/);
     assert.match(await help.textContent(),/構え直しても回数は戻らない/);
+    // 2026-11-27 オーナー「文字で説明しすぎずUIやボタンで視覚的に」: 開いた時は図解の4枚だけ。文章のルールは「くわしいルール」を押した時に出て、長い文は窓の中で送れる
+    const cards=await help.locator('[data-test="axe-how-card"]').evaluateAll(nodes=>nodes.map(n=>({how:n.dataset.how,title:n.querySelector('.axe-how-title').textContent,note:n.querySelector('.axe-how-note').textContent,
+      fits:n.querySelector('.axe-how-note').scrollWidth<=n.querySelector('.axe-how-note').clientWidth+1,seen:n.getBoundingClientRect().height>40})));
+    assert.deepEqual(cards.map(c=>c.how),['aim','throw','score','killshot']);
+    assert.deepEqual(cards.map(c=>c.title),['ねらう','回転を決める','得点','キルショット'],'the gauge mode names the third step by its gauge');
+    assert(cards.every(c=>c.fits&&c.seen&&c.note.length<=12),JSON.stringify(cards));
+    assert.equal(await help.locator('.axe-rules-scroll > section').first().isVisible(),false,'the written rules stay folded until asked');
     if(shotsPath)await page.screenshot({path:shotsPath+'/'+label+'-top.png'});
+    await press(page,'[data-test="axe-rules-more"]',touch);
+    assert.equal(await help.locator('[data-test="axe-rules-more"]').textContent(),'図解にもどる');
+    assert.equal(await help.locator('[data-test="axe-how-cards"]').isVisible(),false);
+    assert.equal(await help.locator('.axe-rules-scroll > section').first().isVisible(),true);
     const scroll=help.locator('.axe-rules-scroll');await scroll.evaluate(n=>n.scrollTop=n.scrollHeight);
     assert(await scroll.evaluate(n=>n.scrollTop>0&&n.scrollWidth<=n.clientWidth));
     const bounds=await help.locator('.axe-rules-card').boundingBox(),view=page.viewportSize();

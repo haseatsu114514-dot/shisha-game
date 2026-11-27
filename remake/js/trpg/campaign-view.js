@@ -41,12 +41,23 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
   let disposed = false, resources = null, busy = false, completed = false, root = null, entrance = null, lastGain = null;
   let resolveFinished;
   const finished = new Promise(r => { resolveFinished = r; });
+  // text は文字列か、[見せる字, 読み上げだけの字…] の並び（quiet で包んだ所は字を出さない。textContent は前と同じ）
   const button = (text, test, action, disabled = false) => el("button.trpg-button", {
-    type: "button", text, disabled, dataset: { test }, onclick: () => {
+    type: "button", disabled, dataset: { test }, onclick: () => {
       if (getState() !== owner) { close(); return; }
       if (!disposed && !busy) action();
     },
-  });
+  }, [].concat(text));
+  const quiet = text => el("span.trpg-quiet", { text });
+  // 本の札のボタン（2026-11-27 オーナー「文字で説明しすぎずUIやボタンで視覚的に」・TRP10）: 頭に印（CSS）を付け、見せる字を短くする
+  // 見せる字は2文字にそろえる（横持ちスマホの細い札でも1行に収まる）。「もう一度」は印（↻）で、しおりの2つは「続き」「最初」
+  const SHELF_LABELS = { "この仲間で遊ぶ": () => [quiet("この仲間で"), "遊ぶ"], "もう一度遊ぶ": () => [quiet("もう一度"), "遊ぶ"], "続きから遊ぶ": () => ["続き", quiet("から遊ぶ")],
+    "最初から": () => ["最初", quiet("から")], "絵本をみる": () => ["絵本", quiet("をみる")] };
+  const shelfButton = (label, kind, test, action, disabled = false) => {
+    const node = button(SHELF_LABELS[label]?.() || label, test, action, disabled);
+    node.dataset.kind = kind; node.setAttribute("aria-label", label);
+    return node;
+  };
   function close() {
     if (disposed) return;
     disposed = true; abort.abort(); root?.remove(); entrance?.cancel();
@@ -143,6 +154,12 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         [...(club.branches[foundingChoice] || []), ...club.branches.founded].map(clubLine)));
       justFounded = false;
     }
+    const castFace = id => {
+      const src = portraitUrl(manifest, id);
+      // 顔の切り出しは部員の札と同じ（.trpg-campaign-face の寸法で計算しているので、同じ箱を縮めて使う）
+      return src ? el("span.trpg-campaign-face.trpg-cast-face", { title: name(id) }, el("img", { src, alt: "", style: faceIconStyle(id, undefined, manifest) }))
+        : el("span.trpg-cast-face.trpg-cast-initial", { title: name(id), text: [...name(id)][0] || "?" });
+    };
     const party = el("div.trpg-campaign-party", { "aria-label": "仲間の今夜の予定" });
     for (const person of catalog.participants.filter(p => state?.met?.[p.id])) {
       const status = participantStatus(state, person);
@@ -228,12 +245,14 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
             else render("購入できませんでした。所持金と入荷状況を確認してください。");
           }, readOnly || spendableMoney(state) < book.price));
       } else {
+        // 今夜の卓は、名前の列の代わりに顔を並べる（名前は title と読み上げ用に残す。顔の絵が無い人は頭文字の丸）
         copy.append(el("p.trpg-campaign-book-cast", { title: cast.ok ? "今夜の卓：" + cast.participants.map(name).join("・") : cast.reason, dataset: { ok: String(!!cast.ok) },
-        }, cast.ok ? [el("span", { text: "今夜の卓：" }), cast.participants.map(name).join("・")] : [cast.reason]),
+        }, cast.ok ? [el("span", { text: "今夜の卓：" }), el("span.trpg-cast-names", { text: cast.participants.map(name).join("・") }),
+          el("span.trpg-cast-faces", { "aria-hidden": "true" }, cast.participants.map(castFace))] : [cast.reason]),
           el("small.trpg-campaign-book-time", { text: scenario.duration }), ...playButtons(book, scenario, cast, "この仲間で遊ぶ"));
       }
       if (owned && state.chapter >= catalog.unlockChapter && progress.ok && hasPictureBook(scenario)) {
-        const read = button("絵本をみる", "trpg-picturebook-" + book.id, () => readPictureBook(scenario));
+        const read = shelfButton("絵本をみる", "book", "trpg-picturebook-" + book.id, () => readPictureBook(scenario));
         read.classList.add("trpg-picturebook-open");
         copy.append(read);
       }
@@ -276,12 +295,13 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     const state = getState();
     const { mark, ok, reason } = cast.ok ? trpgBookmarkFor(state, scenario, cast.assignments) : { mark: null };
     const off = readOnly || !cast.ok;
-    if (!mark) return [button(label, "trpg-play-" + book.id, () => play(scenario), off)];
+    const kind = label === "もう一度遊ぶ" ? "replay" : "play";
+    if (!mark) return [shelfButton(label, kind, "trpg-play-" + book.id, () => play(scenario), off)];
     const note = el("p.trpg-campaign-bookmark", { dataset: { test: "trpg-bookmark-" + book.id },
       text: "しおり：" + (mark.title || "途中") + (ok ? "" : " · " + reason) });
-    return ok ? [note, button("続きから遊ぶ", "trpg-resume-" + book.id, () => play(scenario, { resume: true }), off),
-      button("最初から", "trpg-play-" + book.id, () => play(scenario), off)]
-      : [note, button(label, "trpg-play-" + book.id, () => play(scenario), off)];
+    return ok ? [note, shelfButton("続きから遊ぶ", "play", "trpg-resume-" + book.id, () => play(scenario, { resume: true }), off),
+      shelfButton("最初から", "replay", "trpg-play-" + book.id, () => play(scenario), off)]
+      : [note, shelfButton(label, kind, "trpg-play-" + book.id, () => play(scenario), off)];
   }
 
   async function readPictureBook(scenario) {
