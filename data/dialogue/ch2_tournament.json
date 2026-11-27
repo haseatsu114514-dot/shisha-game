@@ -8,7 +8,67 @@
         {
           "speaker": "",
           "face": "",
-          "text": "県大会の控室。鞄からエプロンを出して、首にかけたところで手が止まった。"
+          "text": "県大会の朝。会場は、試煙会の店と同じビルの、別の階のホールだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付で渡された進行表に、出場する四つの店の名前が並んでいる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "MELTY PUFF、神崎煙草店、「貴方ノ為ノ此ノ煙。」。三つとも、柚ヶ谷の店だ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の一行だけが、柚ヶ谷の外。商店街の、tonari。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（上位は毎年、ほとんど柚ヶ谷の店主。……初日に、スミさんが言ってた）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーには、もう苺の匂いが漂っていた。受付の横に、課題の葉の箱が積んである。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（匂いは、ちゃんと分かる。あとは、舌だけだ）"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_stk_kemuri_thermo_borrowed",
+          "next_true": "lobby_thermo"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "kumicho",
+          "next_true": "lobby_kanzaki_known",
+          "next_false": "lobby_kanzaki_first"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "kuraudo",
+          "next_true": "lobby_kuraudo_known",
+          "next_false": "lobby_kuraudo_first"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんな、もう自分の一台の前にいるみたいだった。鞄を抱え直して、控室へ入る。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "控室の隅で、鞄からエプロンを出して、首にかけたところで手が止まった。"
         },
         {
           "speaker": "",
@@ -110,6 +170,51 @@
             "face": "normal",
             "text": "分かりました。……終わったら、水、持っていきます"
           }
+        ],
+        "lobby_thermo": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "鞄の内ポケットで、博士に借りた温度計が指に当たった。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（舌が遠くても、数字は嘘をつかない）"
+          }
+        ],
+        "lobby_kanzaki_known": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "廊下の奥で、神崎さんが炭の箱を一つずつ開け、裏まで返して確かめていた。"
+          }
+        ],
+        "lobby_kanzaki_first": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "廊下の奥で、色付き眼鏡の男が、炭の箱を一つずつ開け、裏まで返して確かめていた。"
+          }
+        ],
+        "lobby_kuraudo_known": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "壁際の椅子では、クラウドさんがケースを膝に抱え、片耳にだけイヤホンを入れていた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（もう片方の耳は、空けてある。……周りの音も、聴いてるのか）"
+          }
+        ],
+        "lobby_kuraudo_first": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "壁際の椅子では、黒い服の青年がケースを膝に抱え、片耳にだけイヤホンを入れていた。"
+          }
         ]
       }
     },
@@ -164,9 +269,29 @@
           "text": "そしてMELTY PUFFのあげは選手、tonariの逢縁はじめ選手！"
         },
         {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "柚ヶ谷の外から、ただ一人！ 地元大会の覇者が、県の舞台に乗り込んできましたッ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（覇者……。地元の外でも、そう呼ばれるのか）"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "四台の向こうで、上園、チャコール博士、千須が席についた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "博士は席に着くなり、ノートPCを開いた。千須会長は、四台を順に一度ずつ見ただけだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（地元大会で、俺の台を二口吸ってくれた人だ）"
         },
         {
           "speaker": "",
@@ -477,6 +602,41 @@
           "next_true": "tasted"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "係の人が、四台の前に苺の袋を一つずつ置いていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは袋の上から指で押して、葉の湿りを確かめた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは袋の口を少しだけ開けて、目を細めた。誰かの顔を思い浮かべているみたいだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドさんは、袋を開ける音に耳を寄せていた。"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……今日の苺は、少し静かだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は袋の重さを手のひらで確かめてから、ノートの配合の数字をもう一度読んだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（見ている所が、四人とも違う。……俺は、数字を間違えなければいい）"
+        },
+        {
           "speaker": "pakki",
           "face": "excited",
           "text": "準備ができた選手から、制作を始めてください！"
@@ -516,6 +676,11 @@
           "text": "（さっきまで吸っていたはずの一台の味が、口の中に何も残っていない）"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（覚えているのは、温度と、炭を替えた数だけだ）"
+        },
+        {
           "speaker": "pakki",
           "face": "excited",
           "text": "県代表の座は──"
@@ -536,6 +701,26 @@
           "face": "excited",
           "beat": 800,
           "text": "県代表は、tonariの逢縁はじめ選手です！"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "新・県代表に一言ッ！ 勝因は、どこにありましたか！？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……点を落とさない順番を、最後まで守れたことだと思います"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "堅いッ！ でも、それが今日の強さでしたッ！ ぷぷぷっ！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席がわいた。自分の答えが、自分の耳には少し遠かった。"
         },
         {
           "speaker": "",
@@ -594,6 +779,26 @@
           "text": "答えるより先に、会長はもう背を向けていた。"
         },
         {
+          "speaker": "uezono",
+          "face": "smile",
+          "text": "いやあ、四台とも、おいしかったねえ。逢縁くんの手順、きれいだったよ"
+        },
+        {
+          "speaker": "uezono",
+          "face": "normal",
+          "text": "……ただ、今日の苺は、少し緊張してたかな。君と一緒でね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（緊張……。そんなものまで、煙に出るのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席の一番後ろを見た。背の高い男は、もういなかった。"
+        },
+        {
           "type": "hide_portrait",
           "char_id": "kumicho"
         },
@@ -604,6 +809,10 @@
         {
           "type": "hide_portrait",
           "char_id": "sensu"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "uezono"
         },
         {
           "speaker": "",
@@ -692,6 +901,12 @@
           "text": "審査席を片づける博士が、一度だけこちらを見た。"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_stk_kemuri_thermo_borrowed",
+          "next_true": "thermo_return"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（勝った。嬉しいはずなのに、体が追いつかない）"
@@ -741,9 +956,190 @@
           "text": "スマホのカレンダーで、次の受診日を確かめた。東京へ発つ前の日だった。"
         },
         {
+          "type": "hide_portrait",
+          "char_id": "hajime"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_hideaway.png"
+        },
+        {
           "speaker": "",
           "face": "",
-          "text": "スミさんから、新しいメッセージが届いた。"
+          "text": "同じ日の夕方。海沿いの町の、借りた作業場。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは、店主の前に一台を出していた。台も炭も、KEMURIKUSAのものとは違う。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "作業台の端で、伏せたスマホが一度だけ震えた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは画面を見なかった。店主が話しながら吸う速さを、黙って見ている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店主がホースを置いた。なるはそれを待ってから、最後の炭を一つ外側へ寄せた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……次の一口、どうですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店主がうなずく。なるは小さく息を吐いて、ノートに一行書き足した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホは、伏せたままだった。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "naru"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電車で地元へ戻った。tonariの灯りは、入口の一つだけを残して落ちていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "裏口から入ると、カウンターに鍋と、二人分の茶碗が出ていた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "おう。座れ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鞄からトロフィーを出して、地元大会のトロフィーの隣に置いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "県のほうが、少しだけ背が高い。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……並べるのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。地元のと、県のと"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが鍋の蓋を取った。湯気が立つ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "味噌の匂いは、薄い膜を一枚隔てた向こうにあった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "向かい合って食べた。温かいことだけは、ちゃんと分かった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "で、本番は何で行った"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "練習してきた組み合わせです。点を落とさない順番で、最後まで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの箸が、一度だけ止まった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "……そうか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "会長、講評で一口だけ吸って、ホースを置いたんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "地元のときは、二口だったのに。……点は、一番だったんですけど"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは答えずに、俺の茶碗へ、もう一杯よそった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……今日は、これでいいってことなのかな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "食べ終わると、スミさんが先に立って、茶碗を流しへ運んだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "洗い物、やります"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "今日は座ってろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水の音を聞きながら、並んだ二つのトロフィーを見ていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（次は、全国だ。もう一つ並べたら、何か分かるのかな）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（今日の一台の味は、一口も思い出せないのに）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "蛇口を締める音がした。スミさんは背中を向けたまま、手を拭いている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ポケットでスマホが震えた。スミさんからだった。……目の前に、いるのに。"
         }
       ],
       "branches": {
@@ -804,6 +1200,33 @@
             "speaker": "",
             "face": "",
             "text": "片づけが終わると、ようやくスマホを見る余裕ができた。"
+          }
+        ],
+        "thermo_return": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "片づけの終わりに、借りていた温度計を、博士へ返しに行った。"
+          },
+          {
+            "speaker": "dr_charcoal",
+            "face": "normal",
+            "text": "役に立ちましたか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……数字は、最後までずっと正しかったです"
+          },
+          {
+            "speaker": "dr_charcoal",
+            "face": "smile",
+            "text": "それは、よかった"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "博士は温度計を受け取ると、胸ポケットの三色のペンの隣に挿し直した。"
           }
         ]
       },
