@@ -505,3 +505,26 @@ The hookah stem has been pulled out of the base, so the base now stands alone, e
 Fully transparent background.
 Do not draw: the stem, a tube, a rod, hose ports, a hose, a bowl, a tray, charcoal, water, drops, a table, a cast shadow, hands, text, letters, logos, watermark.
 ```
+
+## 11回目: 水入れの流し台（VPL92・候補2枚から1枚）
+
+オーナー「水入れはシンクでやってる感伝わるようにしたいかも　店にこぼしてるみたいだし」。
+店の背の作業台にある、カウンターに埋め込んだステンレスの流し台を、背景なしで描かせた（本編の隣の店の背景 `remake/img/backgrounds/bg_tonari_inside_day.webp` を、絵の具合と灯りの色の参照に渡した。部屋は描かせていない）。蛇口・水は描かせず、コードで重ねる。試作では、ボトルの足が流し台の底の前寄り（ドレンの手前）に乗るように、ボトルの大きさに合わせて置く。
+
+| 原画（`v3/`） | 試作が読む絵（`remake/previews/portrait-stage/img/`） | 使い道 |
+|---|---|---|
+| `sink-original.webp`（1536×1024） | `ui-sink.webp`（1152×768） | 水入れの流し台。底の前寄りは絵の縦 86%、流し台の真ん中は横 51.4% |
+| `sink-candidate2-original.webp`（1536×1024） | 使わない | もう1枚の候補。奥行きが浅く、流し台の中が見えにくいため使わない |
+
+生成後の確認（素材規約の必須チェック）: 流し台は空で乾いていて、蛇口・水・食器・ボトル・人・壁・文字・ロゴが無い。カウンターは画面の左右の端まで続き、流し台の奥・両脇・底とドレンが見える。上半分は透明。合格（2枚のうち1枚を使う）。シーシャ台の機材ではないため §4 の8行は当てはまらない。
+
+```text
+Match the illustration style and the warm lighting of the reference image (a polished anime game background of a small Japanese shisha bar with clean outlines and soft cel shading). Do NOT draw the room from the reference; it is only a style and lighting reference.
+Draw one object only, on a fully transparent background: the work sink behind the bar counter of this shisha bar, where the staff fill the glass hookah bases with water.
+- A brushed stainless-steel counter top that spans the whole width of the image (cut off by the left and right edges), seen from the front and slightly from above (about 25 degrees).
+- Set into the middle of the counter, one deep rectangular stainless-steel sink basin, about 60 percent of the image width. The inside of the basin is visible: the back wall, the two side walls and the flat bottom with a round chrome drain in the middle. It is empty and dry.
+- The front edge of the counter is a straight horizontal band (the apron) across the whole width near the bottom of the image, with a thin dark shadow line under it.
+- The whole object sits in the lower 55 percent of the image; everything above the back edge of the counter is fully transparent.
+- Warm reflections of the bar lights on the steel, a few soft highlights, very clean.
+Do not draw: a faucet, a tap, water, dishes, cups, bottles, hookahs, sponges, towels, people, hands, a wall, tiles, a window, text, letters, logos, watermark.
+```

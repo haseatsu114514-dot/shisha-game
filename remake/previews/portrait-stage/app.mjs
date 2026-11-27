@@ -7,6 +7,8 @@
 
 // テロップの文は本編と同じ組版で、表示する箱の実際の幅と書体で測って2行ずつに分ける（VPL29）
 import { paginateForBox } from "../../js/vn/layout.js";
+// 吸い出しで吐く煙は、本編の共通の煙（KMR14「繊細ドット」・KMR15「煙が成績表」）をそのまま使う（VPL88）
+import { smokeLayer, workerBreath, ringBreath, smokeTint, smokeAllowed } from "../../js/core/smoke.js";
 // タイトル画面と店番（フロア営業）は、場面ごとの別ファイルに置く（VPM01・VPM02）。店番は本編のルール（状態を持たない関数）を呼ぶが、本編の進行・保存には触れない
 import { TitleScene } from "./title.mjs";
 import { FloorScene } from "./floor.mjs";
@@ -43,6 +45,7 @@ const IMG = {
   // 作り直した絵（gpt-image-2.6-sunburst・VPL38）: ボトル・ハガル（空・ふんわり・ノーマル・デンス）・はじめの吸い出し
   bottle: `${OWN_IMG}ui-bottle-open.webp`, // 口の開いたボトル（本編の大会公式モデルの台のベースを入力にした生成。VPL46・VPL81）
   faucet: `${OWN_IMG}ui-faucet.webp`, // 水入れの蛇口（VPL81）
+  sink: `${OWN_IMG}ui-sink.webp`, // 水入れの流し台（カウンターに埋め込んだステンレスのシンク。VPL92）
   bowlEmpty: `${OWN_IMG}ui-bowl-empty.webp`,
   bowl_airy: `${OWN_IMG}ui-bowl-airy.webp`,
   bowl_normal: `${OWN_IMG}ui-bowl-normal.webp`,
@@ -138,6 +141,36 @@ const STEPS = [["water", "水入れ"], ["mix", "配合"], ["pack", "詰め方"],
 // この試作で遊べる作る場面（本編と同じ順。炭と調整は省く）
 const CRAFT_SCENES = ["water", "mix", "pack", "holes", "coal", "steam", "pull"];
 // 温度ゲージを出す場面（VPL61）。穴あけ・炭焼き・雑念よけの間は消し、吸い出しで戻す
+// 吸い出しのはじめの口元（img/craft-pull-hajime.webp の中の位置。横・縦の割合）。絵に描かれた煙と同じく、右上へ吐く
+const PULL_MOUTH = [0.575, 0.292];
+// 吸い出しで吐く煙を、温度から連続して決める（VPL93）。本編 workerBreath の「適温」の吐き方を元に、項目ごとに温度で動かす。
+//   低い……ほんの少し。薄く小さく短い。帯の下端へ近づくほど増える
+//   帯の中……中心（最適温）に近いほど、たっぷりまとまったなめらかな煙が長く残る
+//   高すぎ……量は爆煙になるが、荒れてちぎれて横に散り、灰色に濁って早く崩れる（いい煙ではない）。熱いほどむせた短い煙も混ざる
+const SMOKE_GRAY = [0.6, 0.56, 0.52];
+const lerp = (a, b, k) => a + (b - a) * Math.max(0, Math.min(1, k));
+function smokeByTemp(t, b, { x, y, color }) {
+  const [lo, hi] = b.zone, mid = (b.best[0] + b.best[1]) / 2, base = workerBreath("good", { x, y })[0];
+  const tint = smokeTint(color, 0.3);
+  if (t < lo) { // 低い
+    const k = (t - 0.12) / (lo - 0.12);
+    return { quality: "thin", nice: 0, breaths: [{ ...base, colors: [tint], rate: lerp(5, 12, k), size: lerp(0.018, 0.029, k), dur: lerp(0.55, 1.05, k), life: lerp(1.05, 1.9, k), alpha: lerp(0.5, 0.76, k), hold: lerp(0.2, 0.36, k), speed: lerp(0.22, 0.38, k), spread: lerp(0.3, 0.42, k) }] };
+  }
+  if (t <= hi) { // 帯の中: 中心に近いほどいい煙
+    const q = 1 - Math.abs(t - mid) / Math.max(mid - lo, hi - mid);
+    const best = t >= b.best[0] && t <= b.best[1];
+    return { quality: best ? "best" : "good", nice: q, breaths: [{ ...base, colors: [tint], rate: lerp(12, 19, q), size: lerp(0.029, 0.043, q), dur: lerp(1.05, 1.75, q), life: lerp(1.9, 3, q), alpha: lerp(0.76, 0.9, q), hold: lerp(0.36, 0.5, q), speed: lerp(0.38, 0.44, q), turb: lerp(0.1, 0.06, q), spread: lerp(0.42, 0.36, q) }] };
+  }
+  // 高すぎ: 爆煙だが荒れる
+  const h = (t - hi) / (TEMP_DANGER - hi), dirty = tint.map((v, i) => lerp(v, SMOKE_GRAY[i], 0.25 + 0.45 * h));
+  const plume = { ...base, colors: [dirty], rate: lerp(22, 36, h), size: lerp(0.042, 0.058, h), dur: lerp(1.3, 1.9, h), life: lerp(1.7, 1.15, h), alpha: lerp(0.84, 0.76, h), hold: lerp(0.3, 0.2, h),
+    speed: lerp(0.5, 0.64, h), spread: lerp(0.6, 1, h), turb: lerp(0.24, 0.46, h), drag: lerp(1.9, 2.7, h), sway: 0, flat: true };
+  const breaths = [plume];
+  if (h > 0.35) breaths.push({ ...plume, dur: 0.22, rate: 30, size: 0.026, life: 0.9, speed: 0.66, spread: 1.1, delay: 0.15 }, { ...plume, dur: 0.22, rate: 30, size: 0.026, life: 0.9, speed: 0.55, spread: 1.1, angle: plume.angle - 0.25, delay: 0.65 });
+  return { quality: "harsh", nice: 0, breaths };
+}
+// 煙の輪（本編 craft/fx.js の RING と同じ: 口元から右へ吹いた縦長の輪）
+const SMOKE_RING = { radius: .03, size: .012, squash: [.55, 1], grow: .03, drift: .085, rise: .05, life: 1.7 };
 const THERMO_ON = new Set(["mix", "pack", "pull"]); // 配合は帯だけ（VPL78）
 const COACH = {
   water: "線のあいだまで注げ",
@@ -359,6 +392,12 @@ const GALLERY = [
   { scene: "steam", caption: "作る・蒸らし（雑念よけ）" },
   { scene: "steam", caption: "作る・蒸らし（アタックを覚えた後）", attack: true },
   { scene: "pull", caption: "作る・吸い出し（tonari）" },
+  // 吸い出しで吐く煙は温度で変わる（VPL93）。数秒おきに、その温度のまま吐く
+  { scene: "pull", caption: "吐く煙: 低い（0.25）。ほんの少し", temp: 0.25, smokeDemo: true },
+  { scene: "pull", caption: "吐く煙: 適温の下の端（0.44）", temp: 0.44, smokeDemo: true },
+  { scene: "pull", caption: "吐く煙: 最適温（0.54）。いちばんいい煙", temp: 0.54, smokeDemo: true },
+  { scene: "pull", caption: "吐く煙: 少し熱い（0.72）。量は多いが荒れる", temp: 0.72, smokeDemo: true },
+  { scene: "pull", caption: "吐く煙: 高すぎ（0.86）。爆煙だが濁ってちぎれる", temp: 0.86, smokeDemo: true },
   { scene: "pull", caption: "作る・吸い出し（PEPPERMINT に替えた例）", venue: "shop" },
 ];
 
@@ -445,14 +484,19 @@ const BTN = {
   ok: { label: "決定", text: "決定" },
   next: { label: "次へ", svg: '<path d="M8.5 11.5l7.5 8 7.5-8"/>' },
   rest: { label: "休み", svg: '<path d="M20.5 5.5a11 11 0 1 0 6 15.5 9 9 0 0 1-6-15.5z"/>' },
-  poke: { label: "刺す", tool: "needle" },
-  puff: { label: "吸う", tool: "mouthpiece" },
-  pour: { label: "注ぐ", tool: "pour" },
-  drain: { label: "少しこぼす", tool: "drain" },
+  // word＝白い図形の下に添える短い言葉（VPL84: やはり図形＋言葉がいい）
+  poke: { label: "刺す", tool: "needle", word: "刺す" },
+  puff: { label: "吸う", tool: "mouthpiece", word: "吸う" },
+  pour: { label: "注ぐ", tool: "pour", word: "注ぐ" },
+  drain: { label: "少しこぼす", tool: "drain", word: "こぼす" },
   bomb: { label: "リフレッシュ（心の周りの雑念を払う）", tool: "bomb" },
 };
 // ボタンいっぱいの 100×100 で描く
 // 吸う: マウスピース（ホースの切れ端・金具・先へ細くなる持ち手・吸い口のチップ）を斜めに。吸うたびに少し動いて光る
+// シーシャのボトルの白い図形（ボタン用・VPL85）: 上の受け口（塗り）＋ガラスの輪郭（線）＋底にたまった水（塗り）。水の入ったガラスの器に見えるように。口の真ん中は (50, 44)、胴の真ん中は (50, 75)
+const BOTTLE_PATH = "M41 53C41 59 21 64 19 78C18 88 26 96 50 96C74 96 82 88 81 78C79 64 59 59 59 53";
+const BOTTLE_ICON = `<rect x="38" y="44" width="24" height="9" rx="2"/><path class="gl-glass" d="${BOTTLE_PATH}"/>`;
+const BOTTLE_WATER = `<path d="M21.5 76H78.5C79.5 85 73 92.5 50 92.5C27 92.5 20.5 85 21.5 76Z"/><path class="gl-glass thin" d="M29 65.5C26.5 68.5 25 71.5 24.5 74.5"/>`;
 const TOOL_SVG = {
   // 刺す（VPL58）: ドライバーのような穴あけの道具を少し斜めに置くだけ。押すと、道具の向き（先の方）へ突き出て、離すと戻る
   needle: `<svg class="tool-svg tool-needle" viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(32 50 50)"><g class="gl-needle">
@@ -461,14 +505,16 @@ const TOOL_SVG = {
     <rect x="-4" y="45" width="16" height="10" rx="4"/><rect x="13.5" y="43.3" width="7.5" height="13.4" rx="1.6"/>
     <path d="M22.5 42.8L78 45Q82 45.3 82 48.2V51.8Q82 54.7 78 55L22.5 57.2Z"/><path class="gl-ring" d="M31 43.6V56.4M72 45V55"/>
     <rect class="gl-tip" x="84" y="46.4" width="20" height="7.2" rx="2.6"/></g></g></svg>`,
-  // 注ぐ: 傾けた水差しと、口から落ちる水の粒（注いでいる間は粒が流れる）
-  pour: `<svg class="tool-svg tool-pour" viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(24 50 50)">
-    <path d="M30 30H64L76 23L73 34L66 40V70Q66 80 56 80H40Q30 80 30 70Z"/><path class="gl-handle" d="M30 40Q15 40 15 54Q15 67 30 67"/></g>
-    <g class="gl-drops"><circle cx="85" cy="50" r="3.4"/><circle cx="86.5" cy="63" r="4"/><circle cx="88" cy="77" r="4.6"/></g></svg>`,
-  // こぼす: 傾けた小びんと、口からこぼれる一滴
-  drain: `<svg class="tool-svg tool-drain" viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(-38 50 52)">
-    <rect x="43" y="14" width="14" height="22" rx="3"/><path d="M42 36H58L70 54A21 21 0 1 1 30 54Z"/></g>
-    <path class="gl-drop" d="M24 50C24 50 17 60 17 64A7 7 0 0 0 31 64C31 60 24 50 24 50Z"/></svg>`,
+  // 注ぐ（VPL84・VPL85）: 小さな蛇口から、水の入ったシーシャのボトルの口へ水が落ちる（注いでいる間は粒が流れる）
+  pour: `<svg class="tool-svg tool-pour" viewBox="0 0 100 100" aria-hidden="true">
+    <path class="gl-pipe" d="M18 8H40Q50 8 50 17V18"/><rect x="43.5" y="17" width="13" height="7" rx="2"/>
+    <g class="gl-drops"><circle cx="50" cy="30.5" r="2.6"/><circle cx="50" cy="37.5" r="2.9"/></g>${BOTTLE_ICON}${BOTTLE_WATER}</svg>`,
+  // こぼす（VPL84・VPL85）: 同じボトルを少し傾け、口から水がこぼれる。中の水の面は傾けても水平（ボトルの内側で切り抜く）
+  drain: `<svg class="tool-svg tool-drain" viewBox="0 0 100 100" aria-hidden="true"><defs><clipPath id="drain-in"><path transform="translate(58 56) rotate(-40) translate(-50 -75)" d="${BOTTLE_PATH}Z"/></clipPath></defs>
+    <rect x="0" y="60" width="100" height="40" clip-path="url(#drain-in)"/><g transform="translate(58 56) rotate(-40) translate(-50 -75)">${BOTTLE_ICON}</g>
+    <g class="gl-drop"><path d="M25 46C25 46 19.5 53.5 19.5 56.5A5.5 5.5 0 0 0 30.5 56.5C30.5 53.5 25 46 25 46Z"/><path d="M22 66C22 66 17.5 71.5 17.5 74A4.5 4.5 0 0 0 26.5 74C26.5 71.5 22 66 22 66Z"/></g></svg>`,
+  // 提供（VPL86）: 料理を出す時の蓋（クロッシュ）。吸い出しの右下の丸いボタン
+  serve: `<svg class="tool-svg tool-serve" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="27" r="6"/><path d="M17 72A33 33 0 0 1 83 72Z"/><rect x="8" y="77" width="84" height="8" rx="4"/></svg>`,
   // リフレッシュ（VPL62）: 真ん中の心と、そこから広がる波で雑念の粒を外へ払う形。効果（心の周りを払う）がそのまま見える
   bomb: `<svg class="tool-svg tool-bomb" viewBox="0 0 100 100" aria-hidden="true">
     <path class="gl-heart" d="M50 60C42.500 54.500 37 50 37 44.500A6.500 6.500 0 0 1 50 41.500 6.500 6.500 0 0 1 63 44.500C63 50 57.500 54.500 50 60Z"/>
@@ -484,7 +530,7 @@ const btnFace = (kind) => {
   const b = BTN[kind];
   if (b.text) return `<span class="t">${b.text}</span>`;
   if (b.svg) return `<span class="t"><svg class="glyph" viewBox="0 0 32 32" aria-hidden="true">${b.svg}</svg></span>`;
-  return `<span class="t tool">${TOOL_SVG[b.tool]}</span>`;
+  return `<span class="t tool">${TOOL_SVG[b.tool]}</span>${b.word ? `<small class="btn-lab">${b.word}</small>` : ""}`;
 };
 const aHtml = (kind, { disabled = false, cls = "", extra = "" } = {}) => `<button class="btn-a ${cls}" data-act="a" aria-label="${BTN[kind].label}" ${disabled ? "disabled" : ""}>${btnFace(kind)}${extra}</button>`;
 // 補助ボタン: [id, 絵記号, 読み上げの名前, 短い名前, 数の印, 押されているか]
@@ -518,7 +564,7 @@ function meterHtml() {
 /* ───────── 1台ぶん ───────── */
 
 class Phone {
-  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", grade = 0, gradeP = 0, water = 0, mix = null, venue = "tonari", attack = false, ...ext } = {}) {
+  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", grade = 0, gradeP = 0, water = 0, mix = null, venue = "tonari", attack = false, temp = null, ...ext } = {}) {
     this.el = el;
     this.extOpts = ext; // 別ファイルの場面の見せ方（店番の営業の種類・一覧に並べる場面 shot など。1台表示では URL の値がそのまま入る）
     el.lang = "ja";
@@ -531,7 +577,8 @@ class Phone {
     this.rankAt = RANK_PLACES[rank] ? rank : "d"; // ランクの置き場所の案
     this.venue = VENUES[venue] ? venue : "tonari"; // 作る場面の会場（背景）
     this.attackLearned = !!attack; // 雑念よけのアタックを覚えたか（覚えると精密と入れ替える切り替えが出る・VPL62）
-    this.st = { scene, sel: DEFAULT_SPOT, step, page: 0, grade: Math.max(0, Math.min(6, Number(grade) || 0)), gradeP: Number(gradeP) || 0, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0, temp: 0.4,
+    this.initTemp = temp != null && temp !== "" && Number.isFinite(Number(temp)) ? Math.max(0.05, Math.min(0.95, Number(temp))) : null; // 吸い出しの初めの温度（?temp=・一覧の煙の見本。VPL93）
+    this.st = { scene, sel: DEFAULT_SPOT, step, page: 0, grade: Math.max(0, Math.min(6, Number(grade) || 0)), gradeP: Number(gradeP) || 0, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0, temp: this.initTemp ?? 0.4,
       water: Number(water) || 0, mix: MIX.map((f, i) => (Array.isArray(mix) ? mix[i] : 0) || 0), mixSel: 0, mixSort: null, slow: false, sub: attack ? "attack" : "slow",
       ci: ["a", "b", "c"].includes(ci) ? ci : "a", who: CUTINS[who] ? who : "minto", ciPhase: "off" };
     this.cam = null;      // 地図をドラッグした時の位置（選び直すと選んだ店へ戻る）
@@ -1025,12 +1072,12 @@ class Phone {
     const id = `bw${this.uid}`, { w, h } = BOTTLE;
     // 水流は、受け口の穴の手前の縁より上だけ手前に描く（その下は受け口の陰。胴の中の分は奥の SVG の .w-stream.in がガラス越しに見せる）
     return `<svg class="bottle-svg fx" viewBox="0 0 ${w} ${h}" aria-hidden="true"><defs><clipPath id="${id}f"><rect class="w-fxclip" x="-400" y="-900" width="${w + 800}" height="0"/></clipPath></defs>
-      <g clip-path="url(#${id}f)"><path class="w-stream" fill="url(#${id}s)" d=""/></g><g clip-path="url(#${id})"><g class="w-drops">${`<circle r="0"/>`.repeat(7)}</g></g></svg>`;
+      <g clip-path="url(#${id}f)"><path class="w-stream" fill="url(#${id}s)" d=""/></g><path class="w-spill" d=""/><g clip-path="url(#${id})"><g class="w-drops">${`<circle r="0"/>`.repeat(7)}</g></g></svg>`;
   }
 
   /** 水入れ（VPL46・VPL81）: 蛇口の下で、口の開いたボトルを少し傾けて満たす。水位計は出さない。二本の線が目安 */
   waterPic() {
-    return `<img class="bg" src="${IMG[this.venue]}" alt=""><div class="water-a" data-zone="empty"><div class="bottle open">${this.bottleSvg()}<img class="b-glass" src="${IMG.bottle}" alt="">${this.bottleFxSvg()}</div></div>`;
+    return `<img class="bg" src="${IMG[this.venue]}" alt=""><div class="water-a" data-zone="empty"><div class="bottle open"><img class="sink" src="${IMG.sink}" alt="">${this.bottleSvg()}<img class="b-glass" src="${IMG.bottle}" alt="">${this.bottleFxSvg()}</div></div>`;
   }
 
   /**
@@ -1048,7 +1095,7 @@ class Phone {
     if (!S || S.svg !== svg) {
       const q = (c) => root.querySelector(c);
       S = this.wsim = { svg, h: new Float32Array(N), v: new Float32Array(N), ang: BOTTLE.rest, angV: 0, slope: 0, slopeV: 0, head: null, tail: null, bub: [], drops: [], spawn: 0, was: false,
-        glass: root.querySelector(".b-glass"), clip: q(".w-clip"), body: q(".w-body"), deep: q(".w-deep"), surf: q(".w-surf"), line: q(".w-line"), stream: q(".fx .w-stream"), streamIn: q(".w-stream.in"), fxClip: q(".w-fxclip"),
+        glass: root.querySelector(".b-glass"), clip: q(".w-clip"), body: q(".w-body"), deep: q(".w-deep"), surf: q(".w-surf"), line: q(".w-line"), stream: q(".fx .w-stream"), spill: q(".w-spill"), streamIn: q(".w-stream.in"), fxClip: q(".w-fxclip"),
         bubEls: [...root.querySelectorAll(".w-bubbles circle")], dropEls: [...root.querySelectorAll(".w-drops circle")] };
     }
     const w = this.st.water, still = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1116,6 +1163,13 @@ class Phone {
       S.stream.setAttribute("d", `${lft}${rgt}Z`); S.streamIn.setAttribute("d", `${lft}${rgt}Z`);
     } else { S.stream.setAttribute("d", ""); S.streamIn.setAttribute("d", ""); }
     S.fxClip.setAttribute("height", (tiltPoint(BOTTLE.mouth[0], BOTTLE.rim, ang)[1] + 900).toFixed(1));
+    // こぼす間は、傾けたボトルの口の右の縁から、流し台の底へ水が流れ落ちる（VPL92）
+    if (this.draining && w > 0.02 && ang > BOTTLE.rest + 4) {
+      const [lx, ly] = tiltPoint(BOTTLE.mouth[0] + 100, BOTTLE.rim - 12, ang), floor = BOTTLE.pivot[1] + 4, t = now / 1000;
+      const wob = (yy) => still ? 0 : Math.sin(t * 17 + yy * 0.05) * 1.8;
+      const x1 = lx + 22, mid = (ly + floor) / 2;
+      S.spill.setAttribute("d", `M${lx.toFixed(1)} ${ly.toFixed(1)} Q${(lx + 16).toFixed(1)} ${(ly + 6).toFixed(1)} ${(x1 + wob(mid) - 4).toFixed(1)} ${mid.toFixed(1)} L${(x1 + wob(floor) - 3).toFixed(1)} ${floor} L${(x1 + wob(floor) + 3).toFixed(1)} ${floor} L${(x1 + wob(mid) + 4).toFixed(1)} ${mid.toFixed(1)} Q${(lx + 22).toFixed(1)} ${(ly + 2).toFixed(1)} ${(lx + 6).toFixed(1)} ${(ly - 4).toFixed(1)}Z`);
+    } else S.spill.setAttribute("d", "");
     // 泡としぶき
     if (hitting && !still) {
       S.spawn += dt;
@@ -1198,7 +1252,8 @@ class Phone {
   mixSelHtml() {
     const { st } = this, i = st.mixSel, f = MIX[i];
     const btn = (by) => `<button class="mr-btn" data-act="mixadd" data-i="${i}" data-by="${by}" aria-label="${f.name}を1g${by > 0 ? "増やす" : "減らす"}">${by > 0 ? "＋" : "−"}</button>`;
-    return `${pkgHtml(f, 5.6)}<span class="mr-name"><b>${f.name}${f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : ""}</b><span class="mr-tags">${genreHtml(f.genre, false)}${f.sub ? genreHtml(f.sub, false) : ""}</span></span>
+    // 下の段で「決定」の左に入るので、パッケージとジャンルは出さない（棚の札が光っている）。名前・課題の印・−／＋・g だけ（VPL83）
+    return `<span class="mr-name"><b class="${[...f.name].length >= 7 ? "long" : ""}">${f.name}</b>${f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : ""}</span>
       ${btn(-1)}<span class="mr-g"><em>${st.mix[i]}</em>g</span>${btn(1)}`;
   }
 
@@ -1864,9 +1919,9 @@ class Phone {
         ${aHtml("poke", { cls: "hold center", extra: `<i class="fill"></i><i class="fill-line"></i>` })}
         <span class="hole-count" aria-hidden="true">${icon("holes")}<b>${st.holes.length}</b><small>/${HOLE_COUNT}</small></span>`;
     }
-    // 葉（フレーバーの持ち）は上の段の真ん中、吸った回数は「吸う」の中の点。ボタンに重ねない
+    // いちばん下の段に、左＝葉（フレーバーの持ち）、右＝提供（同じ高さの横長。VPL89）。その上に強さのゲージと「吸う」。吸った回数は「吸う」の中の点、提供の中の2つの点は提供できるまでのあと2口
     return `<span class="leaves" role="img" aria-label="フレーバーの持ち 5">${`<img src="${IMG.leaf}" alt="">`.repeat(5)}</span>
-      <button class="serve" data-act="serve" aria-label="提供する（あと2口）">${icon("bell")}<span>提供</span><i></i><i></i></button>
+      <button class="serve-pill" data-act="serve" aria-label="提供する（あと2口）">${TOOL_SVG.serve}<b>提供</b><span class="pips"><i></i><i></i></span></button>
       <div class="gauge"><span class="end l">${icon("cool")}</span><span class="end r">${icon("heat")}</span>${meterHtml()}</div>
       ${aHtml("puff", { cls: "center", extra: `<span class="pips" aria-label="吸った回数 ${st.pulls}/5">${Array.from({ length: 5 }, (_, i) => `<i class="${i < st.pulls ? "on" : ""}"></i>`).join("")}</span>` })}`;
   }
@@ -2040,12 +2095,49 @@ class Phone {
       // 吸うたびに温度が動く（上げ吸いで上がり、下げ吸いで下がる）
       st.temp = Math.min(0.95, Math.max(0.06, st.temp + 0.05 + ((this.needleT ?? 0.5) - 0.5) * 0.32));
       this.hold = performance.now();
-      el.classList.remove("puffing"); void el.offsetWidth; el.classList.add("puffing");
+      // 吸って、少し間をおいて口元から吐く（VPL88。本編の煙が出せない時＝「動きを減らす」は、これまでの煙の絵）
+      if (smokeAllowed()) { const last = st.pulls >= 5; setTimeout(() => this.exhale({ last }), 420); }
+      else { el.classList.remove("puffing"); void el.offsetWidth; el.classList.add("puffing"); }
       this.patch();
       this.syncThermo();
       setTimeout(() => { this.hold = 0; if (st.pulls >= 5 && this.fixed) { st.pulls = 0; st.temp = 0.4; st.gradeP = 0; this.patch(); this.syncThermo(); this.syncRank(); } }, 700);
       if (st.pulls >= 5 && !this.fixed) setTimeout(() => this.setScene("map"), this.venue === "stage" ? 4800 : 3300);
     }
+  }
+
+  /**
+   * 吸い出しで吐く煙（VPL88）。本編の「煙が成績表」（KMR15）と同じく、吐いた時の温度で煙の姿が変わる:
+   *   最適温＝たっぷり長く残る（5口目なら吐き終わりに煙の輪）／適温＝まとまった煙／ぬるい＝薄く小さい／熱すぎ＝むせてちぎれる。
+   * 色は配合の葉の色をうっすら。煙の升目は 16:9 なので、口元の周りに 16:9 の箱を置いて載せる（縦の画面にそのまま広げると房がつぶれる）。
+   */
+  exhale({ last = false } = {}) {
+    const { st, el } = this, pic = el.querySelector(".pic.craft-pull"), cg = pic?.querySelector(".pull-cg");
+    if (st.scene !== "pull" || !cg || !cg.complete || !smokeAllowed()) return;
+    const pr = pic.getBoundingClientRect(), cr = cg.getBoundingClientRect();
+    if (!pr.width || !cr.width) return;
+    const mx = cr.left - pr.left + cr.width * PULL_MOUTH[0], my = cr.top - pr.top + cr.height * PULL_MOUTH[1];
+    let box = pic.querySelector(".smoke-box");
+    if (!box) { box = document.createElement("div"); box.className = "smoke-box"; pic.append(box); }
+    const bw = pr.width * 1.5, bh = bw * 9 / 16, bx = mx - bw * 0.34, by = my - bh * 0.62;
+    Object.assign(box.style, { left: `${bx}px`, top: `${by}px`, width: `${bw}px`, height: `${bh}px` });
+    const b = bandsOf(st.mix), t = st.temp, x = (mx - bx) / bw, y = (my - by) / bh;
+    const { quality, nice, breaths: raw } = smokeByTemp(t, b, { x, y, color: this.mixColor() });
+    // 本編のはじめは横向き（煙は顔の前へ出る）。縦の絵は正面向きなので、口元から少し右下へ吐き、顔の外へ出てから昇らせる（目元にかけない）。
+    // 横への広がりは、いい煙ほど細くまとめ、熱すぎる煙は荒れたまま散らす
+    const breaths = raw.map((s) => ({ ...s, angle: s.angle + 0.34, buoy: s.buoy * 0.35, speed: s.speed * 1.3, spread: quality === "harsh" ? s.spread : Math.min(s.spread, 0.34) }));
+    if (last && quality === "best") breaths.push(...ringBreath({ ...SMOKE_RING, x: x + .035, y: y - .012, colors: [smokeTint(this.mixColor(), .08)], delay: 1.9 }));
+    const layer = smokeLayer(box, { zIndex: 1, className: "pull-smoke", gridScale: .5 });
+    Object.assign(layer.canvas.dataset, { quality, nice: nice.toFixed(2), temp: t.toFixed(2) });
+    layer.breathe(breaths);
+  }
+
+  /** 配合の葉の色（グラムで重み付けしたジャンルの色）。葉が無ければ煙の白 */
+  mixColor() {
+    const total = this.st.mix.reduce((n, g) => n + g, 0);
+    if (!total) return "#d9d2e6";
+    const rgb = [0, 0, 0];
+    this.st.mix.forEach((g, i) => { if (!g) return; const c = GENRES[MIX[i].genre].color; [1, 3, 5].forEach((k, j) => { rgb[j] += parseInt(c.slice(k, k + 2), 16) * g / total; }); });
+    return `#${rgb.map((v) => Math.round(v).toString(16).padStart(2, "0")).join("")}`;
   }
 
   /** 熱ゲージの針と、適温の帯に入った時の光を今の温度に合わせる（作り直さずに動かす）。 */
@@ -2132,7 +2224,7 @@ class Phone {
     this.thermoWas = crafting(this.st.scene) ? THERMO_ON.has(this.st.scene) : undefined;
     Object.assign(this, { dodge: null, heat: null, pouring: false, draining: false, deciding: false, coachSay: null, stick: null, dragTo: null });
     this.keys.clear();
-    Object.assign(this.st, { scene, step: 0, page: 0, choosing: false, pick: 0, list: false, overview: false, holes: [], pulls: 0, pack: 1, temp: 0.4 });
+    Object.assign(this.st, { scene, step: 0, page: 0, choosing: false, pick: 0, list: false, overview: false, holes: [], pulls: 0, pack: 1, temp: this.initTemp ?? 0.4 });
     this.quiet = false;
     this.render({ delay: arrive ? 1200 : 0 }); // 店に着いた時は、店名の札が出てから文字を送る
     this.hushCoach();
@@ -2259,6 +2351,10 @@ function showGallery() {
     const item = GALLERY[Number(el.dataset.i)], phone = new Phone(el, item.scene, { fixed: true, ...item });
     phones.push(phone);
     // 大会のコメントの見本: ランクの絵を真ん中に大きく出し、コメントを流れの途中で止めて見せる
+    if (item.smokeDemo) { // 吐く煙の見本: 温度を変えずに、数秒おきに吐く
+      const puff = () => { if (!phone.dead && el.isConnected) { phone.exhale(); setTimeout(puff, 4200); } };
+      setTimeout(puff, 900 + Number(el.dataset.i) % 5 * 150);
+    }
     if (item.nico) {
       const show = () => { const img = document.createElement("img"); img.className = "rank-burst still"; img.alt = ""; img.src = IMG[`rank${GRADES[phone.st.grade]}`]; el.append(img); phone.nicoBurst("perfect", { frozen: true }); };
       BROADCAST_READY.then(show);
