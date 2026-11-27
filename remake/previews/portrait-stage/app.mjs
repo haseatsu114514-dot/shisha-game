@@ -54,6 +54,9 @@ const SPOTS = [
   { id: "rest", label: "家", area: "自宅", x: 89, y: 44, who: "自宅で休む", fee: "体力回復", thumb: "thumbHome" },
 ];
 const DEFAULT_SPOT = 3;
+// 左右キー・点・一覧の並び。地図の左から右の順にして、右を押すと画面も右へ動くようにする
+const ORDER = SPOTS.map((spot, i) => i).sort((a, b) => SPOTS[a].x - SPOTS[b].x);
+const stepSpot = (index, by) => ORDER[(ORDER.indexOf(index) + by + ORDER.length) % ORDER.length];
 
 // 会話の台本（data/dialogue/ch1_minto.json の ch1_minto_first、ch1_tsumugi.json の ch1_tsumugi_research から）
 const TALKS = {
@@ -123,8 +126,8 @@ function hudHtml(place) {
   </div>`;
 }
 
-function dpadHtml(live) {
-  const key = (dir, label) => `<button class="dp dp-${dir}${live.includes(dir) ? " live" : ""}" data-act="dir" data-dir="${dir}" aria-label="${label}">${tri()}</button>`;
+function dpadHtml(live, labels = {}) {
+  const key = (dir, label) => `<button class="dp dp-${dir}${live.includes(dir) ? " live" : ""}" data-act="dir" data-dir="${dir}" aria-label="${labels[dir] || label}">${tri()}${labels[dir] ? `<span>${labels[dir]}</span>` : ""}</button>`;
   return `<div class="dpad" role="group" aria-label="十字キー">${key("up", "上")}${key("left", "左")}${key("right", "右")}${key("down", "下")}<i class="dp-core"></i></div>`;
 }
 const aHtml = (label, { disabled = false, cls = "" } = {}) => `<button class="btn-a ${cls}" data-act="a" ${disabled ? "disabled" : ""}><span class="t">${label}</span><span class="k">A</span></button>`;
@@ -215,7 +218,7 @@ class Phone {
       <div class="glass dest${spot.closed ? " closed" : ""}" data-swipe>
         <div class="who">${spot.face ? `<img src="${IMG[spot.face]}" alt="">` : `<i>${spot.closed ? "休" : esc(spot.label[0])}</i>`}<span>${esc(spot.who)}</span></div>
         <div class="fee"><b>${esc(spot.fee)}</b></div>
-        <div class="dots">${SPOTS.map((s, i) => `<button data-act="spot" data-spot="${i}" aria-current="${i === this.st.sel}" aria-label="${esc(s.label)}" class="${s.mark ? "mark" : ""}"></button>`).join("")}</div>
+        <div class="dots">${ORDER.map((i) => `<button data-act="spot" data-spot="${i}" aria-current="${i === this.st.sel}" aria-label="${esc(SPOTS[i].label)}" class="${SPOTS[i].mark ? "mark" : ""}"></button>`).join("")}</div>
       </div>`;
   }
 
@@ -223,12 +226,12 @@ class Phone {
     const { st } = this, spot = SPOTS[st.sel];
     const marks = SPOTS.filter((s) => s.mark).length;
     return `${chipsHtml([["lime", "LIME", "1"], ["menu", "MENU"], ["list", "一覧", "", st.list], ["next", `！の店 ${marks}`]])}
-      ${dpadHtml(st.list ? "up down" : "up down left right")}${aHtml(st.list ? "決定" : spot.closed ? "定休日" : "行く", { disabled: !st.list && spot.closed })}`;
+      ${dpadHtml(st.list ? "up down" : "up down left right", st.list ? {} : { up: st.overview ? "寄る" : "全体", down: "一覧" })}${aHtml(st.list ? "決定" : spot.closed ? "定休日" : "行く", { disabled: !st.list && spot.closed })}`;
   }
 
   sheetHtml() {
     return `<header><b>行き先</b><small>${SPOTS.length}か所</small><button data-act="list" aria-label="閉じる">閉じる</button></header>
-      <div class="rows">${SPOTS.map((spot, i) => `<button class="row${spot.closed ? " closed" : ""}" data-act="spot-go" data-spot="${i}" aria-current="${i === this.st.sel}">
+      <div class="rows">${ORDER.map((i) => [SPOTS[i], i]).map(([spot, i]) => `<button class="row${spot.closed ? " closed" : ""}" data-act="spot-go" data-spot="${i}" aria-current="${i === this.st.sel}">
         <span class="thumb">${spot.face ? `<img src="${IMG[spot.face]}" alt="">` : spot.thumb ? `<img src="${IMG[spot.thumb]}" alt="">` : `<i>${esc(spot.label[0])}</i>`}</span>
         <span class="main"><b>${esc(spot.label)}</b><small>${esc(spot.area)}・${esc(spot.who)}</small></span>
         <span class="side">${spot.mark ? `<em>!</em>` : ""}<small>${esc(spot.fee)}</small></span></button>`).join("")}</div>`;
@@ -285,7 +288,7 @@ class Phone {
       const cx = Math.min(w - 14, Math.max(14, px)), cy = Math.min(bottom, Math.max(top, py));
       list.push({ i, spot, px, py, cx, cy, side: px < w / 2 ? "l" : "r" });
     });
-    const gap = w * 0.092; // 案内1つぶんの高さ
+    const gap = w * 0.102; // 案内1つぶんの高さ
     for (const side of ["l", "r"]) {
       const group = list.filter((b) => b.side === side).sort((a, b) => a.py - b.py);
       group.forEach((b, n) => { if (n && b.cy < group[n - 1].cy + gap) b.cy = group[n - 1].cy + gap; });
@@ -296,10 +299,10 @@ class Phone {
     }).join("");
   }
 
-  select(index, { keepList = false } = {}) {
+  select(index, { keepList = false, keepView = false } = {}) {
     const { st } = this;
     st.sel = index;
-    if (st.overview) st.overview = false;
+    if (st.overview && !keepView) st.overview = false;
     if (!keepList) st.list = false;
     this.cam = null;
     this.patch();
@@ -307,6 +310,12 @@ class Phone {
     this.syncView();
     const row = this.el.querySelector('.sheet .row[aria-current="true"]');
     row?.scrollIntoView?.({ block: "nearest" });
+  }
+
+  toggleOverview() {
+    const { st } = this;
+    st.overview = !st.overview; st.list = false; this.cam = null;
+    this.syncView(); this.patch(); this.camera(true);
   }
 
   /** 寄り／全体の切り替えを、地図と小さい全体図の見た目へ反映する。 */
@@ -488,7 +497,7 @@ class Phone {
     if (act === "dir") this.move(hit.dataset.dir);
     else if (act === "spot") this.select(Number(hit.dataset.spot), { keepList: false });
     else if (act === "spot-go") this.select(Number(hit.dataset.spot));
-    else if (act === "overview") { st.overview = !st.overview; st.list = false; this.cam = null; this.syncView(); this.patch(); this.camera(true); }
+    else if (act === "overview") this.toggleOverview();
     else if (act === "list") { st.list = !st.list; this.patch(); }
     else if (act === "pick") { const same = st.pick === Number(hit.dataset.pick); st.pick = Number(hit.dataset.pick); this.applyLine({ instant: true }); if (same) this.pressA(); }
     else if (act === "pack") { st.pack = Number(hit.dataset.pack); this.patch(); }
@@ -498,8 +507,8 @@ class Phone {
       const id = hit.dataset.fn;
       if (id === "list") { st.list = !st.list; this.patch(); }
       else if (id === "next") { // 「！」の付いた店を順に回る
-        const order = SPOTS.map((spot, i) => i).filter((i) => SPOTS[i].mark);
-        this.select(order[(order.indexOf(st.sel) + 1) % order.length]);
+        const marks = ORDER.filter((i) => SPOTS[i].mark), after = marks.find((i) => ORDER.indexOf(i) > ORDER.indexOf(st.sel));
+        this.select(after ?? marks[0]);
       } else if (id === "auto" || id === "skip") { st[id] = !st[id]; hit.classList.toggle("on", st[id]); }
     }
   }
@@ -528,25 +537,18 @@ class Phone {
     if (this.drag) { this.dragged = this.drag.moved; this.drag = null; if (this.dragged) setTimeout(() => { this.dragged = false; }, 0); return; }
     if (this.swipe) {
       const dx = event.clientX - this.swipe.x; this.swipe = null;
-      if (Math.abs(dx) > 36) { this.dragged = true; setTimeout(() => { this.dragged = false; }, 0); this.select((this.st.sel + (dx < 0 ? 1 : SPOTS.length - 1)) % SPOTS.length); }
+      if (Math.abs(dx) > 36) { this.dragged = true; setTimeout(() => { this.dragged = false; }, 0); this.select(stepSpot(this.st.sel, dx < 0 ? 1 : -1)); }
     }
   }
 
   move(dir) {
     const { st } = this, line = this.line;
     if (st.scene === "map") {
-      if (st.list) { if (dir === "up" || dir === "down") this.select((st.sel + (dir === "down" ? 1 : SPOTS.length - 1)) % SPOTS.length, { keepList: true }); return; }
-      // 押した方向にある近い店へ。その方向に店が無ければ動かさない。
-      const here = SPOTS[st.sel], vec = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[dir];
-      let best = -1, bestScore = Infinity;
-      SPOTS.forEach((spot, i) => {
-        if (i === st.sel) return;
-        const dx = (spot.x - here.x) * 16 / 9, dy = spot.y - here.y, dist = Math.hypot(dx, dy), along = (dx * vec[0] + dy * vec[1]) / dist;
-        if (along < 0.42) return;
-        const score = dist / along ** 2;
-        if (score < bestScore) { bestScore = score; best = i; }
-      });
-      if (best >= 0) this.select(best);
+      if (st.list) { if (dir === "up" || dir === "down") this.select(stepSpot(st.sel, dir === "down" ? 1 : -1), { keepList: true }); return; }
+      // 左右で隣の店へ順に送る（地図の左から右の順。端まで行くと反対の端へ）。上は全体／寄る、下は一覧。
+      if (dir === "left" || dir === "right") this.select(stepSpot(st.sel, dir === "right" ? 1 : -1), { keepView: true });
+      else if (dir === "up") this.toggleOverview();
+      else { st.list = true; this.patch(); }
     } else if (this.talk && st.choosing && line.choice && (dir === "up" || dir === "down")) {
       st.pick = (st.pick + (dir === "down" ? 1 : line.choice.length - 1)) % line.choice.length; this.applyLine({ instant: true });
     } else if (st.scene === "pack" && (dir === "up" || dir === "down")) {
@@ -559,7 +561,8 @@ class Phone {
     if (st.scene === "map") {
       if (st.list) { st.list = false; this.patch(); return; }
       if (SPOTS[st.sel].closed || this.fixed) return;
-      this.enterShop(st.sel === 0 ? "tonari" : "minto");
+      const scene = { tonari: "tonari", minto: "minto" }[SPOTS[st.sel].id];
+      if (scene) this.enterShop(scene); else this.toast("この試作で入れるのは PEPPERMINT と tonari です");
       return;
     }
     if (this.talk) {
@@ -583,6 +586,14 @@ class Phone {
       this.patch();
       setTimeout(() => { this.hold = 0; if (st.pulls >= 5) { if (this.fixed) { st.pulls = 0; this.patch(); } else this.setScene("map"); } }, 700);
     }
+  }
+
+  toast(text) {
+    this.el.querySelector(".toast")?.remove();
+    const note = document.createElement("div");
+    note.className = "toast"; note.textContent = text;
+    this.el.append(note);
+    setTimeout(() => note.remove(), 2200);
   }
 
   /** 穴あけ: 押していた長さで穴の大きさ、針先の位置で当たりを決める。 */
@@ -656,8 +667,8 @@ function showGallery() {
     <p class="g-lead">C案を第1章の場面で詰めた試作です。パッドを大きくしてテロップを少し上げ、立ち絵の位置と地図の動きを作り直しました。どの画面も十字キーとAを押せます。</p>
     <ul class="g-points">
       <li><b>立ち位置</b>1人は中央で少し寄り、2人は左右で身長差そのまま。話している側が手前で明るい</li>
-      <li><b>地図</b>選んだ店へ画面が動く。指でずらす・全体を見る・一覧・「！」の店へ飛ぶ</li>
-      <li><b>パッド</b>輪の十字キーとAを一回り大きく。作る場面は工程ごとの操作に替わる</li>
+      <li><b>地図</b>左右キーで隣の店へ画面が送られる。上で全体、下で一覧。指でずらす・「！」の店へ飛ぶ</li>
+      <li><b>パッド</b>輪の十字キーとAを大きく（幅の約半分と1/3強）。作る場面は工程ごとの操作に替わる</li>
     </ul>
     <p class="g-note">絵・立ち絵・台詞は本編の素材、配置と動きが今回の案です。本編の進行や保存には触れません。<a href="?view=play" data-go="play">1台で通して触る</a></p>
     <div class="g-grid">${GALLERY.map((item, i) => `<figure class="g-cell"><article class="phone" data-i="${i}"></article><figcaption>${item.caption}</figcaption></figure>`).join("")}</div>
