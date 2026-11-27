@@ -751,8 +751,6 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     const bestSlot = el("div.dr-best-slot");
     const bestLabel = key => key === "naru" ? "なる戦" : TIER_LABEL[key];
     const formatBest = top => `${top.score.toLocaleString("ja-JP")}点 ／ ${top.rank}`;
-    // 結果の段の札の注記（初級は評価のご褒美・自己ベストに数えない）。入口の段の札には出さない（下の tierSub）
-    const easyExclusions = "評価報酬の対象外";
     /**
      * 段の札の下の一言: 閉じていれば開く条件、クリア済み、呼び出し側の案内（本編は上級に白火）、この場で開いた、ほかは段の手触り。
      * 初級も同じ（2026-11-27 オーナー「報酬対象外とかシステム的な説明は載せないようにしたり、読むので疲れさせないで」で、
@@ -1698,7 +1696,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
           // 段（#3779）: 記録の板の上に、どの段の滑りかの札（なるとの勝負は段の外なので出さない）
           result.tier ? el("p.dr-result-tags", [
             el("b.dr-result-tier", { text: TIER_LABEL[result.tier], dataset: { test: "desert-result-tier", tier: result.tier } }),
-            result.tier === "easy" ? el("small", { text: easyExclusions }) : null,
+            // 初級の「評価報酬の対象外」の注記は、結果の札からも外した（2026-11-27 オーナー「全て推奨で適応」・DSR111。決まりは同じ）
           ]) : null,
           el("div.dr-rows", [
             statRow("滑走時間", `${result.time.toFixed(1)} 秒`, "desert-time"),
