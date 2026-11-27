@@ -87,21 +87,22 @@
 /* ───────── 下: 選んだマスの札と押す所（十字キーの代わりの専用UI） ───────── */
 .gb-panel { position: absolute; z-index: 6; left: 0; right: 0; bottom: 0; height: var(--gb-panel); display: flex; flex-direction: column; gap: 0.9rem; padding: 0.9rem 1.2rem max(1.2rem, env(safe-area-inset-bottom, 0px)); background: linear-gradient(180deg, #120c1df2, #0b0812); box-shadow: 0 -0.1rem 0 color-mix(in srgb, var(--bc) 60%, transparent), 0 -1.4rem 2.4rem #000a; }
 .gb-card { position: relative; flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; gap: 0.5rem; padding: 1.1rem 1.3rem 1.2rem; border: 0.1rem solid #ffffff30; border-radius: 1.9rem; background: linear-gradient(180deg, #1e163299, #0e0a18cc); box-shadow: inset 0 0.1rem 0 #ffffff3d; }
-.gb-card-head { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 1rem; }
+.gb-card-head { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1rem; }
 .gb-art { position: relative; width: 5.2rem; height: 5.2rem; display: grid; place-items: center; border-radius: 50%; background: url("../../img/ui/growth_board/socket.webp") center / 100% 100% no-repeat; box-shadow: 0 0 0 0.16rem var(--bc), 0 0 1rem color-mix(in srgb, var(--bc) 50%, transparent); }
 .gb-art img { width: 60%; height: 60%; object-fit: contain; } .gb-art b { position: absolute; font-size: 2.4rem; font-weight: 900; }
 .gb-card-head.k-lesson .gb-art img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: 50% 20%; } .gb-card-head.k-gate .gb-art img { width: 52%; height: 52%; }
-.gb-name { min-width: 0; display: grid; gap: 0.2rem; }
-.gb-name small { font-size: 1.22rem; font-weight: 700; letter-spacing: 0.04em; line-height: 1.2; color: var(--bc); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gb-name { min-width: 0; display: grid; gap: 0.3rem; }
+.gb-name > span { display: flex; align-items: center; gap: 0.8rem; min-width: 0; }
+.gb-name small { min-width: 0; font-size: 1.22rem; font-weight: 700; letter-spacing: 0.04em; line-height: 1.2; color: var(--bc); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gb-name b { font-size: 2.1rem; line-height: 1.2; letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.gb-chip { height: 2.7rem; padding: 0 1rem; display: grid; place-items: center; border-radius: 1.4rem; font-size: 1.2rem; font-weight: 700; white-space: nowrap; color: #e7e0f2; background: #ffffff1f; }
+.gb-chip { flex: none; height: 2.3rem; padding: 0 0.9rem; display: grid; place-items: center; border-radius: 1.2rem; font-style: normal; font-size: 1.16rem; font-weight: 700; line-height: 1; white-space: nowrap; color: #e7e0f2; background: #ffffff1f; }
 .gb-chip.s-available { color: #1a1228; background: #fff; } .gb-chip.s-pending { color: #2a1a06; background: var(--gold); } .gb-chip.s-unlocked { color: #1a1228; background: var(--bc); }
 .gb-chip.s-short { color: #ffb9a8; } .gb-chip.s-locked, .gb-chip.s-sealed { color: #ffffff99; }
 .gb-x { width: 3.6rem; height: 3.6rem; margin-right: -0.4rem; display: grid; place-items: center; border-radius: 50%; font-size: 2.2rem; line-height: 1; color: #ffffffb3; background: #ffffff14; }
 .gb-sub { margin: 0.2rem 0 0; font-size: 1.62rem; font-weight: 700; line-height: 1.45; letter-spacing: 0.01em; color: var(--gold); word-break: auto-phrase; line-break: strict; }
 .gb-text { position: relative; margin: 0; font-size: 1.56rem; line-height: 1.55; letter-spacing: 0.01em; color: #f1ecf9; word-break: auto-phrase; line-break: strict; }
-.gb-sub.small { font-size: 1.4rem; } .gb-text.small { font-size: 1.36rem; }
-.gb-text.more { padding-right: 2.4rem; } .gb-text.more::after { content: ""; position: absolute; right: 0.6rem; bottom: 0.7rem; width: 0.9rem; height: 0.9rem; border: solid var(--acc); border-width: 0 0.22rem 0.22rem 0; transform: rotate(45deg); animation: bob 1.2s ease-in-out infinite; }
+.gb-sub.gb-small { font-size: 1.4rem; } .gb-text.gb-small { font-size: 1.36rem; }
+.gb-text.gb-paged { padding-right: 2.4rem; } .gb-text.gb-paged::after { content: ""; position: absolute; right: 0.6rem; bottom: 0.7rem; width: 0.9rem; height: 0.9rem; border: solid var(--acc); border-width: 0 0.22rem 0.22rem 0; transform: rotate(45deg); animation: bob 1.2s ease-in-out infinite; }
 .gb-state { margin: 0; font-size: 1.26rem; line-height: 1.4; color: #ffffffa6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gb-state.s-available { color: var(--gold); } .gb-state.s-short { color: #ffb9a8; } .gb-state.s-unlocked { color: var(--bc); }
 .gb-actions { margin-top: auto; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 0.8rem; }
@@ -122,7 +123,7 @@
 .gb-perks { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; }
 .gb-perk { position: relative; min-width: 0; display: grid; justify-items: center; gap: 0.1rem; padding: 0.5rem 0.2rem 0.7rem; border-radius: 1.2rem; background: #0b081280; }
 .gb-perk img { width: 2.5rem; height: 2.5rem; } .gb-perk b { font-size: 1.5rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
-.gb-perk small { max-width: 100%; font-size: 1.02rem; line-height: 1.2; text-align: center; color: #ffffffb3; overflow-wrap: anywhere; }
+.gb-perk small { max-width: 100%; font-size: 1.02rem; line-height: 1.2; text-align: center; color: #ffffffb3; word-break: auto-phrase; overflow-wrap: anywhere; }
 .gb-perk > i { position: absolute; left: 0.6rem; right: 0.6rem; bottom: 0.25rem; height: 0.26rem; border-radius: 1rem; background: #ffffff26; overflow: hidden; } .gb-perk > i > i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--bc); transition: width 0.4s; }
 .gb-perk.up b { color: var(--gold); } .gb-perk.up { box-shadow: inset 0 0 0 0.12rem #ffe2a680; }
 .gb-sum-label { margin-top: 0.2rem; font-size: 1.16rem; font-weight: 700; letter-spacing: 0.14em; color: #ffffff99; }
@@ -159,7 +160,7 @@
   .gb-top, .gb-view, .gb-panel { --gb-top: 10.5rem; --gb-panel: 26.4rem; }
   .gb-head { height: 3.6rem; } .gb-head h2 { font-size: 2rem; } .gb-tabs { margin-top: 0.6rem; } .gb-tab { height: 4.2rem; } .gb-tab > i { width: 2.9rem; height: 2.9rem; font-size: 1.8rem; }
   .gb-panel { gap: 0.7rem; padding-top: 0.7rem; } .gb-card { padding: 0.8rem 1.1rem 0.9rem; gap: 0.3rem; } .gb-art { width: 4.2rem; height: 4.2rem; } .gb-name b { font-size: 1.9rem; }
-  .gb-sub { font-size: 1.5rem; margin-top: 0; } .gb-text { font-size: 1.44rem; line-height: 1.5; } .gb-sub.small { font-size: 1.3rem; } .gb-text.small { font-size: 1.26rem; } .gb-state { font-size: 1.18rem; }
+  .gb-sub { font-size: 1.5rem; margin-top: 0; } .gb-text { font-size: 1.44rem; line-height: 1.5; } .gb-sub.gb-small { font-size: 1.3rem; } .gb-text.gb-small { font-size: 1.26rem; } .gb-state { font-size: 1.18rem; }
   .gb-btn { height: 4.4rem; font-size: 1.5rem; } .gb-foot .gb-btn.big, .gb-foot .gb-btn:not(.big) { height: 4.6rem; font-size: 1.64rem; }
   .gb-perk { padding: 0.3rem 0.2rem 0.6rem; } .gb-perk img { width: 2.1rem; height: 2.1rem; } .gb-perk b { font-size: 1.36rem; } .gb-perk small { font-size: 0.96rem; }
   .gb-sum-head b { font-size: 1.8rem; } .gb-goal { padding: 0.4rem 0.6rem; } .gb-goal-ico { width: 3rem; height: 3rem; } .gb-zoom { height: 4.4rem; top: 0.8rem; }

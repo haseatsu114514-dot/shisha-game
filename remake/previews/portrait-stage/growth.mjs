@@ -403,8 +403,7 @@ export class GrowthScene {
     this.refs.card.innerHTML = `
       <div class="gb-card-head k-${node.peak ? "peak" : node.kind} s-${st}">
         <span class="gb-art"><img src="${this.nodeIcon(node)}" alt="">${node.kind === "lesson" && !known ? `<b>?</b>` : ""}</span>
-        <div class="gb-name"><small>${esc(kind)}</small><b>${esc(name)}</b></div>
-        <span class="gb-chip s-${st}">${this.statusWord(node, st)}</span>
+        <div class="gb-name"><span><small>${esc(kind)}</small><em class="gb-chip s-${st}">${this.statusWord(node, st)}</em></span><b>${esc(name)}</b></div>
         <button class="gb-x" data-act="gb-close" aria-label="選ぶのをやめる">×</button>
       </div>
       ${sub ? `<p class="gb-sub" data-fit>${esc(sub)}</p>` : ""}
@@ -454,15 +453,15 @@ export class GrowthScene {
     for (const node of this.refs.card.querySelectorAll("[data-fit]")) {
       const text = node.dataset.full ?? node.textContent;
       node.dataset.full = text;
-      node.classList.remove("small");
+      node.classList.remove("gb-small");
       node.textContent = text;
       if (!text || !node.clientWidth) continue;
       let pages = paginateForBox(text, node);
-      if (pages.length > 1) { node.classList.add("small"); pages = paginateForBox(text, node); }
+      if (pages.length > 1) { node.classList.add("gb-small"); pages = paginateForBox(text, node); }
       const at = Math.min(Number(node.dataset.page) || 0, pages.length - 1);
       node.innerHTML = plain(pages[at]);
       // 2行に収まらない文は2行ずつに分け、押すと続きが出る（説明は2行まで・VPL29）
-      node.classList.toggle("more", pages.length > 1);
+      node.classList.toggle("gb-paged", pages.length > 1);
       if (pages.length > 1) { node.dataset.act = "gb-more"; node.dataset.pages = String(pages.length); node.dataset.page = String(at); }
     }
   }
@@ -506,7 +505,7 @@ export class GrowthScene {
     const s = this.overview || this.cam.s < 0.8 ? 1 : this.cam.s;
     this.overview = false;
     // もう見えている所にあるマスは動かさない（押すたびに盤が動くと落ち着かない）
-    const sx = x * s + this.cam.x, sy = y * s + this.cam.y, pad = 3.6;
+    const sx = x * s + this.cam.x, sy = y * s + this.cam.y, pad = 2.2;
     if (s === this.cam.s && sx > pad && sx < w - pad && sy > pad && sy < h - pad) return;
     this.setCam({ s, x: w / 2 - x * s, y: h * 0.5 - y * s });
   }
