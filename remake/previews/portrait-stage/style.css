@@ -2,6 +2,7 @@
 @font-face { font-family: "PS Gothic"; src: url("../../fonts/NotoSansJP-Medium.woff2?v=20261122") format("woff2"); font-weight: 100 599; font-display: swap; }
 @font-face { font-family: "PS Gothic"; src: url("../../fonts/NotoSansJP-Bold.woff2?v=20261122") format("woff2"); font-weight: 600 900; font-display: swap; }
 @font-face { font-family: "PS Mincho"; src: url("../../fonts/ZenOldMincho-Name-Bold.woff2?v=20261122") format("woff2"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Craft Mincho"; src: url("../../fonts/ZenOldMincho-Craft.woff2?v=20261122") format("woff2"); font-weight: 700; font-display: swap; }
 
 :root {
   --gothic: "PS Gothic", "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
@@ -229,26 +230,17 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .bowl { position: absolute; left: 46%; top: 18%; height: 56%; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 2rem 2.4rem #000c); }
 .foil { position: absolute; left: 46%; top: 17%; width: 27.6rem; aspect-ratio: 1; transform: translateX(-50%); filter: drop-shadow(0 1.6rem 2.4rem #000c); }
 .foil img { width: 100%; height: 100%; } .foil-marks { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.foil-marks .todo { fill: #0b08128c; }
-.foil-marks .target rect { fill: none; stroke: #fff; stroke-width: 1.6; filter: drop-shadow(0 0 2px #ffcf6b); }
-.foil-marks .hole { fill: #0b0812; stroke: #00000080; stroke-width: 0.8; } .foil-marks .hole.good { stroke: #ffe2a6; stroke-width: 1.2; }
-.foil-marks .tip { fill: none; stroke: #5ee6ff; stroke-width: 2.2; filter: drop-shadow(0 0 3px #5ee6ff); }
+.foil-marks .todo { fill: #fff8e8; stroke: #0b081266; stroke-width: 0.5; opacity: 0.85; }
+.foil-marks .target rect { fill: none; stroke: #fff; stroke-width: 1.3; filter: drop-shadow(0 0 2px #ffcf6b); }
+.foil-marks .target .ideal { fill: #0b081233; stroke: #ffe2a6; stroke-width: 0.9; stroke-dasharray: 1.6 1.2; }
+.foil-marks .hole { fill: #0b0812; stroke: #fbf4e0; stroke-width: 0.7; } .foil-marks .hole.good { stroke: #ffe2a6; stroke-width: 1; filter: drop-shadow(0 0 2px #ffcf6b); }
+.foil-marks .tip { fill: none; stroke: #5ee6ff; stroke-width: 1.6; filter: drop-shadow(0 0 3px #5ee6ff); }
 .pic.craft-pull > .bg { filter: brightness(0.85); transform: none; }
 .pic.craft-holes { -webkit-mask-image: linear-gradient(180deg, #000 0, #000 86%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 86%, transparent 100%); }
 .pic.craft-holes .foil { top: auto; bottom: 6.4rem; }
-.pull-actor { position: absolute; max-width: none; height: 82%; left: -36%; bottom: 4%; filter: drop-shadow(0 0.6rem 1.4rem #0008); }
 .puff { position: absolute; max-width: none; width: 60%; left: 34%; top: 14%; opacity: 0; pointer-events: none; mix-blend-mode: screen; }
 .phone.puffing .puff { animation: puff 1.5s var(--ease-out); }
 @keyframes puff { 0% { opacity: 0; transform: translate(0, 12%) scale(0.5); } 22% { opacity: 0.85; } 100% { opacity: 0; transform: translate(-6%, -22%) scale(1.25); } }
-/* 穴あけ: 押している長さの輪 */
-.dial { position: absolute; left: 0.9rem; top: var(--pad-top); width: var(--ring); height: var(--ring); border-radius: 50%; display: grid; align-content: center; justify-items: center; border: 0.1rem solid #ffffff40; background: radial-gradient(circle, #ffffff0a, #ffffff1f); -webkit-backdrop-filter: blur(1.4rem); backdrop-filter: blur(1.4rem); box-shadow: 0 1.2rem 2.6rem #000a, inset 0 0.1rem 0 #ffffff59; }
-.dial svg { position: absolute; inset: 0; transform: rotate(-90deg); }
-.dial-bg { fill: none; stroke: #ffffff26; stroke-width: 7; }
-.dial-just { fill: none; stroke: #ffffffb3; stroke-width: 7; stroke-dasharray: 32 68; stroke-dashoffset: -30; }
-.dial-fill { fill: none; stroke: var(--acc); stroke-width: 7; stroke-linecap: round; stroke-dasharray: calc(var(--fill) * 100) 100; filter: drop-shadow(0 0 3px var(--acc)); }
-.dial b { font-size: 4rem; line-height: 1; font-variant-numeric: tabular-nums; } .dial b small { font-size: 1.8rem; color: #ffffffa6; }
-.dial span { margin-top: 0.5rem; font-size: 1.22rem; font-weight: 700; letter-spacing: 0.1em; color: #ffffffb3; }
-.dial em { margin-top: 0.3rem; font-style: normal; font-size: 1.22rem; font-weight: 700; color: var(--acc); }
 /* 吸い出し: メーターの中心に「吸う」 */
 .gauge { position: absolute; left: 3.2rem; right: 3.2rem; top: calc(6.6rem + var(--aux-g, 0rem)); }
 .gauge .lab { position: absolute; top: 0.2rem; font-size: 1.22rem; font-weight: 700; letter-spacing: 0.1em; text-shadow: 0 0.1rem 0.5rem #000; }
@@ -309,8 +301,8 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .row .perk { height: 3.2rem; padding: 0 1rem 0 0.8rem; } .row .perk .ic { font-size: 1.8rem; } .row .perk b { font-size: 1.7rem; } .row .perk small { font-size: 1.3rem; }
 .row .stamp { width: 3.2rem; height: 3.2rem; font-size: 1.5rem; } .row.closed .ava img { filter: grayscale(1) brightness(0.65); }
 /* シーシャ作り: 上は工程の並びだけ */
-.steps { position: absolute; z-index: 5; left: 50%; top: max(1.3rem, env(safe-area-inset-top, 0px)); transform: translateX(-50%); display: flex; align-items: center; gap: 0.3rem; padding: 0.5rem; border: 0.1rem solid #ffffff26; border-radius: 3rem; background: #120c1d99; -webkit-backdrop-filter: blur(1rem); backdrop-filter: blur(1rem); }
-.steps span { width: 3.2rem; height: 3.2rem; display: grid; place-items: center; border-radius: 3rem; font-size: 1.8rem; color: #ffffff59; }
+.steps { position: absolute; z-index: 5; left: 50%; top: max(1.3rem, env(safe-area-inset-top, 0px)); transform: translateX(-50%); display: flex; align-items: center; gap: 0.2rem; padding: 0.5rem; border: 0.1rem solid #ffffff26; border-radius: 3rem; background: #120c1d99; -webkit-backdrop-filter: blur(1rem); backdrop-filter: blur(1rem); }
+.steps span { width: 3rem; height: 3rem; display: grid; place-items: center; border-radius: 3rem; font-size: 1.8rem; color: #ffffff59; }
 .steps span.done { color: var(--acc); }
 .steps span.now { width: auto; display: flex; gap: 0.6rem; padding: 0 1.3rem 0 1rem; color: var(--deep); background: var(--acc); box-shadow: 0 0 1.6rem color-mix(in srgb, var(--acc) 55%, transparent); }
 .steps span.now b { font-family: var(--mincho); font-size: 1.75rem; letter-spacing: 0.08em; white-space: nowrap; }
@@ -318,6 +310,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .coach { display: flex; align-items: flex-end; gap: 1rem; width: 100%; margin-bottom: 0.2rem; text-align: left; }
 .coach img { flex: none; width: 5.2rem; height: 5.2rem; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 0.15rem var(--acc), 0 0.4rem 1rem #000a; }
 .coach .say { padding: 1.1rem 1.6rem 1.2rem; border: 0.1rem solid #ffffff30; border-radius: 1.9rem 1.9rem 1.9rem 0.5rem; font-size: 1.8rem; line-height: 1.6; font-weight: 500; letter-spacing: 0.03em; word-break: auto-phrase; background: linear-gradient(180deg, #1e1632cc, #0e0a18e6); -webkit-backdrop-filter: blur(1.6rem); backdrop-filter: blur(1.6rem); box-shadow: 0 1.2rem 2.4rem #000a, inset 0 0.1rem 0 #ffffff3d; transition: opacity 0.4s, transform 0.4s var(--ease-out); transform-origin: 0 100%; }
+.coach .say-text { display: block; }
 .coach.quiet .say { opacity: 0; transform: translateY(0.6rem) scale(0.94); }
 /* 詰め: 絵の札を横に3枚。密度は点の数で */
 .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; margin-top: 1rem; }
@@ -327,11 +320,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .dens { display: flex; gap: 0.4rem; } .dens i { width: 1rem; height: 1rem; border-radius: 50%; box-shadow: inset 0 0 0 0.16rem #ffffff80; } .dens i.on { background: var(--acc); box-shadow: 0 0 0.6rem var(--acc); }
 .card[aria-current="true"] { border-color: var(--acc); background: color-mix(in srgb, var(--acc) 24%, #120c1dcc); transform: translateY(-0.5rem); box-shadow: 0 0 0 0.15rem color-mix(in srgb, var(--acc) 55%, transparent), 0 0 2.4rem color-mix(in srgb, var(--acc) 40%, transparent), 0 0.8rem 1.6rem #0009; }
 .card.locked img, .card.locked b, .card.locked .dens { opacity: 0.45; } .card .ic { position: absolute; right: 0.8rem; top: 0.8rem; font-size: 1.8rem; color: #ffffffcc; }
-/* 穴あけ: 輪の点＝開けた穴、真ん中の丸＝押している間の大きさ */
-.dial svg { transform: none; }
 .pip { fill: #ffffff33; } .pip.done { fill: #fff; } .pip.good { fill: #ffe2a6; filter: drop-shadow(0 0 2px #ffcf6b); }
-.want { fill: none; stroke: #ffffff38; stroke-width: 7.4; } .grow { fill: var(--acc); opacity: 0.92; }
-.last { fill: #fff; opacity: 0.9; } .last.good { fill: #ffe2a6; filter: drop-shadow(0 0 4px #ffcf6b); } .last.over { fill: #ff8a7e; } .last.under { fill: #ffffffa6; }
 .foil-marks .tip.ok { stroke: #ffe2a6; filter: drop-shadow(0 0 4px #ffcf6b); }
 .foil-marks .grow-hole { fill: #0b0812; stroke: #fff; stroke-width: 0.8; } .foil-marks .grow-hole.good { stroke: #ffe2a6; stroke-width: 1.3; filter: drop-shadow(0 0 3px #ffcf6b); } .foil-marks .grow-hole.over { stroke: #ff6b5e; stroke-width: 1.3; }
 
@@ -343,6 +332,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .pr-good { fill: none; stroke: #ffe2a6; stroke-width: 3.2; opacity: 0.55; transition: opacity 0.2s; }
 .pr-fill { fill: none; stroke: #fff; stroke-width: 4.6; stroke-linecap: round; }
 .btn-a.hold.pressing .pr-good { opacity: 1; filter: drop-shadow(0 0 2px #ffcf6b); }
+.btn-a.hold:not(.pressing) .pr-fill { opacity: 0; }
 .btn-a.hold[data-zone="good"] { border-color: #ffe2a6; box-shadow: 0 0 0 0.8rem #ffe2a62e, 0 0 4rem #ffcf6b, 0 1.4rem 2.6rem #000b, inset 0 0.25rem 0.5rem #ffffff80; }
 .btn-a.hold[data-zone="good"] .pr-fill { stroke: #ffe2a6; filter: drop-shadow(0 0 3px #ffcf6b); } .btn-a.hold[data-zone="good"] .t { color: #fff3d6; }
 .btn-a.hold[data-zone="over"] { border-color: #ff6b5e; } .btn-a.hold[data-zone="over"] .pr-fill { stroke: #ff6b5e; } .btn-a.hold[data-zone="over"] .t { color: #ffd2cc; }
@@ -498,6 +488,294 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .cv-telop-flavor small { font-size: 1.2rem; font-weight: 700; color: var(--acc); } .cv-telop-flavor b { font-size: 1.7rem; }
 .phone.cutin-on .ctrl .btn-a::before { animation-duration: 1.4s; }
 
+/* ───────── 画像生成で作った操作部品（gpt-image-2.6-sunburst。原画とプロンプトは asset_sources/ui/portrait-stage-20261127/） ───────── */
+/* 十字キー: 煙を閉じ込めたガラスの円盤と真鍮の縁（X字の溝で4つに分かれた絵）。三角と役割の絵記号はコードで重ねる */
+.dpad { overflow: hidden; border: 0; background: url("img/ui-dpad.webp") center / 100% 100% no-repeat; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: 0 1.2rem 2.6rem #000a, 0 0 2.4rem color-mix(in srgb, var(--acc) 18%, transparent); }
+.dp-core { display: none; }
+.dp { color: #ffffff4d; } .dp.live { color: #fff; }
+.dp:active { background: color-mix(in srgb, var(--acc) 34%, transparent); }
+/* 丸ボタン: 煙のガラスの面と真鍮の縁。場面の色は中心の光で重ねる */
+.btn-a { border: 0; -webkit-backdrop-filter: none; backdrop-filter: none;
+  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--acc) 34%, transparent) 0%, color-mix(in srgb, var(--acc) 10%, transparent) 46%, transparent 66%), url("img/ui-button.webp") center / 100% 100% no-repeat;
+  box-shadow: 0 0 3.4rem color-mix(in srgb, var(--acc) 42%, transparent), 0 1.4rem 2.6rem #000b; }
+.btn-a.hot { box-shadow: 0 0 0 0.35rem #ffffffcc, 0 0 4.6rem #fff, 0 0 2rem var(--acc), 0 1.4rem 2.6rem #000b; }
+.btn-a.hold[data-zone="good"] { box-shadow: 0 0 0 0.35rem #ffe2a6, 0 0 4.4rem #ffcf6b, 0 1.4rem 2.6rem #000b; }
+.btn-a.hold[data-zone="over"] { box-shadow: 0 0 0 0.35rem #ff6b5e, 0 0 3.4rem #ff6b5e99, 0 1.4rem 2.6rem #000b; }
+.btn-a.hold[data-zone="under"] { box-shadow: 0 0 0 0.3rem #ffffffb3, 0 1.4rem 2.6rem #000b; }
+
+
+/* 穴あけの「刺す」（VPL27）: 真ん中に大きく。押すと色が下から上へ一気に満ち、満ちた瞬間に金に光って弾む（ここで離す）。0.5秒を越えると赤＝深すぎ */
+.btn-a.hold.center { overflow: hidden; }
+.btn-a.hold .fill { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; transform-origin: 50% 100%; transform: scaleY(var(--level, 0));
+  background: linear-gradient(0deg, #fff8e6e6, #ffffffb3); mix-blend-mode: screen; opacity: 0.55; transition: transform 0.18s ease-out, background 0.15s; }
+.btn-a.hold.pressing .fill { transition: none; }
+.btn-a.hold .fill-line { position: absolute; left: 8%; right: 8%; bottom: calc(var(--level, 0) * 100%); height: 0.25rem; margin-bottom: -0.12rem; border-radius: 1rem; background: #fff; box-shadow: 0 0 0.8rem #fff; opacity: 0; pointer-events: none; }
+.btn-a.hold.pressing[data-zone="under"] .fill-line { opacity: 1; }
+.btn-a.hold[data-zone="good"] .fill { background: linear-gradient(0deg, #ffcf6b, #fff3d6); opacity: 0.8; }
+.btn-a.hold[data-zone="good"] .t { color: #3a2408; text-shadow: 0 0.1rem 0 #fff8e6; }
+.btn-a.hold.pressing[data-zone="good"] { animation: hole-full 0.22s ease-out; }
+.btn-a.hold[data-zone="over"] .fill { background: linear-gradient(0deg, #ff3b2e, #ff9a8f); opacity: 0.75; animation: hole-over 0.3s steps(2) infinite; }
+.btn-a.hold .t { position: relative; z-index: 1; }
+@keyframes hole-full { 0% { scale: calc(1 - var(--fill) * 0.1); } 45% { scale: 1.07; } 100% { scale: calc(1 - var(--fill) * 0.1); } }
+@keyframes hole-over { 50% { opacity: 0.45; } }
+.btn-a.hold.center { top: calc(10.2rem + var(--aux-g, 0rem)); width: 15rem; height: 15rem; margin-left: -7.5rem; }
+.btn-a.hold.center::after { z-index: 2; }
+.hole-pips { position: absolute; left: 50%; top: calc(10.2rem + var(--aux-g, 0rem) - 3.2rem); width: 21.4rem; height: 21.4rem; margin-left: -10.7rem; pointer-events: none; overflow: visible; }
+.hole-pips .pip { fill: #ffffff26; stroke: #ffffff4d; stroke-width: 0.5; } .hole-pips .pip.done { fill: #fff; } .hole-pips .pip.good { fill: #ffe2a6; filter: drop-shadow(0 0 1.5px #ffcf6b); }
+
+/* 丸ボタンの顔（VPL31・VPL32）: 店に入る・決めるは漢字の「決定」。次へ・休みは線画、刺す・吸うは道具の絵 */
+.btn-a .glyph { display: block; width: 1.75em; height: 1.75em; fill: none; stroke: currentColor; stroke-width: 2.7; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0.2rem 0.5rem #0b0812) drop-shadow(0 0 0.15rem #0b0812); overflow: visible; }
+.btn-a .t:has(> .glyph) { margin-right: 0; }
+.btn-a[disabled] .t:has(> .glyph) { font-size: 3rem; opacity: 0.55; }
+.btn-a .t.tool { position: absolute; z-index: 1; inset: 0; margin: 0; display: block; }
+/* 刺す・吸うは道具の白い図形（VPL34）。ボタンいっぱいの 100×100 */
+/* ボタンの縁から離すため、真ん中の78%に収める（VPL35） */
+.tool-svg { position: absolute; inset: 11%; width: 78%; height: 78%; overflow: visible; fill: currentColor; filter: drop-shadow(0 0.2rem 0.5rem #0b0812) drop-shadow(0 0 0.15rem #0b0812); }
+/* 刺す: 押し具合（--level）で針が下がってアルミを突く。満ちた所で金の火花、深すぎると針がさらに沈む */
+.tool-needle .gl-needle { transform: translateY(calc(var(--level, 0) * 8px)); transition: transform 0.2s var(--ease-out); }
+.btn-a.hold.pressing .tool-needle .gl-needle { transition: none; }
+.btn-a.hold[data-zone="over"] .tool-needle .gl-needle { transform: translateY(11px); }
+.tool-needle .gl-foil, .tool-needle .gl-dent { fill: none; stroke: currentColor; stroke-width: 3.4; stroke-linecap: round; }
+.tool-needle .gl-dent { opacity: clamp(0, calc((var(--level, 0) - 0.55) * 4), 1); }
+.tool-needle .gl-spark { fill: none; stroke: #ffcf6b; stroke-width: 3.2; stroke-linecap: round; opacity: 0; transition: opacity 0.12s; }
+.btn-a.hold[data-zone="good"] .gl-spark, .btn-a.hold.res-good .gl-spark { opacity: 1; }
+.btn-a.hold[data-zone="good"] .gl-spark { stroke: #b06d10; }
+/* 吸う: 持ち手の細い溝と、少し透けた吸い口。吸うたびに少し動いて光る */
+.tool-mouthpiece .gl-ring { fill: none; stroke: #0b0812; stroke-opacity: 0.55; stroke-width: 1.4; }
+.tool-mouthpiece .gl-tip { opacity: 0.72; }
+.tool-mouthpiece .gl-mp { transform-origin: 50px 50px; transition: transform 0.35s var(--ease-out); }
+.phone.puffing .tool-mouthpiece .gl-mp { transform: translate(2px, -2px) scale(1.05); }
+.phone.puffing .tool-mouthpiece { filter: drop-shadow(0 0 0.9rem var(--acc)) drop-shadow(0 0.2rem 0.5rem #0b0812); }
+
+/* 工程の並びは絵記号だけ。今の工程は少し大きい光る丸 */
+.steps span.now { width: 4.2rem; height: 3.4rem; padding: 0; display: grid; font-size: 2.1rem; }
+
+/* 制作ランク（VPL30）: 案A パッドの裏に透かし／案B 舞台の左上の札／案C 工程の段の右端。絵は本編の D〜SSS */
+.rank { position: absolute; pointer-events: none; }
+.rank-box { position: relative; display: block; }
+.rank-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.rank-meter { position: relative; display: block; height: 0.5rem; margin: 0.2rem auto 0; border-radius: 1rem; background: #0b081299; box-shadow: inset 0 0 0 0.1rem #ffffff26; overflow: hidden; }
+.rank-meter i { display: block; height: 100%; width: calc(var(--p, 0) * 100%); border-radius: inherit; background: linear-gradient(90deg, #ffcf6b, #fff3d6); box-shadow: 0 0 0.8rem #ffcf6b; transition: width 0.35s var(--ease-out); }
+.rank.waiting .rank-box { opacity: 0; }
+.rank.landed .rank-box { animation: rank-land 0.6s var(--ease-out); }
+@keyframes rank-land { 0% { filter: brightness(2) drop-shadow(0 0 1.4rem #ffcf6b); transform: scale(1.14); } 100% { filter: none; transform: none; } }
+.rank-burst { position: absolute; z-index: 30; left: 50%; top: 34%; width: 27rem; height: 24rem; object-fit: contain; transform: translate(-50%, -50%); pointer-events: none; filter: drop-shadow(0 0 2.4rem #000c); }
+
+.rank-b { z-index: 5; left: 1rem; top: 6.4rem; }
+.rank-b .rank-box { width: 11rem; height: 9.2rem; filter: drop-shadow(0 0.4rem 0.8rem #000b); }
+.rank-b .rank-meter { width: 7.6rem; }
+
+.rank-c { z-index: 5; right: 0.9rem; top: max(0.7rem, calc(env(safe-area-inset-top, 0px) - 0.6rem)); }
+.rank-c .rank-box { width: 7.6rem; height: 5.8rem; filter: drop-shadow(0 0.3rem 0.6rem #000b); }
+.rank-c .rank-meter { width: 5.6rem; height: 0.4rem; margin-top: 0; }
+.phone[data-rank="c"] .steps { left: 1rem; transform: none; }
+
+/* 案D（VPL33・VPL35）: 工程を終えた時に上の絵へどかっと出て、右上（工程の並びの右、熱ゲージの上）へ収まる */
+.rank-d { z-index: 5; right: 0.9rem; top: max(0.6rem, calc(env(safe-area-inset-top, 0px) - 0.6rem)); }
+.rank-d .rank-box { width: 8.2rem; height: 6.1rem; filter: drop-shadow(0 0.3rem 0.6rem #000b); }
+.rank-d .rank-meter { width: 6rem; height: 0.45rem; margin-top: 0; }
+.phone[data-rank="d"] .steps { left: 1rem; transform: none; }
+.rank-impact { position: absolute; z-index: 29; left: 50%; top: 34%; width: 26rem; height: 26rem; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); background: radial-gradient(circle, transparent 52%, #ffe2a6cc 58%, #ffcf6b66 64%, transparent 72%); }
+
+.rank-a { z-index: 0; left: 0; right: 0; bottom: 0; height: calc(var(--ctrl-h) + var(--aux-h, 0rem)); display: grid; place-items: center; }
+.rank-a .rank-box { width: 32rem; height: 25rem; margin-top: 4.4rem; -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent); mask-image: radial-gradient(closest-side, #000 62%, transparent); }
+.rank-a .rank-art { opacity: 0.16; filter: saturate(0.7); }
+.rank-a .rank-fill { opacity: 0.55; filter: none; clip-path: inset(calc((1 - var(--p, 0)) * 100%) 0 0 0); transition: clip-path 0.45s var(--ease-out); }
+
+/* ───────── 水入れ・配合・雑念よけ（VPL36） ───────── */
+/* 押している間だけ動くボタン（注ぐ・こぼす）は、押している間少し沈んで明るくなる */
+.btn-a.pressing:not(.hold) { transform: scale(0.95); filter: brightness(1.15); }
+.btn-a.center.pour { top: calc(10.6rem + var(--aux-g, 0rem)); width: 14rem; height: 14rem; margin-left: -7rem; }
+.btn-a.sub { top: calc(13.1rem + var(--aux-g, 0rem)); width: 9rem; height: 9rem; }
+.btn-a.sub.l { left: 1.6rem; right: auto; } .btn-a.sub.r { right: 1.6rem; }
+.btn-a.sub .t { font-size: 2.6rem; } .btn-a.sub .tool-svg { inset: 16%; width: 68%; height: 68%; }
+.btn-a.sub[disabled] .t { opacity: 0.5; }
+.tool-pour .gl-handle { fill: none; stroke: currentColor; stroke-width: 6; stroke-linecap: round; }
+.btn-a.pour.pressing .gl-drops circle { animation: drop-fall 0.42s linear infinite; }
+.btn-a.pour.pressing .gl-drops circle:nth-child(2) { animation-delay: -0.14s; } .btn-a.pour.pressing .gl-drops circle:nth-child(3) { animation-delay: -0.28s; }
+.btn-a.sub.pressing .gl-drop { animation: drop-fall 0.6s linear infinite; }
+@keyframes drop-fall { 0% { transform: translateY(-6px); opacity: 0.3; } 50% { opacity: 1; } 100% { transform: translateY(6px); opacity: 0.3; } }
+.tool-bomb .gl-swirl { fill: none; stroke: currentColor; stroke-width: 6.5; stroke-linecap: round; }
+.btn-a.bomb .cool { position: absolute; z-index: 2; inset: 0.5rem; border-radius: 50%; pointer-events: none; background: conic-gradient(#0b0812c4 calc(var(--cool, 0) * 360deg), transparent 0); }
+
+/* 水入れ（VPL36・VPL37）: 作り直したボトル（640×631）の中だけに水が満ちる。水面の色: 赤＝ステムに届いていない、緑＝ちょうど、金＝そのほか */
+.bottle { position: relative; aspect-ratio: 464 / 650; }
+.bottle > img, .bottle-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bottle > img { filter: drop-shadow(0 1.2rem 1.8rem #000b); }
+.bottle-svg { overflow: visible; }
+.w-body { opacity: 0.66; }
+.w-surf { fill: #e8fbff; transition: fill 0.2s; }
+[data-zone="none"] .w-surf { fill: #ff6b6b; } [data-zone="ideal"] .w-surf { fill: #5fe39a; } [data-zone="shallow"] .w-surf, [data-zone="deep"] .w-surf { fill: #ffd35a; }
+.w-line { fill: none; stroke: #fff3b0; stroke-width: 2.6; stroke-dasharray: 9 7; }
+[data-zone="ideal"] .w-line { stroke: #5fe39a; }
+.w-stream { fill: none; stroke: #9fe6f3; stroke-width: 7; stroke-linecap: round; opacity: 0; transition: opacity 0.12s; }
+.pouring .w-stream { opacity: 0.85; }
+.w-bubbles circle { fill: none; stroke: #e8fbff; stroke-width: 2; opacity: 0; }
+.pouring .w-bubbles circle { animation: bubble 1.1s linear infinite; animation-delay: calc(var(--i) * -0.22s); }
+@keyframes bubble { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 0.8; } 100% { transform: translateY(-110px); opacity: 0; } }
+.water-a { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 42% at 50% 44%, #ffe2a61f, transparent 70%); }
+.water-a .bottle { position: absolute; left: 50%; top: 5.6rem; width: 26.5rem; transform: translateX(-50%); }
+/* 配合: 器が葉で満ちていき、下の12の枠が葉の色で埋まる */
+.mixbowl { position: absolute; left: 50%; top: 6.4rem; width: 21rem; aspect-ratio: 1; transform: translateX(-50%); }
+.mixbowl img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 1rem 1.4rem #000a); }
+.mixbowl .b-airy, .mixbowl .b-full { opacity: 0; transition: opacity 0.25s; }
+.leaf-drop { position: absolute; top: 20%; width: 3rem; height: 3rem; pointer-events: none; }
+.leaf-drop img { width: 100%; height: 100%; filter: drop-shadow(0 0 0.35rem var(--c)); }
+.mixbar { position: absolute; left: 50%; top: 28rem; transform: translateX(-50%); display: flex; align-items: center; gap: 1rem; padding: 0.6rem 1.2rem; border: 0.1rem solid #ffffff26; border-radius: 3rem; background: #0b0812b3; }
+.mixbar .slots { display: flex; gap: 0.3rem; }
+.mixbar .slots i { width: 1.5rem; height: 1.9rem; border-radius: 0.4rem; background: var(--c, #ffffff14); box-shadow: inset 0 0 0 0.1rem #ffffff26; }
+.mixsum { font-size: 2.2rem; font-variant-numeric: tabular-nums; } .mixsum small { margin-left: 0.2rem; font-size: 1.2rem; color: #ffffffa6; }
+.mixbar.full { border-color: #ffe2a6; box-shadow: 0 0 1.4rem #ffcf6b80; } .mixbar.full .mixsum { color: #ffe2a6; }
+.mixbar.nudge { animation: nudge 0.3s; }
+@keyframes nudge { 25% { translate: -0.5rem 0; } 75% { translate: 0.5rem 0; } }
+
+/* 配合の3案（VPL48）: 葉は本編のパッケージ、ジャンルの印は店番と同じ */
+.pkg { position: relative; display: block; flex: none; overflow: hidden; filter: drop-shadow(0 0.4rem 0.6rem #000a); }
+.pkg img, .card .pkg img { position: absolute; max-width: none; height: auto; object-fit: initial; filter: none; }
+.genre { display: inline-flex; align-items: center; gap: 0.2rem; height: 1.9rem; padding: 0 0.45rem; border-radius: 1rem; font-style: normal; color: var(--g); background: color-mix(in srgb, var(--g) 20%, #120c1d); box-shadow: inset 0 0 0 0.1rem var(--g); }
+.genre svg { width: 1.3rem; height: 1.3rem; }
+.genre b { font-size: 1.05rem; color: #fff; white-space: nowrap; }
+.leaf-bit { position: absolute; top: 16%; width: 1.5rem; height: 1.15rem; border-radius: 45% 55% 40% 60%; background-size: 1000% auto; pointer-events: none; }
+.mixcard .pkg { margin-top: 0.2rem; }
+.mixcard .mc-tags { display: flex; gap: 0.3rem; }
+.mixcard .grams { font-size: 1.2rem; color: #ffffffa6; } .mixcard .grams em { font-style: normal; font-size: 2.3rem; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+.mixcard .need { position: absolute; right: 0.7rem; top: 0.5rem; font-size: 1.1rem; color: #ffd35a; } .mixcard.met .need { color: #5fe39a; }
+.mixbar .slots i.cut { margin-left: 0.35rem; }
+/* 案A はかりで量る: 器ははかりに見合う大きさ（VPL43） */
+.mix-a { position: absolute; inset: 0; }
+.mix-a .scale { position: absolute; left: 50%; top: 15rem; width: 35rem; aspect-ratio: 720 / 525; transform: translateX(-50%); }
+.mix-a .scale > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 1.6rem #000b); }
+.mixbowl.on-scale { top: auto; bottom: 47%; width: 13.6rem; }
+.digits { position: absolute; left: 30.5%; width: 32.5%; top: 82.5%; height: 13.5%; display: flex; align-items: center; justify-content: center; gap: 0.3rem; font-variant-numeric: tabular-nums; font-weight: 800; color: #7dffb0; text-shadow: 0 0 0.6rem #3dff8f; }
+.digits .d-num { font-size: 2.8rem; letter-spacing: 0.12em; } .digits .d-unit { font-size: 1.4rem; opacity: 0.8; }
+.digits.full { color: #ffe2a6; text-shadow: 0 0 0.7rem #ffcf6b; }
+/* 案B パッケージから注ぐ: 選んだパッケージが器の上で傾き、1gごとに少し大きく傾く */
+.mix-b { position: absolute; inset: 0; }
+.mix-b .pour-pkg { position: absolute; left: 2.6rem; top: 12rem; rotate: -24deg; transform-origin: 85% 15%; }
+.mix-b .pour-pkg.tip { animation: pkg-tip 0.34s var(--ease-out); }
+@keyframes pkg-tip { 50% { rotate: -8deg; translate: 0.6rem 0.4rem; } }
+.mix-b .mixbowl { top: 17rem; left: 60%; width: 21rem; }
+.mix-b .mixbar { top: 29.2rem; }
+/* 案C 本編の配合を縦に: 器と合計の帯、テロップの所に葉の行 */
+.mix-c { position: absolute; inset: 0; }
+.mix-c .mixbowl { top: 11rem; width: 26rem; }
+.mix-c .mixbar { top: 19rem; }
+.mixrows { display: grid; gap: 0.6rem; margin-top: 0.8rem; }
+.mixrow { position: relative; display: grid; grid-template-columns: auto 1fr auto 3.8rem auto; align-items: center; gap: 0.7rem; padding: 0.4rem 0.8rem; border: 0.1rem solid #ffffff30; border-radius: 1.4rem; background: #120c1d8c; }
+.mixrow.on { border-color: var(--acc); background: color-mix(in srgb, var(--acc) 16%, #120c1dcc); }
+.mr-name { display: grid; gap: 0.25rem; min-width: 0; } .mr-name b { font-size: 1.5rem; white-space: nowrap; }
+.mr-tags { display: flex; align-items: center; gap: 0.3rem; } .mr-tags .need { font-size: 1.05rem; color: #ffd35a; } .mixrow.met .need { color: #5fe39a; }
+.ratio { font-size: 1.1rem; color: #ffffffa6; }
+.mr-btn { width: 4.2rem; height: 4.2rem; display: grid; place-items: center; border: 0.1rem solid #ffffff40; border-radius: 50%; background: radial-gradient(circle at 50% 30%, #3a2a4a, #120c1d); color: #fff; font-size: 2.2rem; line-height: 1; }
+.mr-btn:active { scale: 0.94; }
+.mr-g { text-align: center; font-size: 1.2rem; color: #ffffffa6; } .mr-g em { font-style: normal; font-size: 2.4rem; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+
+/* 雑念よけ: 上の絵いっぱいが雑念の場。上の細い線が残り時間、予告の波は来る縁が金に光る */
+.dodge { position: absolute; inset: 0; background: #0b0812 center / cover no-repeat; touch-action: none; }
+.dodge canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.dodge::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.15s; }
+.dodge[data-warn="top"]::after { opacity: 1; box-shadow: inset 0 2.6rem 2.2rem -1.6rem var(--warn, #e3c788); animation: warn-blink 0.25s steps(2) infinite; }
+.dodge[data-warn="left"]::after { opacity: 1; box-shadow: inset 2.6rem 0 2.2rem -1.6rem var(--warn, #e3c788); animation: warn-blink 0.25s steps(2) infinite; }
+.dodge[data-warn="right"]::after { opacity: 1; box-shadow: inset -2.6rem 0 2.2rem -1.6rem var(--warn, #e3c788); animation: warn-blink 0.25s steps(2) infinite; }
+@keyframes warn-blink { 50% { opacity: 0.45; } }
+.d-time { position: absolute; left: 1.4rem; right: 1.4rem; top: 7.8rem; height: 0.5rem; overflow: hidden; border-radius: 1rem; background: #ffffff1f; }
+.d-time i { display: block; height: 100%; transform-origin: left center; background: linear-gradient(90deg, #ffcf6b, #fff3d6); }
+.d-stamp { position: absolute; left: 50%; top: 40%; padding: 0.4rem 1.8rem 0.6rem; border: 0.4rem solid currentColor; border-radius: 1rem; transform: translate(-50%, -50%) rotate(-8deg); font-family: var(--mincho); font-size: 4.4rem; letter-spacing: 0.1em; white-space: nowrap; color: #ffe2a6; background: #0b0812b3; animation: stamp-in 0.35s cubic-bezier(0.2, 0.8, 0.3, 1.3); }
+.d-stamp[data-kind="ok"] { color: #fff; } .d-stamp[data-kind="bad"] { color: #ff8a7a; }
+@keyframes stamp-in { 0% { transform: translate(-50%, -50%) rotate(-8deg) scale(2.2); opacity: 0; } 100% { transform: translate(-50%, -50%) rotate(-8deg) scale(1); opacity: 1; } }
+/* 吸い出しは作り直したはじめの絵（縦の一枚絵） */
+/* はじめは背景なしの人物（VPL41）。場所の背景の上に、頭が上の段の下に来るように立たせる */
+.pic > .pull-cg { position: absolute; left: 50%; top: 4.8rem; width: 34rem; transform: translateX(-50%); filter: drop-shadow(0 1rem 2rem #000a); }
+/* 雑念よけは本編（横画面）の見た目を縦に（VPL44）: 星雲の場、心の状態で縁が暗くなる、払うボタンは溜まりの円と残り秒、溜まると光の輪が回る */
+.dodge { background-color: #0b0812; }
+.d-vig { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 3rem 1rem #0b0812; transition: box-shadow 0.4s; }
+.dodge[data-mind="1"] .d-vig { box-shadow: inset 0 0 4rem 1.6rem #0b0812; } .dodge[data-mind="2"] .d-vig { box-shadow: inset 0 0 5rem 2.6rem #0b0812e6; } .dodge[data-mind="3"] .d-vig { box-shadow: inset 0 0 6rem 3.6rem #1a0710f0; }
+.btn-a.bomb .cool { display: grid; place-items: center; font-size: 3rem; font-weight: 800; color: #fff; text-shadow: 0 0.2rem 0.6rem #000; }
+.btn-a.bomb.ready::after { content: ""; position: absolute; inset: -0.5rem; border-radius: 50%; pointer-events: none; background: conic-gradient(from 0deg, transparent 0 70%, #a8e6ffcc 85%, transparent 100%); -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 0.35rem), #000 calc(100% - 0.3rem)); mask: radial-gradient(closest-side, transparent calc(100% - 0.35rem), #000 calc(100% - 0.3rem)); animation: spin 2.4s linear infinite; }
+@keyframes spin { to { rotate: 360deg; } }
+.phone[data-scene="steam"] .dp-core { translate: calc(var(--sx, 0) * 3.4rem) calc(var(--sy, 0) * 3.4rem); }
+
+/* シーシャ作りは MENU・説明の段を出さない（VPL51）。空いた分パッドを上へ寄せ、上の画面を広げる。吸い出しは葉の持ちと提供の段があるので残す */
+.phone[data-kind="craft"]:not([data-scene="pull"]) { --aux-h: -4.6rem; --aux-pad: -4.6rem; --aux-g: -4.6rem; }
+.help-q { position: absolute; z-index: 6; right: 9.4rem; top: max(1.6rem, calc(env(safe-area-inset-top, 0px) + 0.3rem)); width: 3.4rem; height: 3.4rem; display: grid; place-items: center; border: 0.1rem solid #ffffff38; border-radius: 50%; background: #0b081266; color: #ffffffb3; font-size: 1.8rem; font-weight: 700; opacity: 0.6; }
+.help-q:active { opacity: 1; }
+.phone:not([data-kind="craft"]) .help-q { display: none; }
+.slowbtn { position: absolute; right: 2rem; top: calc(var(--pad-top) - 5.8rem); width: 5.4rem; height: 5.4rem; display: grid; place-items: center; border: 0.12rem solid #ffffff40; border-radius: 50%; background: radial-gradient(circle at 50% 30%, #2a2040, #0b0812); color: #ffd35a; font-size: 2.6rem; opacity: 0.85; }
+.slowbtn.on { border-color: #ffd35a; box-shadow: 0 0 1.2rem #ffd35a80; opacity: 1; }
+
+/* 配合の下の画面（VPL52）: 十字キーの代わりにフレーバーの一覧。案A・B は横、案C は縦にスライド。下の段に合計の12の枠と「決定」 */
+.mixbowl .b-airy, .mixbowl .b-full { opacity: 0; transition: opacity 0.25s; }
+.leaf-bit { background-size: 420% auto; border-radius: 40% 60% 45% 55%; }
+.picker { position: absolute; left: 0; right: 0; top: 0.6rem; scrollbar-width: none; overscroll-behavior: contain; }
+.picker::-webkit-scrollbar { display: none; }
+.picker.strip { display: flex; gap: 0.9rem; padding: 0.4rem 1.4rem 0.6rem; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 1.4rem; -webkit-mask-image: linear-gradient(90deg, transparent, #000 1.2rem, #000 calc(100% - 2.4rem), transparent); mask-image: linear-gradient(90deg, transparent, #000 1.2rem, #000 calc(100% - 2.4rem), transparent); }
+.pcard { position: relative; flex: none; width: 11.2rem; display: grid; justify-items: center; gap: 0.25rem; padding: 0.5rem 0.4rem 0.5rem; border: 0.1rem solid #ffffff30; border-radius: 1.6rem; background: #120c1db3; scroll-snap-align: start; }
+.pcard.on { border-color: var(--acc); background: color-mix(in srgb, var(--acc) 18%, #120c1dd9); box-shadow: 0 0 1.4rem color-mix(in srgb, var(--acc) 40%, transparent); }
+.pc-name { font-size: 1.35rem; white-space: nowrap; }
+.pc-tags { display: flex; gap: 0.3rem; }
+.pc-g { display: flex; align-items: center; gap: 0.3rem; }
+.pc-g .mr-btn { width: 3.4rem; height: 3.4rem; font-size: 1.9rem; }
+.pc-g .mr-g { min-width: 3.4rem; }
+.pcard .need { position: absolute; right: 0.6rem; top: 0.4rem; font-size: 1.05rem; color: #ffd35a; } .pcard .need.met { color: #5fe39a; }
+.picker.rows { display: grid; align-content: start; gap: 0.5rem; padding: 0.2rem 1.2rem; bottom: 9.4rem; overflow-y: auto; scroll-snap-type: y mandatory; -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 2rem), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 2rem), transparent); }
+.picker.rows .mixrow { scroll-snap-align: start; }
+.picker.rows .mixrow .need.met { color: #5fe39a; }
+.mixfoot { position: absolute; left: 1.2rem; right: 11rem; bottom: 1.4rem; display: flex; align-items: center; }
+.mixfoot .mixbar { position: static; transform: none; flex: 1; justify-content: space-between; padding: 0.5rem 1rem; }
+.mixfoot .mixbar .slots i { width: 1.2rem; height: 1.8rem; }
+.btn-a.mix-ok { left: auto; right: 1.4rem; top: auto; bottom: 0.4rem; width: 8.2rem; height: 8.2rem; margin: 0; }
+.btn-a.mix-ok .t { font-size: 2.6rem; }
+
+/* 炭焼き（VPL54・VPL55）: 下の画面は本編の電熱コンロ。炭は黒い面（cold）と赤（lit）の絵を重ね、--red で焼け、--ash で灰をまとう */
+.stove { position: absolute; left: 50%; top: 0.2rem; width: 36rem; aspect-ratio: 1280 / 853; transform: translateX(-50%); }
+.stove > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 1.6rem #000b) brightness(0.8); transition: filter 0.6s; }
+.stove.on > img { filter: drop-shadow(0 1rem 1.6rem #000b) brightness(1); }
+.stove::after { content: ""; position: absolute; left: 22%; top: 12%; width: 44%; height: 62%; border-radius: 50%; background: radial-gradient(closest-side, #ff5a2a59, transparent); opacity: 0; transition: opacity 0.8s; pointer-events: none; }
+.stove.on::after { opacity: 1; }
+.coal { --cw: 7.4rem; position: absolute; z-index: 1; width: var(--cw); height: calc(var(--cw) * 0.805); transform: translate(-50%, -50%); padding: 0; border: 0; background: none; touch-action: manipulation; }
+.coal img { position: absolute; left: calc(var(--cw) * -0.3638); top: calc(var(--cw) * -0.3737); width: calc(var(--cw) * 1.7241); max-width: none; pointer-events: none; }
+.coal .c-lit { opacity: var(--red, 0); filter: saturate(calc(1 - var(--ash, 0) * 0.7)) drop-shadow(0 0 calc(var(--red, 0) * 1.4rem) #ff5a2acc); }
+.coal .c-ash { position: absolute; inset: 6% 4%; border-radius: 22%; background: radial-gradient(ellipse at 50% 40%, #e9e4e0, #b9b2ad 70%, #8f8884); mix-blend-mode: screen; opacity: calc(var(--ash, 0) * 0.85); pointer-events: none; }
+.coal::after { content: ""; position: absolute; inset: -0.6rem; border-radius: 30%; box-shadow: 0 0 0 0.25rem #fff3b0, 0 0 1.4rem #ffcf6b; opacity: 0; pointer-events: none; }
+.coal.blink::after { animation: coal-blink 0.32s ease-out; }
+@keyframes coal-blink { 40% { opacity: 1; } 100% { opacity: 0; } }
+.coal.taken { animation: coal-take 0.36s var(--ease-out) forwards; pointer-events: none; }
+@keyframes coal-take { to { transform: translate(-50%, -260%) scale(0.6); opacity: 0; } }
+.coal.dropped { animation: coal-drop 0.6s ease-in forwards; pointer-events: none; }
+@keyframes coal-drop { to { transform: translate(-50%, -30%) scale(0.85); opacity: 0; filter: grayscale(1); } }
+/* 上の画面の3案 */
+.coal-up { position: absolute; inset: 0; }
+.tcoal { position: relative; display: block; width: 5.2rem; height: calc(5.2rem * 0.805); }
+.tcoal img { position: absolute; left: calc(5.2rem * -0.3638); top: calc(5.2rem * -0.3737); width: calc(5.2rem * 1.7241); max-width: none; }
+.tcoal .lit { opacity: 1; filter: drop-shadow(0 0 0.8rem #ff5a2acc); }
+.tcoal.pre .lit { opacity: 0.8; } .tcoal.raw .lit, .tcoal.early .lit { opacity: 0.35; filter: none; } .tcoal.hot .lit { filter: saturate(0.7) drop-shadow(0 0 0.6rem #ff5a2a99); } .tcoal.over .lit, .tcoal.ash .lit { opacity: 0.4; filter: grayscale(0.8); }
+/* 案A トングを持つはじめ: 取った炭がトングの先へ */
+.up-a .tongs { position: absolute; left: 50%; top: 14rem; width: 46rem; aspect-ratio: 1280 / 853; transform: translateX(-48%); }
+.up-a .tongs > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 2rem #000a); }
+.up-a .tip { position: absolute; left: 81%; top: 79%; transform: translate(-50%, -50%) rotate(-24deg); }
+.up-a .tip.got .tcoal { animation: tip-got 0.4s var(--ease-out); }
+@keyframes tip-got { from { transform: translateY(14rem) scale(1.3); opacity: 0.2; } }
+/* 案B 炭壺へ入れる: 本編の炭壺を真上から。取った炭が壺の中へ落ちて並ぶ */
+.up-b .carrier { position: absolute; left: 50%; top: 10rem; width: 27rem; aspect-ratio: 1264 / 1244; transform: translateX(-50%); }
+.up-b .carrier > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 1.8rem #000b); }
+/* 案C HMDへ載せる: ハガルの上のHMDの中へ並ぶ */
+.up-c .hmdbowl { position: absolute; left: 50%; top: 8.4rem; width: 23rem; aspect-ratio: 412 / 640; transform: translateX(-50%); }
+.up-c .hmdbowl > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 1.8rem #000b); }
+.slots { position: absolute; inset: 0; }
+.slot { position: absolute; transform: translate(-50%, -50%); animation: slot-in 0.45s var(--ease-out); }
+.up-c .slot .tcoal { width: 4.4rem; height: calc(4.4rem * 0.805); } .up-c .slot .tcoal img { left: calc(4.4rem * -0.3638); top: calc(4.4rem * -0.3737); width: calc(4.4rem * 1.7241); }
+@keyframes slot-in { from { transform: translate(-50%, 260%) scale(1.3); opacity: 0.2; } }
+/* 判定の札（本編の EXCELLENT・GOOD・MISS） */
+.judges { position: absolute; right: 1.4rem; top: 9rem; display: grid; justify-items: end; gap: 0.5rem; pointer-events: none; }
+.jtag { padding: 0.2rem 1rem; border-radius: 0.6rem; font-size: 1.9rem; font-weight: 900; font-style: italic; letter-spacing: 0.04em; color: #fff; background: #0b0812b3; box-shadow: 0 0 0 0.12rem #ffffff40; animation: jtag-in 0.35s cubic-bezier(0.2, 0.8, 0.3, 1.3); transition: opacity 0.4s; }
+.jtag.excellent { color: #ffe2a6; box-shadow: 0 0 0 0.14rem #ffcf6b, 0 0 1.2rem #ffcf6b80; } .jtag.miss { color: #ff8a7a; box-shadow: 0 0 0 0.12rem #ff6b5e80; }
+.jtag.out { opacity: 0.35; }
+@keyframes jtag-in { from { transform: scale(1.8); opacity: 0; } }
+/* 工程の並びを詰め、右上の「？」と並べる（VPL51） */
+.phone[data-kind="craft"] .steps span { width: 2.6rem; height: 2.6rem; font-size: 1.55rem; }
+.phone[data-kind="craft"] .steps span.now { width: 3.8rem; height: 3rem; font-size: 1.9rem; }
+.help-q { right: 9.8rem; width: 3rem; height: 3rem; font-size: 1.6rem; }
+
 /* ───────── 背の低い画面 ───────── */
 @container phone (max-height: 80rem) {
   .body, .pic, .smoke, .sheet, .thermo, .cv-c { --ctrl-h: 26.2rem; } .ctrl { --ctrl-h: 26.2rem; --ring: 18.2rem; --a: 13.2rem; --pad-base: 6.3rem; } .chip { width: 3.9rem; height: 3.9rem; font-size: 1.9rem; } .chips { padding-top: 1rem; }
@@ -508,8 +786,10 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
   .chips.labeled .chip { height: 4.8rem; font-size: 1.9rem; } .phone[data-aux="1"] .serve, .phone[data-aux="3"] .serve { height: 4.8rem; } .sh { height: 4.6rem; } .phone[data-aux="2"] .serve { height: 4.6rem; }
   .tabbar { height: 5.2rem; } .phone[data-aux="3"] .btn-a.center { scale: 0.86; }
 }
+@container phone (max-height: 80rem) { .btn-a.hold.center { top: calc(9rem + var(--aux-g, 0rem)); width: 13.6rem; height: 13.6rem; margin-left: -6.8rem; } .hole-pips { top: calc(9rem + var(--aux-g, 0rem) - 2.9rem); width: 19.4rem; height: 19.4rem; margin-left: -9.7rem; } }
 @container phone (max-height: 80rem) { .cv { --band-top: 55%; } .cv-a .cv-say { top: calc(var(--band-top) + var(--name-size) * 1.5 + 5rem); } }
 @container phone (max-height: 71rem) {
+  .btn-a.hold.center { top: calc(7.6rem + var(--aux-g, 0rem)); width: 11.6rem; height: 11.6rem; margin-left: -5.8rem; } .hole-pips { top: calc(7.6rem + var(--aux-g, 0rem) - 2.4rem); width: 16.4rem; height: 16.4rem; margin-left: -8.2rem; }
   .cv { --band-top: 50%; --art-w: 44rem; --art-top: 1rem; } .cv-a .cv-quote { font-size: 2.3rem; } .cv-a .cv-say { top: calc(var(--band-top) + var(--name-size) * 1.4 + 4.4rem); } .cv-a .cv-band { height: calc(var(--name-size) * 1.4 + 2rem); }
 }
 @container phone (max-height: 71rem) {
@@ -523,6 +803,42 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
   .chips.labeled .chip { height: 4.3rem; font-size: 1.7rem; } .chips.labeled .chip span { font-size: 1rem; } .phone[data-aux="1"] .serve, .phone[data-aux="3"] .serve { height: 4.3rem; } .sh { height: 4.2rem; font-size: 2rem; } .sh span { font-size: 1.3rem; } .phone[data-aux="2"] .serve { height: 4.2rem; }
   .tabbar { height: 4.7rem; } .tab { font-size: 1.9rem; } .phone[data-aux="3"] .btn-a.center { scale: 0.84; }
   .phone[data-scene="pack"] .thermo { bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 15.6rem); } .thermo { top: 6.4rem; width: 4.4rem; } .th-bar { width: 2.4rem; } .th-icon { width: 3rem; height: 3rem; font-size: 1.9rem; }
+}
+
+@container phone (max-height: 80rem) {
+  .rank-b { top: 6rem; } .rank-b .rank-box { width: 9.8rem; height: 8.2rem; } .rank-b .rank-meter { width: 6.8rem; }
+  .rank-a .rank-box { width: 28rem; height: 21.5rem; margin-top: 3.6rem; }
+}
+@container phone (max-height: 71rem) {
+  .rank-b { top: 5.6rem; } .rank-b .rank-box { width: 8.6rem; height: 7.2rem; } .rank-b .rank-meter { width: 6rem; height: 0.4rem; }
+  .rank-c .rank-box { width: 6.6rem; height: 5rem; } .rank-c .rank-meter { width: 4.8rem; }
+  .rank-a .rank-box { width: 24rem; height: 18.5rem; margin-top: 3rem; }
+}
+
+@container phone (max-height: 80rem) {
+  .water-a .bottle { width: 23rem; }   .btn-a.center.pour { top: calc(9.4rem + var(--aux-g, 0rem)); width: 12.4rem; height: 12.4rem; margin-left: -6.2rem; } .btn-a.sub { top: calc(11.6rem + var(--aux-g, 0rem)); width: 8rem; height: 8rem; }
+}
+@container phone (max-height: 71rem) {
+  .water-a .bottle { width: 18rem; top: 5.4rem; }   .btn-a.center.pour { top: calc(7.8rem + var(--aux-g, 0rem)); width: 10.6rem; height: 10.6rem; margin-left: -5.3rem; } .btn-a.sub { top: calc(9.6rem + var(--aux-g, 0rem)); width: 7rem; height: 7rem; } .btn-a.sub .t { font-size: 2.2rem; }
+  .d-time { top: 7rem; } .d-stamp { font-size: 3.6rem; }
+}
+
+@container phone (max-height: 80rem) {
+  .pcard { width: 10.2rem; padding: 0.4rem 0.3rem; gap: 0.2rem; } .pcard .pkg { scale: 0.85; margin: -0.4rem 0; } .picker.rows { bottom: 8.6rem; }
+  .mixfoot { bottom: 1rem; } .btn-a.mix-ok { width: 7.4rem; height: 7.4rem; }
+}
+@container phone (max-height: 71rem) {
+  .pcard { width: 9.2rem; } .pcard .pkg { scale: 0.62; margin: -0.9rem 0; } .pc-tags { display: none; } .pc-name { font-size: 1.15rem; } .pc-g .mr-btn { width: 2.9rem; height: 2.9rem; font-size: 1.6rem; } .pc-g .mr-g em { font-size: 2rem; } .picker.rows { bottom: 7.4rem; } .picker.rows .mixrow .pkg { scale: 0.75; margin: -0.6rem -0.6rem; }
+  .mixfoot { bottom: 0.8rem; } .mixfoot .mixbar { scale: 0.88; transform-origin: 0 50%; } .btn-a.mix-ok { width: 6.4rem; height: 6.4rem; } .btn-a.mix-ok .t { font-size: 2rem; }
+}
+
+@container phone (max-height: 80rem) {
+  .stove { width: 31rem; } .coal { --cw: 6.4rem; } .up-a .tongs { width: 40rem; top: 9.6rem; } .up-b .carrier { width: 22rem; top: 6.8rem; } .up-c .hmdbowl { width: 18.6rem; top: 6.6rem; }
+  .mix-a .scale { width: 30rem; top: 9.6rem; } .mixbowl.on-scale { width: 11.6rem; } .mix-b .pour-pkg { top: 7rem; scale: 0.85; transform-origin: 0 0; } .mix-b .mixbowl { top: 11rem; width: 17rem; } .mix-c .mixbowl { top: 6.6rem; width: 20rem; }
+}
+@container phone (max-height: 71rem) {
+  .stove { width: 26rem; } .coal { --cw: 5.4rem; } .up-a .tongs { width: 33rem; top: 8rem; } .up-b .carrier { width: 17rem; top: 6rem; } .up-c .hmdbowl { width: 14rem; top: 5.8rem; } .judges { top: 7rem; } .jtag { font-size: 1.5rem; }
+  .mix-a .scale { width: 23rem; top: 7.4rem; } .mixbowl.on-scale { width: 8.8rem; } .mix-b .pour-pkg { top: 6rem; scale: 0.62; } .mix-b .mixbowl { top: 7.8rem; width: 12rem; } .mix-c .mixbowl { top: 5.8rem; width: 13.4rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
