@@ -422,3 +422,109 @@ Background above the plate: dark, softly blurred, warm brown shadow.
 Do not draw: charcoal, coals, tongs, hands, smoke, flames, a pot, text, letters, logos, watermark.
 ```
 
+## 9回目: 口の開いたボトルと蛇口（VPL81・2枚）
+
+オーナー「水入れはボトルをもう少し下げていいのと水の量はもう少し多めが丁度いい　ボトルの6割ぐらい　あとボトルをやや斜めにして蛇口をつけて水を入れて充していく感じで　水のリアルなゆらしも入れながら」。
+蛇口の下で水を満たす場面にするため、ボトルは台から外したガラスのベース単体（ステムなし・口が開いている）にした。これまでの `img/ui-bottle-pro.webp`（本編の大会公式モデルの台 `remake/img/ui/scene_props/shisha_home_pro.webp` のベースの切り出し。ステムと襟つき）を入力にした編集で、同じ形・同じ金の渦と菱形・足の黒と金の帯のまま作った。`ui-bottle-pro.webp` は試作から外した。水・水流・しぶきは描かせず、コードで重ねる。
+
+| 原画（`v3/`） | 試作が読む絵（`remake/previews/portrait-stage/img/`） | 使い道 |
+|---|---|---|
+| `bottle-open-original.webp`（1024×1536） | `ui-bottle-open.webp`（540×711） | 水入れのボトル。切り出したあと、ガラスの面だけ半透明にした（彩度の低い明るい所を約26%に、白いハイライトは約88%まで残し、金・黒・輪郭はそのまま）。内側の形はこの絵の輪郭から取り、`app.mjs` の `BOTTLE.inner` に書いた |
+| `faucet-original.webp`（1024×1024） | `ui-faucet.webp`（360×310） | 水入れの蛇口（吐水口と首の下の方だけ。上は画面の外へ消える） |
+
+生成前の8行（§4.3・ボトル）:
+
+```
+人物      : なし
+場面      : 準備中（水入れ。ベース単体。ステムは外してある）
+台の型    : 本編の大会公式モデルの台のガラスのベース（鐘形・金の渦と菱形・足に黒と金の帯）。ステムとの接続部（黒と金の襟）は外した状態で、口に細い金の縁
+HMD       : なし
+炭        : なし
+ホース    : なし
+吸い口    : なし
+構図      : 正面・直立・ベース全体・背景なし。口は少し上から見た細い楕円で、開いていることが分かる
+```
+
+生成後の確認（§4.4・素材規約の必須チェック）: ボトルはステム・襟・水・ホース・台が無く、口が開いている。胴の形・金の渦・菱形3つ・足の黒と金の帯は入力の絵と同じ。蛇口は吐水口が真下を向き、水・流し台・レバー・手が無い。どちらも文字・ロゴ・透かしが無い。合格（生成は各1回）。蛇口はシーシャの機材ではないため §4 の8行は当てはまらない。
+画像の決まり（`docs/shisha_reference.md` §4.1）は「ベースの水は下の方だけ」だが、この場面のちょうどいい水位はオーナーの指示（ボトルの6割ぐらい）に合わせた。絵そのものには水を描いていない。
+
+```text
+Use the reference image as the exact design of a glass hookah base (vase): the same bell-shaped clear glass body, the same golden swirl ornament and small golden diamond marks painted on the glass, the same black and gold bands around the wide foot, and the same polished anime game illustration style with clean dark outlines and two or three tone cel shading.
+Redraw this same glass base ALONE, taken off the hookah, standing upright and seen straight from the front, as it looks when it is about to be filled with water at a sink:
+- Remove the metal stem (the vertical metal tube inside the glass) completely. The inside of the glass is empty: no tube, no rod, no water.
+- Remove the black and gold collar at the top. Instead, the glass narrows into a short, fairly wide open neck and ends in an open round mouth with a thin golden rim. The mouth is seen very slightly from above, so the opening reads as a narrow ellipse and it is clear that the vase is hollow and open at the top.
+- Keep the proportions of the bell-shaped body and the wide foot the same as the reference. The whole vase is visible, from the open mouth at the top to the foot at the bottom, centered, with a small margin on every side.
+- The glass is clear and transparent with a few clean white highlight streaks; it is completely empty and dry.
+Fully transparent background.
+Do not draw: a stem, a tube, a rod, a hose, a bowl, a tray, charcoal, water, drops, a table, a shadow on the ground, hands, text, letters, logos, watermark.
+```
+
+```text
+Match the illustration style of the reference image (polished anime game illustration with clean dark outlines and two or three tone cel shading, shiny metal drawn with a few crisp highlight streaks). Do NOT draw the glass vase from the reference; it is only a style reference.
+Draw one object only: the lower end of a polished chrome bar-sink faucet (water tap), on a fully transparent background.
+The faucet comes down from above: its pipe enters from the top right corner of the image (cut off by the top edge), sweeps in a smooth gooseneck curve to the left, then bends and points straight down, ending in a short cylindrical aerator nozzle. The round opening of the nozzle points straight down and is located at the horizontal center of the image, about one third of the way down from the top. The lower two thirds of the image are empty and transparent.
+Bright chrome with cool grey shading and a thin warm reflected light, a slim golden ring just above the nozzle.
+Do not draw: water, drops, a sink, a wall, a handle, a lever, a hose, a glass, a bottle, hands, text, letters, logos, watermark.
+```
+
+## 10回目: ボトルの口を受け口の形に作り直し（VPL82・候補2枚から1枚）
+
+オーナー「ボトルの水を入れる口の部分はこんな形ではない　なんかカチッとハマるので　今なんかくびれみたいになってるけど実物調べて見た目リアルにして」。
+9回目のボトルは、ステムを受ける黒と金の襟を外し、くびれて広がる口にしていた（誤り）。実物は、ベースの口が短くまっすぐな太い首（日本の店で多いロシア系の台は開口約45mm）で、ステムの下の接続部がパッキンやクリック式で差し込まれてはまる（[The Premium Way の Russian base](https://thepremiumway.com/products/russian-style-shisha-base-vase-dark-snow)：45mm の口に差し込む型、[El-Badia の Russian Spirit](https://pro.el-badia.com/en/bases/1960-vase-russian-spirit-basic.html)：首の径45mm・パッキンで固定、[SmokeDex](https://smokedex.info/en/community/glossary/hookah-stem-base)：接続の型・径・パッキン・ねじ／差し込みが台ごとに違う）。
+本編の大会公式モデルの台の絵（`remake/img/ui/scene_props/shisha_home_pro.webp`）の、襟から足までを切り出して入力にし、ステムだけを抜いた形で作り直した。黒と金の襟は、ステムがはまるベース側の受け口として残し、上を開けて内側にゴムのパッキンを描かせた。
+
+| 原画（`v3/`） | 試作が読む絵（`remake/previews/portrait-stage/img/`） | 使い道 |
+|---|---|---|
+| `bottle-open-original.webp`（1024×1536。9回目の原画を置き換えた） | `ui-bottle-open.webp`（540×800） | 水入れのボトル。ガラスの面だけ半透明にした（9回目と同じ加工。受け口は不透明のまま）。内側の形・受け口の穴の手前の縁は `app.mjs` の `BOTTLE` |
+| `bottle-open-candidate2-original.webp`（1024×1536） | 使わない | もう1枚の候補。胴が円すいに近く、足の帯の位置も元の台と違うため使わない |
+
+生成前の8行（§4.3）:
+
+```
+人物      : なし
+場面      : 準備中（水入れ。ベース単体。ステムは抜いてある）
+台の型    : 本編の大会公式モデルの台のガラスのベース（鐘形・金の渦と菱形・足に黒と金の帯）。肩のすぐ上に黒と金の受け口（ベース側のクリック式の金具）。上が開いていて内側にゴムのパッキン
+HMD       : なし
+炭        : なし
+ホース    : なし
+吸い口    : なし
+構図      : 正面からわずかに上・直立・ベース全体・背景なし
+```
+
+生成後の確認（§4.4・素材規約の必須チェック）: 受け口は元の台の襟と同じ幅・同じ黒と金で、肩のすぐ上に付き、くびれ・広がる口・長い首が無い。上は開いていて、内側にパッキンの輪と暗い穴が見える。ステム・管・ホースの口・水・台・文字・ロゴが無い。胴の形・金の渦・菱形3つ・足の黒と金の帯は元の台と同じ。合格（2枚のうち1枚を使う）。
+
+```text
+The reference image shows the lower part of a hookah: a black-and-gold cylindrical collar sitting on top of a bell-shaped clear glass base, and a thin metal downstem tube going down inside the glass.
+Redraw exactly this glass base, with the same design and the same polished anime game illustration style (clean dark outlines, two or three tone cel shading): the same bell-shaped clear glass body, the same golden swirl ornament and three small golden diamond marks painted on the glass, the same black and gold bands around the wide foot, and the same black-and-gold collar on top.
+The hookah stem has been pulled out of the base, so the base now stands alone, empty and dry, seen from the front and very slightly from above:
+- The black-and-gold collar stays on the base, exactly as wide and as tall as in the reference. It is the base's click-fit socket that the stem snaps into. It sits directly on the rounded glass shoulder; between the collar and the shoulder there is no extra glass neck, no narrow waist and no flared lip.
+- Because the stem is removed, the top of the collar is open: draw a wide round opening (about 75 percent of the collar width) seen as a flat ellipse, with a thin dark rubber gasket ring lining its inner edge and a slightly darker hollow inside.
+- Remove the metal downstem tube completely; the inside of the glass is empty, with no rod, no tube and no water.
+- The whole base is visible from the top of the collar to the foot, centered, with a small margin on every side.
+- The glass is clear and transparent with a few clean white highlight streaks.
+Fully transparent background.
+Do not draw: the stem, a tube, a rod, hose ports, a hose, a bowl, a tray, charcoal, water, drops, a table, a cast shadow, hands, text, letters, logos, watermark.
+```
+
+## 11回目: 水入れの流し台（VPL92・候補2枚から1枚）
+
+オーナー「水入れはシンクでやってる感伝わるようにしたいかも　店にこぼしてるみたいだし」。
+店の背の作業台にある、カウンターに埋め込んだステンレスの流し台を、背景なしで描かせた（本編の隣の店の背景 `remake/img/backgrounds/bg_tonari_inside_day.webp` を、絵の具合と灯りの色の参照に渡した。部屋は描かせていない）。蛇口・水は描かせず、コードで重ねる。試作では、ボトルの足が流し台の底の前寄り（ドレンの手前）に乗るように、ボトルの大きさに合わせて置く。
+
+| 原画（`v3/`） | 試作が読む絵（`remake/previews/portrait-stage/img/`） | 使い道 |
+|---|---|---|
+| `sink-original.webp`（1536×1024） | `ui-sink.webp`（1152×768） | 水入れの流し台。底の前寄りは絵の縦 86%、流し台の真ん中は横 51.4% |
+| `sink-candidate2-original.webp`（1536×1024） | 使わない | もう1枚の候補。奥行きが浅く、流し台の中が見えにくいため使わない |
+
+生成後の確認（素材規約の必須チェック）: 流し台は空で乾いていて、蛇口・水・食器・ボトル・人・壁・文字・ロゴが無い。カウンターは画面の左右の端まで続き、流し台の奥・両脇・底とドレンが見える。上半分は透明。合格（2枚のうち1枚を使う）。シーシャ台の機材ではないため §4 の8行は当てはまらない。
+
+```text
+Match the illustration style and the warm lighting of the reference image (a polished anime game background of a small Japanese shisha bar with clean outlines and soft cel shading). Do NOT draw the room from the reference; it is only a style and lighting reference.
+Draw one object only, on a fully transparent background: the work sink behind the bar counter of this shisha bar, where the staff fill the glass hookah bases with water.
+- A brushed stainless-steel counter top that spans the whole width of the image (cut off by the left and right edges), seen from the front and slightly from above (about 25 degrees).
+- Set into the middle of the counter, one deep rectangular stainless-steel sink basin, about 60 percent of the image width. The inside of the basin is visible: the back wall, the two side walls and the flat bottom with a round chrome drain in the middle. It is empty and dry.
+- The front edge of the counter is a straight horizontal band (the apron) across the whole width near the bottom of the image, with a thin dark shadow line under it.
+- The whole object sits in the lower 55 percent of the image; everything above the back edge of the counter is fully transparent.
+- Warm reflections of the bar lights on the steel, a few soft highlights, very clean.
+Do not draw: a faucet, a tap, water, dishes, cups, bottles, hookahs, sponges, towels, people, hands, a wall, tiles, a window, text, letters, logos, watermark.
+```

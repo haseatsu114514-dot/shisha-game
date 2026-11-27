@@ -80,7 +80,8 @@ await suite("affinity-gates", async check => {
       assert.equal(result.after.visits.ageha, result.before.visits.ageha + 1);
       assert.equal(result.after.flags._ch2_talks.ageha, result.before.flags._ch2_talks.ageha + 1);
       const points = x => x.affinity.ageha + (x.affinityCarry.ageha || 0);
-      assert(Math.abs(points(result.after) - points(result.before) - 16 * .85) < 1e-9, "one story reward, no additional followup reward");
+      // 段階会話は15（pack18・71dda357 で16から変更）
+      assert(Math.abs(points(result.after) - points(result.before) - 15 * .85) < 1e-9, "one story reward, no additional followup reward");
       assert.deepEqual(result.loaded.romanceChoices, result.after.romanceChoices);
       assert.equal(points(result.loaded), points(result.after));
       assert(result.loaded.flags._ch2_followup_done.ageha && result.loaded.flags._ch2_read_remake_ch2_ageha_gyaru);
@@ -107,7 +108,8 @@ await suite("affinity-gates", async check => {
       await page.locator('[data-test="phone-next"]').waitFor();
       assert.equal(await page.locator(".gain-card.affinity").count(),0);
       const read = () => page.evaluate(() => ({ pts:G.core.state.affinity.naru, carry:G.core.state.affinityCarry.naru }));
-      const after = await read(); assert.equal(after.pts,9); assert(Math.abs(after.carry-.2125)<1e-9);
+      // LIMEの返信は1×0.85×0.75（pack18・71dda357 で0.25倍から0.75倍）＝0.6375。整数にならない端数だけ進む
+      const after = await read(); assert.equal(after.pts,9); assert(Math.abs(after.carry-.6375)<1e-9);
       await act('[data-test="lime-back"]'); await act('[data-test="phone-close"]');
       await page.evaluate(async () => { await G.phoneDone; G.core.saveToSlot("suien_remake_slot1"); G.core.newGame(); G.core.loadFromSlot("suien_remake_slot1"); G.phoneDone=G.phone.openLime({sender:"naru"}); });
       await page.locator('[data-test="phone-next"]').waitFor();
@@ -116,7 +118,7 @@ await suite("affinity-gates", async check => {
       await act('[data-test="lime-back"]'); await act('[data-test="phone-close"]');
       await page.evaluate(async () => {
         await G.phoneDone;
-        G.core.state.affinity.naru=19;
+        G.core.state.affinity.naru=19; G.core.state.affinityCarry.naru=0; // 端数だけ進む場面を保つ（0.75倍では前の端数と足すと整数をまたぐ）
         const item=G.core.state.inbox[0]; item.done=false; item.log=[];
         G.phoneDone=G.phone.openLime({sender:"naru"});
       });
@@ -173,7 +175,7 @@ await suite("affinity-gates", async check => {
         return out;
       });
       for (const r of rows) {
-        assert.equal(r.locked.points, 208); // 占いは最初の1回だけ×2（URA03）: 30＋17＋19×8.5 assert.equal(r.locked.level, 5); assert(r.locked.waiting);
+        assert.equal(r.locked.points, 204); // 占いは最初の1回だけ×1.5（pack18・71dda357 で×2から）: 30＋12.75＋19×8.5 assert.equal(r.locked.level, 5); assert(r.locked.waiting);
         assert.equal(r.locked.held, 0); assert.equal(r.locked.early, 0); assert.equal(r.locked.fortune, null);
         // Numeric hearts are independent; completion/finale prerequisites are still separate.
         assert.equal(r.opened.level, 5); assert(!r.opened.waiting);

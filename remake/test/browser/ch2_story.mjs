@@ -166,8 +166,9 @@ await suite('ch2-story', async check => {
     const trace = await page.evaluate(() => window.__storyTrace);
     // VOL13: アダム（DAY7〜）とみんと（DAY12の夜）は店で読む本編。一度も行かなければDAY12の夜に救済で読む
     // SPC28: DAY6の朝の耳鼻科・DAY8の朝のまかない・DAY9の試煙会の後の吸い方講座
-    const expected = ['ch2_sofa_burn','ch2_abyss_baito','ch2_kumicho_greeting','ch2_slump_taste','ch2_ent_clinic','ch2_lingering_smell',
-      'ch2_naru_lunch','remake_ch2_ageha_tasting','ch2_ageha_lesson','ch2_sumi_silence','ch2_naru_confrontation','ch2_adam_distance','ch2_minto_warning','ch2_naru_window','ch2_tsumugi_color',
+    // VOL17: DAY4の夜の最初の手伝い・DAY7の朝のメモ（行動を使わない）・DAY10の夜の最後の採点表
+    const expected = ['ch2_full_house_help','ch2_sofa_burn','ch2_abyss_baito','ch2_kumicho_greeting','ch2_slump_taste','ch2_ent_clinic','ch2_lingering_smell',
+      'ch2_morning_notes','ch2_naru_lunch','remake_ch2_ageha_tasting','ch2_ageha_lesson','ch2_sumi_silence','ch2_phone_score_sheet','ch2_naru_confrontation','ch2_adam_distance','ch2_minto_warning','ch2_naru_window','ch2_tsumugi_color',
       'remake_ch2_eve_arrival','remake_ch2_eve_kuraudo','ch2_pre_tournament_realisation'];
     assert.deepEqual(trace.filter(id => expected.includes(id)), expected);
     const texts = await page.evaluate(() => window.__storyTexts.join('\n'));

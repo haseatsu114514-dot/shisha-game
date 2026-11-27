@@ -65,9 +65,11 @@ await suite("samechan-confession", async check => {
           const repeated = K.snap(); s.slot = 2;
           const confessed = await K.romance.maybeConfession(async () => {}, { busyNight: true, companion: "samechan" });
           const again = await K.romance.maybeConfession(async () => {});
-          const final = K.snap(); K.core.save(); K.core.newGame(); K.core.load();
+          // 別の保存を読み込むと会話LOGは消える（#4194 のLOG保持）ので、読んだ台詞はロードの前に控える
+          const final = K.snap(), log = K.vn.backlog().map(x => x.text).join(" ");
+          K.core.save(); K.core.newGame(); K.core.load();
           return { start, beforeHearts, noon, beforeFinale, finale, sameVisit, repeated, confessed, again,
-            final, loaded: K.snap(), events, log: K.vn.backlog().map(x => x.text).join(" ") };
+            final, loaded: K.snap(), events, log };
         }, { q1, q2, reply });
         assert.equal(r.start, "samechan_shop_quiet_seat");
         assert.deepEqual(r.events.slice(0, 7), ["samechan_shop_quiet_seat", "samechan_shop_closing_check",
@@ -118,7 +120,7 @@ await suite("samechan-confession", async check => {
           asked.push(labels.slice());
           const back = labels.indexOf("いったん、言葉を飲み込む");
           if (back >= 0 && !cancelled) { cancelled = true; return back; }
-          if (cancelled && !reasked && labels[0]?.startsWith("好きです")) reasked = { guilt: s.guilt || 0, lovers: s.lovers.slice() };
+          if (cancelled && !reasked && labels[0]?.startsWith("「好きです")) reasked = { guilt: s.guilt || 0, lovers: s.lovers.slice() };
           return Math.max(0, labels.findIndex(label => label.startsWith("それでも")));
         };
         const accept = await K.romance.maybeConfession(async () => {}), accepted = K.snap();
