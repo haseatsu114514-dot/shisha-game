@@ -956,58 +956,6 @@
           "text": "スマホのカレンダーで、次の受診日を確かめた。東京へ発つ前の日だった。"
         },
         {
-          "type": "hide_portrait",
-          "char_id": "hajime"
-        },
-        {
-          "type": "bg",
-          "bg": "res://assets/backgrounds/bg_hideaway.png"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "同じ日の夕方。海沿いの町の、借りた作業場。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "なるは、店主の前に一台を出していた。台も炭も、KEMURIKUSAのものとは違う。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "作業台の端で、伏せたスマホが一度だけ震えた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "なるは画面を見なかった。店主が話しながら吸う速さを、黙って見ている。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "店主がホースを置いた。なるはそれを待ってから、最後の炭を一つ外側へ寄せた。"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "……次の一口、どうですか"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "店主がうなずく。なるは小さく息を吐いて、ノートに一行書き足した。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "スマホは、伏せたままだった。"
-        },
-        {
-          "type": "hide_portrait",
-          "char_id": "naru"
-        },
-        {
           "type": "bg",
           "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
         },
@@ -1226,7 +1174,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "博士は温度計を受け取ると、胸ポケットの三色のペンの隣に挿し直した。"
+            "text": "博士は温度計を受け取ると、胸ポケットに挿し直した。"
           }
         ]
       },
