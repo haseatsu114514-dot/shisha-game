@@ -2,7 +2,10 @@
 // 本編の覆い（#fx の中身・暗転の幕）に見えている文字と大きな絵を読み、縦の外枠の中に出す。パッドは消して、触れたら本編へ中継する。
 // 登場カットインは、縦画面で決めた案A「縦のポスター」（VPL22・VPL28）に組み直す: 上に人物、真ん中に斜めの帯と名前、下に一言。
 // 名前・二つ名・一言・好きなフレーバー・色・絵は、本編が出したカットイン（vn/intro-art.js の .cutin.art-intro）からそのまま読む。
+// 章タイトル（タイトルコール）は案A（VPN19）: 章タイトルの横長の絵から人物を縦に切り出して上に置き、章名は本編の明朝で下に組み直す。
+// どの章かは本編の章タイトル（core/ui.js chapterTitle の .chapter-card）から読み、章名・英題・編名は core/chapter-title-art.js の登録から。
 import { el } from "../../core/util.js";
+import { CHAPTER_TITLE_ART } from "../../core/chapter-title-art.js";
 import { textOf, mirrorBackground, relayTap } from "./frame.js";
 import { readLines as readBlockLines } from "../retro/cover.js";
 
@@ -58,6 +61,34 @@ function readCutin(host) {
   };
 }
 
+/**
+ * 章タイトルの絵の切り出し（VPN19）: 横長の絵（1280×720）の横のどこからどこまでを、画面の幅いっぱいに見せるか（from〜to は絵の幅に対する割合）と、
+ * 絵の上端の位置（top は画面の高さに対する %）。人物が切れずに収まるように章ごとに決める（第2章は 2026-11-27 オーナーの合格）。
+ */
+const TITLE_CROP = {
+  2: { from: 0.44, to: 0.846, top: 0 }, // 人物1人（オーナー合格）
+  3: { from: 0.47, to: 1, top: 6 }, // 右の3人が切れずに収まる
+  4: { from: 0.4, to: 1, top: 9 }, // 手前の人物と後ろの人物・ドバイの塔
+  5: { from: 0.5, to: 0.933, top: 0 }, // 機械の頭
+};
+const DEFAULT_CROP = { from: 0.45, to: 1, top: 0 };
+
+/** 覆いの中の章タイトル（本編の .chapter-title-shield の .chapter-card）。無ければ null。 */
+function readChapterTitle(roots) {
+  const shield = roots.find((node) => node.matches(".chapter-title-shield"));
+  const card = shield?.querySelector(".chapter-card");
+  if (!card) return null;
+  const entry = CHAPTER_TITLE_ART.find((item) => item.no === card.dataset.chapter);
+  if (!entry) return null;
+  const img = card.querySelector("img.cc-art");
+  return {
+    chapter: entry.chapter, no: entry.no, name: entry.name, sub: entry.sub || "",
+    english: String(entry.read || "").split("──").pop().trim(),
+    art: card.classList.contains("illustrated") ? img?.currentSrc || img?.src || entry.url : "",
+    out: card.classList.contains("out"),
+  };
+}
+
 /** 名前（ふりがな付き）。本編の span.ci-ruby[data-ruby] を ruby に置き直す。 */
 function nameHtml(node) {
   const out = el("div.vt-cv-name");
@@ -77,7 +108,8 @@ export function createCoverScene(frame, own) {
   const wait = el("div.vt-wait", { "aria-hidden": "true" }, [el("i"), el("i"), el("i")]);
   const tip = el("div.vt-tip", { hidden: true, text: "タッチで次へ", "aria-hidden": "true" });
   const poster = el("div.vt-cv", { hidden: true, dataset: { test: "vt-cutin" } });
-  let sig = "", posterSig = "", changedAt = 0, lastTap = 0, holding = false, gap = false;
+  const call = el("div.vt-ct", { hidden: true, dataset: { test: "vt-title-call" } });
+  let sig = "", posterSig = "", callSig = "", changedAt = 0, lastTap = 0, holding = false, gap = false;
 
   /** 本編のステージ中央の一番上の要素へ、タップを中継する（詩の送りなど、覆いがタップを待っている時に詰まらないように）。 */
   function relay() {
@@ -112,12 +144,45 @@ export function createCoverScene(frame, own) {
     );
   }
 
+  /** 章タイトル（案A）を組む。絵は横長の一枚から人物を切り出し、章名は文字で組む（絵に描き込まれた題字は画面の外になる）。 */
+  function renderCall(title) {
+    const crop = TITLE_CROP[title.chapter] || DEFAULT_CROP;
+    const width = 100 / (crop.to - crop.from); // 画面の幅に対する絵の幅（%）
+    call.dataset.chapter = String(title.chapter);
+    // 絵の上端を画面の上より下げる章は、上端も溶かして、後ろのぼかした絵になじませる
+    call.style.cssText = `--ct-w:${width.toFixed(2)}%;--ct-x:${(-crop.from * width).toFixed(2)}%;--ct-top:${crop.top}%;--ct-fade:${crop.top ? 16 : 0}%`;
+    call.setAttribute("aria-label", [title.no, title.name, title.english, title.sub].filter(Boolean).join("　"));
+    call.replaceChildren(
+      title.art ? el("img.vt-ct-amb", { src: title.art, alt: "", draggable: "false" }) : null,
+      title.art ? el("img.vt-ct-art", { src: title.art, alt: "", draggable: "false" }) : null,
+      el("i.vt-ct-veil"),
+      el("div.vt-ct-copy", { "aria-hidden": "true" }, [
+        el("div.vt-ct-brand", { text: "水煙前線 -EN:CODE-" }),
+        el("div.vt-ct-en", { text: `CHAPTER ${title.chapter}` }),
+        el(`div.vt-ct-name${[...title.name].length > 5 ? ".long" : ""}`, { text: title.name }),
+        el("i.vt-ct-rule"),
+        title.english ? el("div.vt-ct-read", { text: title.english }) : null,
+        title.sub ? el("div.vt-ct-sub", { text: title.sub }) : null,
+      ]),
+    );
+  }
+
   function sync(state = {}) {
     holding = !!state.hold;
     gap = !!state.gap;
     const roots = [...(document.getElementById("fx")?.children || [])].filter((node) => !node.matches(HARMLESS));
     const cutin = roots.find((node) => node.matches(".cutin.art-intro"));
-    frame.root.dataset.cover = cutin ? "cutin" : gap ? "gap" : "cover";
+    const title = cutin ? null : readChapterTitle(roots);
+    frame.root.dataset.cover = cutin ? "cutin" : title ? "title" : gap ? "gap" : "cover";
+    if (title) {
+      const next = JSON.stringify([title.chapter, title.art]);
+      if (next !== callSig) { callSig = next; renderCall(title); }
+      call.hidden = false;
+      call.classList.toggle("out", title.out);
+    } else {
+      call.hidden = true;
+      callSig = "";
+    }
     if (cutin) {
       const card = readCutin(cutin);
       const next = JSON.stringify([card.id, card.art, card.bg, card.title, card.line, card.flavor]);
@@ -129,8 +194,8 @@ export function createCoverScene(frame, own) {
     }
     const url = mirrorBackground(bg);
     frame.setAmbient(url);
-    const read = cutin || gap ? [] : readLines(roots.filter((node) => !node.matches(".cutin")));
-    const pics = cutin || gap ? [] : readArt(roots);
+    const read = cutin || title || gap ? [] : readLines(roots.filter((node) => !node.matches(".cutin")));
+    const pics = cutin || title || gap ? [] : readArt(roots);
     const next = JSON.stringify([read, pics.map((p) => p.url)]);
     if (next !== sig) {
       sig = next;
@@ -143,8 +208,8 @@ export function createCoverScene(frame, own) {
       art.replaceChildren(...pics.map((pic) => el("img", { src: pic.url, alt: pic.alt, draggable: "false" })));
     }
     lines.hidden = !read.length;
-    wait.hidden = !!read.length || !!pics.length || !!cutin || gap;
-    tip.hidden = holding || !state.pressable || !!cutin || performance.now() - Math.max(changedAt, lastTap) < 1500;
+    wait.hidden = !!read.length || !!pics.length || !!cutin || !!title || gap;
+    tip.hidden = holding || !state.pressable || !!cutin || !!title || performance.now() - Math.max(changedAt, lastTap) < 1500;
     frame.setChips([]);
     // 下画面はそのまま（指の位置を変えない）。丸ボタンは「次へ」＝本編の覆いへタップを中継
     frame.setPad({ dirs: [], a: { face: "next", label: "次へ", disabled: holding || (!state.pressable && !gap) } });
@@ -156,18 +221,18 @@ export function createCoverScene(frame, own) {
     enter() {
       frame.picture.dataset.kind = "stage";
       frame.picture.append(bg);
-      frame.over.append(art, lines, wait, tip, poster);
+      frame.over.append(art, lines, wait, tip, poster, call);
       frame.over.hidden = false;
-      sig = posterSig = ""; changedAt = performance.now(); bg.dataset.sig = "";
+      sig = posterSig = callSig = ""; changedAt = performance.now(); bg.dataset.sig = "";
     },
-    leave() { poster.hidden = true; delete frame.root.dataset.cover; },
+    leave() { poster.hidden = true; call.hidden = true; delete frame.root.dataset.cover; },
     sync,
     dir() {},
     a: relay,
     chip() {},
     tap: relay,
     overTap: relay,
-    hasContent: () => !lines.hidden || !art.hidden || !poster.hidden,
+    hasContent: () => !lines.hidden || !art.hidden || !poster.hidden || !call.hidden,
     activeAt: () => Math.max(changedAt, lastTap),
   };
 }
