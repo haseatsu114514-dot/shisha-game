@@ -458,15 +458,15 @@ export class GrowthScene {
     for (const node of this.refs.card.querySelectorAll("[data-fit]")) {
       const text = node.dataset.full ?? node.textContent;
       node.dataset.full = text;
-      node.classList.remove("gb-small");
+      node.classList.remove("gb-small", "gb-paged");
       node.textContent = text;
       if (!text || !node.clientWidth) continue;
       let pages = paginateForBox(text, node);
       if (pages.length > 1) { node.classList.add("gb-small"); pages = paginateForBox(text, node); }
+      // 2行に収まらない文は2行ずつに分け、押すと続きが出る（説明は2行まで・VPL29）。続きの印のぶん幅が狭くなるので、その幅で測り直す
+      if (pages.length > 1) { node.classList.add("gb-paged"); pages = paginateForBox(text, node); }
       const at = Math.min(Number(node.dataset.page) || 0, pages.length - 1);
       node.innerHTML = plain(pages[at]);
-      // 2行に収まらない文は2行ずつに分け、押すと続きが出る（説明は2行まで・VPL29）
-      node.classList.toggle("gb-paged", pages.length > 1);
       if (pages.length > 1) { node.dataset.act = "gb-more"; node.dataset.pages = String(pages.length); node.dataset.page = String(at); }
     }
   }
@@ -510,7 +510,7 @@ export class GrowthScene {
     const s = this.overview || this.cam.s < 0.8 ? 1 : this.cam.s;
     this.overview = false;
     // もう見えている所にあるマスは動かさない（押すたびに盤が動くと落ち着かない）
-    const sx = x * s + this.cam.x, sy = y * s + this.cam.y, pad = 2.2;
+    const sx = x * s + this.cam.x, sy = y * s + this.cam.y, pad = 3.4;
     if (s === this.cam.s && sx > pad && sx < w - pad && sy > pad && sy < h - pad) return;
     this.setCam({ s, x: w / 2 - x * s, y: h * 0.5 - y * s });
   }

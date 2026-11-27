@@ -75,7 +75,7 @@
 .ax-pad > [hidden] { display: none !important; }
 /* 目標（この3投で狙うこと）: ◇＝まだ、✓＝達成、×＝届かなかった */
 .ax-goals { flex: none; display: flex; gap: 0.6rem; margin: 0.5rem 0 0; padding: 0; list-style: none; }
-.ax-goals li { flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 0.4rem; height: 3.2rem; border-radius: 1.6rem; font-size: 1.24rem; font-weight: 700; white-space: nowrap; color: #d8d0c0; background: #0b100e99; box-shadow: inset 0 0 0 0.1rem #ffffff24; }
+.ax-goals li { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 0.4rem; height: 3.2rem; padding: 0 0.8rem; border-radius: 1.6rem; font-size: 1.24rem; font-weight: 700; white-space: nowrap; color: #d8d0c0; background: #0b100e99; box-shadow: inset 0 0 0 0.1rem #ffffff24; }
 .ax-goals i { font-style: normal; color: #c9b68f; }
 .ax-goals li[data-state="done"] { color: #10220f; background: #a9dc9a; } .ax-goals li[data-state="done"] i { color: inherit; }
 .ax-goals li[data-state="failed"] { opacity: 0.5; }
@@ -112,9 +112,9 @@
 .ax-arrow { position: absolute; left: 50%; bottom: calc(1rem + var(--ax-grip) - var(--ax-travel) * 0.48); height: calc(var(--ax-travel) * 1.76); transform: translateX(-50%); pointer-events: none; }
 .ax-grip { position: absolute; left: 50%; bottom: 1rem; width: var(--ax-grip); height: var(--ax-grip); margin-left: calc(var(--ax-grip) / -2); display: grid; place-items: center; border-radius: 50%; background: radial-gradient(circle at 50% 35%, #4a3a30, #2a201a); box-shadow: 0 0 0 0.26rem #ffda95, 0 0.6rem 1.4rem #000c; pointer-events: none; transform: translateY(calc(var(--swipe, 0) * var(--ax-travel) * -1)); }
 .ax-grip img { width: 78%; height: 78%; object-fit: contain; transform: rotate(15deg); filter: drop-shadow(0 0.3rem 0.4rem #000a); }
-.ax-mat-label { position: absolute; left: 0; right: 0; top: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 1.7rem; letter-spacing: 0.04em; color: #fff2bd; text-shadow: 0 0.1rem 0.4rem #000; pointer-events: none; transition: opacity 0.15s; }
-.ax-mat-label .ic { font-size: 2rem; }
-.ax-mat[data-pulling="true"] .ax-mat-label { opacity: 0; } .ax-mat[data-pulling="true"] { cursor: grabbing; }
+.ax-mat-label { position: absolute; left: 1.4rem; top: 1.2rem; display: flex; align-items: flex-start; gap: 0.5rem; font-size: 1.7rem; line-height: 1.4; letter-spacing: 0.04em; text-align: left; color: #fff2bd; text-shadow: 0 0.1rem 0.4rem #000; pointer-events: none; transition: opacity 0.15s; }
+.ax-mat-label .ic { margin-top: 0.3rem; font-size: 2rem; }
+.ax-mat[data-pulling="true"] .ax-mat-label { opacity: 0.35; } .ax-mat[data-pulling="true"] { cursor: grabbing; }
 .ax-mat[data-demo="true"] .ax-grip { animation: ax-demo 1.05s ease-in-out both; }
 @keyframes ax-demo { 0%, 20% { transform: none; } 70% { transform: translateY(calc(var(--ax-travel) * -1)); } 100% { transform: none; } }
 .ax-pad[data-phase="flight"] .ax-grip, .ax-pad[data-phase="flight"] .ax-arrow, .ax-pad[data-phase="flight"] .ax-mat-label { opacity: 0; }
@@ -161,7 +161,9 @@
 .ax-sum-stats { font-size: 1.3rem; line-height: 1.5; text-align: center; color: #d8d0c0; word-break: keep-all; overflow-wrap: anywhere; }
 .ax-sum-goals { width: 100%; margin: 0; }
 .ax-sum-buttons { width: 100%; display: flex; align-items: stretch; gap: 1rem; margin-bottom: -0.8rem; }
-.ax-sum-buttons .ax-tag { flex: 1 1 0; min-height: 6.4rem; font-size: 1.8rem; } .ax-sum-buttons .ax-primary { flex: 1.5 1 0; min-height: 6.4rem; margin-top: 0; }
+.ax-sum-buttons .ax-tag { flex: 1 1 0; min-height: 6.4rem; padding: 0 0.4rem; font-size: 1.8rem; white-space: nowrap; }
+.ax-sum-mate { width: 100%; height: auto; margin: 0; } .ax-sum-mate .ax-face { width: 4.6rem; height: 4.6rem; } .ax-sum-mate .ax-line { padding: 0.3rem 1.2rem 0.6rem; background: #0b100e99; box-shadow: inset 0 0 0 0.1rem #ffffff24; }
+.ax-sum-mate .ax-line-text { font-size: 1.5rem; } .ax-sum-mate .ax-line-text.small { font-size: 1.34rem; } .ax-sum-buttons .ax-primary { flex: 1.5 1 0; min-height: 6.4rem; margin-top: 0; }
 .phone[data-ax-summary="true"] .ax-body { visibility: hidden; }
 .phone[data-ax-summary="true"] .ax-board { filter: brightness(0.55) drop-shadow(0 1.6rem 1.8rem #000b); }
 /* 落ちた時、画面の縁が沈む */

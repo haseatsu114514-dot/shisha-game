@@ -203,7 +203,7 @@ export class AxeScene {
           <div class="ax-mat" aria-label="上へ弾いて投げる">
             <svg class="ax-arrow" viewBox="0 0 144 300" fill="none" aria-hidden="true"><path d="M55 232V80m34 152V80" stroke="#886b48" stroke-width="2"/><path class="ax-arrow-path" stroke="#fff2bd" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span class="ax-grip"><img src="${this.art.axe}" alt=""></span>
-            <b class="ax-mat-label">${icon("axUp")}上へ弾いて投げる</b>
+            <b class="ax-mat-label">${icon("axUp")}<span>上へ弾いて<br>投げる</span></b>
           </div>
           <div class="ax-gauge" role="img" aria-label="回転ゲージ。緑の帯が刃から当たる回転">
             <i class="ax-stick" style="bottom:${pc(POWER.stickMin)};height:${pc(POWER.stickMax - POWER.stickMin)}"></i>
@@ -225,6 +225,7 @@ export class AxeScene {
         <ol class="ax-sum-throws"></ol>
         <p class="ax-sum-stats"></p>
         <ul class="ax-goals ax-sum-goals"></ul>
+        <div class="ax-mate ax-sum-mate"><span class="ax-face" role="img" aria-label="${COMPANIONS[MATE].name}"></span><p class="ax-line"><small>${COMPANIONS[MATE].name}</small><span class="ax-line-text"></span></p></div>
         <div class="ax-sum-buttons"><button class="ax-tag" data-act="ax-retry"><span>もう一度</span></button><button class="ax-primary" data-act="ax-finish"><b>終了</b></button></div>
       </section>
       <i class="ax-flashbox"></i>`;
@@ -240,7 +241,7 @@ export class AxeScene {
       guideX: q('[data-guide="x"]'), guideY: q('[data-guide="y"]'), needleX: q('[data-needle="x"]'), needleY: q('[data-needle="y"]'),
       fx: q(".ax-fx"), flash: q(".ax-flash"), ringDark: q(".ax-ring-dark"), ring: q(".ax-ring"), echo: q(".ax-echo"), dust: all(".ax-dust"), chips: all(".ax-chip"), burst: q(".ax-burst"),
       tiles: all(".ax-tiles li"), total: q(".ax-total b"), next: q(".ax-total em"), legend: q(".ax-legend"), cue: q(".ax-cue"),
-      face: q(".ax-face"), line: q(".ax-line-text"), pad: q(".ax-pad"), goals: q(".ax-pad > .ax-goals"), tools: q(".ax-tools"), reaim: q('[data-act="ax-reaim"]'), focus: q('[data-act="ax-focus"]'),
+      face: q(".ax-body .ax-face"), line: q(".ax-body .ax-line-text"), sumFace: q(".ax-sum-mate .ax-face"), sumLine: q(".ax-sum-mate .ax-line-text"), pad: q(".ax-pad"), goals: q(".ax-pad > .ax-goals"), tools: q(".ax-tools"), reaim: q('[data-act="ax-reaim"]'), focus: q('[data-act="ax-focus"]'),
       live: q(".ax-live"), call: q(".ax-call"), mat: q(".ax-mat"), grip: q(".ax-grip"), arrow: q(".ax-arrow-path"), gauge: q(".ax-gauge"), fill: q(".ax-fill"), pin: q(".ax-pin"),
       result: q(".ax-result"), review: q(".ax-review"), primary: q(".ax-pad > .ax-primary"), summary: q(".ax-summary"), flashbox: q(".ax-flashbox"),
     };
@@ -747,8 +748,9 @@ export class AxeScene {
     // ひよりの一言（本編 axe-companions.js の reaction。場面と投げ数で決まり、コマごとに揺れない）
     const bonus = this.shots.length > 0 && killState(this.shots, RULES.throws).bonus > killState(this.shots.slice(0, -1), RULES.throws).bonus;
     const line = reaction(MATE, phase, this.shots, this.called, { heat: heatOf(this.shots), last: this.shots.length === RULES.throws - 1, grade: phase === "summary" ? gradeOf(total, RULES.max) : null, bonus });
-    if (this.lineText !== line.text) { this.lineText = line.text; this.fitText(r.line, line.text); }
-    this.showFace(line.face);
+    const lineBox = phase === "summary" ? r.sumLine : r.line;
+    if (this.lineText !== line.text || this.lineBox !== lineBox) { this.lineText = line.text; this.lineBox = lineBox; this.lineFit = false; }
+    this.showFace(phase === "summary" ? r.sumFace : r.face, line.face);
     // 下の場所: 場面ごとに中身を替える
     const status = this.callStatus();
     r.goals.innerHTML = this.goalsHtml(false);
@@ -780,6 +782,8 @@ export class AxeScene {
     r.summary.hidden = phase !== "summary";
     this.el.dataset.axSummary = String(phase === "summary");
     if (phase === "summary") this.renderSummary(true);
+    // 一言は、箱が見えてから測って折る（集計の札は、出した後でないと幅が無い）
+    if (!this.lineFit && this.lineBox?.clientWidth) { this.lineFit = true; this.fitText(this.lineBox, this.lineText); }
     this.renderAim();
     this.renderHud();
     if (phase === "result" && this.phone.fixed) r.fx.setAttribute("opacity", 0);
@@ -807,11 +811,11 @@ export class AxeScene {
   }
 
   /** ひよりの顔（立ち絵から、表情ごとの顔の位置で切り出す）。 */
-  showFace(face) {
-    if (this.faceName === face) return;
-    this.faceName = face;
+  showFace(node, face) {
+    if (node.dataset.face === face) return;
+    node.dataset.face = face;
     const { x, y } = portraitFocus(MATE, face), zoom = 3.3, zy = zoom * 1200 / 896;
-    Object.assign(this.r.face.style, { backgroundImage: `url("${this.art.face(face)}")`, backgroundSize: `${zoom * 100}% auto`,
+    Object.assign(node.style, { backgroundImage: `url("${this.art.face(face)}")`, backgroundSize: `${zoom * 100}% auto`,
       backgroundPosition: `${((x * zoom - 0.5) / (zoom - 1) * 100).toFixed(1)}% ${((y * zy - 0.5) / (zy - 1) * 100).toFixed(1)}%` });
   }
 
@@ -837,8 +841,8 @@ export class AxeScene {
 
   relayout() {
     if (!this.r) return;
-    if (this.lineText) this.fitText(this.r.line, this.lineText);
-    if (this.phase === "result" && this.shown) this.render();
+    this.lineFit = false;
+    this.render();
   }
 
   /* ── 押した時 ── */
