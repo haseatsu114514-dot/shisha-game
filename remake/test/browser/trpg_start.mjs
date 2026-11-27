@@ -27,3 +27,12 @@ export async function turnToTrpgBook(page, control) {
   if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await tab.tap(); else await tab.click();
   await page.locator(`[data-test="trpg-book-${id}"]:not([hidden]):not([data-flip])`).waitFor();
 }
+
+/**
+ * 本の「遊ぶ」を押した後、卓が開いて、店長の説明（次へ）か表紙（物語をはじめる）が押せるようになるまで待つ。
+ * 物語は押してから読み込むので、押した直後に「次へ」が見えるとは限らない（見えないまま表紙を待つと、説明が終わらず止まる）。
+ */
+export async function waitForTrpgTable(page) {
+  await page.locator(".trpg-root.trpg-cinematic").waitFor({ timeout: 30000 });
+  await page.locator('[data-test="trpg-next"]:visible, [data-test="trpg-start"]:visible').first().waitFor({ timeout: 30000 });
+}

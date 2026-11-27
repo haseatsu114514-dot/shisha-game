@@ -2336,7 +2336,9 @@ body:not(:root) .map .spot-pin .pin-cost { font-size: max(18px, var(--mui-text))
 /* スマホ規格: 文字を下限まで大きくした分、札の余白を詰めて隣のスポットと重ならないようにする（compact_gains_map の重なりの検査） */
 html:root[data-density="phone"] body:not(:root) .map .spot-pin .sub-label { padding: 2px 5px; line-height: 1.2; font-size: max(13px, calc(var(--mui-text) * .93)); letter-spacing: -0.01em; } /* しっぽり明朝の Latin 字形は横幅が広く、隣のスポットへはみ出すため札だけ少し詰める（2026-11-19 フォント変更対応） */
 html:root[data-density="phone"] body:not(:root) .map .spot-pin .pin-cost { margin-top: 1px; padding: 0 5px; line-height: 1.15; }
-html:root[data-density="phone"] body:not(:root) .map .spot-pin .pin-status:not(.pin-closed) { margin-top: 1px; padding: 0 5px; line-height: 1.15; }
+/* 行の高さ（1.15）が字の箱（約1.45）より低いので、字の箱が札の下へ約3pxはみ出し、ピン全体の中身が箱より高くなっていた（見た目は変わらない）。
+   札の中に収める（play_spots の「ピンの文字が切れていない」検査が、スマホの「時間消費なし」の付いたピンで落ちていた）。 */
+html:root[data-density="phone"] body:not(:root) .map .spot-pin .pin-status:not(.pin-closed) { margin-top: 1px; padding: 0 5px; line-height: 1.15; overflow: hidden; }
 body:not(:root) .map .spot-pin .pin-status { font-size: max(14px, var(--mui-text)); }
 body:not(:root) .map .spot-pin .pin-people { top: -42px; pointer-events: auto; } /* 顔の下端は今までと同じ（看板の上端から 6px）。ロゴに重ならない */
 body:not(:root) .map .spot-pin .pin-person { flex-basis: 48px; width: 48px; height: 48px; }

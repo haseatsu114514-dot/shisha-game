@@ -1,6 +1,7 @@
 // デバッグ用の道具（remake/js/dev/）: ?debug=1 で出る・?debug=0 で消える・タイトルの版の表示を5回押して出し入れ・何倍速・シーシャ作りの自動・便利ボタン。
 import assert from "node:assert/strict";
 import { suite, baseURL } from "./support.mjs";
+import { turnToTrpgBook } from "./trpg_start.mjs";
 
 const t = id => `[data-test="${id}"]`;
 const openPanel = async page => {
@@ -31,8 +32,11 @@ await suite("debug-tools", async check => {
         assert.equal(await page.locator(t("desert-ride")).getAttribute("data-rival"), "naru");
       }
       if (id === "trpg") {
-        assert.ok(await page.locator(t(screen)).isEnabled(), "night debug has an actual playable story");
-        await page.locator(t(screen)).click();
+        // 物語は、開いた本をめくって選ぶ（TRP11）。「世界一普通の一台」の頁を開いてから遊ぶ
+        await turnToTrpgBook(page, "trpg-play-ordinary-cup");
+        const play = page.locator(t("trpg-play-ordinary-cup"));
+        assert.ok(await play.isEnabled(), "night debug has an actual playable story");
+        await play.click();
         await page.locator(t("trpg-skip")).click(); // 初回の店長の説明は残し、ここでは表紙へ進める
         await page.locator(t("trpg-start")).waitFor({ timeout: 30000 });
       }

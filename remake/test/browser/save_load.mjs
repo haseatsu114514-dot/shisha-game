@@ -186,50 +186,56 @@ await suite("save-load", async check => {
     assert.equal(await hasLogLine(), false, "a different snapshot from the same cycle clears the conversation log");
   });
 
-  await check("chapter-five-same-day-slots-name-the-card-before-loading", async page => {
+  // 第5章の冒頭は2通り（#4253）。新しく入った保存は、つむぎ目線の新人編（面接は章題の前に読み、章題の後は「エプロンの初日」から）。
+  // それより前に第5章へ入った保存（_ch5.prologueRoute が無い）は、旧来の「ドバイのあと」→「帰郷」。どちらも、枠に場面の名前が出る。
+  for (const [suffix, legacy, first, second] of [["", false, "エプロンの初日", "ノートの名前"], ["-legacy-prologue", true, "ドバイのあと", "帰郷"]])
+  await check("chapter-five-same-day-slots-name-the-card-before-loading" + suffix, async page => {
     const button = id => page.locator(`[data-test="${id}"]`);
     const card = title => button("ch5-scene").getByRole("heading", { name: title, exact: true });
-    await page.evaluate(async () => {
+    await page.evaluate(async legacy => {
       const core = await import("./js/core/state.js");
-      const { advanceToChapterFive } = await import("./js/chapters/ch5-progress.js");
+      const { advanceToChapterFive, completeChapterFiveScene } = await import("./js/chapters/ch5-progress.js");
+      const { CH5_BEFORE_TITLE } = await import("./js/chapters/ch5-prologue.js");
       const value = core.newGame();
       Object.assign(value, { chapter: 4, phase: "cleared", day: 50 });
       value.flags._ch4_cleared = true;
       if (!advanceToChapterFive(value)) throw new Error("第5章へ進めません");
+      if (legacy) delete value.flags._ch5.prologueRoute;
+      else completeChapterFiveScene(value, CH5_BEFORE_TITLE); // 章題の前に読む面接は、読み終えた所から
       value.flags._ch5.titleSeen = true;
       core.save();
       // 場面番号を持たない枠は従来の章・日・段階で表示する。
       const older = structuredClone(value);
       delete older.flags._ch5.stage;
       localStorage.setItem(core.SAVE_SLOTS[1].key, JSON.stringify(older));
-    });
+    }, legacy);
     await page.reload();
     await button("title-load").click();
     assert.match(await button("slot-1").innerText(), /プロローグ/);
     await button("slot-0").click();
-    await card("ドバイのあと").waitFor();
+    await card(first).waitFor();
     await button("ch5-menu").click();
     await button("ch5-save").click();
     await button("slot-1").click();
     await button("confirm-overwrite").click();
     await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.turbo = true; });
     await button("ch5-continue").click();
-    await card("帰郷").waitFor();
+    await card(second).waitFor();
     const openLoad = async () => {
       await button("ch5-menu").click();
       await button("ch5-load").click();
-      assert.deepEqual(await page.locator(".ss-phase").allTextContents(), ["帰郷", "ドバイのあと"]);
+      assert.deepEqual(await page.locator(".ss-phase").allTextContents(), [second, first]);
     };
     await openLoad();
     await button("slot-cancel").click();
-    await card("帰郷").waitFor();
+    await card(second).waitFor();
     await openLoad();
     await button("slot-0").click();
-    await card("帰郷").waitFor();
+    await card(second).waitFor();
     await openLoad();
     await button("slot-1").click();
     await button("confirm-load").click();
-    await card("ドバイのあと").waitFor();
+    await card(first).waitFor();
     // 履歴キャッシュへの退避・復帰。退避時に終了した章のボタンを、再開した場面で再び使えること。
     await Promise.all([
       page.waitForNavigation({ waitUntil: "domcontentloaded" }),
@@ -238,7 +244,7 @@ await suite("save-load", async check => {
         window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true }));
       }),
     ]);
-    await card("ドバイのあと").waitFor();
+    await card(first).waitFor();
     await button("ch5-menu").click();
     await button("ch5-load").waitFor();
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
