@@ -4,6 +4,8 @@
 // シャッフル・フィーバー・休止。十字キーと丸ボタンは置かない（2026-11-27 オーナー「縦レイアウトは必ず十字ボタンや決定ボタンはいらない　その分を専用UIに」
 // 「店番ゲームはアイコンだけじゃミックスの中身わかんない」・VPM07・VPM08）。卓の札を押すと用件が進み（注文・頼みは「接客の画面」。その間は時間が止まる・本編と同じ）、
 // 一覧の札を押すと、いちばん長く注文を待っている卓へそのまま出す。
+// 上の卓の札は親指から遠いので、一覧のすぐ上に「卓の用件の段」（1〜5卓の小さな札。並びは変わらない）を置き、そこを押しても同じに進む（VPM11）。
+// ケア（頼み）の手は、短い言葉だけの大きな札（VPM12）。会計の客が出たら、チリーンと鳴らす（VPM13。音はこの一つだけ）。
 // 本編の進行・所持金・保存には触れない。音は鳴らさない（この試作には音の仕組みが無い）。
 import {
   createFloorNight, createFloorTutorial, floorTick, floorAct, floorTap, floorTutorialCue, floorOrderTarget, floorHint, floorResult,
@@ -88,7 +90,7 @@ export class FloorScene {
     options: { name: "shift", default: "usual", values: Object.fromEntries(Object.entries(FLOOR_SHIFTS).map(([id, shift]) => [id, shift.name])) },
     gallery: {
       title: "店番（tonari のフロア営業）",
-      note: "本編の店番（バイト）を縦へ。ルール・数値・客・ミックス・台詞は本編のものをそのまま使い、画面だけ縦に組んだ。",
+      note: "本編の店番（バイト）を縦へ。ルール・数値・客・ミックス・台詞は本編のものをそのまま使い、画面だけ縦に組んだ。十字キーは無く、親指の届く下の「卓の段」（1〜5卓）とミックスの一覧を押して進める。",
       shots: [
         { caption: "開店前", shot: "intro" },
         { caption: "営業中", shot: "live" },
@@ -133,7 +135,7 @@ export class FloorScene {
     const fast = Number(new URLSearchParams(location.search).get("fast")) || 1;
     Object.assign(this, { mode: "intro", sel: 1, panel: null, pausePick: 0, speed: 1, fast, carry: 0, lastAt: 0, coach: null, band: false,
       salesShown: 0, salesMark: 0, lastOutlook: null, outlookAt: -99, lastCalled: false, duskShown: false, feverSalesAt: 0, resultPage: 0,
-      back: {}, logs: [], lastHint: "" });
+      back: {}, logs: [], voice: "", lineLog: "", lineLogUntil: 0 });
     this.plan = floorPlan(this.s);
     this.preload();
   }
@@ -190,10 +192,11 @@ export class FloorScene {
       <i class="fl-flash"></i>
       <div class="body fl-body">
         <div class="telop fl-telop" data-slot="telop">
-          <button class="fl-ticker" data-act="fl-hint" aria-label="はじめの心の声"><span class="fl-log"></span><span class="fl-voice"><img src="${this.face("hajime")}" alt=""><b></b></span></button>
+          <p class="fl-line" data-kind="voice"><img src="${this.face("hajime")}" alt=""><b></b></p>
           <button class="coach fl-coach" data-act="fl-coach" aria-label="スミさんの言葉" hidden><img src="${this.face("sumi")}" alt=""><span class="say"><span class="say-text"></span><i class="fl-coach-next"></i></span></button>
+          <div class="fl-slots" role="group" aria-label="卓の用件（押すと、その卓へ）">${Array.from({ length: RULES.tableCount }, (_, i) => `<button class="fl-slot" data-act="fl-table" data-id="${i + 1}" data-need=""><i class="fl-slot-no">${i + 1}</i><span class="fl-slot-main"></span><b class="fl-slot-sub"></b></button>`).join("")}</div>
         </div>
-        <div class="fl-deck" data-slot="deck" data-busy="false"><i class="fl-target"></i>
+        <div class="fl-deck" data-slot="deck" data-busy="false">
           <div class="fl-rows"></div>
           <div class="fl-busy">${icon("shuffle")}<b>入れ替え中</b><span class="fl-busy-bar"><i></i></span><small></small></div>
           <div class="fl-acts" data-slot="acts"></div>
@@ -208,7 +211,8 @@ export class FloorScene {
       room: q(".fl-room"), tables: [...el.querySelectorAll(".fl-table")].map((root) => ({ root, want: root.querySelector(".fl-want"), fx: root.querySelector(".fl-fx"),
         who: root.querySelector(".fl-who"), cell: root.querySelector(".fl-cell"), bar: root.querySelector(".fl-bar i"), count: root.querySelector(".fl-count"), keys: {} })),
       making: q(".fl-making"), clock: q(".fl-clock b"), timebar: q(".fl-timebar i"), sales: q(".fl-sales b"), outlook: q(".fl-outlook"),
-      band: q(".fl-band"), notice: q(".fl-notice"), flash: q(".fl-flash"), ticker: q(".fl-ticker"), log: q(".fl-log"), voice: q(".fl-voice b"),
+      band: q(".fl-band"), notice: q(".fl-notice"), flash: q(".fl-flash"), line: q(".fl-line"),
+      slots: [...el.querySelectorAll(".fl-slot")].map((root) => ({ root, main: root.querySelector(".fl-slot-main"), sub: root.querySelector(".fl-slot-sub"), key: "" })),
       coach: q(".fl-coach"), coachText: q(".fl-coach .say-text"), deck: q(".fl-deck"), rows: q(".fl-rows"), busy: q(".fl-busy"),
       acts: q('[data-slot="acts"]'), layer: q('[data-slot="layer"]'),
     };
@@ -340,7 +344,53 @@ export class FloorScene {
   log(text) {
     if (!text) return;
     this.logs.push(text);
-    if (this.refs) this.refs.log.textContent = text;
+    this.lineLog = text;
+    this.lineLogUntil = performance.now() + 2600;
+    this.syncLine();
+  }
+
+  /** 真ん中の一行: ふだんは、はじめの心の声（今いちばん先に見る所）。出来事が起きた時は、少しの間その一行を出す。 */
+  syncLine() {
+    const line = this.refs?.line;
+    if (!line) return;
+    const showLog = !!this.lineLog && !this.phone.fixed && performance.now() < this.lineLogUntil;
+    const text = showLog ? this.lineLog : this.voice || "";
+    line.dataset.kind = showLog ? "log" : "voice";
+    const b = line.querySelector("b");
+    if (b.textContent !== text) b.textContent = text;
+  }
+
+  /* ── 音（会計の客が出た時の「チリーン」だけ。VPM13）。この試作に本編の音の仕組みは無いので、ここで鳴らす ── */
+
+  /** 最初に画面を押した時に、音を鳴らせるようにする（ブラウザは、押す前の音を止める）。 */
+  unlockAudio() {
+    if (this.phone.fixed) return;
+    try {
+      this.actx ||= new (window.AudioContext || window.webkitAudioContext)();
+      if (this.actx.state === "suspended") this.actx.resume();
+    } catch { this.actx = null; }
+  }
+
+  /** 卓上ベルの「チリーン」: 短く打つ音のあとに、高い澄んだ音が伸びる。 */
+  chime() {
+    const ctx = this.actx;
+    if (!ctx || this.phone.fixed || ctx.state !== "running") return;
+    const t = ctx.currentTime, out = ctx.createGain();
+    out.gain.value = 0.2;
+    out.connect(ctx.destination);
+    const ring = (freq, at, dur, vol) => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.type = "sine"; osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.0001, t + at);
+      gain.gain.exponentialRampToValueAtTime(vol, t + at + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + at + dur);
+      osc.connect(gain).connect(out);
+      osc.start(t + at); osc.stop(t + at + dur + 0.05);
+    };
+    ring(2093, 0, 0.1, 0.5);          // チ
+    ring(2637, 0.08, 1.4, 0.9);       // リーン
+    ring(2637 * 2.005, 0.08, 1.0, 0.28); // わずかにずらした倍音（鈴のうなり）
+    ring(2637 * 2.76, 0.08, 0.5, 0.12);
   }
 
   say(id, text) { if (text) this.log(`${id}卓${quoted(text)}`); }
@@ -409,7 +459,7 @@ export class FloorScene {
           this.log(`${e.tableId}卓　おかわりの注文！「${e.line}」`);
           break;
         case "refillMissed": this.pop(e.tableId, "おかわり逃した", "off"); this.log(`${e.tableId}卓　おかわりを聞きそびれて、お会計に`); break;
-        case "billReady": this.log(`${e.tableId}卓がお会計です`); break;
+        case "billReady": this.chime(); this.log(`${e.tableId}卓がお会計です`); break; // 会計の客が出たら、チリーン
         case "bill":
           this.hit(e.tableId, "coin");
           this.pop(e.tableId, e.fans > 0 ? `ファン ＋${e.fans}` : yen(e.total), e.fans > 0 ? "best" : "coin");
@@ -504,6 +554,21 @@ export class FloorScene {
     const countKey = (table.call || table.phase === "bill") && left != null ? (left > 0 ? String(seconds(left)) : "!") : "";
     if (k.count !== countKey) { k.count = countKey; spot.count.innerHTML = countKey ? `${icon("clock")}<b>${countKey === "!" ? "！" : countKey}</b>` : ""; }
     spot.root.setAttribute("aria-label", `${table.id}卓、${guest ? `${guest.name}、` : ""}${want[1]}`);
+    // 下の用件の段（親指の届く所に、同じ卓の今の用件を出す。押すと、卓の札を押したのと同じ）。並びは卓の番号のまま変えない（押す位置を手が覚える）
+    const slot = this.refs.slots[table.id - 1], tap = floorTap(s, table.id);
+    const need = ["order", "care", "tend", "bill"].includes(tap) ? tap : "";
+    const slotKey = `${table.phase}/${need}/${cellKey}/${countKey}/${guest?.order.wish || ""}/${table.refill}`;
+    Object.assign(slot.root.dataset, { need, phase: table.phase, urgent: spot.root.dataset.urgent });
+    slot.root.style.setProperty("--c", guest ? WISH[guest.order.wish].color : "transparent");
+    if (slot.key !== slotKey) {
+      slot.key = slotKey;
+      slot.main.innerHTML = need === "order" ? icon(WISH_ICON[guest.order.wish]) : need === "care" ? icon(want[0]) : need === "tend" ? icon("add") : need === "bill" ? icon("bill")
+        : table.phase === "prep" ? icon(making ? "cook" : "clock") : stage ? `<img src="${this.art(MOOD_ART[stage.id])}" alt="">` : table.phase === "cool" ? icon("clean") : "";
+      const count = (n) => `<em>${n}</em>`;
+      slot.sub.innerHTML = need === "order" ? `${table.refill ? "替え" : "注文"}${count(seconds(left))}` : need === "care" ? `頼み${countKey ? count(countKey === "!" ? "！" : countKey) : ""}`
+        : need === "tend" ? "炭" : need === "bill" ? `会計${countKey ? count(countKey === "!" ? "！" : countKey) : ""}` : making ? count(seconds(table.make.left)) : "";
+      slot.root.setAttribute("aria-label", `${table.id}卓、${want[1]}`);
+    }
   }
 
   syncMaking() {
@@ -519,7 +584,7 @@ export class FloorScene {
   }
 
   /** 下の一覧。ふだんと注文の接客ではミックス5つ（属性の印・名前・使ったフレーバー・その客との合い方 ◎○×）、頼みの接客では5つの手。
-   *  ふだんは、札を押すと、いちばん長く注文を待っている卓へそのまま出す（出す先は、卓の点線と一覧の左上の番号で分かる）。 */
+   *  ふだんは、札を押すと、いちばん長く注文を待っている卓へそのまま出す（出す先は、卓の札と下の段の点線、下の段から一覧へ向く印で分かる）。 */
   syncDeck() {
     const s = this.s, { deck, rows, busy } = this.refs, { icon, esc } = this.kit;
     const panel = this.mode === "panel" ? this.panel : null;
@@ -530,8 +595,8 @@ export class FloorScene {
       html = () => this.panelOptions().map(({ verb, action }, i) => {
         const ok = !this.coach || this.coachExpects(action); // チュートリアル: 今の段でやる一つだけを押せる
         return `<button class="fl-opt" data-act="fl-pick" data-i="${i}" aria-label="${verb.label}"${ok ? "" : " disabled"}${this.coach && ok ? ` data-coach="true"` : ""}>
-          <span class="fl-opt-icon">${icon(VERB_ICON[verb.id])}</span><span class="fl-opt-text"><b>${verb.label}</b><small>${verb.note}</small></span></button>`;
-      }).join("");
+          <span class="fl-opt-icon">${icon(VERB_ICON[verb.id])}</span><span class="fl-opt-text"><b>${verb.label}</b></span></button>`;
+      }).join("") + `<button class="fl-opt fl-opt-later" data-act="fl-later" aria-label="あとで">${icon("back")}<span class="fl-opt-text"><b>あとで</b></span></button>`;
     } else {
       target = panel ? s.tables[panel.id - 1] : floorOrderTarget(s, this.sel);
       order = target?.guestId ? s.guests[target.guestId].order : null;
@@ -553,11 +618,11 @@ export class FloorScene {
       deck.dataset.kind = care ? "care" : "mix";
       deck.dataset.target = !panel && target ? String(target.id) : "";
       deck.style.setProperty("--c", order ? WISH[order.wish].color : "transparent");
-      deck.querySelector(".fl-target").textContent = !panel && target ? String(target.id) : "";
       rows.innerHTML = html();
     }
     if (panel) this.syncCursor();
     for (const spot of this.refs.tables) spot.root.dataset.target = String(!panel && String(target?.id || "") === spot.root.dataset.id);
+    for (const slot of this.refs.slots) slot.root.dataset.target = String(!panel && String(target?.id || "") === slot.root.dataset.id);
     // 入れ替えの最中は、一覧を隠して進みを出す（ミックスは出せない）
     const wait = care ? 0 : floorShuffleLeft(s);
     deck.dataset.busy = String(wait > 0);
@@ -614,8 +679,9 @@ export class FloorScene {
     }
     const hint = floorHint(s);
     this.hint = hint;
-    for (const spot of r.tables) spot.root.dataset.guide = String(s.level === 0 && !this.coach && String(hint.tableId) === spot.root.dataset.id);
-    if (hint.text !== this.lastHint) { this.lastHint = hint.text; r.voice.textContent = hint.text; }
+    for (const spot of [...r.tables, ...r.slots]) spot.root.dataset.guide = String(s.level === 0 && !this.coach && String(hint.tableId) === spot.root.dataset.id);
+    this.voice = hint.text;
+    this.syncLine();
   }
 
   /** フィーバーの札: 灯りと残量。使える量まで溜まると金に灯り、使っている間は紫。もう一度押すと終了し、残りは次に使える。 */
@@ -660,7 +726,7 @@ export class FloorScene {
     if (mode === "intro") html = `${this.tutorial ? "" : act("fl-howto", "help", "遊び方", "sub")}${act("fl-start", "", this.tutorial ? "はじめる" : "開店する", "primary")}`;
     else if (mode === "result") html = act("fl-result-next", "", this.resultPage === 0 ? "次へ" : "シフトを終える", "primary");
     else if (mode === "pause") html = "";
-    else if (mode === "panel") html = `${act("fl-later", "back", "あとで", "sub")}${this.panel.kind === "order" ? shuffle : ""}`;
+    else if (mode === "panel") html = this.panel.kind === "order" ? `${act("fl-later", "back", "あとで", "sub")}${shuffle}` : ""; // 頼みの時は、「あとで」も札の並びの中
     else if (this.coach?.step.talk) html = `${act("fl-coach", "", "次へ", "primary")}${pause}`;
     else html = `${shuffle}${fever}${pause}`;
     const key = `${mode}/${this.panel?.kind || ""}/${!!this.coach?.step.talk}/${this.tutorial}/${this.resultPage}`;
@@ -748,9 +814,9 @@ export class FloorScene {
     if (!hit || !this.el.contains(hit)) return false;
     const act = hit.dataset.act;
     this.keyNav = false;
+    this.unlockAudio();
     if (act === "fl-table") this.tapTable(Number(hit.dataset.id));
     else if (act === "fl-pick") this.pickRow(Number(hit.dataset.i));
-    else if (act === "fl-hint") this.followHint();
     else if (act === "fl-shuffle") this.doShuffle();
     else if (act === "fl-fever") this.useFever();
     else if (act === "fl-pause") { if (this.mode === "live" && !this.band) this.setModePause("pause"); }
@@ -1115,7 +1181,7 @@ export class FloorScene {
 
   coachOpens(kind, id) {
     const want = this.coach?.step.expect;
-    return !!want && want.tableId === id && (want.panel === kind || (kind === "order" && want.type === "order"));
+    return !!want && want.tableId === id && (want.panel === kind || want.type === kind); // 選ぶ段の途中で「あとで」と閉じても、同じ卓を開き直せる
   }
 
   coachNudge() {
@@ -1141,7 +1207,7 @@ export class FloorScene {
   coachFocus() {
     if (!this.refs) return;
     const [kind, id] = this.coach?.step.focus || [];
-    for (const spot of this.refs.tables) spot.root.dataset.coach = String(kind === "table" && spot.root.dataset.id === String(id));
+    for (const spot of [...this.refs.tables, ...this.refs.slots]) spot.root.dataset.coach = String(kind === "table" && spot.root.dataset.id === String(id));
     this.el.querySelector(".fl-chip-shuffle")?.setAttribute("data-coach", String(kind === "shuffle"));
     this.el.querySelector(".fl-chip-fever")?.setAttribute("data-coach", String(kind === "fever"));
   }
@@ -1185,9 +1251,10 @@ export class FloorScene {
     this.open();
     this.refs.coach.hidden = true;
     this.refs.room.dataset.dusk = "false";
-    this.refs.log.textContent = "";
+    this.lineLog = "";
     this.refs.deck.dataset.key = "";
     for (const spot of this.refs.tables) { spot.keys = {}; spot.fx.innerHTML = ""; }
+    for (const slot of this.refs.slots) slot.key = "";
     this.setMode("intro");
     this.phone.onExtOption?.("shift", this.shiftId);
   }

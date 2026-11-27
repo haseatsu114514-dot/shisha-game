@@ -108,10 +108,10 @@ const TALKS = {
       { kind: "say", id: "minto", face: "wink", text: "初めてのお客様には、みんとイチ推しの『フラミンゴ・ピーチ』っ♡ 甘くてカワイイの！" },
     ],
   },
-  // tonari の入口（本編の勤務札 remake/js/daily/tonari.js の tonariMenu にあたる）: シフトに入ると店番、一服は2人の会話へ（VPM02）
+  // tonari の入口（本編の勤務札 remake/js/daily/tonari.js の tonariMenu にあたる）: シフトに入ると店番、一服は2人の会話、ひよりと斧投げへ（VPM02・VPM05）
   door: {
     place: ["tonari", "バイト先"], bg: "tonari", acc: "#ffc978",
-    steps: [{ kind: "narr", text: "昼のtonari。今日はどうする？", choice: ["シフトに入る（バイト）", "お客さんとして一服"] }],
+    steps: [{ kind: "narr", text: "昼のtonari。今日はどうする？", choice: ["シフトに入る（バイト）", "お客さんとして一服", "ひよりと斧投げへ"] }],
   },
   tonari: {
     place: ["tonari", "バイト先"], bg: "tonari", acc: "#ffc978",
@@ -1666,7 +1666,7 @@ class Phone {
       if (!st.choosing && this.nextPage()) return;
       if (line.choice && !st.choosing) { st.choosing = true; st.pick = 0; this.applyLine({ instant: true }); return; }
       st.choosing = false;
-      if (st.scene === "door" && !this.fixed) { this.setScene(st.pick === 0 ? "floor" : "tonari"); return; } // シフトに入ると店番、一服は2人の会話へ
+      if (st.scene === "door" && !this.fixed) { this.setScene(["floor", "tonari", "axe"][st.pick] || "tonari"); return; } // シフトに入ると店番、一服は2人の会話、斧投げはその場面へ
       if (st.step + 1 < this.talk.steps.length) { st.step += 1; this.applyLine(); }
       else if (this.fixed) { st.step = 0; this.render(); }
       else this.setScene(st.scene === "minto" ? "tonari" : "water");
