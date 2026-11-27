@@ -45,6 +45,7 @@ const IMG = {
   // 作り直した絵（gpt-image-2.6-sunburst・VPL38）: ボトル・ハガル（空・ふんわり・ノーマル・デンス）・はじめの吸い出し
   bottle: `${OWN_IMG}ui-bottle-open.webp`, // 口の開いたボトル（本編の大会公式モデルの台のベースを入力にした生成。VPL46・VPL81）
   faucet: `${OWN_IMG}ui-faucet.webp`, // 水入れの蛇口（VPL81）
+  sink: `${OWN_IMG}ui-sink.webp`, // 水入れの流し台（カウンターに埋め込んだステンレスのシンク。VPL92）
   bowlEmpty: `${OWN_IMG}ui-bowl-empty.webp`,
   bowl_airy: `${OWN_IMG}ui-bowl-airy.webp`,
   bowl_normal: `${OWN_IMG}ui-bowl-normal.webp`,
@@ -1038,12 +1039,12 @@ class Phone {
     const id = `bw${this.uid}`, { w, h } = BOTTLE;
     // 水流は、受け口の穴の手前の縁より上だけ手前に描く（その下は受け口の陰。胴の中の分は奥の SVG の .w-stream.in がガラス越しに見せる）
     return `<svg class="bottle-svg fx" viewBox="0 0 ${w} ${h}" aria-hidden="true"><defs><clipPath id="${id}f"><rect class="w-fxclip" x="-400" y="-900" width="${w + 800}" height="0"/></clipPath></defs>
-      <g clip-path="url(#${id}f)"><path class="w-stream" fill="url(#${id}s)" d=""/></g><g clip-path="url(#${id})"><g class="w-drops">${`<circle r="0"/>`.repeat(7)}</g></g></svg>`;
+      <g clip-path="url(#${id}f)"><path class="w-stream" fill="url(#${id}s)" d=""/></g><path class="w-spill" d=""/><g clip-path="url(#${id})"><g class="w-drops">${`<circle r="0"/>`.repeat(7)}</g></g></svg>`;
   }
 
   /** 水入れ（VPL46・VPL81）: 蛇口の下で、口の開いたボトルを少し傾けて満たす。水位計は出さない。二本の線が目安 */
   waterPic() {
-    return `<img class="bg" src="${IMG[this.venue]}" alt=""><div class="water-a" data-zone="empty"><div class="bottle open">${this.bottleSvg()}<img class="b-glass" src="${IMG.bottle}" alt="">${this.bottleFxSvg()}</div></div>`;
+    return `<img class="bg" src="${IMG[this.venue]}" alt=""><div class="water-a" data-zone="empty"><div class="bottle open"><img class="sink" src="${IMG.sink}" alt="">${this.bottleSvg()}<img class="b-glass" src="${IMG.bottle}" alt="">${this.bottleFxSvg()}</div></div>`;
   }
 
   /**
@@ -1061,7 +1062,7 @@ class Phone {
     if (!S || S.svg !== svg) {
       const q = (c) => root.querySelector(c);
       S = this.wsim = { svg, h: new Float32Array(N), v: new Float32Array(N), ang: BOTTLE.rest, angV: 0, slope: 0, slopeV: 0, head: null, tail: null, bub: [], drops: [], spawn: 0, was: false,
-        glass: root.querySelector(".b-glass"), clip: q(".w-clip"), body: q(".w-body"), deep: q(".w-deep"), surf: q(".w-surf"), line: q(".w-line"), stream: q(".fx .w-stream"), streamIn: q(".w-stream.in"), fxClip: q(".w-fxclip"),
+        glass: root.querySelector(".b-glass"), clip: q(".w-clip"), body: q(".w-body"), deep: q(".w-deep"), surf: q(".w-surf"), line: q(".w-line"), stream: q(".fx .w-stream"), spill: q(".w-spill"), streamIn: q(".w-stream.in"), fxClip: q(".w-fxclip"),
         bubEls: [...root.querySelectorAll(".w-bubbles circle")], dropEls: [...root.querySelectorAll(".w-drops circle")] };
     }
     const w = this.st.water, still = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1129,6 +1130,13 @@ class Phone {
       S.stream.setAttribute("d", `${lft}${rgt}Z`); S.streamIn.setAttribute("d", `${lft}${rgt}Z`);
     } else { S.stream.setAttribute("d", ""); S.streamIn.setAttribute("d", ""); }
     S.fxClip.setAttribute("height", (tiltPoint(BOTTLE.mouth[0], BOTTLE.rim, ang)[1] + 900).toFixed(1));
+    // こぼす間は、傾けたボトルの口の右の縁から、流し台の底へ水が流れ落ちる（VPL92）
+    if (this.draining && w > 0.02 && ang > BOTTLE.rest + 4) {
+      const [lx, ly] = tiltPoint(BOTTLE.mouth[0] + 100, BOTTLE.rim - 12, ang), floor = BOTTLE.pivot[1] + 4, t = now / 1000;
+      const wob = (yy) => still ? 0 : Math.sin(t * 17 + yy * 0.05) * 1.8;
+      const x1 = lx + 22, mid = (ly + floor) / 2;
+      S.spill.setAttribute("d", `M${lx.toFixed(1)} ${ly.toFixed(1)} Q${(lx + 16).toFixed(1)} ${(ly + 6).toFixed(1)} ${(x1 + wob(mid) - 4).toFixed(1)} ${mid.toFixed(1)} L${(x1 + wob(floor) - 3).toFixed(1)} ${floor} L${(x1 + wob(floor) + 3).toFixed(1)} ${floor} L${(x1 + wob(mid) + 4).toFixed(1)} ${mid.toFixed(1)} Q${(lx + 22).toFixed(1)} ${(ly + 2).toFixed(1)} ${(lx + 6).toFixed(1)} ${(ly - 4).toFixed(1)}Z`);
+    } else S.spill.setAttribute("d", "");
     // 泡としぶき
     if (hitting && !still) {
       S.spawn += dt;
@@ -1878,9 +1886,9 @@ class Phone {
         ${aHtml("poke", { cls: "hold center", extra: `<i class="fill"></i><i class="fill-line"></i>` })}
         <span class="hole-count" aria-hidden="true">${icon("holes")}<b>${st.holes.length}</b><small>/${HOLE_COUNT}</small></span>`;
     }
-    // 葉（フレーバーの持ち）は左下、吸った回数は「吸う」の中の点。提供はほかの場面の決定と同じ右下の丸いボタン（VPL86）。中の2つの点は、提供できるまでのあと2口
+    // いちばん下の段に、左＝葉（フレーバーの持ち）、右＝提供（同じ高さの横長。VPL89）。その上に強さのゲージと「吸う」。吸った回数は「吸う」の中の点、提供の中の2つの点は提供できるまでのあと2口
     return `<span class="leaves" role="img" aria-label="フレーバーの持ち 5">${`<img src="${IMG.leaf}" alt="">`.repeat(5)}</span>
-      <button class="btn-a serve-ok" data-act="serve" aria-label="提供する（あと2口）"><span class="t tool">${TOOL_SVG.serve}</span><small class="btn-lab">提供</small><span class="pips"><i></i><i></i></span></button>
+      <button class="serve-pill" data-act="serve" aria-label="提供する（あと2口）">${TOOL_SVG.serve}<b>提供</b><span class="pips"><i></i><i></i></span></button>
       <div class="gauge"><span class="end l">${icon("cool")}</span><span class="end r">${icon("heat")}</span>${meterHtml()}</div>
       ${aHtml("puff", { cls: "center", extra: `<span class="pips" aria-label="吸った回数 ${st.pulls}/5">${Array.from({ length: 5 }, (_, i) => `<i class="${i < st.pulls ? "on" : ""}"></i>`).join("")}</span>` })}`;
   }
