@@ -5,6 +5,7 @@
 // 文面は正本の data/lime_messages.json をそのまま読む（文は写していない。台本を直せば、この試作にもそのまま効く）。
 // 縦のチャット画面なので、十字キーと丸ボタンは置かない（2026-11-27 オーナー「縦レイアウトは必ず十字ボタンや決定ボタンはいらない　その分を専用UIに」）。
 // 上＝相手の名前、真ん中＝吹き出し、下（親指の届く所）＝返事の札。PC では ↑↓ で選び、Enter で決める。
+// 見た目は、あえて LINE の配色に寄せる（2026-11-27 オーナー「ライムの画面はあえてLINEの色とかに寄せたい　トークリストとか」・VPM10。lime.css）。
 // 本編の進行・好感度・保存には触れない（返事を選んでも、この画面の中だけで終わる）。音は鳴らさない。
 
 const DATA_URL = new URL("../../../data/lime_messages.json", import.meta.url).href;
@@ -65,7 +66,7 @@ export class LimeScene {
     options: { name: "case", default: "chat", values: Object.fromEntries(Object.entries(CASES).map(([id, c]) => [id, c.name])) },
     gallery: {
       title: "LIME（メッセージ）",
-      note: "本編の LIME を縦のチャット画面へ。文面は本編の台本（data/lime_messages.json）をそのまま読む。十字キーと丸ボタンは置かず、上に相手の名前、真ん中に吹き出し、下の親指の届く所に返事の札。一覧 → トーク → 返事 → 相手の返事まで触れる。",
+      note: "本編の LIME を縦のチャット画面へ。文面は本編の台本（data/lime_messages.json）をそのまま読む。十字キーと丸ボタンは置かず、上に相手の名前、真ん中に吹き出し、下の親指の届く所に返事の札。見た目は、あえて LINE の配色に寄せた（白いトーク一覧と緑の未読数、青い背景に白と緑の吹き出し、既読）。一覧 → トーク → 返事 → 相手の返事まで触れる。",
       shots: [
         { caption: "トーク一覧（未読1件）" },
         { caption: "トーク・返事を選ぶ", shot: "thread", with: "minto" },
@@ -231,8 +232,8 @@ export class LimeScene {
       return;
     }
     const unread = this.unread();
-    this.refs.head.innerHTML = `<span class="lm-logo">LIME</span><b class="lm-title">トーク</b>
-      <span class="lm-when">${unread ? `<em aria-label="未読${unread}件">${unread}</em>` : ""}DAY ${this.day}・昼</span>`;
+    this.refs.head.innerHTML = `<b class="lm-title">トーク</b>${unread ? `<em class="lm-count" aria-label="未読${unread}件">${unread}</em>` : ""}
+      <span class="lm-when"><span class="lm-logo">LIME</span>DAY ${this.day}・昼</span>`;
   }
 
   setActions(html) {
@@ -263,16 +264,16 @@ export class LimeScene {
     chat.classList.add("list");
     chat.innerHTML = senders.length ? senders.map((sender, i) => {
       const items = this.thread(sender), last = items.at(-1);
-      const unread = items.some((item) => !item.read);
+      const unread = items.filter((item) => !item.read).length;
       const openInvite = items.some((item) => item.msg.type === "invitation" && !item.done);
       const lines = [...last.msg.messages, ...(last.read ? last.log : [])].map((line) => this.content(line)).filter(Boolean);
       const lastLine = lines.at(-1);
       const preview = lastLine?.kind === "text" ? lastLine.text : lastLine?.asset?.preview || lastLine?.fallback || "";
-      const tag = openInvite ? `<span class="lm-tag invite">誘い</span>` : last.msg.type === "chat" ? `<span class="lm-tag">雑談</span>` : "";
+      const tag = openInvite ? `<span class="lm-tag invite">誘い</span>` : "";
       return `<button class="lm-row${unread ? " unread" : ""}" data-act="lm-open" data-account="${sender}" aria-current="${i === this.cursor}" style="--i:${i}">
-        <span class="lm-row-face">${this.avatar(sender)}${unread ? `<i class="lm-dot"></i>` : ""}</span>
+        <span class="lm-row-face">${this.avatar(sender)}</span>
         <span class="lm-row-main"><b>${esc(this.name(sender))}</b><span>${esc(preview)}</span></span>
-        <span class="lm-row-side"><small>${this.dayLabel(last)}</small>${tag}</span></button>`;
+        <span class="lm-row-side"><small>${this.dayLabel(last)}</small><span class="lm-row-marks">${tag}${unread ? `<em class="lm-count" aria-label="未読${unread}件">${unread}</em>` : ""}</span></span></button>`;
     }).join("") : `<p class="lm-empty">まだトークはない</p>`;
     chat.scrollTop = 0;
     this.setActions(`<button class="lm-reply ghost" data-act="lm-close">${this.kit.icon("lmClose")}<span>スマホを閉じる</span></button>`);
@@ -307,7 +308,7 @@ export class LimeScene {
       typing.remove();
       this.lastSide = before;
     }
-    this.row(`${mine ? "" : this.face(sender)}<div class="lm-bubble">${this.kit.esc(text)}</div>`, mine ? "me" : "peer", { animate });
+    this.row(`${mine ? `<span class="lm-read">既読</span>` : this.face(sender)}<div class="lm-bubble">${this.kit.esc(text)}</div>`, mine ? "me" : "peer", { animate });
     if (animate) await this.wait(mine ? 300 : 460);
   }
 
