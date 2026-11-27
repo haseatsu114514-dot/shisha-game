@@ -271,8 +271,22 @@ function chatList(s, key) {
 }
 /** 本編の人物に、その店でその人だけの雑談があるか。 */
 const visitorChats = (s, guest) => (guest?.charId ? venueOf(s).visitorChats?.[guest.charId] || [] : []);
+/** 一つの営業で、雑談をこのくらい出す見込み。次の営業は、一覧のこの数だけ先から出す（TFL75）。 */
+const CHAT_STRIDE = 8;
+const chatOrders = new Map();
+/** 一覧ごとに決まった並び（どの保存でも同じ）。営業ごとに、この並びの続きから出す。 */
+function chatOrder(key, length) {
+  const name = `${key}:${length}`;
+  if (!chatOrders.has(name)) {
+    let h = 0x811c9dc5;
+    for (const ch of name) h = Math.imul(h ^ ch.codePointAt(0), 0x01000193) >>> 0;
+    chatOrders.set(name, shuffled(Array.from({ length }, (_, i) => i), rng(h)));
+  }
+  return chatOrders.get(name);
+}
 /**
  * 次に出す雑談を選ぶ。同じ一覧の話は、出しきるまで繰り返さない（出しきったら、直前の一つを除いて最初から）。
+ * やりこむ人が同じ話を何度も見ないよう、回した回数（level）ごとに、決まった並びの続きから出す（TFL75。保存は増やさない）。
  * 昼だけ・夜だけの話（at）は、その時間帯にだけ出す。つむぎが働く日は、ふつうの客の雑談の一部がつむぎの話になる。
  */
 function pickChat(s, guest) {
@@ -292,7 +306,13 @@ function pickChat(s, guest) {
     open = fits.filter((i) => !used.includes(i));
     if (!open.length) open = fits;
   }
-  const index = open[hash32(s.seed, turn) % open.length];
+  const order = chatOrder(key, list.length);
+  const start = (Math.max(0, s.level || 0) * CHAT_STRIDE) % order.length;
+  let index = open[0];
+  for (let k = 0; k < order.length; k++) {
+    const i = order[(start + k) % order.length];
+    if (open.includes(i)) { index = i; break; }
+  }
   seen[key] = [...used, index];
   return { key, index };
 }

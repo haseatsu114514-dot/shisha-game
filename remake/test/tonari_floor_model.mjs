@@ -519,21 +519,21 @@ test("雑談の台本: 味・趣味・何気ない話・愚痴をたっぷり。
   const mob = [...Object.entries(CALLS).filter(([k]) => k !== "chatty").flatMap(([, c]) => c.lines.flatMap((l) => [l.said, l.good])), ...CALL_MISS];
   for (const line of mob) assert.ok(!lines.has(line), line);
   assert.equal(CALLS.chatty.lines, CHAT_COMMON, "どの店でも通る味の話が、頼みの雑談の既定");
-  // 店ごと: 味の話（全店共通・30本以上）＋その店の客の話。どの店（tonari・東京 mukai・ドバイ）も、趣味・何気ない話・愚痴を20本以上ずつ（TFL71・73）
+  // 店ごと: 味の話（全店共通・45本以上）＋その店の客の話。どの店（tonari・東京 mukai・ドバイ）も、趣味・何気ない話・愚痴を30本以上ずつ（TFL71・73・75）
   const topics = (list) => Object.fromEntries(["taste", "hobby", "daily", "gripe"].map((t) => [t, list.filter((c) => c.topic === t).length]));
   for (const v of venues) {
     const counts = topics(v.chats);
-    assert.ok(counts.taste >= 30 && ["hobby", "daily", "gripe"].every((t) => counts[t] >= 20), `${v.id}: ${JSON.stringify(counts)}`);
-    assert.ok(v.chats.length >= 90, `${v.id}: 雑談 ${v.chats.length} 本`);
+    assert.ok(counts.taste >= 45 && ["hobby", "daily", "gripe"].every((t) => counts[t] >= 30), `${v.id}: ${JSON.stringify(counts)}`);
+    assert.ok(v.chats.length >= 140, `${v.id}: 雑談 ${v.chats.length} 本`);
     assert.ok(CHAT_COMMON.every((c) => v.chats.includes(c)), v.id);
     assert.ok(v.chats.some((c) => c.at === "day") && v.chats.some((c) => c.at === "night"), `${v.id}: 昼だけ・夜だけの話もある`);
-    // レアで来る本編の人物は、全員その人だけの雑談を持つ（五本ずつ。ドバイへ同行した人は三本から）
-    for (const who of Object.values(v.visitors)) assert.ok(v.visitorChats[who.id]?.length >= 5, `${v.id}: ${who.id}`);
+    // レアで来る本編の人物は、全員その人だけの雑談を持つ（八本ずつ。ドバイへ同行した人は五本から）
+    for (const who of Object.values(v.visitors)) assert.ok(v.visitorChats[who.id]?.length >= 8, `${v.id}: ${who.id}`);
   }
-  for (const id of OVERSEAS_HEROINES) assert.ok(FLOOR_VENUES.dubai.visitorChats[id]?.length >= 3, `ドバイへ同行した ${id}`);
+  for (const id of OVERSEAS_HEROINES) assert.ok(FLOOR_VENUES.dubai.visitorChats[id]?.length >= 5, `ドバイへ同行した ${id}`);
   // つむぎが働く日の話: 客がつむぎのことを話す物と、つむぎ本人が返す物
   const staff = CHAT_STAFF.tsumugi;
-  assert.ok(staff.length >= 20 && staff.filter((c) => c.by === "tsumugi").length >= 8 && staff.filter((c) => !c.by).length >= 10);
+  assert.ok(staff.length >= 30 && staff.filter((c) => c.by === "tsumugi").length >= 14 && staff.filter((c) => !c.by).length >= 12);
   assert.ok(staff.filter((c) => c.by === "tsumugi").every((c) => c.reply.startsWith("……")), "つむぎは、間に「……」を置いて話す");
 });
 
@@ -565,6 +565,21 @@ test("雑談: その店の話から選び、出しきるまで同じ話を繰り
     assert.ok(said.every((line) => [...CHAT_COMMON, ...own].some((c) => c.said === line)), venue);
     assert.ok(said.some((line) => own.some((c) => c.said === line)), `${venue}: その店の客の話が出る`);
   }
+});
+
+test("雑談: やりこんでも同じ話が続かない。回した回数ごとに、一覧の続きから出す（TFL75）", () => {
+  // 十回続けて店番に入り、一回に六つずつ雑談しても、同じ話は一つも出ない（保存は増やさない。回した回数 level だけで決まる）
+  const shown = [];
+  for (let level = 3; level < 13; level++) {
+    let s = serveFirst(createFloorNight({ seed: 100 + level, level, night: "usual" }));
+    s.upcoming = [];
+    shown.push(...chatRounds(s, 6).shown.map((c) => c.said));
+  }
+  assert.equal(new Set(shown).size, shown.length, "十回の店番で、同じ雑談は出ない");
+  // 種が違っても、回した回数が同じなら同じ順（どの保存でも、続きから出る）
+  const first = (seed, level) => { const s = serveFirst(createFloorNight({ seed, level, night: "usual" })); s.upcoming = []; return chatRounds(s, 3).shown.map((c) => c.said); };
+  assert.deepEqual(first(1, 7), first(2, 7));
+  assert.notDeepEqual(first(1, 7), first(1, 8));
 });
 
 test("雑談: つむぎが働く日（第5章の tonari）は、一部がつむぎの話になり、つむぎ本人が返すこともある（TFL69）", () => {

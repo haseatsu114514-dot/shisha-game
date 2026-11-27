@@ -20,6 +20,7 @@ import {
 } from "../../js/daily/tonari-floor-model.js";
 import { MIXES, WISHES, VERBS, CALLS, MOODS, TUTORIAL, PRICE } from "../../js/daily/tonari-floor-data.js";
 import { floorVenue } from "../../js/daily/floor-venues.js";
+import { CHAT_SPEAKERS } from "../../js/daily/floor-chats.js";
 // 心得の盤の効き目（VPM19・SBD157）: 1台表示で縦の盤に灯したマス（phone.boardPlay）を本編と同じ式（growthFloorPerks）で読み、店番に効かせる
 //   （仕事が早い＝シャッフル1秒・売り上手＝歩合13%・波に乗る＝フィーバー3卓・フロアを読む＝ほかの卓の注文も読む・能力のマスの恩恵）。
 //   営業の種類「盤のスキルあり」は、店番に効くマスとスキルを全部灯した形で開く。効いている心得は開店前の札に並べる。
@@ -35,6 +36,8 @@ const WISH = Object.fromEntries(WISHES.map((w) => [w.id, w]));
 const seconds = (ticks) => Math.ceil(ticks * FLOOR_TICK_MS / 1000);
 const yen = (n) => `${Math.round(n).toLocaleString("ja-JP")}円`;
 const quoted = (text) => (text.startsWith("（") ? text : `「${text}」`);
+/** 雑談の返しを言った人（はじめ・つむぎ）の名前。 */
+const talker = (by) => CHAT_SPEAKERS[by] || CHAT_SPEAKERS.hajime;
 const BAND_MS = 1500; // 画面を横切る帯（営業開始・フィーバー・営業終了）が出ている長さ。本編と同じ
 const SALES_STEP = 10000;
 
@@ -537,7 +540,9 @@ export class FloorScene {
         case "call": this.log(e.coal ? `${e.tableId}卓　炭を見てほしそうです` : `${e.tableId}卓で、お客さんの様子が変わりました`); break;
         case "care":
           if (e.ok) { this.hit(e.tableId, "good"); this.pop(e.tableId, "いいケア", "best"); } else { this.hit(e.tableId, "off"); this.pop(e.tableId, "ちがった…", "off"); }
-          this.say(e.tableId, e.line);
+          // 雑談（客の話しかけ → はじめかつむぎの返しの二回。TFL72）: 返しは店の側の言葉なので名前を添え、客の最後の一言は話しかけのまま
+          if (e.reply) { this.log(`${e.tableId}卓　${talker(e.by)}${quoted(e.reply)}`); this.remember(e.tableId, e.said); }
+          else this.say(e.tableId, e.line);
           break;
         case "callLate": this.pop(e.tableId, "見逃した", "off"); this.log(`${e.tableId}卓の頼みを見逃しました`); break;
         case "drink": this.hit(e.tableId, "coin"); this.pop(e.tableId, `＋${yen(PRICE.drink)}`, "coin"); this.log(`${e.tableId}卓　追加ドリンク注文！`); break;
@@ -1155,8 +1160,10 @@ export class FloorScene {
     this.refs.rows.children[panel.cursor]?.setAttribute("data-picked", "true");
     who.querySelector(".fl-guest-mark").innerHTML = `<img src="${this.art(care.ok ? "verdict-best" : "verdict-bad")}" alt="">`;
     const quote = who.querySelector(".fl-quote");
-    if (care.line) { quote.dataset.sight = "false"; this.fitText(quote.querySelector(".fl-q"), quoted(care.line)); }
-    this.verdictTimer = this.later(() => { if (this.panel?.locked && this.mode === "panel") this.closePanel(); }, 1000);
+    // 雑談に応えた時は、吹き出しを店の側の返し（名前つき）に替え、読む間を少し長く取る（TFL72）
+    const text = care.reply ? `${talker(care.by)}${quoted(care.reply)}` : care.line ? quoted(care.line) : "";
+    if (text) { quote.dataset.sight = "false"; this.fitText(quote.querySelector(".fl-q"), text); }
+    this.verdictTimer = this.later(() => { if (this.panel?.locked && this.mode === "panel") this.closePanel(); }, care.reply ? 2000 : 1000);
   }
 
   /* ── 開店前・休止・精算 ── */
