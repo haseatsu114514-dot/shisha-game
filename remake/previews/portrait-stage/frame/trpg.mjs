@@ -16,7 +16,8 @@ const stage = document.getElementById("stage"), host = document.getElementById("
 // 倍率は幅（640）と高さ（ステージの高さ）の両方に収まる大きさ（VPG22）
 const RS_W = 720, RS_H = 1300;
 initPortraitFit(stage, ({ width, height }) => {
-  stage.style.setProperty("--rs-k", String(Math.min(width / RS_W, (height - 24) / RS_H).toFixed(4)));
+  // 上下に 55 ずつ空ける（下の「タップでスキップ」が、低い画面でも振り直せるの札に重ならない）
+  stage.style.setProperty("--rs-k", String(Math.min(width / RS_W, (height - 110) / RS_H).toFixed(4)));
   syncExplore();
 });
 // 本編のスマホ向けの決まり（文字とタップの大きさ。css/phone-density.css・css/trpg-phone.css の data-density="phone"）を、縦でも使う

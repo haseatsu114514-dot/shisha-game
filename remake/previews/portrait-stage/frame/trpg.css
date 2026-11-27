@@ -529,7 +529,7 @@ html:root[data-density="phone"][data-layout="portrait"] #stage .trpg-root.trpg-c
 #stage .trpg-root .trpg-roll-show .trpg-rs-plus.a { left: 360px; top: 432px; }
 #stage .trpg-root .trpg-roll-show .trpg-rs-plus.b { left: 268px; top: 750px; }
 #stage .trpg-root .trpg-roll-show .trpg-rs-chip { left: 304px; top: 668px; width: 164px; height: 164px; }
-#stage .trpg-root .trpg-roll-show .trpg-rs-chip > small { max-width: 132px; font-size: 25px; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-chip > small { max-width: 136px; font-size: 27px; }
 #stage .trpg-root .trpg-roll-show .trpg-rs-chip > b { font-size: 54px; }
 #stage .trpg-root .trpg-roll-show .trpg-rs-need { left: -10px; right: -10px; top: 862px; gap: 14px; }
 #stage .trpg-root .trpg-roll-show .trpg-rs-need > small { font-size: 26px; letter-spacing: .16em; }
@@ -563,7 +563,7 @@ html:root[data-density="phone"][data-layout="portrait"] #stage .trpg-root.trpg-c
 #stage .trpg-root .trpg-roll-show .trpg-rs-hint > b { font-size: 24px; }
 #stage .trpg-root .trpg-roll-show .trpg-rs-hint > strong { font-size: 38px; }
 #stage .trpg-root .trpg-roll-show .trpg-rs-hint > span { justify-self: center; font-size: 26px; }
-#stage .trpg-root .trpg-roll-show .trpg-rs-skip { font-size: 24px; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-skip { right: 18px; bottom: 12px; font-size: 24px; }
 /* 劇場の間の「盛り上がり ＋1」の知らせは、上の左（見出しの上）に */
 #stage .trpg-root.trpg-cinematic:has(.trpg-roll-show) :is(.trpg-heat-pop, .trpg-heat-pop:not([data-tier="0"])) { left: 16px; top: 16px; }
 
