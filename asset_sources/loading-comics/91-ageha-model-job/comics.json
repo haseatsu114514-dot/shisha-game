@@ -1,0 +1,100 @@
+{
+  "id": "ageha-model-job",
+  "title": "モデルの仕事",
+  "cast": [
+    "ageha"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "モデルの仕事取れた！",
+    "雑誌ですか？",
+    "顔、ほぼ手。"
+  ],
+  "first_speaker": "ageha",
+  "panel1": "あげはの店の店内。右のあげはがスマホを高く掲げて大喜び「モデルの仕事取れた！」（左上に高く）。左のはじめが拍手して「雑誌ですか？」（右下）。",
+  "panel2": "駅の通路の壁に大きな広告。中身はパロディバナー「うわっ…私のシーシャ、軽すぎ…？」（両手で口元を覆うあげはの写真）。あげはは広告を指さしてピースのドヤ顔、はじめは見上げて汗「顔、ほぼ手。」。",
+  "caption": "あげはは、雑誌の読者モデルもしている店長。",
+  "type": "期待はずれ（雑誌モデルのはずが、顔の隠れた広告）",
+  "note": "2026-11-27 オーナー依頼（あげはの漫画で、モデルの仕事が取れたと言ってオチがパロディバナー）。あげはが読者モデル（data/characters.json）なのは正本どおり。広告の仕事はギャグの誇張。広告の文言は広告主のものなので一人称が「私」でもよい（あげはの台詞の一人称は「うち」）。",
+  "source": "91-ageha-model-job.png",
+  "source_sha256": "fb933cc30cf890b0c5565a0076a1fd27a9d88eaa044e12bcb81a8b4e9e7015a2",
+  "generator": "OpenAI images/edits（gpt-image-2.6-sunburst・quality medium・1536x1024）→ ②のポスターに poster.png を合成",
+  "prompt": "prompt.txt",
+  "scripts": {
+    "generate": "generate.py（下敷き・立ち絵2枚・既存のあげは漫画2コマを参照に生成）",
+    "poster": "render_poster.js（パロディバナーを空白の比率 約1.41:1 に組み直す）",
+    "composite": "composite.py（raw/v1-b.png の空白を検出して poster.png をはめ込む）"
+  },
+  "candidates": {
+    "raw/v1-a.png": {
+      "sha256": "69e4f0260885f9236e34249ee05267b8870ec46880a4466a452df9aa7aef1047",
+      "status": "不採用（コマ枠の高さが 517px で比率 1.40。余白埋めで端が切れる）"
+    },
+    "raw/v1-b.png": {
+      "sha256": "3269a631064fa7ad9b17c63842ff03c50f5bd9cbf56f91de4806aa1a59304867",
+      "status": "採用（枠の比率 1.515 で規格に最も近い）"
+    },
+    "raw/v1-c.png": {
+      "sha256": "9efea7c3896d9fa0ad0ab968b9ad68930c8a735c6fe07de675aa01ec19ab6bd9",
+      "status": "不採用（内容は同等。②のポスターの空白が 1.5:1 と横長）"
+    }
+  },
+  "references": {
+    "template": "asset_sources/loading-comics/template/2koma_template_1536x1024.png（tools/loading_comic_cut.py template で再生成したもの）",
+    "hajime": {
+      "path": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    "ageha": {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+    },
+    "style": [
+      "remake/img/loading/ageha-full-coord-1.webp",
+      "remake/img/loading/ageha-full-coord-2.webp"
+    ],
+    "poster": "asset_sources/parody/ageha-karusugi-banner/banner.html"
+  },
+  "regions": [
+    {
+      "x": 36,
+      "y": 272,
+      "width": 721,
+      "height": 476,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024
+    },
+    {
+      "x": 779,
+      "y": 272,
+      "width": 721,
+      "height": 476,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024
+    }
+  ],
+  "delivery": [
+    {
+      "file": "remake/img/loading/ageha-model-job-1.webp",
+      "width": 721,
+      "height": 481,
+      "sha256": "3e3d9fafa6f5e572c2ed716bf58cbeae9af3a07be563d5783a231303c99c0947"
+    },
+    {
+      "file": "remake/img/loading/ageha-model-job-2.webp",
+      "width": 721,
+      "height": 481,
+      "sha256": "ea37ef6beece1e6fbb13b32d54d47af7df8c5458d4d50dca03e457cda7491c37"
+    }
+  ],
+  "qa": {
+    "cut": "tools/loading_comic_cut.py sheet: 2コマとも比率 1.515 → ok。fill: 余白 1% 以下で拡大なし。check: OK（721x481・3:2）",
+    "dialogue_verbatim": "3つの台詞を台本と一字一句照合（！？・句読点も同じ）",
+    "reading_order": "①は右のあげはが先に話し、吹き出しは左上に高く・尻尾はあげはへ。はじめの返事は右下",
+    "identity": "はじめ（黒キャップ・黒パーカー・ドッグタグ）、あげは（ツインテール・ピンクと白のクマの髪留め・ヒョウ柄ジャケット・チョーカー）。両コマで、はじめが左・あげはが右",
+    "extra_text": "②の広告の文字は合成したパロディバナー（オチそのもの）。生成AIには文字を描かせず、空白で描かせて後から合成した",
+    "prohibited_items": "シーシャ機材・炭・煙・武器・お酒・実在のロゴなし。人物は2人だけ"
+  },
+  "status": "registered",
+  "registered": true
+}
