@@ -57,6 +57,12 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   // RLS10: ラテをこぼしてハットを干した日（天気に依存しない）。常連が店主だと気づかず、コーヒーで分かる。猫のラテの後に一度。
   ch3_mukai_no_hat: { file: "ch3_mukai", label: "ハットのない日", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_mukai_latte_cat"] },
+  // RLS10⑥（VOL21 第2弾）: 量りとタイマーで淹れるコーヒー。鼻が利かなかった一週間の話なので、味が戻る前だけ。
+  ch3_mukai_scale_coffee: { file: "ch3_mukai", label: "量りのコーヒー", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mukai_intro"], before: ["ch3_taste_return"] },
+  // RLS10⑥（VOL21 第2弾）: 裏口でてつこに餌を出すムカイさん。懐かれなくても、席だけ用意して待つ。
+  ch3_mukai_tetsuko: { file: "ch3_mukai", label: "てつこの皿", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mukai_intro"] },
   // 台本が「大会後」。大会前のカードには出ず、勝利後は ch3-aftermath-progress.js の寄り道から読む。
   ch3_cigarman_trace: { file: "ch3_mukai", label: "大会後の客席", location: "mukai", bg: "bg_mukai_shop" },
   // エミルは大会当日に初めて名乗る審査員。面識ができる前に体験会を置かない。大会後の入口は
@@ -103,6 +109,9 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   // RLS10: はじめと綾取の友情。煙幕の初訪問の後、東京育ちでも今は福岡の人の綾取と、東京のお客さん同士になる。
   ch3_ayatori_bakery: { file: "ch3_rivals", label: "パン屋の紙袋", location: "煙幕", bg: "bg_yohaku_shop",
     after: ["ch3_ayatori_first"] },
+  // RLS10⑥（VOL21 第2弾）: 福岡の店のバイトの子から初めての配合が届く。パン屋の紙袋の後、大会前に一度。
+  ch3_ayatori_parcel: { file: "ch3_rivals", label: "福岡からの小包", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_ayatori_bakery"] },
   // 綾取とましろの過去。ましろ側はレモンケーキの客を見た煙幕の初訪問後、綾取側はmukaiへ客として来た後。
   ch3_ayatori_mashiro_tea_tin: { file: "ch3_saku_mashiro", label: "茶缶の半分", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_ayatori_first"] },
@@ -179,10 +188,11 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
 // loadIntroDialogues が読む追加分（ファイル→場面ID）。routes の全任意場面・前夜場面と一致させる（story_routes.mjs で照合）。
 export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_double_apple: ["ch3_minto_small_lies"],
-  ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_shadow", "ch3_mukai_latte_cat", "ch3_mukai_no_hat", "ch3_cigarman_trace", "ch3_mukai_yoru_playlist"],
+  ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_shadow", "ch3_mukai_latte_cat", "ch3_mukai_no_hat", "ch3_cigarman_trace", "ch3_mukai_yoru_playlist",
+    "ch3_mukai_scale_coffee", "ch3_mukai_tetsuko"],
   // 綾取・スティーブの締めくくり（#2028）は寄り道ではなく、煙幕・Smoke & Glory を訪ねた時の「〜に呼ばれる」から
   // （daily/bonds.js の条件。版3は ch3-tokyo-daily.js、優勝の翌日は ch3-aftermath.js、旧行程は ch3.js の場面カード）。
-  ch3_rivals: ["ch3_emil_workshop", "ch3_ayatori_bakery", "ch3_ayatori_lime", "ch3_ayatori_missed", "ch3_ayatori_cleanup", "ch3_ayatori_liar", "ch3_ayatori_first_reply", "ch3_ayatori_bond_finale", "ch3_steve_lime", "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch", "ch3_steve_bond_finale"],
+  ch3_rivals: ["ch3_emil_workshop", "ch3_ayatori_bakery", "ch3_ayatori_parcel", "ch3_ayatori_lime", "ch3_ayatori_missed", "ch3_ayatori_cleanup", "ch3_ayatori_liar", "ch3_ayatori_first_reply", "ch3_ayatori_bond_finale", "ch3_steve_lime", "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch", "ch3_steve_bond_finale"],
   // ♥3の質問と締めくくりは寄り道ではなく、場面カードの「ましろちゃんと話す」から（daily/bonds.js の条件）。
   ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice",
     "ch3_mashiro_black_tea", "ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_mashiro_glass_cloth",

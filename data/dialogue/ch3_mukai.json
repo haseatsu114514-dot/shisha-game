@@ -647,6 +647,21 @@
           "text": "一口かじると、思っていたより腹が減っていた。"
         },
         {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "試喫の人、最後まで座ってたな。配信で見てた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "朝の客は急がない、って言われてたので"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "……言ってみるもんだな"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "ましろちゃんは？"
@@ -985,6 +1000,153 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "はい、……いい曲ですもんね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_mukai_scale_coffee",
+      "comment": "RLS10⑥（第3章はムカイさんを厚く描く・2026-11-27 VOL21 第2弾）。mukaiの二日目の後、味が戻る前だけ一度（ch3-story-wiring.js の before）。ムカイさんは量りとタイマーでコーヒーを淹れる。鼻が利かなかった一週間の話を、はじめの不調に重ねず本人の話として置く。大会・恋愛に触れない。好感度は動かさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開店前のmukai。ムカイさんが、挽いた豆を量りに載せていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "湯を注ぐ手の横に、小さなタイマーが置いてある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "量って淹れるんですね。てっきり、勘かと"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "勘でも淹れられる。でも、勘は日によって違う"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "何年か前、ひどい風邪で、一週間ほど鼻が利かなかった"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "その間の常連のコーヒーは、量りとタイマーが淹れた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……誰か、気づきました？"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "一人だけ、今日は薄いなと言った。いつもと同じ量なのにな"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "薄かったのは、たぶんそいつの体の方だ。そういう日もある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは淹れ終えたカップを置き、量りの目盛りをゼロに戻した。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "鼻が利かない日は、数字に頼っていい。最後に、一口だけ確かめればいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（量って、待って、最後に一口。……シーシャでも、同じことができる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口もらう。苦さは遠いのに、温かさだけは、まっすぐ届いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_mukai_tetsuko",
+      "comment": "RLS10⑥（第3章はムカイさんを厚く描く・2026-11-27 VOL21 第2弾）。mukaiの二日目の後、大会前に一度。出発前のスミさんの「自分の店の猫に、あんまり懐かれてない」（ch3_prep_opening）を受ける。てつこはましろにだけよく懐く（characters.json）。大会・恋愛に触れない。好感度は動かさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後、裏口のベンチの前で、ムカイさんがしゃがんでいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "小さな皿に、餌を量って入れている。てつこは少し離れて、丸く座ったまま見ていた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……食え"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "てつこは動かない。ムカイさんが二歩下がると、ようやく皿へ寄ってきた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさんが言ってました。自分の店の猫に、あんまり懐かれてないって"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……あいつ、そんなことまで話したのか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "懐かなくていい。腹が減った時に、ここへ来ればいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "てつこは食べ終えると、ムカイさんの靴を嗅いだ。それから、ベンチへ戻った。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "……今日は、靴まで来た"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "進んでますね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんには、すぐ寄っていくのに"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "ましろは、自分から寄っていかないからな。座って、待ってる"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "客も同じだ。席だけ用意して、こっちからは寄らない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ましろちゃんが黙ってホースを返したのも、そういうことかな）"
         }
       ]
     }

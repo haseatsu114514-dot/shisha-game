@@ -1,0 +1,104 @@
+/* 縦画面C案「煙の舞台」: ロード画面（loading.mjs）。長さは rem（スマホの幅 39rem）、高さで変わる寸法は cqh（.phone の高さ）。
+   上＝ロゴ／真ん中＝2コマ漫画の紙面（2コマを上下に積んで、幅いっぱいに大きく）／下＝バー・LOADING・大きな「進む」の札。
+   色と紙は本編のロード画面（css/loading.css）と同じ: 紙 #eee3cf・墨 #2c1f2a・ラベンダーの見出しの印・ピンク→紫→水色のバー。
+   煙は画面の下を流れる霞だけで、機材からは出さない（docs/shisha_reference.md §4.1）。十字キーと丸ボタンは置かない（VPM07）。 */
+
+.phone[data-kind="loading"] {
+  --acc: #ff9bd2;
+  --lo-paper: #eee3cf; --lo-paper-hi: #f6eedc; --lo-paper-lo: #e4d7bf;
+  --lo-ink: #2c1f2a; --lo-ink-soft: #4a2c44; --lo-lavender: #69497e; --lo-amber: #d8963f;
+  --lo-bar: linear-gradient(90deg, #ff5fa8 0%, #b45cf0 50%, #3fd0e8 100%);
+  background: #100b18;
+}
+/* 紙面の中の幅（＝1コマの幅）。2コマ（3:2 を2つ）と、ロゴ・題・解説・下の段が、どの高さでも画面に収まる幅にする */
+.phone[data-kind="loading"] > * { --lo-w: min(34.8rem, calc((100cqh - 34rem) * 0.75)); }
+
+/* 背景: 本編のロード画面の絵（霞のラウンジ）を縦に切り抜き、紙面のまわりを暗く沈める */
+.lo-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 62% 50%; filter: blur(0.2rem) brightness(0.62) saturate(1.15); transform: scale(1.04); }
+.lo-veil { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 70% 46% at 50% 52%, #0b0713d9 0%, #0b0713a6 60%, transparent 100%),
+    linear-gradient(180deg, #0b0812cc 0%, transparent 18%, transparent 70%, #0b0812f2 100%); }
+/* 下を流れる霞（吐いた煙のような、ぼかした楕円だけ） */
+.lo-haze { position: absolute; left: -20%; right: -20%; bottom: -4%; height: 30%; pointer-events: none; filter: blur(1.8rem); }
+.lo-haze i { position: absolute; bottom: 10%; width: 50%; height: 70%; border-radius: 50%; background: radial-gradient(ellipse, #d9c6f033 0%, transparent 70%); animation: lo-haze 22s ease-in-out infinite alternate; }
+.lo-haze i:nth-child(1) { left: 0; }
+.lo-haze i:nth-child(2) { left: 32%; background: radial-gradient(ellipse, #f0c6e02e 0%, transparent 70%); animation-duration: 27s; animation-delay: -9s; }
+.lo-haze i:nth-child(3) { left: 60%; background: radial-gradient(ellipse, #b45cf02b 0%, transparent 72%); animation-duration: 19s; animation-delay: -4s; }
+@keyframes lo-haze { from { transform: translateX(-6%) scale(1); } to { transform: translateX(8%) scale(1.15); } }
+
+/* 縦の段: ロゴ → 紙面 → 下の段。余った高さは、紙面の上下に分けて置く */
+.lo-stack { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center;
+  padding: max(1.6rem, env(safe-area-inset-top, 0px)) 1.2rem max(1.6rem, env(safe-area-inset-bottom, 0px)); }
+.lo-brand { position: relative; flex: none; display: grid; place-items: center; margin: auto 0 1.2rem; }
+.lo-brand::before { content: ""; position: absolute; inset: -40% -18% -20%; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(ellipse 50% 42% at 50% 60%, #e6d6ff2e 0%, #b45cf01f 45%, transparent 72%); filter: blur(1.2rem); animation: lo-mist 12s ease-in-out infinite alternate; }
+@keyframes lo-mist { from { transform: translateX(-4%) scale(0.95); opacity: 0.7; } to { transform: translateX(4%) scale(1.08); opacity: 1; } }
+.lo-logo { position: relative; width: min(23rem, 26cqh); height: auto; filter: drop-shadow(0 0.4rem 1rem #000d) drop-shadow(0 0 1.6rem #b45cf059); }
+
+/* 紙面: 刷った紙の地紋・細い内枠・深い影（本編と同じ紙）。幅は1コマの幅＋余白 */
+.lo-sheet { position: relative; isolation: isolate; flex: none; width: calc(var(--lo-w) + 2.4rem); padding: 1.1rem 1.2rem 0.9rem; border-radius: 0.4rem;
+  background: linear-gradient(170deg, var(--lo-paper-hi) 0%, var(--lo-paper) 45%, var(--lo-paper-lo) 100%);
+  border: 0.1rem solid #fff8ea99; color: var(--lo-ink);
+  box-shadow: 0 0 0 0.1rem #00000066, inset 0 0 3rem #6b4a3a1a, 0 2.2rem 4.6rem #000000c4, 0 0 4rem #b45cf024; }
+.lo-sheet::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; opacity: 0.5; mix-blend-mode: multiply;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .26 0 0 0 0 .2 .28 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"); }
+.lo-sheet::after { content: ""; position: absolute; inset: 0.5rem; z-index: -1; border: 0.1rem solid #3b1f3f2b; border-radius: 0.2rem; pointer-events: none; }
+/* 題: ラベンダーの印＋題名（明朝）＋二重の罫 */
+.lo-title { display: flex; align-items: center; gap: 0.9rem; margin: 0 0 0.9rem; padding: 0 0.2rem 0.65rem; font-family: var(--mincho); font-size: 2.2rem; font-weight: 700; line-height: 1.2; letter-spacing: 0.08em; color: #2e1a33;
+  background: linear-gradient(var(--lo-ink-soft), var(--lo-ink-soft)) left bottom / 100% 0.2rem no-repeat, linear-gradient(#4a2c4455, #4a2c4455) left calc(100% - 0.4rem) / 100% 0.1rem no-repeat; }
+.lo-title::before { content: ""; flex: none; width: 0.8rem; height: 1em; border-radius: 0.15rem; background: linear-gradient(180deg, #8a63a8, var(--lo-lavender)); box-shadow: inset 0 0 0 0.1rem #ffffff40; }
+/* 2コマ: 上下に積む。間に、読む向き（下へ）の小さな墨の矢印 */
+.lo-panels { display: grid; justify-items: center; gap: 0; }
+.lo-panel { margin: 0; width: var(--lo-w); aspect-ratio: 3 / 2; overflow: hidden; background: var(--lo-paper); box-shadow: 0 0 0 0.2rem var(--lo-ink), 0 0.6rem 1.4rem -0.4rem #2c1f2a73; }
+.lo-panel img { width: 100%; height: 100%; object-fit: contain; }
+.lo-next { display: block; width: 1.6rem; height: 1.7rem; opacity: 0.55;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M1.5 4 7 9.5 12.5 4' fill='none' stroke='%232c1f2a' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 1.2rem no-repeat; }
+.lo-caption { display: flex; align-items: center; gap: 0.6rem; min-height: 1.5em; margin: 0.8rem 0.2rem 0; font-size: 1.36rem; font-weight: 600; line-height: 1.35; color: var(--lo-ink-soft); }
+.lo-caption::before { content: ""; flex: none; width: 0.6rem; height: 0.6rem; transform: rotate(45deg); background: var(--lo-amber); }
+.lo-caption:empty { visibility: hidden; }
+
+/* 下の段: バー → LOADING（印つき）→ 大きな「進む」の札。親指の届く所 */
+.lo-dock { flex: none; width: 100%; display: grid; justify-items: center; gap: 0.9rem; margin: 1.4rem 0 auto; padding-top: 0.2rem; }
+.lo-bar { position: relative; width: 70%; height: 0.9rem; border-radius: 1rem; overflow: hidden; background: #ffffff1c; box-shadow: inset 0 0 0 0.1rem #ffffff22, 0 0 1.4rem #b45cf033; }
+.lo-bar > i { position: absolute; inset: 0 auto 0 0; width: calc(var(--p, 0.12) * 100%); border-radius: inherit; background: linear-gradient(180deg, #ffffff52 0%, transparent 55%), var(--lo-bar); box-shadow: 0 0 1rem #ff5fa880; }
+.lo-bar::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, transparent, #ffffff55, transparent); transform: translateX(-100%); animation: lo-sweep 1.6s ease-in-out infinite; }
+@keyframes lo-sweep { to { transform: translateX(100%); } }
+.lo-status { display: flex; align-items: center; gap: 0.9rem; margin: 0; color: #f3e8d2; font-size: 1.8rem; font-weight: 800; line-height: 1.2; letter-spacing: 0.3em; text-indent: 0.3em; text-shadow: 0 0 0.6em #ff5fa866, 0 0.1rem 0 #00000080; }
+.lo-emblem { width: 1.5em; height: 2.1em; margin: -0.2em 0; overflow: visible; flex: none; filter: drop-shadow(0 0.1rem 0 #00000099); }
+.lo-emblem-body { fill: currentColor; opacity: 0.92; }
+.lo-emblem-hose { fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; opacity: 0.92; }
+.lo-emblem-glow { fill: #ffa060; transform-box: fill-box; transform-origin: 50% 55%; filter: blur(1.2px) drop-shadow(0 0 2.5px #ff7a3d); animation: lo-coal 2.6s ease-in-out infinite; }
+@keyframes lo-coal { 0%, 100% { opacity: 0.35; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.12); } }
+/* 「進む」の札: タイトルのメニューの行と同じ作り（角丸・薄い縁・すりガラス）。準備中は暗く押せない、準備完了で光の色に灯ってゆっくり脈打つ */
+.lo-go { width: 100%; height: 5.6rem; display: grid; place-items: center; border: 0.1rem solid #ffffff38; border-radius: 2.8rem; background: #120c1d99; -webkit-backdrop-filter: blur(1.4rem); backdrop-filter: blur(1.4rem);
+  color: #f0eaf8; font-size: 1.9rem; font-weight: 700; letter-spacing: 0.16em; text-indent: 0.16em; box-shadow: 0 0.6rem 1.4rem #0008; transition: border-color 0.3s, background 0.3s, box-shadow 0.3s, opacity 0.3s; }
+.lo-go:disabled { opacity: 0.5; cursor: default; font-size: 1.6rem; font-weight: 600; }
+.phone.lo-ready .lo-go { border-color: var(--acc); background: color-mix(in srgb, var(--acc) 22%, #120c1dcc); color: #fff4fb;
+  box-shadow: 0 0 0 0.15rem color-mix(in srgb, var(--acc) 55%, transparent), 0 0 2.4rem color-mix(in srgb, var(--acc) 40%, transparent), 0 0.6rem 1.4rem #0008; animation: lo-go 1.8s ease-in-out infinite; }
+.lo-go:not(:disabled):active { transform: scale(0.98); }
+@keyframes lo-go { 50% { box-shadow: 0 0 0 0.15rem color-mix(in srgb, var(--acc) 75%, transparent), 0 0 3.4rem color-mix(in srgb, var(--acc) 60%, transparent), 0 0.6rem 1.4rem #0008; } }
+.phone.lo-ready .lo-bar::after { animation: none; }
+
+/* 入ってきた時: ロゴ → 紙面 → 1コマ目 → 2コマ目 の順に出す（本編のロード画面と同じ順） */
+.phone.lo-enter .lo-logo { animation: lo-in 0.9s var(--ease-out) backwards; }
+.phone.lo-enter .lo-sheet { animation: lo-sheet-in 0.8s 0.12s var(--ease-out) backwards; }
+.phone.lo-enter .lo-panel { animation: lo-in 0.7s calc(0.38s + var(--i) * 0.32s) var(--ease-out) backwards; }
+@keyframes lo-in { from { opacity: 0; transform: translateY(0.8rem); } }
+@keyframes lo-sheet-in { from { opacity: 0; transform: translateY(1.6rem) scale(0.98); } }
+/* 進む時: 煙の幕で覆ってから、作る場面へ */
+.lo-wipe { position: absolute; z-index: 40; inset: 0; opacity: 0; pointer-events: none; background: radial-gradient(circle at 50% 70%, #2a2040, #0b0812 70%); }
+.phone.lo-leaving .lo-wipe { animation: lo-wipe 0.68s ease-in forwards; }
+@keyframes lo-wipe { to { opacity: 1; } }
+
+/* 背の低いスマホ: ロゴを小さく、間を詰める（紙面の幅は --lo-w が高さに合わせて細くなる） */
+@container phone (max-height: 74rem) {
+  .lo-logo { width: min(18rem, 22cqh); }
+  .lo-brand { margin-bottom: 0.8rem; }
+  .lo-dock { gap: 0.7rem; margin-top: 1rem; }
+  .lo-go { height: 5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lo-haze i, .lo-brand::before, .lo-bar::after, .lo-emblem-glow, .phone.lo-ready .lo-go { animation: none; }
+  .phone.lo-enter :is(.lo-logo, .lo-sheet, .lo-panel) { animation: none; }
+}
