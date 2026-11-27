@@ -46,6 +46,8 @@ export function preloadSkillLogo() {
 }
 const live = host => typeof document?.createElement === "function" && typeof host?.animate === "function" && host.isConnected !== false;
 const calm = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+/** 劇場を出せるか（動きを減らす設定・簡易DOMでは出さない）。出せない時、呼び出し側は今までどおり卓の窓で選ばせる。 */
+export function rollShowReady(host) { return live(host) && !calm(); }
 // スマホ（横持ち・data-density="phone"）では、紙吹雪と火花の数を半分にし、評価時のぼかしを省く。
 // iPhone では演出の山場（クリティカル等）で描画が限界を超えてページごと落ちることがあるための軽量化で、
 // 見せ場の流れと PC の見た目は変えない。影と全面フィルター側の軽量化は trpg-roll-show.css の phone 上書き。
@@ -65,7 +67,9 @@ function word(text, cls = "") {
  * @param show { title, who, rule, dice: [a, b], thrown: 振り直した1個の番号（最初の判定は null）, bonus, bonusLabel, total, goal, mixed,
  *               grade, special, label, sub, sound(kind), onVerdict: 評価が出た瞬間（一度だけ）, onDone: 片付いた後,
  *               skill: { kind: "support"|"reroll", who, name, effect, face: Node } 発動したスキル（無ければ無し）,
- *               rerollHint: 評価のあとに「振り直せる！」の下へ添える、誰の何か（無ければ出さない） }
+ *               rerollHint: 評価のあとに「振り直せる！」の下へ添える、誰の何か（無ければ出さない）,
+ *               seamless: 直前まで劇場の幕（showRollChoice）が出ていた時。幕の入りの動きを省いて、続けて見せる,
+ *               keepUp: 終わりに幕を薄くせず、そのまま onDone へ（続けて劇場の中で選ばせる時。VPG29） }
  * @returns { playing, cancel(), skip() } 。演出しない環境では null。
  */
 export function playRollShow(host, show) {
@@ -297,8 +301,10 @@ export function playRollShow(host, show) {
   }
 
   // ---- 1. 幕と見出し ----
-  animate(node, [{ opacity: 0 }, { opacity: 1 }], { duration: 120, easing: "linear" });
-  animate(node.querySelector(".trpg-rs-veil"), [{ clipPath: "polygon(0 0, 0 0, -30% 100%, -30% 100%)" }, { clipPath: "polygon(0 0, 130% 0, 100% 100%, -30% 100%)" }], { duration: 300, easing: EASE.out });
+  if (!show.seamless) {
+    animate(node, [{ opacity: 0 }, { opacity: 1 }], { duration: 120, easing: "linear" });
+    animate(node.querySelector(".trpg-rs-veil"), [{ clipPath: "polygon(0 0, 0 0, -30% 100%, -30% 100%)" }, { clipPath: "polygon(0 0, 130% 0, 100% 100%, -30% 100%)" }], { duration: 300, easing: EASE.out });
+  }
   animate(lines, [{ opacity: 0 }, { opacity: .32, offset: .3 }, { opacity: .14 }], { duration: 900, easing: "ease-out" });
   animate(head, [{ opacity: 0, transform: "translateX(-120px) skewX(-20deg)" }, { opacity: 1, transform: "none" }], { duration: 360, delay: 80, easing: EASE.out });
   animate(goalNode, [{ opacity: 0, scale: "2.4", rotate: "20deg" }, { opacity: 1, scale: "1", rotate: "0deg" }], { duration: 380, delay: 200, easing: EASE.back });
@@ -639,8 +645,75 @@ export function playRollShow(host, show) {
   // 「振り直せる！」の札が出る時は、読めるよう1秒長く残す（同上）
   const hold = (special === "critical" ? 2300 : grade === "success" ? 1800 : special === "fumble" ? 2100 : 1500) + (hintNode ? 1000 : 0);
   const endAt = verdictAt + hold;
-  after(endAt - 240, () => animate(node, [{ opacity: 1 }, { opacity: 0 }], { duration: 240, easing: "ease-in" }));
+  if (!show.keepUp) after(endAt - 240, () => animate(node, [{ opacity: 1 }, { opacity: 0 }], { duration: 240, easing: "ease-in" }));
   after(endAt, () => handle.skip());
   }
   return handle;
+}
+
+/**
+ * 劇場の中で切り札を選ぶ（縦の試作・VPG29。2026-11-27 オーナー「スキルはダイス劇場内で発動選ぶ」）。
+ * 劇場と同じ幕・見出し・目標の盾の上に、選ぶ札を置いて、押されるまで待つ。投げる前（助力を使うか）と、
+ * 出目が出た後（振り直すか）の両方に使う。判定・確率・回数は呼び出し側が決めた値をそのまま書き、ここでは何も決めない。
+ * @param host 判定の窓を載せている幕（.trpg-overlay）
+ * @param opts { title, who, goal, dice: [a, b] | null（投げる前は null）, total, label: 評価の一言, tone,
+ *               prompt: 問いかけの一言, choices: [{ face: Node, owner, name, text, odds, test }], keep: { text, test },
+ *               onPick(index), onKeep() }
+ * @returns { node, cancel() } 。押す・やめるのどちらかで片付き、onPick / onKeep を一度だけ呼ぶ。
+ */
+export function showRollChoice(host, opts) {
+  const { goal = 30, dice = null, tone = "" } = opts;
+  let done = false;
+  const finish = fn => () => { if (done) return; done = true; cleanup(); fn(); };
+  const head = el("header.trpg-rs-head", [el("strong", { text: opts.title || "" }), opts.who ? el("span", { text: opts.who }) : null].filter(Boolean));
+  const goalNode = el("div.trpg-rs-goal", [el("b", { text: String(goal) }), el("span", { text: "以上で成功" })]);
+  // 出目（出た後）か、まだ投げていない2個のサイコロ
+  const dieNodes = [0, 1].map(i => {
+    const value = dice ? dice[i] : 20;
+    const die = el("div.trpg-rs-die", { dataset: { i: String(i), state: "rest", landed: dice ? "true" : "false" }, style: { left: REST[i][0] - SIZE / 2 + "px", top: REST[i][1] - SIZE / 2 + "px" } }, [
+      el("i.trpg-rs-shadow"), el("div.trpg-rs-spin", [el("canvas.trpg-rs-d3")]),
+      el("b.trpg-rs-num", { text: dice ? String(value) : "?", dataset: { digits: dice ? String(String(value).length) : "1" } }),
+    ]);
+    return { die, value };
+  });
+  const verdict = dice ? el("div.trpg-rs-choice-verdict", { dataset: { tone } }, [
+    el("strong", { text: "合計 " + opts.total }), opts.label ? el("span", { text: String(opts.label) }) : null,
+  ].filter(Boolean)) : null;
+  const cards = opts.choices.map((choice, index) => el("button.trpg-rs-pick", { type: "button", dataset: { test: choice.test }, onclick: finish(() => opts.onPick(index)) }, [
+    el("span.trpg-rs-pick-face", { "aria-hidden": "true" }, choice.face ? [choice.face] : []),
+    el("span.trpg-rs-pick-copy", [
+      el("small", [el("b", { text: "SKILL" }), (choice.owner || "") + "の「" + (choice.name || "") + "」"]),
+      el("strong", { text: choice.text }),
+    ]),
+    el("em.trpg-rs-pick-odds", { text: choice.odds || "" }),
+  ]));
+  const keep = el("button.trpg-rs-keep", { type: "button", dataset: { test: opts.keep?.test || "trpg-show-keep" }, onclick: finish(() => opts.onKeep()) }, [opts.keep?.text || "このまま"]);
+  const panel = el("div.trpg-rs-choose", { role: "group", "aria-label": opts.prompt || "切り札" }, [el("p.trpg-rs-choose-prompt", { text: opts.prompt || "" }), ...cards, keep]);
+  const camera = el("div.trpg-rs-camera", [head, goalNode, ...dieNodes.map(d => d.die), verdict, panel].filter(Boolean));
+  const node = el("div.trpg-roll-show.trpg-rs-choosing", { dataset: { phase: "choose", tone, rolled: String(!!dice) } },
+    [el("i.trpg-rs-veil"), el("i.trpg-rs-lines"), el("div.trpg-rs-fit", [camera]), el("i.trpg-rs-vignette")]);
+  function onKey(event) {
+    if (event.key !== "Escape") return;
+    event.preventDefault(); event.stopPropagation();
+    keep.click();
+  }
+  function cleanup() { host.removeEventListener("keydown", onKey, true); node.remove(); }
+  host.addEventListener("keydown", onKey, true);
+  host.append(node);
+  const fit = Math.min(1, (node.clientWidth || 1280) / 1280, (node.clientHeight || 720) / 720);
+  if (fit < 1) node.querySelector(".trpg-rs-fit").style.transform = `scale(${fit})`;
+  // 立体のダイス（劇場と同じ絵）。投げる前は、20の面を少し傾けて置いておく
+  const pixelRatio = (typeof devicePixelRatio === "number" ? devicePixelRatio : 1) * fit;
+  dieNodes.forEach(({ die, value }, i) => {
+    const d3 = createD20(die.querySelector(".trpg-rs-d3"));
+    if (!d3) { die.querySelector(".trpg-rs-spin").prepend(el("span.trpg-rs-body")); return; }
+    d3.resize(SIZE, pixelRatio);
+    die.dataset.render = "3d";
+    d3.draw(dice ? restPose(value) : pose(restPose(value), randomAxis(), (i ? -1 : 1) * .5));
+  });
+  if (typeof node.animate === "function") {
+    cards.forEach((card, n) => card.animate([{ opacity: 0, translate: "0 40px" }, { opacity: 1, translate: "0 0" }], { duration: 260, delay: 80 + n * 70, easing: EASE.back, fill: "backwards" }));
+  }
+  (cards[0] || keep).focus?.({ preventScroll: true });
+  return { node, cancel() { if (!done) { done = true; cleanup(); } } };
 }

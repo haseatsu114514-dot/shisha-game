@@ -567,21 +567,22 @@ html:root[data-density="phone"][data-layout="portrait"] #stage .trpg-root.trpg-c
 /* 劇場の間の「盛り上がり ＋1」の知らせは、上の左（見出しの上）に */
 #stage .trpg-root.trpg-cinematic:has(.trpg-roll-show) :is(.trpg-heat-pop, .trpg-heat-pop:not([data-tier="0"])) { left: 16px; top: 16px; }
 
-/* ── 調べる（VPG23）: 部屋の絵を縦の画面で大きく（高さ 664）。横長の絵は左半分・右半分に分けて見せ、下の「左・右」の札と、横に払うので切り替える。
-      印（番号の丸と短い名前）は絵と一緒に動く。今の側に無い印は隠し、反対側の札に「まだ調べていない数」。trpg.mjs が --sx/--sy（印の位置）と data-pan を立てる ── */
-#stage { --pex-top: max(176px, calc((var(--stage-h, 1385px) - 1046px) / 2 + 166px)); --ex-w: calc(var(--ex-h, 664px) * var(--ex-ar, 1.7778)); }
-#stage[data-pan="left"] { --pan-x: 0px; }
-#stage[data-pan="right"] { --pan-x: calc(var(--ex-w) - 640px); }
-#stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] { --ex-top: var(--pex-top); --zone-b: var(--stage-h, 1385px); }
+/* ── 調べる（VPG23→VPG27）: 部屋の絵を、画面の上から下の段の上まで縦いっぱいに（上下に空きを残さない。上の帯は絵の上に重ねる）。
+      横長の絵は、左・中・右の3つの範囲に分けて見せる（◀ ▶・範囲の札・横に払う）。印（番号の丸と短い名前）は絵と一緒に動き、今の範囲に無い印は隠す。
+      trpg.mjs が --ex-h（絵の高さ）・--ex-ar（絵の比率）・--pan-x（見ている範囲の左端）・--sx/--sy（印の位置）と data-pan を立てる ── */
+#stage { --ex-w: calc(var(--ex-h, 1185px) * var(--ex-ar, 1.7778)); --pex-top: 0px; }
+#stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] { --ex-top: 0px; --zone-b: var(--stage-h, 1385px); }
+#stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"]::before { background: #071416; filter: none; } /* ぼかした地は、もう見えない */
 #stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room { inset: 0; top: 0; height: auto; padding: 0; display: block; box-shadow: none; overflow: hidden; }
 #stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room::before { content: none; }
 #stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room::after { background: none; }
-#stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room > img { position: absolute; inset: auto; left: calc(-1 * var(--pan-x)); top: var(--ex-top); width: var(--ex-w); height: var(--ex-h, 664px); max-width: none; object-fit: cover; object-position: 50% 50%;
+#stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room > img { position: absolute; inset: auto; left: calc(-1 * var(--pan-x, 0px)); top: 0; width: var(--ex-w); height: var(--ex-h, 1185px); max-width: none; object-fit: cover; object-position: 50% 50%;
   transition: left .36s cubic-bezier(.3, .7, .3, 1); }
-#stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-stage-cue { top: calc(var(--ex-top) - 70px); }
+/* 場面の一言（手がかり 0/3・気になるものを調べよう）は、絵の下の端に重ねる（上は印が来るので空けておく） */
+#stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-stage-cue { top: calc(var(--ex-h, 1185px) - 62px); }
 #stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-stage-cue :is(p, span, small) { font-size: 23px; }
 #stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot {
-  position: absolute; left: calc(var(--sx, 50) * var(--ex-w) / 100 - var(--pan-x)) !important; top: calc(var(--ex-top) + var(--sy, 50) * var(--ex-h, 664px) / 100) !important;
+  position: absolute; left: calc(var(--sx, 50) * var(--ex-w) / 100 - var(--pan-x, 0px)) !important; top: calc(var(--sy, 50) * var(--ex-h, 1185px) / 100) !important;
   z-index: 4; flex: none; display: flex; flex-direction: column; align-items: center; gap: 6px; width: max-content; height: auto; min-height: 0; margin: 0; padding: 0;
   transform: translate(-50%, -40px); translate: none; border: 0; border-radius: 0; background: none; box-shadow: none; backdrop-filter: none; color: #fff4d6; text-align: center;
   transition: left .36s cubic-bezier(.3, .7, .3, 1), opacity .2s ease; }
@@ -602,22 +603,30 @@ html:root[data-density="phone"][data-layout="portrait"] #stage .trpg-root.trpg-c
 #stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot.checked > i { color: #d8e7cf; background: #2c4a44; border-color: #cee0c6; }
 #stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot.checked > span { color: #cfe0d2; background: #0b1c1ee0; }
 #stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot:disabled { opacity: .5; }
-/* 見ている側の札（左・右）。絵の縁の金の線と、反対側に続きがあることを示す端の暗がりも、ここで描く */
-#stage .p-pan { display: none; position: absolute; z-index: 30; left: 0; right: 0; top: var(--pex-top); height: calc(var(--ex-h, 664px) + 112px); pointer-events: none; }
+/* 絵の上の端は、上の帯（道具・段の進み）が読めるよう薄く暗く。左右の端は、となりの範囲に続きがあることを示す暗がり */
+#stage .p-pan { display: none; position: absolute; z-index: 30; inset: 0; pointer-events: none; }
 #stage[data-exploring="true"] .p-pan { display: block; }
-#stage .p-pan::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: var(--ex-h, 664px); box-sizing: border-box; border-block: 3px solid #d2ae66b0; box-shadow: 0 12px 30px #000a; }
-#stage .p-pan::after { content: ""; position: absolute; top: 3px; height: calc(var(--ex-h, 664px) - 6px); width: 64px; }
-#stage[data-pan="left"] .p-pan::after { right: 0; background: linear-gradient(90deg, #04101100, #041011b8); }
-#stage[data-pan="right"] .p-pan::after { left: 0; background: linear-gradient(270deg, #04101100, #041011b8); }
-#stage .p-pan-side { position: absolute; top: calc(var(--ex-h, 664px) + 18px); width: calc(50% - 18px); height: 88px; pointer-events: auto; display: flex; align-items: center; justify-content: center; gap: 12px;
-  box-sizing: border-box; border: 2px solid #d2ae6680; border-radius: 16px; background: #0b2125e6; color: #f3ead6; font-family: inherit; font-size: 30px; font-weight: 700; line-height: 1; box-shadow: 0 6px 16px #0008; cursor: pointer; }
-#stage .p-pan-side[data-side="left"] { left: 12px; }
-#stage .p-pan-side[data-side="right"] { right: 12px; }
-#stage .p-pan-side i { font-style: normal; font-size: 26px; color: #ffd98f; }
+#stage .p-pan::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: var(--ex-h, 1185px); box-sizing: border-box; border-bottom: 3px solid #d2ae66b0;
+  background: linear-gradient(180deg, #071317d9 0, #07131700 170px), linear-gradient(0deg, #071317b3 0, #07131700 120px); }
+#stage .p-pan::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: calc(var(--ex-h, 1185px) - 3px); }
+#stage[data-pan="left"] .p-pan::after { background: linear-gradient(90deg, #04101100 calc(100% - 64px), #041011b8); }
+#stage[data-pan="center"] .p-pan::after { background: linear-gradient(90deg, #041011b8, #04101100 64px, #04101100 calc(100% - 64px), #041011b8); }
+#stage[data-pan="right"] .p-pan::after { background: linear-gradient(270deg, #04101100 calc(100% - 64px), #041011b8); }
+/* 絵の下の段: ◀ ・ 左／中／右 ・ ▶（見えていない範囲の札に、そこでしか見えない「まだ調べていない数」） */
+#stage .p-pan :is(.p-pan-step, .p-pan-panes) { position: absolute; top: calc(var(--ex-h, 1185px) + 12px); height: 84px; pointer-events: auto; }
+#stage .p-pan-step { width: 100px; display: grid; place-items: center; box-sizing: border-box; border: 2px solid #d2ae6680; border-radius: 16px; background: #0b2125e6; color: #ffd98f;
+  font-family: inherit; font-size: 34px; line-height: 1; box-shadow: 0 6px 16px #0008; cursor: pointer; }
+#stage .p-pan-step[data-dir="prev"] { left: 12px; }
+#stage .p-pan-step[data-dir="next"] { right: 12px; }
+#stage .p-pan-step i { font-style: normal; }
+#stage .p-pan-step:disabled { opacity: .35; cursor: default; }
+#stage .p-pan-step[data-more="true"]:not(:disabled) { border-color: #ffe3a0; box-shadow: 0 0 0 3px #d0573a88, 0 6px 16px #0008; }
+#stage .p-pan-panes { left: 124px; right: 124px; display: flex; gap: 10px; }
+#stage .p-pan-side { position: relative; flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box;
+  border: 2px solid #d2ae6680; border-radius: 16px; background: #0b2125e6; color: #f3ead6; font-family: inherit; font-size: 30px; font-weight: 700; line-height: 1; box-shadow: 0 6px 16px #0008; cursor: pointer; }
 #stage .p-pan-side b { font-size: 30px; }
 #stage .p-pan-side[aria-pressed="true"] { border-color: #ffe3a0; color: #2a1b0c; background: linear-gradient(180deg, #fff1c8, #d2ae66); }
-#stage .p-pan-side[aria-pressed="true"] i { color: #6a4510; }
-#stage .p-pan-side em { display: inline-grid; place-items: center; min-width: 40px; height: 40px; padding: 0 8px; box-sizing: border-box; border-radius: 999px; font-style: normal; font-size: 24px; font-weight: 700; color: #fff; background: #d0573a; box-shadow: 0 0 0 2px #fff4d6; }
+#stage .p-pan-side em { display: inline-grid; place-items: center; min-width: 38px; height: 38px; padding: 0 8px; box-sizing: border-box; border-radius: 999px; font-style: normal; font-size: 24px; font-weight: 700; color: #fff; background: #d0573a; box-shadow: 0 0 0 2px #fff4d6; }
 #stage .p-pan-side em:empty { display: none; }
 /* 字の見直し（VPG25）: 実寸 13px（ステージ 22px）に満たなかった所 */
 /* 判定の窓の補正の丸（並びが 0.8 倍に縮むので、字は 28px） */
@@ -633,3 +642,53 @@ html:root[data-density="phone"][data-layout="portrait"] #stage .trpg-root.trpg-c
 #stage .trpg-root.trpg-cinematic .trpg-declare-prompt .trpg-inline-help-body { left: 0; right: 0; width: auto; transform: none; }
 #stage .trpg-root .trpg-inline-help-body :is(span, .trpg-declare-rule) { font-size: 23px; line-height: 1.55; }
 #stage .trpg-root .trpg-inline-help-body { background: linear-gradient(170deg, #2f1c10, #1d1109); }
+
+/* ── 切り札は劇場の中で選ぶ（VPG29。roll-show.js の showRollChoice）: 劇場と同じ幕・見出し・目標・サイコロの上に、選ぶ札を置く。
+      投げる前＝「切り札を使う？」（仲間の助力）、出目が出た後＝「振り直す？」（1個目・2個目）。どちらも「使わずに振る／このまま続ける」で先へ ── */
+#stage .trpg-root .trpg-roll-show.trpg-rs-choosing { cursor: default; }
+#stage .trpg-root .trpg-roll-show.trpg-rs-choosing :is(.trpg-rs-head, .trpg-rs-goal, .trpg-rs-die) { opacity: 1; }
+#stage .trpg-root .trpg-roll-show.trpg-rs-choosing .trpg-rs-lines { opacity: .14; }
+#stage .trpg-root .trpg-roll-show.trpg-rs-choosing .trpg-rs-vignette { opacity: .5; }
+/* 投げる前のサイコロは、少し小さく暗く（まだ振っていない） */
+#stage .trpg-root .trpg-roll-show.trpg-rs-choosing[data-rolled="false"] .trpg-rs-die { filter: brightness(.7) saturate(.8); scale: .78; }
+#stage .trpg-root .trpg-roll-show.trpg-rs-choosing[data-rolled="false"] .trpg-rs-shadow { opacity: .5; }
+/* 出目が出た後: サイコロの下に、合計と評価の一言 */
+#stage .trpg-root .trpg-roll-show .trpg-rs-choice-verdict { position: absolute; left: 0; right: 0; top: 596px; display: flex; align-items: baseline; justify-content: center; gap: 22px; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-choice-verdict > strong { font-size: 62px; font-weight: 900; color: #fff8e6; text-shadow: 0 3px 0 #000, 0 0 18px #000c; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-choice-verdict > span { font-size: 40px; font-weight: 900; color: var(--rs); text-shadow: 0 2px 0 #000, 0 0 14px #000c; }
+/* 選ぶ札の段 */
+#stage .trpg-root .trpg-roll-show .trpg-rs-choose { position: absolute; left: 40px; right: 40px; top: 690px; display: flex; flex-direction: column; gap: 18px; }
+#stage .trpg-root .trpg-roll-show.trpg-rs-choosing[data-rolled="false"] .trpg-rs-choose { top: 640px; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-choose-prompt { margin: 0 0 4px; text-align: center; font-size: 44px; font-weight: 900; color: #fff3c4; text-shadow: 0 3px 0 #000, 0 0 16px #000c; letter-spacing: .04em; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-pick { display: grid; grid-template-columns: 112px minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; gap: 8px 18px; min-height: 150px; padding: 16px 22px 16px 16px;
+  box-sizing: border-box; border: 3px solid #ffd98f; border-radius: 22px; background: linear-gradient(170deg, #1b3a36f2, #0c2224f5); color: #fff4d6; font-family: inherit; text-align: left;
+  box-shadow: 0 0 0 4px #ffd98f33, 0 12px 30px #000c; cursor: pointer; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-pick:hover, #stage .trpg-root .trpg-roll-show .trpg-rs-pick:focus-visible { border-color: #fff1c8; box-shadow: 0 0 0 6px #ffd98f66, 0 12px 30px #000c; outline: none; }
+/* 顔はスキルのカットインと同じ丸（顔の絵は img の位置と大きさで丸の中に収める） */
+#stage .trpg-root .trpg-roll-show .trpg-rs-pick-face { grid-row: 1 / span 2; align-self: center; position: relative; width: 112px; height: 112px; border-radius: 50%; overflow: hidden;
+  background: radial-gradient(circle at 40% 30%, #fff6dc, #d9b062); box-shadow: 0 0 0 4px #ffd76a, 0 0 0 7px #1a0f04; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-pick-face img { position: absolute; max-width: none; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-pick-copy { display: grid; gap: 6px; min-width: 0; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-pick-copy > small { display: flex; align-items: center; gap: 10px; font-size: 26px; font-weight: 700; color: #f2dca6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-pick-copy > small > b { flex: none; padding: 2px 10px; border-radius: 8px; font-size: 22px; line-height: 1.2; color: #031a16; background: #5fe0c4; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-pick-copy > strong { font-size: 34px; font-weight: 900; line-height: 1.25; color: #fff8e6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-pick-odds { grid-column: 2; justify-self: start; padding: 6px 16px; border-radius: 14px; font-size: 28px; font-weight: 900; line-height: 1.2; color: #2a1b0c; background: linear-gradient(180deg, #fff1c8, #e7c26f); text-align: center; white-space: nowrap; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-keep { align-self: center; min-width: 380px; min-height: 92px; margin-top: 6px; padding: 0 28px; box-sizing: border-box; border: 2px solid #d2ae6699; border-radius: 999px;
+  background: #061416d9; color: #f3ead6; font-family: inherit; font-size: 32px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px #000a; }
+
+/* ── 判定の前後の窓を簡素に（VPG28。2026-11-27 オーナー「ダイス劇場の前後のウインドウがなんかわかりづらい　もっとシンプルに」） ── */
+/* 前（振る前）: 誰が・何を・成功の見込み（大きく）・振るボタンを主役に。サイコロの絵は劇場で見せるので出さない。詳細は小さな「くわしく」 */
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage:not([data-roll-state]) :is(.trpg-roll-scene, .trpg-roll-instruction) { display: none; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage:not([data-roll-state]) .trpg-roll-actor { padding: 10px 14px; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage:not([data-roll-state]) .trpg-roll-chance > strong { font-size: 58px; line-height: 1.1; letter-spacing: .02em; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage:not([data-roll-state]) .trpg-roll-details { align-self: center; border: 0; background: none; padding: 0; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage:not([data-roll-state]) .trpg-roll-details > summary { font-size: 22px; opacity: .8; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage:not([data-roll-state]) .trpg-modal-actions [data-test="trpg-check-back"] { flex: 0 0 auto; min-width: 160px; background: transparent; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage:not([data-roll-state]) .trpg-modal-actions [data-test="trpg-roll"] { flex: 1 1 auto; min-height: 96px; font-size: 34px; }
+/* 後（劇場で出目・評価を見せた後）: 出目・式・ゲージ・内訳は繰り返さず、評価の一言・合計・続けるだけ */
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] :is(.trpg-roll-scene, .trpg-roll-gauge, .trpg-roll-receipts, .trpg-roll-equation, .trpg-roll-fx) { display: none; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] > h2 .trpg-roll-rule { display: none; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] .trpg-dice-total { display: flex; flex-direction: column-reverse; align-items: center; gap: 4px; padding: 8px 0 4px; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] .trpg-dice-total .trpg-dice-grade { font-size: 52px; font-weight: 900; line-height: 1.15; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] .trpg-dice-total strong { font-size: 32px; opacity: .9; }
+#stage .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] .trpg-modal-actions .trpg-button { min-height: 96px; font-size: 34px; }

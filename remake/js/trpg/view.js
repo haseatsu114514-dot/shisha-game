@@ -9,7 +9,7 @@ import { createTrpgAudio } from "./audio.js";
 import { checkForecast, declarationChanceLabels, rerollOdds, rollOdds } from "./feedback.js";
 import { playTrpgEntrance } from "./entrance.js";
 import { playIncarnation, playSceneCard, playResultCut, playClueCard, impact } from "./stage-fx.js";
-import { playRollShow, preloadSkillLogo } from "./roll-show.js";
+import { playRollShow, preloadSkillLogo, rollShowReady, showRollChoice } from "./roll-show.js";
 import { createD20, restPose } from "./dice3d.js";
 import { autoWrap } from "../vn/text.js";
 import { hasPictureBook, playPictureBook } from "./picture-book.js";
@@ -164,7 +164,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   let frames = [], cursor = 0, afterTalk = null, afterFocus = null, busy = false, disposed = false, choiceField = null;
   const warmPortraits = new Map();
   let overlay = null, modalCloser = null, timer = null, rollTicker = null, settleGuard = false, searchTimer = null;
-  let activeRollShow = null;
+  let activeRollShow = null, activeRollChoice = null;
   let pictureBook = null;
   // 演出（TRF08〜10）: 転生は1卓に一度（しおりから再開した卓は、もう物語の中）。場面の題の札は場面ごとに一度。
   let incarnated = resumed, staging = null, endingRevealed = false, campaignEnding = null, sceneFx = null, clueFx = null, clubGained = null;
@@ -1081,7 +1081,14 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
    * ダイス劇場（TRF29）: 振った瞬間から評価が出るまでを画面いっぱいで見せる。出目・合計・評価は決まった値を渡すだけ。
    * 評価の音と光は、劇場の中で評価が出た瞬間（飛ばした時は閉じる時）に一度だけ。演出しない環境（動きを減らす設定・簡易DOM）では null。
    */
-  function rollShow(result, { title, who = "", statName = "", thrown = null, labels = LABELS, skill = null, rerollHint = "", onDone }) {
+  /**
+   * 切り札（助力・振り直し）を、卓の窓ではなくダイス劇場の中で選ばせるか（縦の試作・VPG29）。
+   * 縦の試作ページが html[data-trpg-skills-in-show="true"] を立てた時だけ。劇場を出せない時（動きを減らす設定）は、今までどおり窓で選ぶ。
+   */
+  function skillsInShow() {
+    return typeof document !== "undefined" && document.documentElement?.dataset?.trpgSkillsInShow === "true" && rollShowReady(root);
+  }
+  function rollShow(result, { title, who = "", statName = "", thrown = null, labels = LABELS, skill = null, rerollHint = "", seamless = false, keepUp = false, onDone }) {
     if (!overlay) return null;
     const special = result.special === "critical" || result.special === "fumble" ? result.special : "";
     const near = nearMissOf(result);
@@ -1089,7 +1096,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       title, who, rule: DICE.success + "以上で成功", dice: result.dice, thrown, bonus: result.bonus, bonusLabel: result.bonus === result.base && statName ? statName : "補正",
       total: result.total, goal: DICE.success, mixed: DICE.mixed, grade: result.grade, special: result.special || "",
       sound: kind => { if (!disposed) audio.play(kind); },
-      skill, rerollHint,
+      skill, rerollHint, seamless, keepUp,
       label: special ? SPECIALS[special] : labels[result.grade] + (result.grade === "success" && !labels[result.grade].endsWith("！") ? "！" : ""),
       sub: special === "critical" ? "20の目 · 必ず成功" : result.special === "double" ? SPECIALS.double : near ? "あと" + near + "……！" : "",
       onVerdict: () => {
@@ -1103,6 +1110,38 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       },
     });
     return activeRollShow;
+  }
+  /** 劇場の中で振り直しを選ばせる出目か（劇場の「振り直せる！」の知らせと同じ条件）。 */
+  function canRerollInShow(result) {
+    const actor = session.rerollActor, state = session.snapshot();
+    return result.special !== "critical" && result.grade !== "success" && !state.used[actor] && state.teamwork > 0 && !!cast[actor];
+  }
+  /** 劇場の中で振り直しを選ぶ（VPG29）。押すと、その1個だけを劇場で投げ直す。「このまま続ける」で結果の窓へ。 */
+  function offerReroll(pop, body) {
+    if (disposed) return;
+    const result = session.checkResult(), actor = session.rerollActor, copy = showCopy(result);
+    const fumble = result.special === "fumble";
+    activeRollChoice = showRollChoice(overlay, {
+      title: copy.title, who: copy.who, goal: DICE.success, dice: result.dice, total: result.total,
+      label: fumble ? SPECIALS.fumble : LABELS[result.grade], tone: fumble ? "fumble" : result.grade,
+      prompt: "振り直す？",
+      choices: [0, 1].map(i => ({ face: roleFace(seatOf(actor), actor), owner: skillOwnerName(actor), name: cast[actor].ability,
+        text: (i + 1) + "個目（" + result.dice[i] + "）を振り直す", odds: rerollText(rerollOdds(result.dice, result.bonus, i)), test: "trpg-show-reroll-" + i })),
+      keep: { text: "このまま続ける", test: "trpg-show-keep" },
+      onPick: i => {
+        activeRollChoice = null;
+        if (disposed) return;
+        if (session.snapshot().used[actor] || session.snapshot().teamwork < 1) { showRollResult(pop, body, null, true); return; }
+        session.reroll(i);
+        syncResources();
+        const again = session.checkResult();
+        if (rollShow(again, { ...showCopy(again), rerollHint: "", thrown: i, seamless: true,
+          skill: skillOf(actor, "reroll", (i + 1) + "個目のサイコロを振り直す"), onDone: () => showRollResult(pop, body, i, true) })) return;
+        audio.play("rethrow");
+        showRollResult(pop, body, i);
+      },
+      onKeep: () => { activeRollChoice = null; if (!disposed) showRollResult(pop, body, null, true); },
+    });
   }
   /** 判定の卓の題と、動く役（劇場の見出し）。仲間の切り札を使った判定は、そのカットインも。振り直せる時は、その知らせも。 */
   function showCopy(result) {
@@ -1259,7 +1298,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       body.querySelector(".trpg-dice-bonus").textContent = "＋" + predicted.baseBonus;
       const lo = Math.min(predicted.odds.success, predicted.bestOdds.success), hi = Math.max(predicted.odds.success, predicted.bestOdds.success);
       // 助力を付けられるのに付けていない間は、付けた時の見込みも添える（付けると上の数字がその値になる）。
-      const aided = support && !support.checked ? checkForecast(scenario, session.snapshot(), kind, { support: true, approach: declared?.id || null, sheets }) : null;
+      const aided = support && !support.checked && !aidInShow ? checkForecast(scenario, session.snapshot(), kind, { support: true, approach: declared?.id || null, sheets }) : null;
       chance.replaceChildren(...[el("strong", { text: "成功 約" + lo + (predicted.potentialBonus ? "〜" + hi : "") + "%" }),
         el("small", { text: bonusParts(predicted, declared, !!support?.checked).join("・") + " 込み"
           + (predicted.potentialBonus ? "（見立てが合えば＋" + predicted.potentialBonus + "）" : "") }),
@@ -1280,23 +1319,51 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     }
     const support = helper && !session.snapshot().used[helper] && session.snapshot().teamwork > 0
       ? el("input", { type: "checkbox", dataset: { test: "trpg-support-" + helper } }) : null;
-    if (support) {
-      preloadSkillLogo();
+    // 劇場の中で選ぶ時（VPG29）は、窓に助力の札を出さない（振ると、劇場の幕の上で「使う／使わずに振る」を選ぶ）
+    const aidInShow = !!support && skillsInShow();
+    if (support) preloadSkillLogo();
+    if (support && !aidInShow) {
       body.append(el("label.trpg-aid", [support, seatMark(helper),
         el("span.trpg-aid-art", { "aria-hidden": "true" }, roleFace(seatOf(helper), helper)), el("span", [
           el("strong", { text: skillLabel(helper) }),
           el("small", { text: "＋" + DICE.support + " · 連携札1枚" }),
         ])]));
-      support.addEventListener("change", () => { if (support.checked) audio.play("card"); updateForecast(); });
     }
+    if (support) support.addEventListener("change", () => { if (support.checked) audio.play("card"); updateForecast(); });
     if (helper && !support) body.append(el("p.trpg-aid-spent", { text: skillOwnerName(helper) + "の切り札は使えない" }));
     body.append(el("details.trpg-roll-details", { dataset: { test: "trpg-roll-details" } }, [
       el("summary", { text: "判定の詳細", dataset: { test: "trpg-details-toggle" } }),
       el("p", { text: check.hint }), forecast,
     ])); updateForecast();
-    let pop;
+    let pop, asking = false;
     const roll = button("サイコロを振る", "trpg-roll", () => {
-      if (session.snapshot().pending) return;
+      if (session.snapshot().pending || asking) return;
+      // 劇場の中で助力を選ぶ（VPG29）: 投げる前に、劇場の幕の上で「使う／使わずに振る」。見込みは窓と同じ checkForecast
+      if (aidInShow && !support.checked && skillsInShow()) {
+        asking = true;
+        roll.disabled = true;
+        modalCloser = null;
+        pop.box.querySelectorAll("input,button").forEach(n => { n.disabled = true; });
+        const forecastOf = aid => checkForecast(scenario, session.snapshot(), kind, { support: aid, approach: declared?.id || null, sheets });
+        const pct = f => Math.min(f.odds.success, f.bestOdds.success) + (f.potentialBonus ? "〜" + Math.max(f.odds.success, f.bestOdds.success) : "") + "%";
+        const plain = forecastOf(false), aided = forecastOf(true);
+        const pc = declared ? sheets[declared.sheet || declared.actor] : null;
+        activeRollChoice = showRollChoice(overlay, {
+          title: check.title, who: pc?.name || (declared?.actor && cast[declared.actor] ? name(declared.actor) : ""), goal: DICE.success,
+          prompt: "切り札を使う？",
+          choices: [{ face: roleFace(seatOf(helper), helper), owner: skillOwnerName(helper), name: cast[helper].ability,
+            text: "＋" + DICE.support + " · 連携札1枚", odds: "成功 約" + pct(plain) + " → " + pct(aided), test: "trpg-show-support" }],
+          keep: { text: "使わずに振る（約" + pct(plain) + "）", test: "trpg-show-nosupport" },
+          onPick: () => { activeRollChoice = null; support.checked = true; audio.play("card"); throwDice(true); },
+          onKeep: () => { activeRollChoice = null; throwDice(true); },
+        });
+        return;
+      }
+      throwDice(false);
+    }, { class: "primary" });
+    function throwDice(seamless) {
+      asking = false;
+      if (disposed || session.snapshot().pending) return;
       const result = session.beginCheck(kind, { support: !!support?.checked, approach: declared?.id || null });
       syncResources();
       pop.box.dataset.rollState = "rolling";
@@ -1306,7 +1373,10 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       pop.box.focus({ preventScroll: true });
       settleGuard = false;
       // 画面いっぱいの劇場で見せられる時は、卓の窓は結果が出るまで下で待つ（TRF29）。音は劇場が着地に合わせて鳴らす。
-      if (rollShow(result, { ...showCopy(result), onDone: () => showRollResult(pop, body, null, true) })) return;
+      // 劇場の中で選ぶ時（VPG29）は、振り直せる出目なら劇場を閉じずに、そのまま劇場の中で振り直しを選ばせる。
+      const offer = skillsInShow() && canRerollInShow(result);
+      if (rollShow(result, { ...showCopy(result), seamless, ...(offer ? { rerollHint: "", keepUp: true } : {}),
+        onDone: () => offer ? offerReroll(pop, body) : showRollResult(pop, body, null, true) })) return;
       const thrown = [die(1, true), die(1, true)];
       thrown.forEach((node, i) => { node.dataset.throw = "ab"[i]; });
       body.querySelector(".trpg-dice-row").replaceChildren(...thrown, el("span.trpg-dice-bonus", { text: "＋" + result.bonus }));
@@ -1324,7 +1394,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         timer = null; clearInterval(rollTicker); rollTicker = null;
         if (!disposed) showRollResult(pop, body);
       }, reduced ? 40 : 1050);
-    }, { class: "primary" });
+    }
     pop = modal(check.title, body, [button("卓に戻る", "trpg-check-back", () => pop.close()), roll], { skin: "trpg-roll-stage" });
     // スマホでは判定の決まりの一文を題の行の右へ出す（本文の一文は隠す）。右の列で切り札の札を押し下げないため（TRF03）。
     pop.box.querySelector("h2").append(el("small.trpg-roll-rule", { text: DICE.success + "以上で成功" }));
@@ -1391,7 +1461,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (result.hypothesisBonus) receipts.append(el("p.trpg-ability-receipt.trpg-roll-insight", { text: "見立て的中 ＋" + result.hypothesisBonus }));
     if (session.rules.inspectionPressure) receipts.append(el("p.trpg-ability-receipt.trpg-roll-consequence", { text: RISK + (result.grade === "success" ? " ±0" : " ＋" + session.rules.checkPressure[result.grade]) }));
     // クリティカルは最高の出目なので振り直しは出さない。使えない時も何も出さない（決まりは「？」に）。
-    if (result.special !== "critical" && !session.snapshot().used[session.rerollActor] && session.snapshot().teamwork > 0) {
+    if (result.special !== "critical" && !(shown && skillsInShow()) && !session.snapshot().used[session.rerollActor] && session.snapshot().teamwork > 0) {
       preloadSkillLogo();
       body.append(el("p.trpg-roll-trump", { text: skillLabel(session.rerollActor) + " · 連携札1枚" }));
       body.append(el("div.trpg-rerolls", [0, 1].map(i =>
@@ -1802,6 +1872,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     warmPortraits.clear();
     activeRollShow?.cancel();
     activeRollShow = null;
+    activeRollChoice?.cancel();
+    activeRollChoice = null;
     for (const effect of effects) effect.cancel();
     if (timer) clearTimeout(timer);
     clearTimeout(tipTimer); clearTimeout(searchTimer);

@@ -3,8 +3,9 @@
 // 状態の作り方は本編の試遊（js/trpg/trial.js・TRF21）と同じ trpgTrialState（夜・部員がそろっている・部員の本は買ってある）。
 // 本編のセーブ・設定は読み書きしない（状態はこのページの中だけ。卓を遊び終えたら次の夜の本棚へ）。
 // 物語・台詞・判定・絵・音は本編のまま、並べ方は trpg.css。
-// ?shot=library|turned|cover|talk|choice|aid|roll|topics|explore は、一覧（PC）に並べる止め絵
-//   （library＝本の見開き、turned＝別の本へめくった所、choice＝行動の宣言、aid＝助力を付けられる宣言、roll＝判定の結果、topics＝聞き込み、explore＝部屋を調べる）。
+// ?shot=library|turned|cover|talk|choice|aid|showaid|showreroll|roll|topics|explore は、一覧（PC）に並べる止め絵
+//   （library＝本の見開き、turned＝別の本へめくった所、choice＝行動の宣言、aid＝助力を付けられる宣言、showaid／showreroll＝劇場の中で助力／振り直しを選ぶ所、
+//    roll＝判定の結果、topics＝聞き込み、explore＝部屋を調べる）。
 import { newState } from "../../../js/core/state.js";
 import { mountTrpgCampaign } from "../../../js/trpg/campaign-view.js";
 import { loadTrpgClubResources } from "../../../js/trpg/index.js";
@@ -15,14 +16,18 @@ const stage = document.getElementById("stage"), host = document.getElementById("
 // ダイスの劇場（js/trpg/roll-show.js）は、縦では 720×1300 の縦長の舞台に組み替えて（trpg.css）、画面の幅いっぱい近くまで大きく見せる。
 // 倍率は幅（640）と高さ（ステージの高さ）の両方に収まる大きさ（VPG22）
 const RS_W = 720, RS_H = 1300;
+let stageH = 1385; // ステージの高さ（幅 640 の単位）。調べる絵の高さを決める
 initPortraitFit(stage, ({ width, height }) => {
   // 上下に 55 ずつ空ける（下の「タップでスキップ」が、低い画面でも振り直せるの札に重ならない）
   stage.style.setProperty("--rs-k", String(Math.min(width / RS_W, (height - 110) / RS_H).toFixed(4)));
+  stageH = height;
   syncExplore();
 });
 // 本編のスマホ向けの決まり（文字とタップの大きさ。css/phone-density.css・css/trpg-phone.css の data-density="phone"）を、縦でも使う
 document.documentElement.dataset.density = "phone";
 document.documentElement.dataset.layout = "portrait";
+// 切り札（仲間の助力・振り直し）は、卓の窓ではなくダイス劇場の中で選ぶ（VPG29。本編の view.js がこの印を見る。横の本編は今までどおり窓で選ぶ）
+document.documentElement.dataset.trpgSkillsInShow = "true";
 
 const SHOT_SCENARIO = "ordinary-cup"; // 止め絵に使う物語（世界一普通の一台）
 // ?jump=explore などは、止め絵と同じ場面まで自動で進めて、そこから遊べる（止め絵と違い、画面を押せる。検査用）
@@ -58,6 +63,8 @@ const SHOT_READY = {
   choice: () => find(".trpg-approach-list .trpg-approach"),
   aid: () => find('[data-test="trpg-choice-aid"]'), // 仲間の助力を付けられる宣言（札に「助力で 約N%」が出る）
   roll: () => find(".trpg-dice-total") && !document.querySelector(".trpg-roll-show"),
+  showaid: () => find('[data-test="trpg-show-support"]'), // 劇場の中で、助力を使うか選ぶ所（VPG29）
+  showreroll: () => find('[data-test="trpg-show-reroll-0"]'), // 劇場の中で、振り直すか選ぶ所（VPG29）
   topics: () => document.querySelector(".trpg-root.trpg-idle") && find(".trpg-topic-list .trpg-topic"),
   explore: () => document.querySelector('.trpg-root.trpg-idle[data-phase="explore"]') && find(".trpg-spot"),
 };
@@ -79,8 +86,9 @@ async function pose(name) {
   await wait(500);
   for (let step = 0; step < 600 && !ready(); step++) {
     const show = document.querySelector(".trpg-roll-show");
-    // ダイスの演出は、画面を押して結果へ送る。絵本（任意）はとばす
-    if (show) host.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    // ダイスの演出は、画面を押して結果へ送る。劇場の中で選ぶ札は「使わずに振る／このまま続ける」。絵本（任意）はとばす
+    if (show?.classList.contains("trpg-rs-choosing")) (find('[data-test="trpg-show-nosupport"]') || find('[data-test="trpg-show-keep"]'))?.click();
+    else if (show) host.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
     else (find('[data-test="trpg-picturebook-skip"]') || find('[data-test="trpg-picturebook-next"]') || find('[data-test="trpg-incarnate-skip"]')
       || find('[data-test="trpg-next"]') || find('[data-test="trpg-roll"]') || find('[data-test="trpg-settle"]') || find(".trpg-approach-list .trpg-approach")
       || find('.trpg-topic-list .trpg-topic:not(.selected)') || find(".trpg-hypothesis-board .trpg-object-choice") || find(".trpg-stage-action .trpg-button.primary")
@@ -125,73 +133,113 @@ function syncSceneArt() {
   if (src) host.style.setProperty("--scene-art", `url("${src.replace(/"/g, "%22")}")`);
   else host.style.removeProperty("--scene-art");
 }
-// 調べる場面（VPG23）: 部屋の絵を縦の画面で大きく見せる。横長の絵は縦に収まらないので、左半分と右半分に分けて見せ、
-// 下の「左・右」の札と、絵を横に払うので切り替える。調べる印は絵と一緒に動き、今の側に無い印は隠す（反対側の札に、まだ調べていない数）。
-// 本編の DOM には触れない: 印の位置（本編が style の left/top に % で書く）を CSS の変数に写し、表と裏（data-pan）は #stage に立てる。
-const EX_H = 664; // 絵の高さ（ステージの単位）。幅は絵の比率から（16:9 で約 1180）。左右の半分が 100px ほど重なり、どの印もどちらかの側で丸ごと見える
+// 調べる場面（VPG23→VPG27）: 部屋の絵を、画面の上から下の段（見る範囲の切り替え・相談）の上まで、縦いっぱいに大きく見せる（上下に空きを残さない）。
+// 横長の絵は縦に収まらないので、左・中・右の3つの範囲に分けて見せ、◀ ▶・範囲の札・絵を横に払うので切り替える（2026-11-27 オーナー「三分割していいかも　その代わり余白は上下埋まるように」）。
+// 3つの範囲は、印のある所を覆うように置き、どの印もどれかの範囲で丸ごと見える（入りきらない時だけ、絵を少し小さくする）。
+// 調べる印は絵と一緒に動き、今の範囲に無い印は隠す（ほかの範囲の札に、そこでしか見えない「まだ調べていない数」）。
+// 本編の DOM には触れない: 印の位置（本編が style の left/top に % で書く）を CSS の変数に写し、見ている範囲は #stage の data-pan に立てる。
+const PANES = ["left", "center", "right"], PANE_LABEL = { left: "左", center: "中", right: "右" };
+const EX_BOTTOM = 200; // 絵の下に置く段（切り替え 84・相談 80・間）の高さ
+const MARK = 46; // 印（丸 80px）の半分と少し: この幅が範囲の中に入れば「丸ごと見える」
 const panNav = document.createElement("nav");
 panNav.className = "p-pan";
-panNav.setAttribute("aria-label", "部屋の見る側");
-const panButtons = ["left", "right"].map(side => {
+panNav.setAttribute("aria-label", "部屋の見る範囲");
+const makeButton = (cls, test, html, label, onClick) => {
   const button = document.createElement("button");
   button.type = "button";
-  button.className = "p-pan-side";
-  button.dataset.side = side;
-  button.dataset.test = `trpg-pan-${side}`;
-  button.innerHTML = side === "left" ? '<i aria-hidden="true">◀</i><b>左</b><em aria-hidden="true"></em>' : '<em aria-hidden="true"></em><b>右</b><i aria-hidden="true">▶</i>';
-  button.addEventListener("click", () => pan(side));
-  panNav.append(button);
+  button.className = cls;
+  button.dataset.test = test;
+  button.innerHTML = html;
+  button.setAttribute("aria-label", label);
+  button.addEventListener("click", onClick);
+  return button;
+};
+const prevButton = makeButton("p-pan-step", "trpg-pan-prev", '<i aria-hidden="true">◀</i>', "左の範囲へ", () => step(-1));
+const nextButton = makeButton("p-pan-step", "trpg-pan-next", '<i aria-hidden="true">▶</i>', "右の範囲へ", () => step(1));
+prevButton.dataset.dir = "prev"; nextButton.dataset.dir = "next";
+const paneButtons = PANES.map(pane => {
+  const button = makeButton("p-pan-side", `trpg-pan-${pane}`, `<b>${PANE_LABEL[pane]}</b><em aria-hidden="true"></em>`, `部屋の${PANE_LABEL[pane]}を見る`, () => pan(pane));
+  button.dataset.side = pane;
   return button;
 });
+const paneRow = document.createElement("div");
+paneRow.className = "p-pan-panes";
+paneRow.append(...paneButtons);
+panNav.append(prevButton, paneRow, nextButton);
 stage.append(panNav);
-stage.dataset.pan = "left";
-function pan(side) {
-  if (stage.dataset.pan === side) return;
-  stage.dataset.pan = side;
+stage.dataset.pan = "center";
+let panRoom = "";
+function pan(pane) {
+  if (stage.dataset.pan === pane) return;
+  stage.dataset.pan = pane;
   syncExplore();
+}
+function step(dir) {
+  const at = PANES.indexOf(stage.dataset.pan) + dir;
+  if (at >= 0 && at < PANES.length) pan(PANES[at]);
+}
+/** 印のある所を覆う3つの範囲（幅 640）の左端。どの印も、どれかの範囲で丸ごと見えるか。 */
+function paneLayout(xs, exW) {
+  const width = 640, span = Math.max(0, exW - width);
+  const lo = xs.length ? Math.min(...xs) - MARK - 24 : 0, hi = xs.length ? Math.max(...xs) + MARK + 24 : exW;
+  const left = Math.max(0, Math.min(span, lo)), right = Math.max(0, Math.min(span, hi - width));
+  const offsets = [left, (left + right) / 2, right];
+  const fits = xs.every(x => offsets.some(o => x - MARK >= o && x + MARK <= o + width));
+  return { offsets, fits };
 }
 function syncExplore() {
   const root = host.querySelector(".trpg-root");
-  // 窓（メモ・見立て・判定など）が開いている間は、左右の札を出さない
+  // 窓（メモ・見立て・判定など）が開いている間は、範囲の切り替えを出さない
   const room = root?.matches('.trpg-idle[data-phase="explore"]') && !root.querySelector(".trpg-modal, .trpg-roll-show") ? root.querySelector(".trpg-room.interactive") : null;
   stage.dataset.exploring = room ? "true" : "false";
   if (!room) return;
   const img = room.querySelector(":scope > img");
+  const src = img?.currentSrc || img?.src || "";
+  if (src !== panRoom) { panRoom = src; stage.dataset.pan = "center"; } // 別の部屋に入ったら、真ん中から
   const ratio = img?.naturalWidth > 0 && img.naturalHeight > 0 ? img.naturalWidth / img.naturalHeight : 16 / 9;
-  const exW = EX_H * ratio, width = 640, panX = stage.dataset.pan === "right" ? exW - width : 0;
-  stage.style.setProperty("--ex-h", `${EX_H}px`);
+  const spots = [...room.querySelectorAll(".trpg-spot")].map(spot => ({ spot, sx: parseFloat(spot.style.left), sy: parseFloat(spot.style.top) }))
+    .filter(({ sx, sy }) => Number.isFinite(sx) && Number.isFinite(sy));
+  // 絵の高さ: 画面の上から下の段の上まで。印が3つの範囲に収まらない時だけ、少しずつ小さくする
+  let exH = Math.max(600, stageH - EX_BOTTOM), layout = null;
+  for (let tries = 0; tries < 12; tries++) {
+    layout = paneLayout(spots.map(({ sx }) => sx / 100 * exH * ratio), exH * ratio);
+    if (layout.fits) break;
+    exH *= .96;
+  }
+  const exW = exH * ratio, width = 640, current = PANES.indexOf(stage.dataset.pan), panX = layout.offsets[current];
+  stage.style.setProperty("--ex-h", `${exH.toFixed(1)}px`);
   stage.style.setProperty("--ex-ar", ratio.toFixed(5));
-  const left = { open: 0 }, right = { open: 0 };
-  for (const spot of room.querySelectorAll(".trpg-spot")) {
-    const sx = parseFloat(spot.style.left), sy = parseFloat(spot.style.top);
-    if (!Number.isFinite(sx) || !Number.isFinite(sy)) continue;
+  stage.style.setProperty("--pan-x", `${panX.toFixed(1)}px`);
+  const unseen = PANES.map(() => 0);
+  for (const { spot, sx, sy } of spots) {
     spot.style.setProperty("--sx", String(sx));
     spot.style.setProperty("--sy", String(sy));
     const at = sx / 100 * exW;
-    // 印（丸 80px）が丸ごと入る側。真ん中付近の印は両方の側で見える
-    const inLeft = at <= width - 44, inRight = at >= exW - width + 44;
-    const shown = stage.dataset.pan === "right" ? inRight : inLeft;
-    spot.dataset.off = String(!shown);
+    const inPane = layout.offsets.map(o => at - MARK >= o && at + MARK <= o + width);
+    // どの範囲にも丸ごとは入らない印（絵が足りない時）は、中心が入る範囲で見せる
+    if (!inPane.some(Boolean)) layout.offsets.forEach((o, i) => { inPane[i] = at >= o && at <= o + width; });
+    spot.dataset.off = String(!inPane[current]);
     const x = at - panX;
     spot.dataset.edge = x < 130 ? "start" : x > width - 130 ? "end" : "";
-    // 名前の札は印の下に（絵が縦に高いので下に余る）。絵の下の端に近い印だけ上に
-    spot.dataset.pside = sy > 86 ? "above" : "below";
-    if (!spot.classList.contains("checked") && !spot.disabled) {
-      if (inLeft && !inRight) left.open++;
-      if (inRight && !inLeft) right.open++;
-    }
+    // 名前の札は印の下に。絵の下の端に近い印だけ上に
+    spot.dataset.pside = sy > 82 ? "above" : "below";
+    if (!spot.classList.contains("checked") && !spot.disabled && !inPane[current]) inPane.forEach((inside, i) => { if (inside) unseen[i]++; });
   }
-  for (const button of panButtons) {
-    const side = button.dataset.side, open = side === "left" ? left.open : right.open, current = stage.dataset.pan === side;
-    button.setAttribute("aria-pressed", String(current));
-    button.querySelector("em").textContent = !current && open ? String(open) : "";
-    button.setAttribute("aria-label", `部屋の${side === "left" ? "左" : "右"}側を見る${!current && open ? `。まだ調べていない所が${open}つ` : ""}`);
-  }
+  paneButtons.forEach((button, i) => {
+    const here = i === current, count = here ? 0 : unseen[i];
+    button.setAttribute("aria-pressed", String(here));
+    button.querySelector("em").textContent = count ? String(count) : "";
+    button.setAttribute("aria-label", `部屋の${PANE_LABEL[PANES[i]]}を見る${count ? `。まだ調べていない所が${count}つ` : ""}`);
+  });
+  prevButton.disabled = current <= 0;
+  nextButton.disabled = current >= PANES.length - 1;
+  prevButton.dataset.more = String(unseen.slice(0, current).some(Boolean));
+  nextButton.dataset.more = String(unseen.slice(current + 1).some(Boolean));
 }
-// 絵を横に払って、反対の側へ（印を押す途中で払った時は、その印は押さない）
+// 絵を横に払って、となりの範囲へ（印を押す途中で払った時は、その印は押さない）
 let swipe = null, swallowClick = false;
 stage.addEventListener("pointerdown", event => {
-  if (stage.dataset.exploring !== "true" || event.target.closest?.(".p-pan, .trpg-stage-companions, .trpg-stage-pockets, .trpg-stage-action")) return;
+  if (stage.dataset.exploring !== "true" || event.target.closest?.(".p-pan, .trpg-stage-companions, .trpg-stage-pockets, .trpg-stage-action, .trpg-header")) return;
   swipe = { x: event.clientX, y: event.clientY, id: event.pointerId };
 });
 stage.addEventListener("pointerup", event => {
@@ -201,7 +249,7 @@ stage.addEventListener("pointerup", event => {
   if (Math.abs(dx) < 48 * unit || Math.abs(dx) < Math.abs(dy) * 1.2) return;
   swallowClick = true;
   setTimeout(() => { swallowClick = false; }, 0);
-  pan(dx < 0 ? "right" : "left");
+  step(dx < 0 ? 1 : -1);
 });
 stage.addEventListener("pointercancel", () => { swipe = null; });
 stage.addEventListener("click", event => { if (swallowClick) { swallowClick = false; event.stopPropagation(); event.preventDefault(); } }, true);
