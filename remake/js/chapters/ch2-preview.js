@@ -1,5 +1,6 @@
 // 第2章の街歩きだけを独立して試遊する。本編の起動・進行フック・保存APIを呼ばない。
 import { DB, loadAll } from "../core/data.js";
+import { createChapterActions } from "../core/chapter-actions.js";
 import { newState, setState, state } from "../core/state.js";
 import { el } from "../core/util.js";
 import { storeLogo } from "../core/store-logos.js";
@@ -13,13 +14,12 @@ const visited = new Set();
 let arrivalRead = false;
 let scene = "loading";
 let time = "day";
-let busy = false;
 let initialized = false;
 let mapAvailable = false;
 let liveStatus;
 let activeScene = null;
 let pageActive = true;
-let previewEpoch = 0;
+let previewSession = { busy: false };
 
 function fitStage() {
   const width = window.visualViewport?.width || innerWidth;
@@ -43,33 +43,27 @@ function resetPreview() {
 }
 
 function say(text) { if (liveStatus) liveStatus.textContent = text; }
-function stillCurrent(owner) { return pageActive && previewEpoch === owner; }
+function stillCurrent(owner) { return pageActive && previewSession === owner; }
 function focusTest(test) {
   requestAnimationFrame(() => layers.screen.querySelector(`[data-test="${test}"]`)?.focus());
 }
-function button(label, test, action, className = "btn") {
-  return el("button", { type: "button", class: className, text: label, dataset: { test }, onclick: action, disabled: busy });
-}
-function setBusy(value) {
-  busy = value;
+function setBusy(owner, value) {
+  owner.busy = value;
   if (!layers.screen) return; // 初回bootでinitLayersするまでは、操作できる画面はまだない。
   layers.screen.setAttribute("aria-busy", String(value));
   for (const btn of layers.screen.querySelectorAll("button")) btn.disabled = value;
 }
-async function perform(action) {
-  if (busy) return;
-  const owner = previewEpoch;
-  setBusy(true);
-  try { await action(); }
-  catch (error) {
-    if (!stillCurrent(owner)) return;
-    console.error("[ch2-preview]", error);
-    renderActionError(action);
-  } finally { if (stillCurrent(owner)) setBusy(false); }
-}
+const actions = createChapterActions({
+  current: stillCurrent, test: name => name, logName: "[ch2-preview]",
+  renderError: (_owner, _error, action) => renderActionError(action),
+  buttonOwner: () => previewSession, buttonDisabled: owner => owner.busy,
+  setBusy, clearBusyIfCurrent: true,
+});
+const button = (label, test, action, primary = false) => actions.button(previewSession, label, test, action, primary);
+const perform = action => actions.perform(previewSession, action);
 
 async function showMapBackground() {
-  const owner = previewEpoch;
+  const owner = previewSession;
   const url = MAP[time];
   const available = await imageReady(url, 15000);
   if (!stillCurrent(owner)) return false;
@@ -87,7 +81,7 @@ function renderEntry() {
       el("h1", [el("small", { text: "第2章・街歩き試遊" }), "柚ヶ谷"]),
       el("p.ch2-entry-description", { text: "地元の大会の、その先へ。隣町の大きな駅を出ると、人の流れと、まだ知らない煙が待っている。" }),
       el("p.ch2-preview-note", { text: "街と4つの訪問先・県大会ホールの挨拶、準備中の室内見学を遊べます。あげはも県大会のライバルです。日常の続きと県大会は未収録。本編と別に進み、本編のセーブは変更せず、再読み込みでリセットされます。" }),
-      el("div.ch2-actions", [button("隣町へ向かう", "ch2-preview-start", () => perform(startPreview), "btn primary"), el("a.ch2-text-link", { href: "index.html", text: "本編タイトルへ" })]),
+      el("div.ch2-actions", [button("隣町へ向かう", "ch2-preview-start", startPreview, true), el("a.ch2-text-link", { href: "index.html", text: "本編タイトルへ" })]),
       el("p.ch2-entry-controls", { text: "会話：クリック・タップ・Enter ／ 地図：行き先を選ぶ" }),
     ]),
   ]));
@@ -95,7 +89,7 @@ function renderEntry() {
 }
 
 async function playScene(id, label) {
-  const generation = previewEpoch;
+  const generation = previewSession;
   scene = id;
   if (!DB.dialogues[`ch2_city_${id}`]) throw new Error(`試遊の場面が見つかりません: ${id}`);
   layers.hud.replaceChildren(el("div.ch2-vn-label", { text: `第2章・街歩き試遊 ／ ${label}` }));
@@ -108,7 +102,7 @@ async function playScene(id, label) {
 }
 
 async function startPreview() {
-  const owner = previewEpoch;
+  const owner = previewSession;
   const stationAvailable = await imageReady(STATION, 15000);
   if (!stillCurrent(owner)) return;
   if (stationAvailable) await setBg(STATION, { instant: true });
@@ -127,7 +121,7 @@ function mapPin(stop, index) {
   const read = visited.has(stop.id);
   const pin = el("button.ch2-pin", {
     type: "button", class: `${read ? "read " : ""}${stop.id === "c_station" ? "c-station" : stop.id}`,
-    disabled: busy, dataset: { test: `ch2-preview-pin-${stop.id}`, read: String(read) },
+    disabled: previewSession.busy, dataset: { test: `ch2-preview-pin-${stop.id}`, read: String(read) },
     "aria-label": `${stop.name}、${read ? "挨拶を読了、もう一度話す" : "初めて訪れる"}`,
     onclick: () => perform(async () => {
       if (!await playScene(stop.id, stop.sceneLabel || `${stop.name}の入口`)) return;
@@ -157,19 +151,19 @@ function renderStopMenu(stop, imageFailed = false) {
       el("p", { text: "挨拶を終えた。少し中を見せてもらってから、次の場所へ向かおう。" }),
       imageFailed ? el("p.ch2-room-warning", { role: "status", text: "店内の背景を読み込めませんでした。再読み込みするか、地図へ戻れます。" }) : null,
       el("div.ch2-actions", [
-        button(imageFailed ? "室内の背景を再読み込み" : "店内をのぞく", "ch2-preview-inside", () => perform(() => visitInside(stop)), "btn primary"),
-        button("地図へ戻る", "ch2-preview-back-map", () => perform(async () => {
+        button(imageFailed ? "室内の背景を再読み込み" : "店内をのぞく", "ch2-preview-inside", () => visitInside(stop), true),
+        button("地図へ戻る", "ch2-preview-back-map", async () => {
           if (!await showMapBackground()) return;
           renderMap();
           focusTest(`ch2-preview-pin-${stop.id}`);
-        })),
+        }),
       ]),
     ]),
   ]));
 }
 
 async function visitInside(stop) {
-  const owner = previewEpoch;
+  const owner = previewSession;
   const available = await imageReady(ROOMS[stop.id], 15000);
   if (!stillCurrent(owner)) return;
   if (!available) {
@@ -195,7 +189,7 @@ function renderMap() {
   scene = "map";
   layers.hud.replaceChildren();
   const station = el("li", { style: { left: "15%", top: "34%" } }, [
-    el("button.ch2-pin.station", { type: "button", disabled: busy, dataset: { test: "ch2-preview-station" }, "aria-label": "駅へ戻り、試遊を終える", onclick: () => perform(returnHome) }, [
+    el("button.ch2-pin.station", { type: "button", disabled: previewSession.busy, dataset: { test: "ch2-preview-station" }, "aria-label": "駅へ戻り、試遊を終える", onclick: () => perform(returnHome) }, [
       el("span.ch2-pin-num.train-icon", { html: TRAIN_ICON_SVG }),
       el("span.ch2-pin-title", { text: "駅へ戻る" }),
       el("span.ch2-pin-caption", { text: "地元へ戻る" }),
@@ -210,7 +204,7 @@ function renderMap() {
       ]),
       el("div.ch2-time-control", { role: "group", "aria-label": "街の昼夜を切り替える" }, [
         ...[["day", "昼"], ["night", "夜"]].map(([value, label]) => el("button", {
-          type: "button", text: label, disabled: busy, "aria-pressed": String(time === value), dataset: { test: `ch2-preview-${value}` },
+          type: "button", text: label, disabled: previewSession.busy, "aria-pressed": String(time === value), dataset: { test: `ch2-preview-${value}` },
           onclick: () => { if (time !== value) perform(() => changeTime(value)); },
         })),
       ]),
@@ -231,12 +225,12 @@ function renderMap() {
   if (!mapAvailable) {
     map.append(el("div.ch2-map-warning", { role: "status" }, [
       el("span", { text: "街の背景を読み込めませんでした。行き先は引き続き選べます。" }),
-      button("再読み込み", "ch2-preview-retry-map", () => perform(async () => {
+      button("再読み込み", "ch2-preview-retry-map", async () => {
         if (!await showMapBackground()) return;
         renderMap();
         say(mapAvailable ? "街の背景を読み込みました。" : "街の背景を読み込めませんでした。");
         focusTest(mapAvailable ? "ch2-preview-pin-ageha" : "ch2-preview-retry-map");
-      })),
+      }),
     ]));
   }
   layers.screen.replaceChildren(map);
@@ -270,11 +264,11 @@ function renderEnd() {
       el("p.ch2-end-progress", { text: `訪問した入口　${visited.size} / ${STOPS.length}か所` }),
       el("p.ch2-preview-note", { text: "今回は街・挨拶・準備中の室内見学までです。新登場3人は通常立ち絵を制作しました。日常の続き・県大会・表情差分は今後制作します。この試遊では本編のセーブは変更していません。" }),
       el("div.ch2-actions", [
-        button("もう一度、街を訪れる", "ch2-preview-restart", () => perform(async () => {
+        button("もう一度、街を訪れる", "ch2-preview-restart", async () => {
           resetPreview();
           if (!await showMapBackground()) return;
           renderEntry();
-        }), "btn primary"),
+        }, true),
         el("a.ch2-text-link", { href: "index.html", text: "本編タイトルへ" }),
       ]),
     ]),
@@ -297,7 +291,7 @@ function renderActionError(retry) {
       el("h1", { text: "試遊を読み込めませんでした" }),
       el("p", { text: "通信を確認して、もう一度お試しください。本編のセーブは変更していません。" }),
       el("div.ch2-actions", [
-        button("もう一度試す", "ch2-preview-retry", () => perform(retry), "btn primary"),
+        button("もう一度試す", "ch2-preview-retry", retry, true),
         el("a.ch2-text-link", { href: "index.html", text: "本編タイトルへ" }),
       ]),
     ]),
@@ -316,16 +310,15 @@ export async function boot() {
     window.addEventListener("keydown", unlockAudio);
     window.addEventListener("pagehide", () => {
       pageActive = false;
-      previewEpoch++;
       activeScene?.abort();
     });
     window.addEventListener("pageshow", (event) => {
       if (!event.persisted) return;
-      previewEpoch++;
+      previewSession = { busy: false };
       pageActive = true;
       // ブラウザ履歴から戻った場合は、中断した会話を完走扱いにしない。
       resetPreview();
-      setBusy(false);
+      setBusy(previewSession, false);
       renderEntry();
     });
     initLayers();
@@ -338,7 +331,7 @@ export async function boot() {
       vnTest,
     };
   }
-  const generation = previewEpoch;
+  const generation = previewSession;
   renderLoading();
   resetPreview();
   await loadAll();

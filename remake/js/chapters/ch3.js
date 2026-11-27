@@ -42,6 +42,7 @@ import { outingCounts } from "./ch3-outing-progress.js";
 import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
 import { CH3_STORY_DIALOGUE_FILES, EVENING_WINDOW, availableOptionalScenes, commitOptionalRead,
   selectChapterThreeEvening, eveningRecord } from "./ch3-story-wiring.js";
+import { createChapterCard } from "../core/chapter-card.js";
 
 const FILES = {
   ch3_prologue: ["ch3_childhood_opening", "ch3_ayatori_research", "ch3_train_arrival"],
@@ -82,35 +83,33 @@ function hud(owner, visible = false) {
   layers.hud.classList.toggle("show", visible);
 }
 
-function card(owner, name, title, description, actions = [], note = "", sceneId = "") {
-  hud(owner);
-  showScreen("ch3-intro", el("main.ch2-contest", { dataset: { test: test(name), scene: sceneId } }, [
-    el("header.ch2-contest-header", [
-      el("div", [el("p", { text: "第三章 ／ 嘘つきたちの夜" }), el("h1", { text: title })]),
-      menuButton(owner),
-    ]),
-    el("p.ch2-contest-description", { text: description }),
-    sceneId ? createChapterThreeWayfinding(state, chapterThreeScenes(state), sceneId) : null,
-    note ? el("p.ch2-contest-note", { text: note }) : null,
-    el("div.ch2-contest-actions", [...actions,
-      ...(["free", "ready"].includes(name) ? [button(owner, name === "free" && freeTimeChoices(state).length
-        ? "東京の地図で行き先を選ぶ" : "東京の地図", "map", () => openTokyoMap(owner), name === "free")] : []),
-      ...(["scene", "free", "ready"].includes(name) ? [
-      button(owner, "東京の店で葉を買う", "shop", async () => {
-        await openShop({ branch: "tokyo" });
-        if (current(owner)) await renderStage(owner);
-      }),
-      button(owner, "LIME・地元との連絡", "lime", async () => {
-        const social = await withLoadingNotice(import("./ch3-social.js"), loadingNotice("LIMEを準備しています…"));
-        if (!current(owner)) return;
-        const controller = owner.controller = new AbortController();
-        try { await social.openTokyoLime({ signal: controller.signal }); }
-        finally { if (owner.controller === controller) owner.controller = null; }
-        if (current(owner)) await renderStage(owner);
-      }),
-    ] : [])]),
-  ]));
+function footerActions(owner, name) {
+  if (!["scene", "free", "ready"].includes(name)) return [];
+  const actions = [];
+  if (name !== "scene") {
+    actions.push(button(owner, name === "free" && freeTimeChoices(state).length
+      ? "東京の地図で行き先を選ぶ" : "東京の地図", "map", () => openTokyoMap(owner), name === "free"));
+  }
+  actions.push(
+    button(owner, "東京の店で葉を買う", "shop", async () => {
+      await openShop({ branch: "tokyo" });
+      if (current(owner)) await renderStage(owner);
+    }),
+    button(owner, "LIME・地元との連絡", "lime", async () => {
+      const social = await withLoadingNotice(import("./ch3-social.js"), loadingNotice("LIMEを準備しています…"));
+      if (!current(owner)) return;
+      const controller = owner.controller = new AbortController();
+      try { await social.openTokyoLime({ signal: controller.signal }); }
+      finally { if (owner.controller === controller) owner.controller = null; }
+      if (current(owner)) await renderStage(owner);
+    }),
+  );
+  return actions;
 }
+
+const card = createChapterCard({ hud, screen: "ch3-intro", test, heading: "第三章 ／ 嘘つきたちの夜", menuButton,
+  chapterClear: false, footerActions,
+  beforeNote: sceneId => sceneId ? createChapterThreeWayfinding(state, chapterThreeScenes(state), sceneId) : null });
 
 /** 必要な四ファイルをすべて確認してから DB に公開する。 */
 async function loadIntroDialogues() {
