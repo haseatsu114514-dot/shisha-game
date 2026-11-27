@@ -418,6 +418,19 @@
           "portrait_face": "normal"
         },
         {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "名前は、吸い終わってから聞けって。スミさんの口癖なんだ",
+          "portrait": "hajime",
+          "portrait_face": "smile"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……鉄仮面さんは、いつ吸い終わるんでしょう",
+          "portrait": false
+        },
+        {
           "speaker": "tsumugi",
           "face": "baito_smile",
           "text": "……はじめさんの猫も、いますよ",
