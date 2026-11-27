@@ -302,7 +302,7 @@ const FAUCET = (() => { const [mx, my] = tiltPoint(...BOTTLE.mouth, BOTTLE.rest)
 const GENRES = {
   fruit: { name: "フルーティ", color: "#ff8f6b", icon: '<path d="M12 8.2c-1.7-1.3-4.7-1.1-6.1 1.1-1.6 2.5-.6 6.8 1.7 9.3 1.3 1.5 2.9 1.6 4.4.7 1.5.9 3.1.8 4.4-.7 2.3-2.5 3.3-6.8 1.7-9.3-1.4-2.2-4.4-2.4-6.1-1.1z" fill="currentColor"/><path d="M12 8.2c0-2.2 1-3.9 3.2-4.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' },
   sweet: { name: "スイート", color: "#f7a8d8", icon: '<circle cx="12" cy="12" r="4.6" fill="currentColor"/><path d="M7.6 12 3 8.2v7.6zM16.4 12 21 8.2v7.6z" fill="currentColor"/>' },
-  fresh: { name: "刺激系", color: "#7fd8e8", icon: '<path d="M10.5 3H19l-5.6 7.1H18L4.7 21l4.4-8H4.6z" fill="currentColor"/>' },
+  fresh: { name: "刺激", color: "#7fd8e8", icon: '<path d="M10.5 3H19l-5.6 7.1H18L4.7 21l4.4-8H4.6z" fill="currentColor"/>' },
   deep: { name: "リラックス", color: "#b9a6ff", icon: '<path d="M19.6 14.9A8.2 8.2 0 1 1 9.1 4.4a6.6 6.6 0 0 0 10.5 10.5z" fill="currentColor"/>' },
 };
 // 第1章の葉（本編の ID）。ジャンルは店番の表（ダブルアップル＝刺激系＋フルーティ、ミント＝刺激系、レモン＝フルーティ＋刺激系）。
@@ -310,15 +310,15 @@ const GENRES = {
 // 熱への強さ（tol）は本編 data/flavors.json の heat_tolerance（配合の温度帯に使う・VPL78）
 // 葉の色（leaf）は実物に合わせて、色を付けた果物系＝赤寄り、ミントやシナモン・柑橘＝茶色寄り（VPL50・VPL53）
 const MIX = [
-  { id: "double_apple", tol: 1, name: "ダブルアップル", genre: "fresh", sub: "fruit", leaf: "red", box: [105, 53, 304, 405] },
+  { id: "double_apple", tol: 1, name: "ダブルアップル", wrap: "ダブル|アップル", genre: "fresh", sub: "fruit", leaf: "red", box: [105, 53, 304, 405] },
   { id: "mint", tol: 1.2, name: "ミント", genre: "fresh", leaf: "brown", box: [124, 85, 264, 347] },
   { id: "lemon", tol: 1.1, name: "レモン", genre: "fruit", sub: "fresh", leaf: "brown", need: 2, box: [104, 51, 306, 408] },
-  { id: "blueberry", tol: 0.9, name: "ブルーベリー", genre: "fruit", leaf: "red", box: [104, 51, 305, 407] },
-  { id: "strawberry", tol: 0.85, name: "ストロベリー", genre: "fruit", leaf: "red", box: [104, 51, 305, 407] },
+  { id: "blueberry", tol: 0.9, name: "ブルーベリー", wrap: "ブルー|ベリー", genre: "fruit", leaf: "red", box: [104, 51, 305, 407] },
+  { id: "strawberry", tol: 0.85, name: "ストロベリー", wrap: "ストロ|ベリー", genre: "fruit", leaf: "red", box: [104, 51, 305, 407] },
   { id: "grape", tol: 0.95, name: "グレープ", genre: "fruit", leaf: "red", box: [110, 57, 295, 404] },
   { id: "watermelon", tol: 0.85, name: "スイカ", genre: "fruit", sub: "fresh", leaf: "red", box: [104, 51, 305, 408] },
   { id: "orange", tol: 1, name: "オレンジ", genre: "fruit", sub: "fresh", leaf: "brown", box: [104, 51, 306, 408] },
-  { id: "pineapple", tol: 1.1, name: "パイナップル", genre: "fruit", leaf: "brown", box: [104, 51, 306, 408] },
+  { id: "pineapple", tol: 1.1, name: "パイナップル", wrap: "パイ|ナップル", genre: "fruit", leaf: "brown", box: [104, 51, 306, 408] },
   { id: "cinnamon", tol: 1.05, name: "シナモン", genre: "fresh", sub: "sweet", leaf: "brown", box: [102, 51, 308, 409] },
 ];
 const pkgHtml = (f, h) => {
@@ -1293,7 +1293,8 @@ class Phone {
     const { st } = this, i = st.mixSel, f = MIX[i];
     const btn = (by) => `<button class="mr-btn" data-act="mixadd" data-i="${i}" data-by="${by}" aria-label="${f.name}を1g${by > 0 ? "増やす" : "減らす"}">${by > 0 ? "＋" : "−"}</button>`;
     // 下の段で「決定」の左に入るので、パッケージとジャンルは出さない（棚の札が光っている）。名前・課題の印・−／＋・g だけ（VPL83）
-    return `<span class="mr-name"><b class="${[...f.name].length >= 7 ? "long" : ""}">${f.name}</b>${f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : ""}</span>
+    // 長い名前は、入りきらない時だけ語の切れ目（wrap の「|」）で2行に折る（VPL106。端末の字の幅で「−」の下に隠れないように）
+    return `<span class="mr-name"><b class="${[...f.name].length >= 7 ? "long" : ""}">${f.wrap ? f.wrap.split("|").join("<wbr>") : f.name}</b>${f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : ""}</span>
       ${btn(-1)}<span class="mr-g"><em>${st.mix[i]}</em>g</span>${btn(1)}`;
   }
 
