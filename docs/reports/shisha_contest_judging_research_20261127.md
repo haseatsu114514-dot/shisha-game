@@ -1,6 +1,6 @@
 # 実際のシーシャ大会の審査と演出の調査（2026-11-27）
 
-> **位置づけ**: オーナー依頼の調査と提案。**オーナー未決定で、採用扱いにしない**（[現行資料ガイド](../current_documentation_guide.md)の reports の扱い）。決まった案は正本（`docs/master_spec.md`・`brand/story_and_structure.md` など）へ反映し、このレポートは役目を終えたら `archive/` へ移す。台帳は [owner_requests.md](../owner_requests.md) の JDG01〜。
+> **位置づけ**: オーナー依頼の調査と提案。**オーナー未決定で、採用扱いにしない**（[現行資料ガイド](../current_documentation_guide.md)の reports の扱い）。決まった案は正本（`docs/master_spec.md`・`brand/story_and_structure.md` など）へ反映し、このレポートは役目を終えたら `archive/` へ移す。台帳は [owner_requests.md](../owner_requests.md) の JDG01〜、採否を決める入口は Issue #4324。
 >
 > ゲームのコード・台詞・データはこのレポートでは変えていない。
 
