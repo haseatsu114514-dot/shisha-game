@@ -1184,11 +1184,15 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const check = scenario.checks[kind], state = session.snapshot();
     let pop;
     // Beginners can follow the "おすすめ" mark: the approach with the best odds (the first one on a tie).
+    // 仲間の切り札（助力・連携札1枚）をこの判定で使える時は、付けた時の見込みも札に並べる（2026-11-27 オーナー「補正で増えるパーセントも込みに」）。
+    // 数字は判定の窓で助力を付けた時と同じ checkForecast から取る。付けるかどうかは判定の窓で選ぶ（ここでは見せるだけ）。
+    const aidReady = !!(check.helper && !state.used[check.helper] && state.teamwork > 0);
     const choices = approaches.map(approach => ({
       approach, forecast: checkForecast(scenario, state, kind, { approach: approach.id, sheets }),
+      aided: aidReady ? checkForecast(scenario, state, kind, { approach: approach.id, sheets, support: true }) : null,
     }));
     const bestId = choices.reduce((best, choice) => choice.forecast.odds.success > best.forecast.odds.success ? choice : best).approach.id;
-    const cards = choices.map(({ approach, forecast }) => {
+    const cards = choices.map(({ approach, forecast, aided }) => {
       const pc = sheets[approach.sheet || approach.actor];
       const { base, odds, bestOdds, potentialBonus } = forecast;
       const labels = declarationChanceLabels(forecast);
@@ -1197,6 +1201,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         title: pcText(approach.detail),
         "aria-label": pcText(approach.label) + "。" + pcText(approach.detail) + "。" + (approach.npc ? "GMが演じる" : name(approach.actor) + "の") + (pc?.name || "") + "、" + statLabel(approach.stat) + "＋" + base + "。" + labels.success + "、ひと手間 約" + odds.mixed + "%"
           + (potentialBonus ? "。見立て的中時は成功 約" + bestOdds.success + "%、ひと手間 約" + bestOdds.mixed + "%" : "")
+          + (aided ? "。" + skillOwnerName(check.helper) + "の助力を付ければ成功 約" + aided.odds.success + "%" : "")
           + (approach.id === bestId ? "。おすすめ" : "") + (first ? "。この役の初めての見せ場で盛り上がり＋1" : ""),
         onclick: () => {
           if (!pop || busy) return;
@@ -1215,6 +1220,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
           el("span.trpg-odds-bar", { "aria-hidden": "true", dataset: { test: "trpg-approach-odds" }, style: { "--success": odds.success + "%", "--mixed": odds.mixed + "%" } }),
           el("small", { text: labels.success, dataset: { test: "trpg-choice-success" } }),
           labels.insight ? el("small", { text: labels.insight, dataset: { test: "trpg-choice-insight" } }) : null,
+          aided ? el("small.trpg-choice-aid", { text: "助力で 約" + aided.odds.success + "%", title: skillLabel(check.helper) + "（連携札1枚）を付けた時", dataset: { test: "trpg-choice-aid" } }) : null,
           approach.id === bestId ? el("i.trpg-approach-best", { text: "おすすめ", title: "いちばん成功しやすい", dataset: { test: "trpg-approach-best" } }) : null,
           first ? el("i.trpg-approach-first", { text: "見せ場 ＋1", title: "この役が初めて前に出る。盛り上がり＋1" }) : null,
         ].filter(Boolean)),
@@ -1252,9 +1258,13 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       const predicted = checkForecast(scenario, session.snapshot(), kind, { support: !!support?.checked, approach: declared?.id || null, sheets });
       body.querySelector(".trpg-dice-bonus").textContent = "＋" + predicted.baseBonus;
       const lo = Math.min(predicted.odds.success, predicted.bestOdds.success), hi = Math.max(predicted.odds.success, predicted.bestOdds.success);
-      chance.replaceChildren(el("strong", { text: "成功 約" + lo + (predicted.potentialBonus ? "〜" + hi : "") + "%" }),
+      // 助力を付けられるのに付けていない間は、付けた時の見込みも添える（付けると上の数字がその値になる）。
+      const aided = support && !support.checked ? checkForecast(scenario, session.snapshot(), kind, { support: true, approach: declared?.id || null, sheets }) : null;
+      chance.replaceChildren(...[el("strong", { text: "成功 約" + lo + (predicted.potentialBonus ? "〜" + hi : "") + "%" }),
         el("small", { text: bonusParts(predicted, declared, !!support?.checked).join("・") + " 込み"
-          + (predicted.potentialBonus ? "（見立てが合えば＋" + predicted.potentialBonus + "）" : "") }));
+          + (predicted.potentialBonus ? "（見立てが合えば＋" + predicted.potentialBonus + "）" : "") }),
+        aided ? el("small.trpg-roll-chance-aid", { dataset: { test: "trpg-roll-chance-aid" },
+          text: "助力を付けると 約" + Math.min(aided.odds.success, aided.bestOdds.success) + (aided.potentialBonus ? "〜" + Math.max(aided.odds.success, aided.bestOdds.success) : "") + "%" }) : null].filter(Boolean));
       forecast.replaceChildren(el("div.trpg-forecast-head", [
         el("strong", { text: "この判定の見通し" }), el("small", { text: "2d20 ＋ " + (declared ? statLabel(declared.stat) : "基本") + predicted.base + (support?.checked ? " ＋ 助力" + DICE.support : "") + (predicted.momentum ? " ＋ 勢い" + predicted.momentum * DICE.momentum : "") }),
       ]), el("div.trpg-odds", [
