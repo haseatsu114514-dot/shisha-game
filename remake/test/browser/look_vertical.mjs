@@ -268,7 +268,10 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "sheet");
     await page.locator(t("vt-chip-tab-people")).tap();
     await page.waitForFunction(() => document.querySelector('#modal .dm-tab[data-tab="people"]')?.getAttribute("aria-selected") === "true");
-    assert.equal(await page.locator(t("vt-chip-tab-people")).getAttribute("aria-pressed"), "true");
+    // 補助ボタンの段は、本編の変化を次の描画で写し直す（looks/vertical.js の MutationObserver → requestAnimationFrame）。
+    // 本編のタブが切り替わった直後はまだ写し直す前のことがある（CI で2回続けて false を読んだ）ので、写し終えるのを待ってから確かめる
+    await page.waitForFunction(() => document.querySelector('[data-test="vt-chip-tab-people"]')?.getAttribute("aria-pressed") === "true", null, { timeout: 5000 }).catch(() => {});
+    assert.equal(await page.locator(t("vt-chip-tab-people")).getAttribute("aria-pressed"), "true", "the MENU tab chip follows the selected tab");
     await assertFits(page, "menu");
     await assertPadHome(page, "menu sheet", home);
     await pressA(page);
