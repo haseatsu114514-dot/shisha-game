@@ -104,7 +104,7 @@
 .gb-sub { margin: 0.2rem 0 0; font-size: 1.62rem; font-weight: 700; line-height: 1.45; letter-spacing: 0.01em; color: var(--gold); word-break: auto-phrase; line-break: strict; }
 .gb-text { position: relative; margin: 0; font-size: 1.56rem; line-height: 1.55; letter-spacing: 0.01em; color: #f1ecf9; word-break: auto-phrase; line-break: strict; }
 .gb-sub.gb-small { font-size: 1.4rem; } .gb-text.gb-small { font-size: 1.36rem; }
-.gb-text.gb-paged { padding-right: 2.4rem; } .gb-text.gb-paged::after { content: ""; position: absolute; right: 0.6rem; bottom: 0.7rem; width: 0.9rem; height: 0.9rem; border: solid var(--acc); border-width: 0 0.22rem 0.22rem 0; transform: rotate(45deg); animation: bob 1.2s ease-in-out infinite; }
+.gb-text.gb-paged { padding-right: 3rem; } .gb-text.gb-paged::after { content: ""; position: absolute; right: 0.5rem; bottom: 0.8rem; width: 0.9rem; height: 0.9rem; border: solid var(--acc); border-width: 0 0.22rem 0.22rem 0; transform: rotate(45deg); animation: bob 1.2s ease-in-out infinite; }
 .gb-state { margin: 0; font-size: 1.26rem; line-height: 1.4; color: #ffffffa6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gb-state.s-available { color: var(--gold); } .gb-state.s-short { color: #ffb9a8; } .gb-state.s-unlocked { color: var(--bc); }
 .gb-actions { margin-top: auto; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 0.8rem; }
