@@ -580,3 +580,40 @@ Polished anime game illustration style with clean dark outlines and two or three
 Do not draw: any background, smoke, a necklace, a second hose, a forked hose, the hookah body, a bowl, charcoal, text, letters, logos other than the cap emblem, watermark, frame.
 ```
 
+## 14回目: 水入れの流し台を、ボトルと同じ低い目線で蛇口ごと作り直す（VPL101・候補2枚から1枚）
+
+オーナー「水入れゲームシンクとボトルのサイズや立体感が変」。11回目の流し台は高い所から見下ろした絵で、横から見たボトルと目線が合っていなかった。ボトルの方が流し台より大きく見え、足は流し台の手前に浮いていた。蛇口の先も宙に浮いていた。
+`gpt-image-2.6-sunburst` の編集（images/edits・品質 high・背景は透明・1536×1024・2枚）で作った。鍵は環境変数から読み、値は記録していない。入力は2枚で、店の背景 `remake/img/backgrounds/bg_tonari_inside_day.webp` は絵柄と光の参考、ボトル `remake/previews/portrait-stage/img/ui-bottle-open.webp` は目線をそろえる参考にした（どちらも描かないよう指示）。
+
+試作に入れる時の手直し（生成はしていない）:
+- 蛇口のまっすぐな柱の所（絵の上から300行目）の1行を323行くり返して、首を伸ばした。吐水口からカウンターの手前の縁までを、ボトルの口から足の少し上までの長さに合わせるため（柱は上下に一様なので、伸ばしても形は変わらない）。
+- 縮めて 1152×1010 にした。
+
+試作では、吐水口がボトルの口の真上（FAUCET.nx・ny）に来るよう置き、流し台の幅をボトルの約2倍にした。カウンターの手前の縁から下（絵の縦 85.3% より下）は、同じ絵をもう1枚ボトルの上に重ねて、ボトルの足を隠す。
+
+| 原画（v3/） | 試作で使う絵（img/） | 使う所 |
+|---|---|---|
+| `sink-low-original.webp`（1536×1024） | `ui-sink-faucet.webp`（1152×1010・柱を伸ばした） | 水入れの流し台と蛇口（奥）と、カウンターの手前の縁（ボトルの上） |
+| `sink-low-candidate2-original.webp`（1536×1024） | 使わない | もう1枚の候補。流し台の中が浅く見え、ボトルを入れた時に中の奥行きが出にくいため使わない |
+
+11回目の `ui-sink.webp` と、9回目の蛇口 `ui-faucet.webp` は試作で使わなくなったので、`img/` から外した（原画は v3/ にそのまま残す）。
+
+生成後の確認（素材規約の必須チェック）:
+- 流し台は空で乾いている。水・ボトル・食器・人・壁・文字・ロゴが無い。
+- 目線は低く、カウンターの手前の縁がまっすぐな横線。流し台の床は手前の縁に隠れ、奥と左右の内側の壁が見える。
+- 蛇口はカウンターの奥に1本だけ立ち、首を曲げて吐水口が下を向く。
+- カウンターより上は透明（蛇口のほか）。
+- 合格（2枚のうち1枚を使う）。シーシャ台の機材ではないため、§4 の8行は当てはまらない。
+
+```text
+Match the illustration style and the warm lighting of the first reference image (a polished anime game background of a small Japanese shisha bar with clean outlines and soft cel shading). Do NOT draw the room from it; it is only a style and lighting reference.
+The second reference is the glass water base of a hookah that will be placed into this sink later by the game. Match its viewing angle exactly: seen straight from the front, with the eye only a little above the counter (looking down about 15 degrees). Do NOT draw that glass base.
+Draw on a fully transparent background one object only: the work sink of this shisha bar with its faucet, where the staff fill the glass hookah bases with water.
+- A brushed stainless-steel counter that spans the whole width of the image (cut off by the left and right edges). Because the eye is low, the counter top is a fairly thin band in perspective. The front edge of the counter top is one straight horizontal line at about 80 percent of the image height; below it, the vertical front face of the counter (a plain stainless apron) continues down to the bottom edge of the image.
+- Set into the counter, centered, one deep rectangular stainless-steel sink basin about 68 percent of the image width. From this low angle you look into it: the inner back wall and the two inner side walls are visible in perspective, and the basin floor is hidden behind the front edge of the counter.
+- On the back part of the counter, behind the basin and a little left of center, a tall gooseneck bar faucet in brushed stainless steel: a round base, a vertical column rising high above the counter, a smooth arch at the top, and a short spout that points straight down, ending exactly above the horizontal center of the image at about 15 percent of the image height from the top. One small lever handle on the column.
+- Everything above the back edge of the counter is fully transparent except the faucet.
+- Warm reflections of the bar lights on the steel, a few soft highlights, very clean.
+Do not draw: water, a hookah, a glass base, bottles, glasses, dishes, sponges, towels, people, hands, a wall, tiles, a window, text, letters, logos, watermark.
+```
+
