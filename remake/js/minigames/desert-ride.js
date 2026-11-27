@@ -53,6 +53,16 @@ const HORIZON = 262;             // 地平線の高さ（路面＝斜面の消�
  */
 const SLOPE = Object.freeze({ edgePx: 0, runout: 260 });
 const CAM = { depth: 1.5, height: 2.0, back: 4.5, meterPerLane: 1.6 }; // 疑似3Dのカメラ（人物の4.5m後ろ・高さ2m。lane 1 = 1.6m）
+/**
+ * 下り坂の見え方（縦画面。2026-11-27 オーナー「サンドボードは縦画面のやつでもレース中にも坂をくだってる立体感がわかりやすくしたい」）。
+ * 見た目だけの値で、判定・規則・採点・手応えの数値は変えない。横（既定）は使わない（startDesertRide の downhill で切り替える）。
+ * 横の作りでは路面の消失線＝遠くの砂丘の足元（HORIZON）なので、路面が平らな台地のまま砂丘へ届いて見えた。
+ * 下り坂では、目の高さ（eye: 空と遠くの稜線の境）より下に路面の消失線（ground）を置く。路面は目の高さより下へ続き、
+ * その間に坂の下の谷（遠景の絵の谷の部分。縦に広げる）が見える＝見下ろしながら坂を下っている見え方。
+ * height は斜面から測ったカメラの高さ（m。横の 2m より高いほど見下ろす）。valley は遠景の横の倍率（小さいほど遠くの谷が広く見える）。
+ * posts はコースの両端の杭とロープ（every m ごと、reach m 先まで）。坂の下へ細く集まる2本の線で、コースの向きと奥行きを見せる。
+ */
+const DOWNHILL = Object.freeze({ eye: 150, ground: 300, height: 2.4, valley: 0.62, posts: Object.freeze({ every: 6, reach: 170, height: 0.85 }) });
 const COUNTDOWN = 2.4;           // 本番のスタートの合図（3・2・1・GO）の秒数（その相手との最初の一本）
 /**
  * 手応え（演出）の数値（2026-11-13 オーナー「手応えレビューの内容を実装して、より面白く」）。規則（desert-ride-model.js）と違い凍結しない:
@@ -356,10 +366,15 @@ export function runDesertRide(options = {}) {
 function startDesertRide({ host = document.getElementById("stage"), signal = null, tutorial = false, startRival = null, best = null, legacyBest = null, seed, courseId, rivals = ["noor"],
   tiers = TIERS, tier = "normal", cleared = [], tierNotes = null, easyBest = null, bests = null, onTier = null,
   reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = "ヌール", speedUp = 1, layout = "landscape",
-  naruSlot = true } = {}) {
+  naruSlot = true, downhill = null } = {}) {
   // layout: "portrait" は縦画面の試作（remake/previews/portrait-stage/frame/desert.html）だけが渡す。画面の並べ方は data-layout を見るCSSが決め、
   // 規則・採点・描く中身は横と同じ。縦では横向きの案内（回転ガード）を見張らない。既定（横）の動きは変えない。
   const portrait = layout === "portrait";
+  // 下り坂の見え方（DOWNHILL）は縦だけ。downhill: true/false で明示すると横でも切り替えられる（横に当てた時の見え方の確認用）
+  const sloped = downhill ?? portrait;
+  const EYE_Y = sloped ? DOWNHILL.eye : HORIZON;       // 目の高さの地平線（空と遠くの稜線の境。遠景の絵を合わせる）
+  const GROUND_Y = sloped ? DOWNHILL.ground : HORIZON; // 路面の消失線（坂の下の端）。EYE_Y より下にあるほど急な下りに見える
+  const CAM_H = sloped ? DOWNHILL.height : CAM.height; // 斜面から測ったカメラの高さ（m）
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   if (signal?.aborted) return Promise.resolve({ results: [], practiced: false });
@@ -1879,7 +1894,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     const project = (xLane, y, dz) => {
       const scale = view.depth / dz;
       // view.rise: 大ジャンプの間、カメラも一緒に上がる（地面が下へ遠ざかる。DSR99）
-      return { x: W / 2 + scale * xLane * CAM.meterPerLane * (W / 2), y: HORIZON + scale * (CAM.height + view.rise - y) * (H / 2), scale, w: scale * CAM.meterPerLane * (W / 2) };
+      return { x: W / 2 + scale * xLane * CAM.meterPerLane * (W / 2), y: GROUND_Y + scale * (CAM_H + view.rise - y) * (H / 2), scale, w: scale * CAM.meterPerLane * (W / 2) };
     };
     const lerp = (a, b, t) => a + (b - a) * t;
     const mixColor = (a, b, t) => `rgb(${Math.round(lerp(a[0], b[0], t))},${Math.round(lerp(a[1], b[1], t))},${Math.round(lerp(a[2], b[2], t))})`;
@@ -2002,6 +2017,21 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       }
       return c;
     }
+    /**
+     * 遠景の絵の置き方。横: 絵の縁（lip）の行を HORIZON に合わせる（空・稜線は同じ倍率、縁より下は画面の下端まで伸ばす）。
+     * 下り坂（DOWNHILL）: 空と稜線の境（skyLine）を目の高さ EYE_Y、縁を路面の消失線 GROUND_Y に合わせ、間の谷を縦に広げる（見下ろした谷）。
+     * 横の倍率は DOWNHILL.valley（縦は左右を切って真ん中だけ見せるので、絵を小さくして遠くの砂丘を小さく・谷を広く見せる）。
+     */
+    function backdropFit() {
+      const B = DESERT_ART.backdrop, above = B.horizon - DESERT_ART.land.top, below = B.height - B.horizon;
+      if (!sloped) {
+        const k = BACKDROP_SCALE;
+        return { dw: Math.round(B.width * k), skyY: HORIZON - B.horizon * k, skyK: k, landY: HORIZON - above * k, landH: above * k, above, below };
+      }
+      // 空は横と同じく画面の上端より上から（傾き・揺れで上の角が空かないよう 40px 余らせる）
+      const k = DOWNHILL.valley, kv = (GROUND_Y - EYE_Y) / (B.horizon - B.skyLine), skyK = Math.max(k, (EYE_Y + 40) / B.skyLine);
+      return { dw: Math.round(B.width * k), skyY: EYE_Y - B.skyLine * skyK, skyK, landY: EYE_Y - (B.skyLine - DESERT_ART.land.top) * kv, landH: above * kv, above, below };
+    }
     function drawBackdrop(dusk, progress, present = true) {
       const sky = art.get("sky"), land = art.get("land");
       if (!sky || !land) return false;
@@ -2017,32 +2047,32 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         backdropKey = key;
       const g = backdropLayer.getContext("2d");
       g.setTransform(1, 0, 0, 1, BACKDROP_MARGIN, 0);
-      const B = DESERT_ART.backdrop, k = BACKDROP_SCALE, dw = Math.round(B.width * k), baseX = (W - dw) / 2;
-      // 空はゆっくり、陸は速く横へ流れる（カーブに合わせたパララックス）。絵の地平線の行を HORIZON に合わせる。
+      const B = DESERT_ART.backdrop, fit = backdropFit(), dw = fit.dw, baseX = (W - dw) / 2;
+      // 空はゆっくり、陸は速く横へ流れる（カーブに合わせたパララックス）。絵の地平線の行を HORIZON に合わせる（下り坂は backdropFit）。
       // 曲がっている間は遠くの砂丘が横へ流れ続ける（2026-11-11 オーナー「カーブがほんとにしてるのか分かりづらい」）
-      wrapImage(g, sky, 0, 0, B.width, sky.naturalHeight, baseX - yawPx * 0.5, HORIZON - B.horizon * k, dw, sky.naturalHeight * k);
+      wrapImage(g, sky, 0, 0, B.width, sky.naturalHeight, baseX - yawPx * 0.5, fit.skyY, dw, sky.naturalHeight * fit.skyK);
       const duskVisible = dusk >= 0.01;
       const duskSky = art.get("duskSky"), duskLand = art.get("duskLand");
       if (duskVisible && duskSky && duskLand) {
         // 同じ構図の夕方の絵を、ゴールへ近づくほど濃く重ねる（0.01 未満は視認不可のため合成を省く）
         g.globalAlpha = dusk;
-        wrapImage(g, duskSky, 0, 0, B.width, duskSky.naturalHeight, baseX - yawPx * 0.5, HORIZON - B.horizon * k, dw, duskSky.naturalHeight * k);
+        wrapImage(g, duskSky, 0, 0, B.width, duskSky.naturalHeight, baseX - yawPx * 0.5, fit.skyY, dw, duskSky.naturalHeight * fit.skyK);
         g.globalAlpha = 1;
       } else if (duskVisible) {
-        const tint = g.createLinearGradient(0, 0, 0, HORIZON + 10);
+        const tint = g.createLinearGradient(0, 0, 0, EYE_Y + 10);
         tint.addColorStop(0, `rgba(120,72,110,${dusk * 0.85})`); tint.addColorStop(0.62, `rgba(245,150,84,${dusk * 0.8})`); tint.addColorStop(1, `rgba(255,208,140,${dusk * 0.7})`);
-        g.fillStyle = tint; g.fillRect(-BACKDROP_MARGIN, 0, W + BACKDROP_MARGIN * 2, HORIZON + 10);
+        g.fillStyle = tint; g.fillRect(-BACKDROP_MARGIN, 0, W + BACKDROP_MARGIN * 2, EYE_Y + 10);
       }
       // 太陽: 進むほど大きく低く。ゴールの手前では砂丘の稜線の後ろへ沈みかける。
       // 曲がり始めに横へ動き、その先は画面に残る（ゴールの夕日を見失わない）
-      const sunX = W * 0.5 - Math.tanh(yaw * 0.8) * 300 + 180 * (1 - progress), sunY = lerp(70, HORIZON - 34 + edge, Math.min(1, progress * 1.05)), r = lerp(30, 72, progress);
+      const sunX = W * 0.5 - Math.tanh(yaw * 0.8) * 300 + 180 * (1 - progress), sunY = lerp(70, EYE_Y - 34 + edge, Math.min(1, progress * 1.05)), r = lerp(30, 72, progress);
       const glow = g.createRadialGradient(sunX, sunY, r * 0.4, sunX, sunY, r * 3.2);
       glow.addColorStop(0, `rgba(255,230,170,${0.55 + 0.3 * dusk})`); glow.addColorStop(1, "rgba(255,200,120,0)");
       g.fillStyle = glow; g.fillRect(sunX - r * 3.2, sunY - r * 3.2, r * 6.4, r * 6.4);
       g.fillStyle = mixColor([255, 248, 220], [255, 170, 90], dusk);
       g.beginPath(); g.arc(sunX, sunY, r, 0, Math.PI * 2); g.fill();
       // 陸: 稜線〜縁（lip）は空と同じ倍率、縁より下（手前の斜面の砂）は画面の下端まで伸ばす
-      const landX = baseX - yawPx, above = B.horizon - DESERT_ART.land.top, below = B.height - B.horizon;
+      const landX = baseX - yawPx, { above, below } = fit;
       // ブースト中は遠景を左右に少しずらして重ね、流れているように見せる
       const smear = !reducedMotion && (view.boost || 0) > 0.2 ? 14 * (view.boost || 0) : 0;
       for (const [image, alpha] of [[land, 1], [duskVisible ? duskLand : null, dusk]]) {
@@ -2050,8 +2080,8 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         for (const [shift, a] of smear ? [[0, alpha], [smear, alpha * 0.28], [-smear, alpha * 0.28]] : [[0, alpha]]) {
           g.globalAlpha = a;
           // 砂丘は edge だけ下げる（採用した坂の絵では edgePx=0 なので、縁は HORIZON に乗る）。縁より下は手前の斜面の砂
-          wrapImage(g, image, 0, 0, B.width, above, landX + shift, HORIZON + edge - above * k, dw, above * k);
-          wrapImage(g, image, 0, above, B.width, below, landX + shift, HORIZON, dw, H - HORIZON);
+          wrapImage(g, image, 0, 0, B.width, above, landX + shift, fit.landY + edge, dw, fit.landH);
+          wrapImage(g, image, 0, above, B.width, below, landX + shift, GROUND_Y, dw, H - GROUND_Y);
         }
       }
       g.globalAlpha = 1;
@@ -2068,14 +2098,14 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       const t = Math.min(1, edge / SLOPE.edgePx), x0 = -BACKDROP_MARGIN, wAll = W + BACKDROP_MARGIN * 2;
       const haze = mixColor([248, 230, 204], [255, 198, 154], dusk).slice(4, -1), rim = mixColor([255, 246, 220], [255, 218, 172], dusk).slice(4, -1);
       // 霞は縁のすぐ上の細い帯だけ、薄く。広く濃くかけると、霞んだ砂丘の下半分が「うっすら重なったもう1枚」に見えた（2026-11-17 オーナー）
-      const top = HORIZON - 12;
-      const air = g.createLinearGradient(0, top, 0, HORIZON);
+      const top = GROUND_Y - 12;
+      const air = g.createLinearGradient(0, top, 0, GROUND_Y);
       air.addColorStop(0, `rgba(${haze},0)`); air.addColorStop(1, `rgba(${haze},${0.22 * t})`);
-      g.fillStyle = air; g.fillRect(x0, top, wAll, HORIZON - top);
-      const shoulder = g.createLinearGradient(0, HORIZON, 0, HORIZON + 14);
+      g.fillStyle = air; g.fillRect(x0, top, wAll, GROUND_Y - top);
+      const shoulder = g.createLinearGradient(0, GROUND_Y, 0, GROUND_Y + 14);
       shoulder.addColorStop(0, `rgba(${rim},${0.5 * t})`); shoulder.addColorStop(1, `rgba(${rim},0)`);
-      g.fillStyle = shoulder; g.fillRect(x0, HORIZON, wAll, 14);
-      g.fillStyle = `rgba(${rim},${0.85 * t})`; g.fillRect(x0, HORIZON - 1, wAll, 2);
+      g.fillStyle = shoulder; g.fillRect(x0, GROUND_Y, wAll, 14);
+      g.fillStyle = `rgba(${rim},${0.85 * t})`; g.fillRect(x0, GROUND_Y - 1, wAll, 2);
     }
     /** 横へ流れる遠景を、面を覆うまで並べて描く。隣は左右反転した同じ絵なので絵柄がつながり、整数の位置に置くので隙間も重なりも出ない。 */
     function wrapImage(g, image, sx, sy, sw, sh, x, y, dw, dh) {
@@ -2091,11 +2121,11 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     }
     function drawSky(dusk, progress) {
       const top = mixColor([92, 158, 226], [120, 72, 110], dusk), mid = mixColor([176, 212, 240], [245, 150, 84], dusk), bottom = mixColor([236, 226, 206], [255, 208, 140], dusk);
-      const sky = ctx.createLinearGradient(0, 0, 0, HORIZON + 20);
+      const sky = ctx.createLinearGradient(0, 0, 0, GROUND_Y + 20);
       sky.addColorStop(0, top); sky.addColorStop(0.62, mid); sky.addColorStop(1, bottom);
-      ctx.fillStyle = sky; ctx.fillRect(0, 0, W, HORIZON + 20);
+      ctx.fillStyle = sky; ctx.fillRect(0, 0, W, GROUND_Y + 20);
       // 太陽: 進むほど大きく低く。ゴールの手前では地平線に触れる
-      const sunX = W * 0.5 - Math.tanh(world.yaw * 0.8) * 300 + 180 * (1 - progress), sunY = lerp(70, HORIZON - 14 + (world.slope || 0), Math.min(1, progress * 1.05)), r = lerp(30, 72, progress);
+      const sunX = W * 0.5 - Math.tanh(world.yaw * 0.8) * 300 + 180 * (1 - progress), sunY = lerp(70, EYE_Y - 14 + (world.slope || 0), Math.min(1, progress * 1.05)), r = lerp(30, 72, progress);
       const glow = ctx.createRadialGradient(sunX, sunY, r * 0.4, sunX, sunY, r * 3.2);
       glow.addColorStop(0, `rgba(255,230,170,${0.55 + 0.3 * dusk})`); glow.addColorStop(1, "rgba(255,200,120,0)");
       ctx.fillStyle = glow; ctx.fillRect(sunX - r * 3.2, sunY - r * 3.2, r * 6.4, r * 6.4);
@@ -2105,7 +2135,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     function drawDunes(dusk) {
       // 遠景の砂丘は3層。横へは向きに合わせ、奥ほどゆっくり流れる（パララックス）
       // 斜面の縁の深さだけ下げる（足元は drawGround の砂が隠す）
-      const FAR = HORIZON + (world.slope || 0);
+      const FAR = GROUND_Y + (world.slope || 0);
       const layers = [
         { amp: 26, freq: 0.0032, speed: 0.08, base: FAR - 36, color: mixColor([226, 196, 150], [214, 136, 104], dusk) },
         { amp: 40, freq: 0.0046, speed: 0.17, base: FAR - 14, color: mixColor([232, 206, 158], [226, 150, 108], dusk) },
@@ -2145,7 +2175,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       const camX = game.x * (portrait ? 0.75 : 0.6);
       if (!painted) {
         ctx.fillStyle = mixColor([238, 210, 160], [238, 170, 112], dusk);
-        ctx.fillRect(-GROUND_BLEED, HORIZON, W + GROUND_BLEED * 2, H - HORIZON + GROUND_BLEED);
+        ctx.fillRect(-GROUND_BLEED, GROUND_Y, W + GROUND_BLEED * 2, H - GROUND_Y + GROUND_BLEED);
       }
       const flagArt = art.get("flag");
       // 区間の境目を手前から並べる。最初の点は画面の下端のすぐ外（dz 0.5m）に置く
@@ -2204,19 +2234,20 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       }
       // 地平線のかすみ（遠くの砂を空の色へ溶かす）
       // 縁が開いている間は、縁より上（下げた砂丘）を霞ませない（砂丘がくっきり1組に見えるように）。ふもとでは元の地平線の霞
-      const hazeTop = HORIZON - 30 * (1 - Math.min(1, (world.slope || 0) / 12));
+      // 下り坂では、坂の下の端（GROUND_Y）に谷の空気をかける（谷が低く遠い所にあると分かるように）
+      const hazeTop = GROUND_Y - (sloped ? 44 : 30 * (1 - Math.min(1, (world.slope || 0) / 12)));
       const red = Math.round(lerp(250, 255, dusk)), green = Math.round(lerp(232, 190, dusk)), blue = Math.round(lerp(200, 140, dusk));
       const rgb = (red << 16) | (green << 8) | blue;
       if (hazeColor !== rgb || hazeStart !== hazeTop) {
         const hazeRgb = `${red},${green},${blue}`;
         hazeColor = rgb;
         hazeStart = hazeTop;
-        hazeGradient = ctx.createLinearGradient(0, hazeTop, 0, HORIZON + 120);
+        hazeGradient = ctx.createLinearGradient(0, hazeTop, 0, GROUND_Y + 120);
         hazeGradient.addColorStop(0, `rgba(${hazeRgb},0)`);
         hazeGradient.addColorStop(0.25, `rgba(${hazeRgb},0.5)`);
         hazeGradient.addColorStop(1, `rgba(${hazeRgb},0)`);
       }
-      ctx.fillStyle = hazeGradient; ctx.fillRect(0, hazeTop, W, HORIZON + 120 - hazeTop);
+      ctx.fillStyle = hazeGradient; ctx.fillRect(0, hazeTop, W, GROUND_Y + 120 - hazeTop);
       // 明暗の二重線で走路の縁を追えるようにする。線幅が変わる手前（dz<48）は1区間ずつ描き、線幅が下限で一定になる奥（dz>=48）だけ距離帯ごとにまとめる。
       const EDGE_SPLIT = 48;
       const edgeBands = [...groundBands(points, EDGE_SPLIT, 250, 5, 2)];
@@ -2255,6 +2286,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
           ctx.beginPath(); ctx.moveTo(x1 - side * ctx.lineWidth * 0.6, near.p.y); ctx.lineTo(x2 - side * ctx.lineWidth * 0.6, far.p.y); ctx.stroke();
         }
       }
+      if (sloped) drawRopePosts(points, dusk);
       // コースの端の目印（細い旗竿）: 24m ごと
       for (let i = points.length - 1; i > 0; i--) {
         const far = points[i], near = points[i - 1];
@@ -2274,6 +2306,56 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         }
       }
     }
+    /**
+     * コースの両端の杭とロープ（下り坂。見本の絵の、坂の下へ細く集まっていくロープと杭）。区間の点（6m ごと）に杭を立て、杭の頭をたるんだロープでつなぐ。
+     * 路面と同じ投影なので、カーブでも走路の縁に沿う。遠くほど細く薄く、DOWNHILL.posts.reach m で消える。
+     * 軽さ: 杭・ロープを1本ずつ stroke せず、距離帯ごとに1本の道にまとめる（帯は手前を細かく、奥を粗く。1コマ 20 回ほど）。
+     */
+    function drawRopePosts(points, dusk) {
+      const P = DOWNHILL.posts, LANE = 1.1;
+      const post = mixColor([86, 56, 34], [80, 46, 36], dusk).slice(4, -1), lit = mixColor([255, 232, 188], [255, 206, 160], dusk).slice(4, -1);
+      ctx.lineCap = "round"; ctx.lineJoin = "round";
+      // 奥の帯から手前へ（手前の杭が奥のロープに重なる）。帯の境の点は奥の帯の端なので、各帯は (i0, i1] だけ描く
+      const bands = [...groundBands(points, 36, P.reach, 4, 2), ...groundBands(points, 2, 36, 6, 2)];
+      for (const [i0, i1] of bands) {
+        const mid = points[(i0 + i1) >> 1], fade = Math.max(0, 1 - mid.dz / P.reach);
+        if (fade <= 0.02) continue;
+        const unit = mid.p.scale * (H / 2), width = Math.max(1, Math.min(9, unit * 0.07));
+        // ロープ: 杭の頭から次の杭の頭へ、少したるませる（中ほどが杭の高さの約2割下がる）
+        ctx.strokeStyle = `rgba(${post},${(0.75 * fade).toFixed(3)})`; ctx.lineWidth = Math.max(0.8, width * 0.42);
+        ctx.beginPath();
+        for (const side of ROAD_SIDES) {
+          for (let i = i0 + 1; i <= i1; i++) {
+            const a = points[i - 1], b = points[i];
+            const ax = a.p.x + side * a.p.w * LANE, ay = a.p.y - a.p.scale * P.height * (H / 2);
+            const bx = b.p.x + side * b.p.w * LANE, by = b.p.y - b.p.scale * P.height * (H / 2);
+            const sag = (a.p.scale + b.p.scale) * 0.5 * P.height * 0.42 * (H / 2);
+            ctx.moveTo(ax, ay); ctx.quadraticCurveTo((ax + bx) / 2, (ay + by) / 2 + sag, bx, by);
+          }
+        }
+        ctx.stroke();
+        // 杭: 濃い木の棒に、日の当たる側の細い明るい線
+        ctx.strokeStyle = `rgba(${post},${(0.95 * fade).toFixed(3)})`; ctx.lineWidth = width;
+        ctx.beginPath();
+        for (const side of ROAD_SIDES) {
+          for (let i = i0 + 1; i <= i1; i++) {
+            const pt = points[i], x = pt.p.x + side * pt.p.w * LANE;
+            ctx.moveTo(x, pt.p.y); ctx.lineTo(x, pt.p.y - pt.p.scale * P.height * (H / 2));
+          }
+        }
+        ctx.stroke();
+        if (width < 2.5) continue;
+        ctx.strokeStyle = `rgba(${lit},${(0.6 * fade).toFixed(3)})`; ctx.lineWidth = width * 0.3;
+        ctx.beginPath();
+        for (const side of ROAD_SIDES) {
+          for (let i = i0 + 1; i <= i1; i++) {
+            const pt = points[i], x = pt.p.x + side * pt.p.w * LANE - width * 0.25;
+            ctx.moveTo(x, pt.p.y - 1); ctx.lineTo(x, pt.p.y - pt.p.scale * P.height * (H / 2) + 1);
+          }
+        }
+        ctx.stroke();
+      }
+    }
     /** 砂の模様を1枚のオフスクリーン面へ走査線合成し、1回の drawImage で貼る（回転時の 100 回超 drawImage を1回に集約）。 */
     let sandBuf = null;
     function ensureSandBuf() {
@@ -2288,7 +2370,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     function drawSandRows(points, camZ, camX) {
       const levels = sandTexture(), buf = ensureSandBuf();
       if (!levels.length || !buf) return;
-      const rowH = SAND_ROW_H, k = view.depth * (CAM.height + view.rise) * (H / 2);
+      const rowH = SAND_ROW_H, k = view.depth * (CAM_H + view.rise) * (H / 2);
       // カメラが傾いていない・揺れていない間は画面外の余白行を描かない（直進・カウントダウン中の無駄な画面外描画を省く）
       const bleed = view.roll || shake.t > 0 ? GROUND_BLEED : 0;
       const { b, d, f } = ctx.getTransform();
@@ -2299,8 +2381,8 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       const rgbMask = SAND_IS_LE ? 0x00ffffff : 0xffffff00;
       const dst = buf.u32, maxTexels = SAND_BUF_W * 1.25;
       let seg = 1, count = 0;
-      for (let y = bottomY - rowH; y > HORIZON + 1 && count < SAND_BUF_H; y -= rowH) {
-        const dz = k / (y + rowH / 2 - HORIZON);
+      for (let y = bottomY - rowH; y > GROUND_Y + 1 && count < SAND_BUF_H; y -= rowH) {
+        const dz = k / (y + rowH / 2 - GROUND_Y);
         if (dz > DRAW_DIST) break;
         const alpha = Math.min(1, Math.max(0, 1.15 - dz / 120));
         if (alpha <= 0.02) break;
@@ -2760,7 +2842,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     }
     /** ブーストで「後ろ」へ流れる向き（消失点から、その点を通って手前・外側へ）。 */
     function boostBack(x, y) {
-      const dx = x - W / 2, dy = y - HORIZON + 60, l = Math.hypot(dx, dy) || 1;
+      const dx = x - W / 2, dy = y - GROUND_Y + 60, l = Math.hypot(dx, dy) || 1;
       return [dx / l, dy / l];
     }
     // 炎色の残像に使う、人物の絵を一色に塗った小さな複製（絵と色ごとに一度だけ作る）
@@ -2788,16 +2870,15 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       vignetteLayer(1);
       const sky = art.get("sky"), land = art.get("land");
       if (sky && land) {
-        const B = DESERT_ART.backdrop, k = BACKDROP_SCALE, dw = Math.round(B.width * k);
-        const above = B.horizon - DESERT_ART.land.top, below = B.height - B.horizon;
-        backdropStrip(sky, 0, 0, B.width, sky.naturalHeight, dw, sky.naturalHeight * k);
-        backdropStrip(land, 0, 0, B.width, above, dw, above * k);
-        backdropStrip(land, 0, above, B.width, below, dw, H - HORIZON);
+        const B = DESERT_ART.backdrop, { dw, skyK, landH, above, below } = backdropFit();
+        backdropStrip(sky, 0, 0, B.width, sky.naturalHeight, dw, sky.naturalHeight * skyK);
+        backdropStrip(land, 0, 0, B.width, above, dw, landH);
+        backdropStrip(land, 0, above, B.width, below, dw, H - GROUND_Y);
         const duskSky = art.get("duskSky"), duskLand = art.get("duskLand");
-        if (duskSky) backdropStrip(duskSky, 0, 0, B.width, duskSky.naturalHeight, dw, duskSky.naturalHeight * k);
+        if (duskSky) backdropStrip(duskSky, 0, 0, B.width, duskSky.naturalHeight, dw, duskSky.naturalHeight * skyK);
         if (duskLand) {
-          backdropStrip(duskLand, 0, 0, B.width, above, dw, above * k);
-          backdropStrip(duskLand, 0, above, B.width, below, dw, H - HORIZON);
+          backdropStrip(duskLand, 0, 0, B.width, above, dw, landH);
+          backdropStrip(duskLand, 0, above, B.width, below, dw, H - GROUND_Y);
         }
         if (!backdropLayer) {
           drawBackdrop(0, 0, false);
@@ -3188,7 +3269,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       const airK = game.air > 0 && game.airKind === "big" && game.airTotal > 0 ? Math.sin(Math.PI * Math.min(1, Math.max(0, 1 - game.air / game.airTotal))) : 0;
       if (k < 0.3 && feel < 0.05 && airK < 0.05) return;
       const amount = Math.min(1.15, (k < 0.3 ? 0 : (k - 0.3) / 0.7) + 0.85 * feel + FEEL.airLines * airK);
-      const n = Math.min(streaks.length, Math.round(14 + 48 * amount)), cx = W / 2, cy = HORIZON + 40, reach = Math.hypot(W, H) * 0.66;
+      const n = Math.min(streaks.length, Math.round(14 + 48 * amount)), cx = W / 2, cy = GROUND_Y + 40, reach = Math.hypot(W, H) * 0.66;
       ctx.save();
       // 横幅の中央56%には速度線を描かず、先の岩と着地点を見せる。
       const clipLeft = W * 0.22, clipRight = W * 0.78;

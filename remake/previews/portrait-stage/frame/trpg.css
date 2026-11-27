@@ -375,3 +375,103 @@ html:root[data-density="phone"][data-layout="portrait"] { --phone-text: 24px; --
 /* 判定の結果: サイコロの目と「＋4」はすぐ上に並んでいるので、「13 ＋ 3 ＋ 補正4 ＝」の式は出さない（合計と出来を大きく） */
 #stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-equation { display: none; }
 #stage .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total strong { font-size: 40px; }
+
+/* ───────── 背景を画面いっぱいに（VPG16・2026-11-27 オーナー「Trpgこそ世界観に入り込みたいから基本こんな感じでしっかり背景写したい　下の操作のバーとかで埋めすぎず」） ─────────
+   卓の場面は、部屋の絵を上から下まで画面いっぱいの背景にし（横長の絵の真ん中を縦に切り出す）、操作は絵の上に重ねる最小限の帯にする。
+     会話: 下に半透明の台詞の窓（名前と「次へ」の1段＋台詞2〜3行だけ）。その上に4人の顔の列（話している人が光る）。話している人の姿は小さめに左へ。上の帯は細く半透明に。
+     宣言・聞き込み: 幕で塗らず、下だけ薄く暗くして札を下に詰める（札は半透明で小さめ）。判定: 演出はそのまま、幕を薄くして絵が透ける。
+     調べる: 印の位置が絵とずれないよう絵は横長のまま（幅いっぱい）出し、その外側は同じ絵をぼかして画面いっぱいに敷く。場所は番号と短い名前の小さな札（3つずつ2段）。
+   表紙・本棚はこれまでどおり。字は 22px（実寸 13px）以上、押す所は 72px（実寸 44px）以上のまま。 */
+#stage .trpg-root.trpg-cinematic, #stage .trpg-root.trpg-cinematic.trpg-idle:has(.trpg-selection) { --pic-h: var(--stage-h, 1385px); --dock-h: 228px; --seat-h: 76px; }
+#stage .trpg-root.trpg-cinematic .trpg-room { inset: 0; height: auto; }
+/* 絵を暗くしすぎない（本編は卓の会話で 0.5 まで落とす。縦は絵が主役なので少しだけ） */
+#stage .trpg-root.trpg-cinematic.trpg-talking[data-layer="table"]:not([data-phase="cover"]) .trpg-room > img { filter: brightness(.8) saturate(.85); }
+/* 上の帯と下の台詞の所だけ、絵の端を薄く暗く（字を読むための下地） */
+#stage .trpg-root.trpg-cinematic .trpg-room::after { background: linear-gradient(180deg, #071317b0 0, #07131700 10%, transparent 58%, #07131766 80%, #071317b8 100%); }
+
+/* 上の帯: 木のレールをやめ、絵の上の縁を薄く暗くした所に道具を並べる */
+#stage .trpg-root.trpg-cinematic .trpg-header { top: 4px; height: 80px; }
+#stage .trpg-root.trpg-cinematic .trpg-header::before { left: -10px; right: -10px; top: -4px; height: 104px; transform: none; border-radius: 0; box-shadow: none;
+  background: linear-gradient(180deg, #050c0dd0 0%, #050c0d8c 55%, #050c0d00 100%); }
+#stage .trpg-root.trpg-cinematic .trpg-tools .trpg-button { width: 78px; min-width: 78px; height: 78px; min-height: 78px; }
+#stage .trpg-root.trpg-cinematic :is(.trpg-teamwork, .trpg-heat) { top: 88px; background: #050c0d8c; }
+
+/* 4人の顔の列: 台詞の窓のすぐ上に、絵に重ねて（半透明の丸い札。話している人は金に光る） */
+#stage .trpg-root.trpg-cinematic .trpg-table { top: auto; bottom: calc(var(--dock-h) - 6px); left: 10px; right: 10px; height: var(--seat-h); padding: 0; gap: 8px; border: 0; border-radius: 0; background: none; box-shadow: none; align-items: center; }
+#stage .trpg-root.trpg-cinematic .trpg-table-person { height: 64px; padding: 0 10px 0 4px; gap: 8px; justify-content: flex-start; border: 2px solid #d2ae6640; border-radius: 999px; background: #050f11a6; box-shadow: 0 3px 10px #0007; transition: background .2s ease, box-shadow .2s ease, border-color .2s ease; }
+#stage .trpg-root.trpg-cinematic .trpg-table-person .trpg-seat-face { flex: 0 0 54px; width: 54px; height: 54px; }
+#stage .trpg-root.trpg-cinematic .trpg-table-person .trpg-seat-name { color: #f3ead6; text-shadow: 0 1px 3px #000; }
+#stage .trpg-root.trpg-cinematic .trpg-table-person.active { border-color: #ffe3a0; background: linear-gradient(180deg, #6b4c14e0, #3b2a0be6); box-shadow: 0 0 0 3px #f0c45a59, 0 0 20px #f0c45aa6; }
+#stage .trpg-root.trpg-cinematic .trpg-table-person.active .trpg-seat-name { color: #fff6d8; }
+
+/* 台詞の窓: 箱で塗らず、絵の裾を暗く溶かした帯（本編の TMX07 と同じ考え方）。1段目に名前と「≫」「次へ」、2段目から台詞 */
+#stage .trpg-root.trpg-cinematic .trpg-dock { top: auto; bottom: 0; height: var(--dock-h); grid-template-columns: minmax(0, 1fr) auto auto; grid-template-rows: 76px minmax(0, 1fr); gap: 2px 10px; padding: 18px 14px 12px 20px;
+  border-top: 0; box-shadow: none; background: linear-gradient(180deg, #04101100 0%, #0410119c 14%, #040e0fd4 46%, #030b0cec 100%); }
+#stage .trpg-root.trpg-cinematic .trpg-dock .trpg-speech { display: contents; }
+#stage .trpg-root.trpg-cinematic .trpg-dock .trpg-speaker-label { grid-column: 1; grid-row: 1; align-self: center; min-width: 0; margin: 0; }
+#stage .trpg-root.trpg-cinematic .trpg-dock .trpg-speech p { grid-column: 1 / -1; grid-row: 2; align-self: start; line-height: 1.5; }
+#stage .trpg-root.trpg-cinematic .trpg-dock .trpg-skip { grid-column: 2; grid-row: 1; width: 76px; height: 76px; align-self: center; }
+#stage .trpg-root.trpg-cinematic .trpg-dock .trpg-next { grid-column: 3; grid-row: 1; min-width: 168px; height: 76px; align-self: center; margin: 0; background: #0b1d1fb3; }
+/* 話している人の姿: 顔の列の上の左に、小さめに */
+#stage .trpg-root.trpg-cinematic .trpg-dock .trpg-speaker-art { left: 10px; bottom: calc(100% + var(--seat-h) - 2px); }
+#stage .trpg-root.trpg-cinematic .trpg-dock:is([data-kind="pc"], [data-kind="npc"]) .trpg-speaker-art { width: 210px; height: 287px; }
+#stage .trpg-root.trpg-cinematic .trpg-dock[data-kind="pc"] .trpg-speaker-art img { width: 470px; }
+#stage .trpg-root.trpg-cinematic .trpg-dock[data-kind="npc"] .trpg-speaker-art img { width: 287px; }
+
+/* 場面の一言: 上の帯の下に、絵に重ねた細い札 */
+#stage .trpg-root.trpg-cinematic .trpg-stage-cue, #stage .trpg-root.trpg-cinematic[data-phase="explore"] .trpg-stage-cue { top: 138px; padding: 6px 16px; box-sizing: border-box; border-radius: 16px; background: #050f11a6; }
+/* 進むボタン・メモ・相談: いちばん下に、低めに */
+#stage .trpg-root.trpg-cinematic .trpg-stage-action { top: calc(var(--zone-b) - 94px); bottom: auto; }
+#stage .trpg-root.trpg-cinematic .trpg-stage-action .trpg-button { min-height: 80px; }
+#stage .trpg-root.trpg-cinematic .trpg-stage-pockets { top: calc(var(--zone-b) - 94px); bottom: auto; }
+
+/* 札を選ぶ場面（聞き込み・持ち物など）: 札は下に詰め、絵は上に見せる。下だけ薄く暗く */
+#stage .trpg-root.trpg-cinematic .trpg-selection { top: auto; bottom: 108px; height: auto; max-height: calc(var(--stage-h, 1385px) - 250px); justify-content: flex-end; gap: 8px; padding: 0 12px; overflow: visible; }
+#stage .trpg-root.trpg-cinematic .trpg-selection::before { inset: -90px -12px -108px; background: linear-gradient(180deg, #04101100 0%, #04101170 30%, #040e0fc4 100%); }
+#stage .trpg-root.trpg-cinematic .trpg-selection-title { padding: 6px 14px; border-radius: 14px; background: #050f1199; }
+#stage .trpg-root.trpg-cinematic .trpg-topic-list { gap: 8px; }
+#stage .trpg-root.trpg-cinematic .trpg-topic { min-height: 76px; padding: 6px 18px; border-color: #d2ae6659; background: linear-gradient(170deg, #12302fbf, #0b2125cc); box-shadow: 0 4px 14px #0006; text-shadow: 0 1px 3px #000; }
+#stage .trpg-root.trpg-cinematic .trpg-topic strong { font-size: 25px; }
+#stage .trpg-root.trpg-cinematic .trpg-choice-tabs button { min-height: 72px; }
+
+/* 行動の宣言: 幕で塗らず、下だけ薄く暗く。札（生成りの紙）は下に3枚、1枚を低く（顔｜誰・案｜能力と見込み） */
+#stage .trpg-root.trpg-cinematic .trpg-overlay:has(.trpg-declare-stage) { align-items: end; align-content: end; background: linear-gradient(180deg, #081b2400 0%, #081b2414 30%, #081b2499 62%, #061418d9 100%); backdrop-filter: none; -webkit-backdrop-filter: none; padding: 16px 12px 14px; }
+#stage .trpg-root.trpg-cinematic .trpg-modal.trpg-declare-stage { align-self: end; padding: 0; }
+#stage .trpg-root.trpg-cinematic .trpg-declare-stage > h2 { margin: 0 0 4px; text-shadow: 0 2px 6px #000, 0 0 14px #000a; }
+#stage .trpg-root.trpg-cinematic .trpg-declare-stage .trpg-declare-prompt { text-shadow: 0 1px 4px #000; }
+#stage .trpg-root.trpg-cinematic .trpg-approach-list { gap: 10px; }
+#stage .trpg-root.trpg-cinematic .trpg-approach { grid-template-columns: 76px minmax(0, 1fr) auto; grid-template-areas: "face who who" "face what what" "face stat odds"; grid-template-rows: auto auto auto; gap: 0 14px; padding: 8px 14px 14px; overflow: hidden;
+  background: linear-gradient(168deg, #fdf8eaeb 0%, #f1e6cbeb 62%, #e6d7b4eb 100%); }
+#stage .trpg-root.trpg-cinematic .trpg-approach-face { width: 76px; height: 76px; align-self: center; }
+#stage .trpg-root.trpg-cinematic .trpg-approach-face[data-costume="true"] { width: 76px; height: 90px; }
+#stage .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-copy > small { grid-area: who; line-height: 1.3; }
+#stage .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-copy > strong { grid-area: what; font-size: 25px; line-height: 1.3; }
+#stage .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta { display: contents; }
+#stage .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta > b[data-stat] { grid-area: stat; justify-self: start; margin-top: 6px; }
+#stage .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta > small { grid-area: odds; align-self: center; margin-top: 6px; }
+#stage .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta > small + small { grid-area: auto; grid-column: 1 / -1; }
+/* 見込みの帯は、札の下の縁いっぱいに（金＝うまくいく・緑＝ひと手間） */
+#stage .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta > .trpg-odds-bar { position: absolute; left: 0; right: 0; bottom: 0; width: auto; min-width: 0; height: 9px; margin: 0; border-radius: 0; }
+#stage .trpg-root.trpg-cinematic .trpg-declare-stage .trpg-modal-actions { margin-top: 10px; }
+#stage .trpg-root.trpg-cinematic .trpg-declare-stage .trpg-modal-actions .trpg-button { min-height: 72px; background: #0b1d1fb3; }
+
+/* 判定: サイコロの演出と結果の札はそのまま。後ろの幕を薄くして、部屋の絵が透けるように */
+#stage .trpg-root.trpg-cinematic .trpg-overlay:has(:is(.trpg-roll-stage, .trpg-hypothesis-stage)) { background: #081b2452; backdrop-filter: none; -webkit-backdrop-filter: none; }
+#stage .trpg-root .trpg-roll-show .trpg-rs-veil { background: radial-gradient(ellipse 60% 46% at 50% 46%, #2c8f8673 0%, #0d4a4c80 42%, #03121ab8 100%), repeating-linear-gradient(115deg, #ffffff06 0 2px, transparent 2px 9px); }
+
+/* 調べる: 横長の絵を幅いっぱいに（印の位置は本編のまま）。その外は同じ絵をぼかして画面いっぱいに敷く（絵は trpg.mjs が --scene-art に入れる） */
+/* 場面の一言・相談・メモは絵（.trpg-room）の中に置かれた部品なので、位置は絵の上の端から測る（--zone-b＝絵の上の端から画面の下まで） */
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] { --ex-top: max(200px, calc((var(--stage-h, 1385px) - 470px) / 2)); --zone-b: calc(var(--stage-h, 1385px) - var(--ex-top)); }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"]::before { inset: -30px; z-index: 0; background: var(--scene-art, none) center / cover no-repeat, #071416; filter: blur(8px) brightness(.6) saturate(.9); }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room { top: var(--ex-top); height: 360px; gap: 8px; padding: 0 12px; box-shadow: 0 0 0 2px #d2ae6699, 0 18px 40px #000c; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room::after { background: linear-gradient(180deg, #0713174d, transparent 24%); }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room::before { height: 368px; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-stage-cue { top: -62px; left: 50%; right: auto; width: max-content; max-width: calc(100% - 28px); transform: translateX(-50%); }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot { flex: 0 0 calc((100% - 16px) / 3); height: 76px; min-height: 76px; gap: 8px; padding: 0 8px; border-radius: 12px; background: linear-gradient(180deg, #12302fd9, #0b2125e0); }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot > i { width: 42px; height: 42px; font-size: 24px; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot > span { font-size: 22px; line-height: 1.15; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot.checked { background: linear-gradient(180deg, #12292bcc, #0b1c1ed9); }
+/* 絵の上の印: 押せる大きさ（実寸 44px）に。印を押しても調べられる */
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive .trpg-spot::before { width: 72px; height: 72px; margin: -36px 0 0 -36px; font-size: 32px; border-width: 3px; box-shadow: 0 0 0 6px #efd5a440, 0 6px 16px #000c; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] :is(.trpg-stage-companions, .trpg-stage-pockets, .trpg-stage-action) { top: calc(var(--zone-b) - 94px); bottom: auto; }
+#stage .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-stage-companions button { min-height: 80px; background: #0b2125cc; }

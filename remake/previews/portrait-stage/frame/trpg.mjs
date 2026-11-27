@@ -103,8 +103,17 @@ function syncStep() {
   track.replaceChildren(name, pips);
   node.classList.add("p-step-source");
 }
+// 調べる場面で、横長の絵の外側に同じ絵をぼかして敷く（trpg.css の --scene-art。VPG16）。今の部屋の絵を写すだけで、本編の DOM には触れない。
+function syncSceneArt() {
+  const img = host.querySelector(".trpg-room > img");
+  const src = img?.currentSrc || img?.src || "";
+  if (host.dataset.sceneArt === src) return;
+  host.dataset.sceneArt = src;
+  if (src) host.style.setProperty("--scene-art", `url("${src.replace(/"/g, "%22")}")`);
+  else host.style.removeProperty("--scene-art");
+}
 let stepQueued = false;
-new MutationObserver(() => { if (!stepQueued) { stepQueued = true; requestAnimationFrame(() => { stepQueued = false; syncStep(); }); } })
+new MutationObserver(() => { if (!stepQueued) { stepQueued = true; requestAnimationFrame(() => { stepQueued = false; syncStep(); syncSceneArt(); }); } })
   .observe(host, { childList: true, subtree: true, characterData: true });
 
 window.addEventListener("pagehide", () => controller?.destroy());

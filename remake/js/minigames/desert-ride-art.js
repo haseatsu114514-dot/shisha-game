@@ -8,7 +8,8 @@ export const DESERT_ART = Object.freeze({
   // 遠景（#3713 の坂の絵）。空と陸を分け、沈む太陽を陸の後ろに描く。horizon は斜面の縁（lip）の行、duneTop は稜線のいちばん上
   sky: Object.freeze({ file: "ui/desert_ride/backdrop_day_sky.webp", size: Object.freeze([1800, 416]) }),
   land: Object.freeze({ file: "ui/desert_ride/backdrop_day_land.webp", size: Object.freeze([1800, 500]), top: 220 }),
-  backdrop: Object.freeze({ width: 1800, height: 720, horizon: 405, duneTop: 232 }),
+  // skyLine は空と遠くの稜線の境の行（縦の下り坂で目の高さに合わせる。DOWNHILL）
+  backdrop: Object.freeze({ width: 1800, height: 720, horizon: 405, duneTop: 232, skyLine: 250 }),
   // 同じ構図の夕方。ゴールへ近づくほど昼の上に重ねる。陸の寸法・基準点は昼と同じ
   duskSky: Object.freeze({ file: "ui/desert_ride/backdrop_dusk_sky.webp", size: Object.freeze([1800, 416]) }),
   duskLand: Object.freeze({ file: "ui/desert_ride/backdrop_dusk_land.webp", size: Object.freeze([1800, 500]), top: 220 }),
