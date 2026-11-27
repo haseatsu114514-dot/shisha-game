@@ -229,10 +229,11 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .bowl { position: absolute; left: 46%; top: 18%; height: 56%; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 2rem 2.4rem #000c); }
 .foil { position: absolute; left: 46%; top: 17%; width: 27.6rem; aspect-ratio: 1; transform: translateX(-50%); filter: drop-shadow(0 1.6rem 2.4rem #000c); }
 .foil img { width: 100%; height: 100%; } .foil-marks { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.foil-marks .todo { fill: #0b08128c; }
-.foil-marks .target rect { fill: none; stroke: #fff; stroke-width: 1.6; filter: drop-shadow(0 0 2px #ffcf6b); }
-.foil-marks .hole { fill: #0b0812; stroke: #00000080; stroke-width: 0.8; } .foil-marks .hole.good { stroke: #ffe2a6; stroke-width: 1.2; }
-.foil-marks .tip { fill: none; stroke: #5ee6ff; stroke-width: 2.2; filter: drop-shadow(0 0 3px #5ee6ff); }
+.foil-marks .todo { fill: #fff8e8; stroke: #0b081266; stroke-width: 0.5; opacity: 0.85; }
+.foil-marks .target rect { fill: none; stroke: #fff; stroke-width: 1.3; filter: drop-shadow(0 0 2px #ffcf6b); }
+.foil-marks .target .ideal { fill: #0b081233; stroke: #ffe2a6; stroke-width: 0.9; stroke-dasharray: 1.6 1.2; }
+.foil-marks .hole { fill: #0b0812; stroke: #fbf4e0; stroke-width: 0.7; } .foil-marks .hole.good { stroke: #ffe2a6; stroke-width: 1; filter: drop-shadow(0 0 2px #ffcf6b); }
+.foil-marks .tip { fill: none; stroke: #5ee6ff; stroke-width: 1.6; filter: drop-shadow(0 0 3px #5ee6ff); }
 .pic.craft-pull > .bg { filter: brightness(0.85); transform: none; }
 .pic.craft-holes { -webkit-mask-image: linear-gradient(180deg, #000 0, #000 86%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 86%, transparent 100%); }
 .pic.craft-holes .foil { top: auto; bottom: 6.4rem; }
@@ -330,8 +331,10 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 /* 穴あけ: 輪の点＝開けた穴、真ん中の丸＝押している間の大きさ */
 .dial svg { transform: none; }
 .pip { fill: #ffffff33; } .pip.done { fill: #fff; } .pip.good { fill: #ffe2a6; filter: drop-shadow(0 0 2px #ffcf6b); }
-.want { fill: none; stroke: #ffffff38; stroke-width: 7.4; } .grow { fill: var(--acc); opacity: 0.92; }
-.last { fill: #fff; opacity: 0.9; } .last.good { fill: #ffe2a6; filter: drop-shadow(0 0 4px #ffcf6b); } .last.over { fill: #ff8a7e; } .last.under { fill: #ffffffa6; }
+.want { fill: none; stroke: #ffe2a6; stroke-width: 1.6; stroke-dasharray: 3.2 2.4; opacity: 0.85; } .grow { fill: var(--acc); opacity: 0.92; }
+.last { fill: #0b0812; stroke: #fbf4e0; stroke-width: 1.4; opacity: 0.75; } .last.good { stroke: #ffe2a6; filter: drop-shadow(0 0 3px #ffcf6b); } .last.over { stroke: #ff8a7e; } .last.under { stroke: #ffffffa6; }
+.lens-grow { fill: #0b0812; stroke: #fff; stroke-width: 1.4; } .lens-grow.good { stroke: #ffe2a6; filter: drop-shadow(0 0 4px #ffcf6b); } .lens-grow.over { stroke: #ff6b5e; }
+.dial.pressing .last { opacity: 0.25; }
 .foil-marks .tip.ok { stroke: #ffe2a6; filter: drop-shadow(0 0 4px #ffcf6b); }
 .foil-marks .grow-hole { fill: #0b0812; stroke: #fff; stroke-width: 0.8; } .foil-marks .grow-hole.good { stroke: #ffe2a6; stroke-width: 1.3; filter: drop-shadow(0 0 3px #ffcf6b); } .foil-marks .grow-hole.over { stroke: #ff6b5e; stroke-width: 1.3; }
 
@@ -343,6 +346,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .pr-good { fill: none; stroke: #ffe2a6; stroke-width: 3.2; opacity: 0.55; transition: opacity 0.2s; }
 .pr-fill { fill: none; stroke: #fff; stroke-width: 4.6; stroke-linecap: round; }
 .btn-a.hold.pressing .pr-good { opacity: 1; filter: drop-shadow(0 0 2px #ffcf6b); }
+.btn-a.hold:not(.pressing) .pr-fill { opacity: 0; }
 .btn-a.hold[data-zone="good"] { border-color: #ffe2a6; box-shadow: 0 0 0 0.8rem #ffe2a62e, 0 0 4rem #ffcf6b, 0 1.4rem 2.6rem #000b, inset 0 0.25rem 0.5rem #ffffff80; }
 .btn-a.hold[data-zone="good"] .pr-fill { stroke: #ffe2a6; filter: drop-shadow(0 0 3px #ffcf6b); } .btn-a.hold[data-zone="good"] .t { color: #fff3d6; }
 .btn-a.hold[data-zone="over"] { border-color: #ff6b5e; } .btn-a.hold[data-zone="over"] .pr-fill { stroke: #ff6b5e; } .btn-a.hold[data-zone="over"] .t { color: #ffd2cc; }

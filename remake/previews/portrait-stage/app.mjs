@@ -99,10 +99,16 @@ const COACH = {
   pull: "手元を見ているぞ。落ち着いていけ",
 };
 const HOLE_COUNT = 10;
-// 穴あけ: 押している長さで穴の大きさが決まる。HOLD_FULL で最大、GOOD_PRESS の間がちょうどいい大きさ
-const HOLD_FULL = 900;
-const GOOD_PRESS = [0.3, 0.62];
-const pressZone = (fill) => fill <= 0 ? "" : fill < GOOD_PRESS[0] ? "under" : fill <= GOOD_PRESS[1] ? "good" : "over";
+// 穴あけ: 押していた長さで穴の大きさが決まる。本編（remake/js/craft/holes_logic.js の PRESS・HOLE_SIZES）と同じ4段階:
+// 0.12秒未満＝浅い、0.5秒まで＝標準（ちょうどいい）、0.85秒まで＝少し大きい、0.85秒で刺し抜ける＝大きい
+const HOLD_FULL = 850;
+const GOOD_PRESS = [120 / HOLD_FULL, 500 / HOLD_FULL];
+const pressZone = (fill) => fill <= 0 ? "" : fill < GOOD_PRESS[0] ? "under" : fill < GOOD_PRESS[1] ? "good" : "over";
+const holeDepth = (fill) => fill < GOOD_PRESS[0] ? "shallow" : fill < GOOD_PRESS[1] ? "small" : fill < 1 ? "wide" : "large";
+// 箔の上の穴の半径（箔の幅を200とした値）。標準は箔の幅の約3%。比は本編の HOLE_SIZES（0.2・1・1.35・1.7）に近づけた
+const HOLE_R = { shallow: 1.3, small: 3, wide: 4, large: 5 };
+// 左の輪（拡大した見本）での半径: 点線の丸がちょうどいい大きさ
+const LENS_R = { shallow: 5, small: 11, wide: 15, large: 19 };
 // 熱ゲージ: 本編（remake/js/craft/thermometer.js・temperature-model.js）と同じ色の意味。
 // 管は一本のグラデーション（クリーム→黄→適温のミント緑→橙→赤→深紅）。緑が適温の目安、真ん中の虹が合わせやすい範囲、一番上が焦げる帯（炎）
 const TEMP_ZONE = [0.42, 0.66];
@@ -644,14 +650,14 @@ class Phone {
         return `<circle class="pip${hole ? (hole.good ? " good" : " done") : ""}" cx="${(41 * Math.cos(a)).toFixed(1)}" cy="${(41 * Math.sin(a)).toFixed(1)}" r="3.4"/>`;
       }).join("");
       const last = st.holes.at(-1);
-      const lastDot = last ? `<circle class="last ${pressZone(last.size)}" r="${(4 + last.size * 24).toFixed(1)}"/>` : "";
+      const lastDot = last ? `<circle class="last ${pressZone(last.size)}" r="${LENS_R[holeDepth(last.size)]}"/>` : "";
       // 「刺す」ボタンの縁の輪: 押している間だけ伸びる。金の区間がちょうどいい長さ、越えると赤
       const ring = `<svg class="press" viewBox="0 0 100 100" aria-hidden="true">
           <circle class="pr-track" cx="50" cy="50" r="46" pathLength="100"/>
           <circle class="pr-good" cx="50" cy="50" r="46" pathLength="100" stroke-dasharray="${((GOOD_PRESS[1] - GOOD_PRESS[0]) * 100).toFixed(1)} 100" stroke-dashoffset="${(-GOOD_PRESS[0] * 100).toFixed(1)}"/>
           <circle class="pr-fill" cx="50" cy="50" r="46" pathLength="100" stroke-dasharray="0 100"/></svg>`;
       return `${this.auxHtml("craft", CRAFT_CHIPS)}
-        <div class="dial"><svg viewBox="-50 -50 100 100">${pips}<circle class="want" r="15.5"/>${lastDot}</svg></div>
+        <div class="dial"><svg viewBox="-50 -50 100 100">${pips}${lastDot}<circle class="want" r="${LENS_R.small}"/><circle class="lens-grow" r="0"/></svg></div>
         ${aHtml("刺す", { cls: "hold", extra: ring })}`;
     }
     // 葉（フレーバーの持ち）は上の段の真ん中、吸った回数は「吸う」の中の点。ボタンに重ねない
@@ -671,11 +677,11 @@ class Phone {
     const marks = Array.from({ length: HOLE_COUNT }, (_, i) => {
       const [x, y] = at(i * step);
       if (i < next) return "";
-      return i === next ? `<g class="target" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(45)"><rect x="-6.5" y="-6.5" width="13" height="13"/><rect x="-3.6" y="-3.6" width="7.2" height="7.2"/></g>`
-        : `<circle class="todo" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.2"/>`;
+      return i === next ? `<g class="target" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><rect x="-6.2" y="-6.2" width="12.4" height="12.4" transform="rotate(45)"/><circle class="ideal" r="${HOLE_R.small}"/></g>`
+        : `<circle class="todo" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.3"/>`;
     }).join("");
     const holes = this.st.holes.map((hole) => { const [x, y] = at(hole.deg); return `<circle class="hole${hole.good ? " good" : ""}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${hole.r.toFixed(1)}"/>`; }).join("");
-    svg.innerHTML = `${holes}${marks}<circle class="grow-hole" r="0"/><circle class="tip" r="7"/>`;
+    svg.innerHTML = `${holes}${marks}<circle class="grow-hole" r="0"/><circle class="tip" r="5.2"/>`;
   }
 
   /* ── 入力 ── */
@@ -847,7 +853,7 @@ class Phone {
     const target = st.holes.length * 360 / HOLE_COUNT;
     const size = Math.min(1, heldMs / HOLD_FULL), zone = pressZone(size);
     const good = Math.abs((this.tipDeg ?? target) - target) < 5 && zone === "good";
-    st.holes.push({ deg: this.tipDeg ?? target, r: 2.2 + size * 4.2, size, good });
+    st.holes.push({ deg: this.tipDeg ?? target, r: HOLE_R[holeDepth(size)], size, good });
     this.patch(); this.drawHoles();
     // 結果を「刺す」に返す: ちょうどいい大きさなら金の光、小さすぎ・大きすぎは小さく揺れる
     const btn = this.el.querySelector(".btn-a.hold");
@@ -911,12 +917,20 @@ class Phone {
         if (!this.holdAt) btn.classList.remove("pressing");
         btn.querySelector(".pr-fill")?.setAttribute("stroke-dasharray", `${(fill * 100).toFixed(1)} 100`);
       }
+      // 穴は押した長さに沿って育つ（浅い→標準→少し大きい→大きい）。目印の点線の丸を満たした所がちょうどいい
+      const grown = (table) => fill <= 0 ? 0 : fill < GOOD_PRESS[0] ? table.shallow * fill / GOOD_PRESS[0]
+        : fill < GOOD_PRESS[1] ? table.shallow + (table.small - table.shallow) * (fill - GOOD_PRESS[0]) / (GOOD_PRESS[1] - GOOD_PRESS[0])
+        : table.small + (table.large - table.small) * (fill - GOOD_PRESS[1]) / (1 - GOOD_PRESS[1]);
       const grow = el.querySelector(".foil-marks .grow-hole");
       if (grow && tip) {
         grow.setAttribute("cx", tip.getAttribute("cx")); grow.setAttribute("cy", tip.getAttribute("cy"));
-        grow.setAttribute("r", fill ? (2.2 + fill * 4.2).toFixed(2) : "0");
+        grow.setAttribute("r", grown(HOLE_R).toFixed(2));
         grow.setAttribute("class", `grow-hole ${zone}`);
       }
+      const lens = el.querySelector(".dial .lens-grow");
+      if (lens) { lens.setAttribute("r", grown(LENS_R).toFixed(2)); lens.setAttribute("class", `lens-grow ${zone}`); }
+      el.querySelector(".dial")?.classList.toggle("pressing", !!this.holdAt);
+      if (this.holdAt && now - this.holdAt >= HOLD_FULL) this.endHold(); // 本編と同じく、押し続けると刺し抜ける
     }
     if ((this.talk || st.scene === "cutin") && this.typedAt && now >= this.typedAt) { this.typedAt = 0; el.classList.remove("typing"); }
     requestAnimationFrame(this.tick);
