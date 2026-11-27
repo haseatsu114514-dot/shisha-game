@@ -60,9 +60,10 @@ const CAM = { depth: 1.5, height: 2.0, back: 4.5, meterPerLane: 1.6 }; // 疑似
  * 下り坂では、目の高さ（eye: 空と遠くの稜線の境）より下に路面の消失線（ground）を置く。路面は目の高さより下へ続き、
  * その間に坂の下の谷（遠景の絵の谷の部分。縦に広げる）が見える＝見下ろしながら坂を下っている見え方。
  * height は斜面から測ったカメラの高さ（m。横の 2m より高いほど見下ろす）。valleyWidth は谷の絵（DESERT_VALLEY_ART）を描く幅（px。縦横同じ倍率）。
+ * valleyHaze は谷にかける空気の濃さ [目の高さ, 斜面の端]（遠いほど白く霞み、低く遠い所にあると分かる）。
  * posts はコースの両端の杭とロープ（every m ごと、reach m 先まで）。坂の下へ細く集まる2本の線で、コースの向きと奥行きを見せる。
  */
-const DOWNHILL = Object.freeze({ eye: 140, ground: 290, height: 2.6, valleyWidth: 700, posts: Object.freeze({ every: 6, reach: 170, height: 0.85 }) });
+const DOWNHILL = Object.freeze({ eye: 190, ground: 300, height: 2.6, valleyWidth: 520, valleyHaze: Object.freeze([0.5, 0.12]), posts: Object.freeze({ every: 6, reach: 170, height: 0.85 }) });
 const COUNTDOWN = 2.4;           // 本番のスタートの合図（3・2・1・GO）の秒数（その相手との最初の一本）
 /**
  * 手応え（演出）の数値（2026-11-13 オーナー「手応えレビューの内容を実装して、より面白く」）。規則（desert-ride-model.js）と違い凍結しない:
@@ -2099,6 +2100,13 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         }
       }
       g.globalAlpha = 1;
+      if (fit.valley) {
+        // 谷の空気: 稜線の足元（目の高さ）ほど白く、斜面の端へ薄く。谷が下の遠い所にあると分かる（見本の絵の霞んだ谷）
+        const air = mixColor([248, 234, 210], [255, 204, 166], dusk).slice(4, -1), [far, near] = DOWNHILL.valleyHaze;
+        const haze = g.createLinearGradient(0, EYE_Y - 8, 0, GROUND_Y);
+        haze.addColorStop(0, `rgba(${air},0)`); haze.addColorStop(0.06, `rgba(${air},${far})`); haze.addColorStop(1, `rgba(${air},${near})`);
+        g.fillStyle = haze; g.fillRect(-BACKDROP_MARGIN, EYE_Y - 8, W + BACKDROP_MARGIN * 2, GROUND_Y - EYE_Y + 8);
+      }
       if (edge > 1) drawSlopeEdge(g, edge, dusk);
       }
       if (present) ctx.drawImage(backdropLayer, -BACKDROP_MARGIN, 0);
