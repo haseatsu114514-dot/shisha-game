@@ -933,7 +933,7 @@
 /* The seat rail marks who is speaking. While the player chooses, it steps aside so cards and the main button stay clear. */
 .trpg-root.trpg-cinematic.trpg-idle:not([data-phase="cover"]) .trpg-table { visibility: hidden; }
 
-/* ===== 道具を使う手ざわり（2026-11-02）: ダイストレイに投げ込み、跳ねて止まる。切り札は場に置き、手がかりはメモへ。 ===== */
+/* ===== 道具を使う手ざわり（2026-11-02）: ダイストレイに投げ込み、跳ねて止まる。スキルは場に置き、手がかりはメモへ。 ===== */
 /* ダイストレイ: 木の縁と、目の詰んだフェルト。 */
 .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene {
   width: min(560px, 100%); min-height: 168px; margin: 8px auto 6px; border-radius: 16px; overflow: visible;
@@ -1016,7 +1016,7 @@
 @keyframes trpg-stamp { 0% { opacity: 0; transform: scale(1.6) rotate(-8deg); } 100% { opacity: 1; transform: none; } }
 .trpg-root.trpg-cinematic[data-paused="true"] :is(.trpg-die-body, .trpg-d20-value, .trpg-reroll-stamp, .trpg-teamwork i, .trpg-aid, .trpg-sheet, .trpg-note-card) { animation-play-state: paused !important; }
 
-/* 切り札を借りると、仲間のカードを場に置く。置いたカードには「場に出した」の印。 */
+/* 仲間のスキルを借りると、そのカードを場に置く。置いたカードには「場に出した」の印。 */
 .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid {
   position: relative; border: 1px solid #c9b48a; border-radius: 8px; box-shadow: 0 3px 0 #a98f6266, 0 6px 12px #0003;
   transition: transform .22s cubic-bezier(.2,1.3,.4,1), box-shadow .22s;
@@ -1026,7 +1026,7 @@
   content: "場に出した"; position: absolute; right: -10px; top: -12px; padding: 2px 8px; border: 2px solid #a33f44; border-radius: 4px;
   color: #a33f44; background: #fff8f0; font-size: 12px; font-weight: 700; transform: rotate(8deg); pointer-events: none;
 }
-/* 振り直しのボタンは、切り札のカード。 */
+/* 振り直しのボタンは、スキルのカード。 */
 .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice { border-radius: 8px; box-shadow: 0 3px 0 #a98f6255, 0 5px 10px #0002; transition: transform .18s; }
 .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice:hover:not(:disabled) { transform: translateY(-4px); }
 /* 上の連携札は小さなカード。使うと裏返って抜け、戻ると表になって入る。 */

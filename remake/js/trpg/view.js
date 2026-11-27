@@ -1082,11 +1082,11 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
    * 評価の音と光は、劇場の中で評価が出た瞬間（飛ばした時は閉じる時）に一度だけ。演出しない環境（動きを減らす設定・簡易DOM）では null。
    */
   /**
-   * スキル（助力・振り直し）を、卓の窓ではなくダイス劇場の中で選ばせるか（縦の試作・VPG29）。
-   * 縦の試作ページが html[data-trpg-skills-in-show="true"] を立てた時だけ。劇場を出せない時（動きを減らす設定）は、今までどおり窓で選ぶ。
+   * スキル（助力・振り直し）を、卓の窓ではなくダイス劇場の中で選ばせるか（VPG29。2026-11-27 オーナー決定で横の本編も既定でこの形）。
+   * 劇場を出せない時（動きを減らす設定・単体試験の簡易DOM）は、今までどおり窓で選ぶ。
    */
   function skillsInShow() {
-    return typeof document !== "undefined" && document.documentElement?.dataset?.trpgSkillsInShow === "true" && rollShowReady(root);
+    return rollShowReady(root);
   }
   function rollShow(result, { title, who = "", statName = "", thrown = null, labels = LABELS, skill = null, rerollHint = "", seamless = false, keepUp = false, onDone }) {
     if (!overlay) return null;
@@ -1097,7 +1097,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       total: result.total, goal: DICE.success, mixed: DICE.mixed, grade: result.grade, special: result.special || "",
       sound: kind => { if (!disposed) audio.play(kind); },
       skill, rerollHint, seamless, keepUp,
-      // 縦の試作（劇場の中でスキルを選ぶ時）は、補正の丸に何が足されたかも書く（VPG30）。横の本編は今までどおり
+      // 劇場の中でスキルを選ぶ時は、補正の丸に何が足されたかも書く（VPG30。「振り直す？」の式と同じ内訳）
       bonusParts: skillsInShow() ? resultBonusParts(result) : null,
       label: special ? SPECIALS[special] : labels[result.grade] + (result.grade === "success" && !labels[result.grade].endsWith("！") ? "！" : ""),
       sub: special === "critical" ? "20の目 · 必ず成功" : result.special === "double" ? SPECIALS.double : near ? "あと" + near + "……！" : "",
@@ -1120,7 +1120,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       result.momentum ? "勢い＋" + result.momentum * DICE.momentum : null,
       result.hypothesisBonus ? "見立て＋" + result.hypothesisBonus : null].filter(Boolean);
   }
-  /** 劇場の中で振り直しを選ばせる出目か（劇場の「振り直せる！」の知らせと同じ条件）。 */
+  /** 劇場の中で振り直しを選ばせる出目か（劇場の「振り直せる！」の知らせ・結果の窓の振り直しの札と同じ条件。成功・クリティカルには出さない）。 */
   function canRerollInShow(result) {
     const actor = session.rerollActor, state = session.snapshot();
     return result.special !== "critical" && result.grade !== "success" && !state.used[actor] && state.teamwork > 0 && !!cast[actor];
@@ -1232,8 +1232,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const check = scenario.checks[kind], state = session.snapshot();
     let pop;
     // Beginners can follow the "おすすめ" mark: the approach with the best odds (the first one on a tie).
-    // 仲間の切り札（助力・連携札1枚）をこの判定で使える時は、付けた時の見込みも札に並べる（2026-11-27 オーナー「補正で増えるパーセントも込みに」）。
-    // 数字は判定の窓で助力を付けた時と同じ checkForecast から取る。付けるかどうかは判定の窓で選ぶ（ここでは見せるだけ）。
+    // 仲間のスキル（助力・連携札1枚）をこの判定で使える時は、付けた時の見込みも札に並べる（2026-11-27 オーナー「補正で増えるパーセントも込みに」）。
+    // 数字は助力を付けた時と同じ checkForecast から取る。付けるかどうかは、振った時に劇場の中で選ぶ（劇場を出せない時は判定の窓。ここでは見せるだけ）。
     const aidReady = !!(check.helper && !state.used[check.helper] && state.teamwork > 0);
     const choices = approaches.map(approach => ({
       approach, forecast: checkForecast(scenario, state, kind, { approach: approach.id, sheets }),
@@ -1405,7 +1405,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       }, reduced ? 40 : 1050);
     }
     pop = modal(check.title, body, [button("卓に戻る", "trpg-check-back", () => pop.close()), roll], { skin: "trpg-roll-stage" });
-    // スマホでは判定の決まりの一文を題の行の右へ出す（本文の一文は隠す）。右の列で切り札の札を押し下げないため（TRF03）。
+    // スマホでは判定の決まりの一文を題の行の右へ出す（本文の一文は隠す）。右の列でスキルの札を押し下げないため（TRF03）。
     pop.box.querySelector("h2").append(el("small.trpg-roll-rule", { text: DICE.success + "以上で成功" }));
     pop.box.append(el("div.trpg-spare-kit", { "aria-hidden": "true", role: "presentation" }));
   }
@@ -1469,8 +1469,9 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (!shown) audio.play(result.special === "critical" || result.special === "fumble" ? result.special : result.grade);
     if (result.hypothesisBonus) receipts.append(el("p.trpg-ability-receipt.trpg-roll-insight", { text: "見立て的中 ＋" + result.hypothesisBonus }));
     if (session.rules.inspectionPressure) receipts.append(el("p.trpg-ability-receipt.trpg-roll-consequence", { text: RISK + (result.grade === "success" ? " ±0" : " ＋" + session.rules.checkPressure[result.grade]) }));
-    // クリティカルは最高の出目なので振り直しは出さない。使えない時も何も出さない（決まりは「？」に）。
-    if (result.special !== "critical" && !(shown && skillsInShow()) && !session.snapshot().used[session.rerollActor] && session.snapshot().teamwork > 0) {
+    // 振り直しは、成功しなかった出目（ひと手間・思わぬ出来事）にだけ出す。成功とクリティカルには出さない（2026-11-27 オーナー決定。劇場・縦と同じ）。
+    // 使えない時も何も出さない（決まりは「？」に）。劇場の中で選んだ時は、窓には出さない。
+    if (result.grade !== "success" && result.special !== "critical" && !(shown && skillsInShow()) && !session.snapshot().used[session.rerollActor] && session.snapshot().teamwork > 0) {
       preloadSkillLogo();
       body.append(el("p.trpg-roll-trump", { text: skillLabel(session.rerollActor) + " · 連携札1枚" }));
       body.append(el("div.trpg-rerolls", [0, 1].map(i =>
@@ -1482,7 +1483,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         if (rollShow(again, { ...showCopy(again), thrown: i, skill: skillOf(session.rerollActor, "reroll", (i + 1) + "個目のサイコロを振り直す"), onDone: () => showRollResult(pop, body, i, true) })) {
           syncResources();
           pop.box.dataset.rollState = "rolling";
-          // 使った切り札の札はその場で片付ける（二度押しで二度振らない）。「物語を続ける」は、結果が出直してから置き直す。
+          // 使ったスキルの札はその場で片付ける（二度押しで二度振らない）。「物語を続ける」は、結果が出直してから置き直す。
           body.querySelectorAll(".trpg-rerolls, .trpg-roll-trump").forEach(n => n.remove());
           pop.box.querySelector(".trpg-modal-actions").replaceChildren();
           pop.box.focus({ preventScroll: true });
@@ -1854,7 +1855,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("p", { text: "見立ての的中、事情に合う提案、判定で2回以上成功。それぞれ星が一つつきます。" }),
       ...scenario.cast.filter(c => c.part !== "GM").map(c => el("p.trpg-help-ability", { text: name(c.id) + "「" + c.ability + "」 · " + c.abilityText })),
       el("p", { text: "スキルは各人一度ずつ。先に助けを借りるか、最後のために札を残すか、相談しながら決めましょう。" }),
-      el("p", { text: "仲間のスキルは、振る前に札を選ぶと判定に＋" + DICE.support + "。振り直しは、出目を見てからサイコロ1個を選んで振り直します。新しい出目を採用するので、下がることもあります。クリティカル（20の目）の時は振り直せません。" }),
+      el("p", { text: "仲間のスキルは、振る前に使うと決めれば判定に＋" + DICE.support + "。振り直しは、成功しなかった時だけ。出目を見てサイコロ1個を選び、振り直します。新しい出目を採用するので、下がることもあります。" }),
       head("操作"),
       el("p", { text: "画面をタップして進めます。選ぶ時は、札やボタンをタップ。" }),
     ], [button("卓に戻る", "trpg-help-close", () => pop.close(), { class: "primary" })]);
