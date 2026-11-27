@@ -1,5 +1,6 @@
 import { PHOTO_KEEPSAKES, purikuraId } from "./gallery-progress.js";
 import { ALL_MINTO_CHEKIS } from "./minto-cheki-data.js";
+import { PURIKURA_PHOTOS, PURIKURA_CHAR } from "./purikura-data.js";
 
 export const GALLERY_TABS = [
   ["all", "すべて"], ["still", "スチル"], ["cheki", "チェキ"],
@@ -16,7 +17,9 @@ const cgChars = Object.fromEntries(Object.entries({
   naru: ["cg_naru_after_hours", "cg_naru_last_chance", "cg_naru_next_entry", "cg_ch2_naru_score_sheet"],
   rio: ["cg_rio_confession"],
   mashiro: ["cg_ch3_childhood_offered_hand", "cg_saku_mashiro_childhood", "cg_mashiro_double_apple", "cg_mashiro_confession", "cg_ch3_mashiro_no_craft_day", "cg_ch3_half_cake"],
-}).flatMap(([char, ids]) => ids.map(id => [id, char])));
+}).flatMap(([char, ids]) => ids.map(id => [id, char])).concat(
+  // MELTY PUFF のプリクラ（PFC18）。札のある人だけ。神崎・ひより・ひとりは「その他」
+  PURIKURA_PHOTOS.filter(p => PURIKURA_CHAR[p.with]).map(p => [p.cg, PURIKURA_CHAR[p.with]])));
 const charTag = char => Object.hasOwn(CHAR_LABELS, char) ? char : "other";
 // IDに cheki を含むが通常のスチルとして扱うもの（オーナー指示 2026-11-18: cg_minto_cheki はツーショット写真でありチェキではない）。
 const cgKindOverrides = { cg_minto_cheki: "still" };
@@ -27,6 +30,8 @@ const cgChapters = {
   cg_minto_casual: 1, cg_minto_cheki: 1, cg_minto_first_cheki: 1,
   // PEPPERMINTのチェキ（頼むチェキ・2ショットの回・こっそりの一枚）は第1章から撮れる（daily/minto-cheki.js・daily/spots.js）
   ...Object.fromEntries(ALL_MINTO_CHEKIS.map(c => [c.cg, 1])),
+  // MELTY PUFF のプリクラは第2章から撮れる（chapters/ch2-purikura.js）
+  ...Object.fromEntries(PURIKURA_PHOTOS.map(p => [p.cg, 2])),
   cg_naru_after_hours: 2, cg_naru_last_chance: 3, cg_naru_next_entry: 3,
   cg_oneesan_first_smoke: 1, cg_tsumugi_smoke_color: 1,
 };
@@ -91,6 +96,7 @@ const labels = {
   cg_ageha_first_purikura: "あげはとの初プリ", cg_ryuji_purikura: "神崎との職人プリ",
   cg_ch2_ageha_purikura_strip: "あげはと半分このプリクラ",
   ...Object.fromEntries(ALL_MINTO_CHEKIS.map(c => [c.cg, c.secret ? `ないしょのチェキ・${c.label}` : c.twoShot ? `2ショットチェキ・${c.label}` : `みんとのチェキ・${c.label}`])),
+  ...Object.fromEntries(PURIKURA_PHOTOS.map(p => [p.cg, p.label])),
 };
 const localAsset = (path, extensions) => typeof path === "string"
   && /^(?:img|\.\.\/assets)\/[a-zA-Z0-9_./-]+$/.test(path)
@@ -101,6 +107,8 @@ const localAsset = (path, extensions) => typeof path === "string"
 export function galleryEntries(manifest, catalog, progress, seen) {
   const got = new Set(seen);
   progress.keepsakes.forEach(id => got.add(PHOTO_KEEPSAKES[id]));
+  // 撮った写真の絵（PFC18）は、その絵の一覧の項目で解放する
+  progress.purikura.forEach(p => { if (p.cg) got.add(p.cg); });
   const entries = [...new Set((manifest.cgs || []).map(file => file.replace(/\.png$/, "")))]
     // 制作途中の下描き（#1076 DAY3 で見せる素材）は収集スチルではないので一覧に出さない。
     .filter(id => !/^cg_ch2_ageha_purikura_strip_(?:soft|gal)$/.test(id) && id !== "cg_ch1_tsumugi_sketch_wip").sort().map((id, i) => ({
@@ -110,7 +118,9 @@ export function galleryEntries(manifest, catalog, progress, seen) {
     kind: cgKindOverrides[id] || (id.includes("cheki") ? "cheki" : id.includes("purikura") ? "purikura" : "still"),
     title: labels[id] || "物語のスチル " + (i + 1), unlocked: got.has(id),
   }));
-  progress.purikura.forEach(p => entries.push({
+  // 絵のある撮影は、上の絵の項目に出す（同じ写真を立ち絵の写真として重ねない）。絵の無い撮影・旧セーブだけ撮影ごとに出す
+  const pictured = new Set(entries.map(e => e.id));
+  progress.purikura.filter(p => !(p.cg && pictured.has(p.cg))).forEach(p => entries.push({
     id: purikuraId(p), kind: "purikura", photo: p, unlocked: true,
     title: "第" + p.chapter + "章・DAY" + (p.chapterDay ?? p.day) + (p.slot === 0 ? " 昼" : " 夜") + "のプリクラ",
   }));

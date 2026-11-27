@@ -75,6 +75,12 @@ await suite("ch1-cg-art", async check => {
       await page.evaluate(() => { void C.gallery.openGallery(); });
       await page.locator(`[data-test="gal-${id}"]`).click();
       assert.match(await page.locator(".gal-viewer.show .gal-media-image").getAttribute("src"), new RegExp(`${id}\\.webp`));
+      // 一覧の縮小画像は遅延読み込み（loading="lazy"）。一覧が伸びて画面外にあったマスは、押して見えてから読み始めるので、
+      // 読み終わるまで待ってから、読み込めたこと（失敗すると「画像なし」に置き換わり、ここで落ちる）を確かめる。
+      await page.waitForFunction(id => {
+        const im = document.querySelector(`[data-test="gal-${id}"] img`);
+        return !im || im.complete;
+      }, id, { timeout: 10000 });
       assert.equal(await page.locator(`[data-test="gal-${id}"] img`).evaluate(im => im.complete && im.naturalWidth > 0), true);
       assert.deepEqual(withoutGallery(await storageSnapshot(page)), saved, "Gallery modified game save");
     }, options);

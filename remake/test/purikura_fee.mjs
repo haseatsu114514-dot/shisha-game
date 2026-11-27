@@ -20,21 +20,21 @@ async function fixture() {
  const el=(selector,attrs={},children=[])=>({selector,attrs,children:Array.isArray(attrs)?attrs:children});
  const ports=new Map([
  ['core/state.js',stateModule],['core/ui.js',fixed('core/ui.js',{toast:()=>{},modal:async o=>{
-  log.push({kind:'modal',title:o.title,body:typeof o.body==='string'?o.body:null,options:o.options});
+  log.push({kind:'modal',title:o.title,body:typeof o.body==='string'?o.body:null,node:o.body&&typeof o.body==='object'?o.body:null,options:o.options});
   if(modalImpl)return modalImpl(o);
   if(o.options.some(x=>x.test==='purikura-insufficient'))return true;
   if(o.options.some(x=>x.test==='purikura-receive'))return true;
   if(o.options.some(x=>x.test?.startsWith('purikura-with-')))return guest;
   return mode;
  }})],
- ['core/data.js',fixed('core/data.js',{DB:{characters:{hajime:{},ageha:{},kumicho:{},kuraudo:{}}},displayName:id=>id,portraitInfo:id=>({src:id+'.webp'})})],
+ ['core/data.js',fixed('core/data.js',{DB:{characters:{hajime:{},ageha:{},kumicho:{},kuraudo:{},tsumugi:{},rio:{},hiyori:{}}},displayName:id=>id,portraitInfo:id=>({src:id+'.webp'}),cgUrl:id=>`img/cgs/${id}.webp`})],
  ['core/util.js',fixed('core/util.js',{el})],
  ['core/bus.js',fixed('core/bus.js',{emit:(...args)=>log.push({kind:'emit',args})})],
   ['daily/spot-people.js',fixed('daily/spot-people.js',{spotPeople:()=>present})],
  ['vn/engine.js',fixed('vn/engine.js',{play:async(id,opts)=>{log.push({kind:'play',id,opts});return playImpl(id,opts);}})]
  ]);
  const modules=new Map(ports);
- const real=['chapters/ch2-purikura.js','core/keepsakes.js','core/minto-cheki-data.js','core/travel-budget.js','core/purikura-photo.js','core/rules.js','core/ryuji-visit.js','core/chapter-clock.js'];
+ const real=['chapters/ch2-purikura.js','core/keepsakes.js','core/minto-cheki-data.js','core/purikura-data.js','core/travel-budget.js','core/purikura-photo.js','core/rules.js','core/ryuji-visit.js','core/chapter-clock.js'];
  for(const p of real)modules.set(p,new vm.SourceTextModule(read(p),{context:ctx,identifier:p}));
  const money=read('core/stats.js').match(/export function addMoney\(n\) \{[\s\S]*?\n\}/)?.[0];assert(money,'actual addMoney source');
  modules.set('core/stats.js',new vm.SourceTextModule('import {state} from "./state.js";import {MAX_MONEY} from "./rules.js";import {emit} from "./bus.js";\n'+money,{context:ctx,identifier:'core/stats.js'}));
@@ -42,7 +42,8 @@ async function fixture() {
  await main.link((s,m)=>{const id=path.posix.normalize(path.posix.join(path.posix.dirname(m.identifier),s));assert(modules.has(id),id);return modules.get(id);});await main.evaluate();
  return {get state(){return state;},log,saved,memory,replace,setMode:v=>mode=v,setGuest:v=>guest=v,setPeople:v=>present=v,setPlay:v=>playImpl=v,setModal:v=>modalImpl=v,
   next:()=>state.day++,roundTrip:()=>{memory.set('save',JSON.stringify(state));return replace(JSON.parse(memory.get('save')));},
-  offer:(signal,spot={id:'ch2_ageha',kind:'rival',charId:'ageha'})=>main.namespace.offerAgehaPurikura('bg',spot,{signal})};
+  offer:(signal,spot={id:'ch2_ageha',kind:'rival',charId:'ageha'})=>main.namespace.offerAgehaPurikura('bg',spot,{signal}),
+  pick:(...args)=>main.namespace.pickPurikuraPhoto(...args)};
 }
 let groups=0,failures=0;
 async function check(name,fn){try{await fn(await fixture());groups++;console.log('PASS '+name);}catch(e){failures++;console.error('FAIL '+name+': '+e.stack);}}
@@ -152,6 +153,47 @@ for(const met of [{ageha:true},{ageha:true,kumicho:true}])await check(`Cloud gre
 await check('Cloud greeting cancel keeps it unread',async f=>{
  f.state.met={ageha:true,kuraudo:true};f.state.flags._ch2_day1={startDay:1};f.setPlay(async id=>id==='remake_ch2_kuraudo_melty_greeting'?{cancelled:true}:{id,visited:[]});
  assert.equal(await f.offer(),false);assert.equal(f.state.flags._kuraudo_melty_greeting,undefined);assert.equal(f.state.money,1000);
+});
+// PFC18: 選定した写真の絵。相手ごとに、まだ撮っていない1枚 → そろった後はもう一度。記録に絵を残し、受け取りの小窓に絵を出す。
+const receipt=f=>f.log.filter(l=>l.options?.some(o=>o.test==='purikura-receive')).at(-1)?.node;
+await check('PFC18 pair photos: each untaken ageha picture once, then a repeat; the receipt shows the picture',async f=>{
+ f.state.money=999999;f.setMode('pair');const seen=[];
+ for(let n=0;n<4;n++){assert.equal(await f.offer(),true);const row=f.state.flags._ageha_purikura_history.at(-1);
+  assert.match(row.cg,/^cg_purikura_ageha_/);assert(!seen.includes(row.cg),'no repeat while untaken pictures remain');seen.push(row.cg);
+  const node=receipt(f);assert.match(node.selector,/purikura-photo-real/);assert.equal(node.attrs.dataset.cg,row.cg);assert.equal(node.children[0].attrs.src,`img/cgs/${row.cg}.webp`);f.next();}
+ assert.equal(await f.offer(),true);assert(seen.includes(f.state.flags._ageha_purikura_history.at(-1).cg),'after all four, a repeat');
+ f.roundTrip();assert.equal(f.state.flags._ageha_purikura_history.length,5);assert(f.state.flags._ageha_purikura_history.every(r=>r.cg));
+});
+await check('PFC18 solo has its picture; a guest without pictures keeps the face photo and no cg',async f=>{
+ f.state.money=999999;f.setMode('solo');assert.equal(await f.offer(),true);assert.equal(f.state.flags._ageha_purikura_history.at(-1).cg,'cg_purikura_solo_first');
+ f.next();f.setMode('guest');f.setGuest('kuraudo');assert.equal(await f.offer(),true);
+ const row=f.state.flags._ageha_purikura_history.at(-1);assert.equal(row.people.join(','),'hajime,kuraudo');assert.equal(row.cg,undefined);
+ assert.doesNotMatch(receipt(f).selector,/purikura-photo-real/);assert.equal(receipt(f).attrs.dataset.test,'purikura-photo');
+});
+await check('PFC18 present guests with pictures (tsumugi/rio/hiyori) get their own photos',async f=>{
+ f.state.money=999999;f.state.met={tsumugi:true,rio:true,hiyori:true};
+ f.setPeople([{id:'tsumugi',role:'guest',known:true,name:'つむぎ'},{id:'rio',role:'guest',known:true,name:'凛想'},{id:'hiyori',role:'guest',known:true,name:'ひより'}]);
+ f.setMode('guest');
+ for(const id of ['tsumugi','rio','hiyori']){f.setGuest(id);assert.equal(await f.offer(),true);const row=f.state.flags._ageha_purikura_history.at(-1);
+  assert.equal(row.people.join(','),`hajime,${id}`);assert.match(row.cg,new RegExp(`^cg_purikura_${id}_`));assert.equal(f.log.filter(l=>l.id==='remake_ch2_purikura_guest').length>0,true);f.next();}
+});
+await check('PFC18 Kanzaki: first photo is the craftsman strip, later his pictures with the trio scene',async f=>{
+ f.state.money=999999;f.state.met={ageha:true,kumicho:true};f.state.flags._ryuji_melty_greeting=true;f.setMode('guest');f.setGuest('kumicho');
+ assert.equal(await f.offer(),true);let row=f.state.flags._ageha_purikura_history.at(-1);
+ assert.equal(row.cg,'cg_ryuji_purikura');assert(f.state.keepsakes.includes('ryuji_purikura'));assert.equal(f.log.filter(l=>l.id==='remake_ch2_purikura_ryuji').length,1);
+ const later=[];for(let n=0;n<2;n++){f.next();assert.equal(await f.offer(),true);later.push(f.state.flags._ageha_purikura_history.at(-1).cg);}
+ assert.deepEqual([...later].sort(),['cg_purikura_kumicho_kinen','cg_purikura_kumicho_trio']);
+ assert.equal(f.log.filter(l=>l.id==='remake_ch2_purikura_ryuji').length,1,'the craftsman scene is the first time only');
+ assert.equal(f.log.filter(l=>l.id==='remake_ch2_purikura_trio').length,1,'Ageha joins for the three-person picture');
+ assert.equal(f.state.keepsakes.filter(id=>id==='ryuji_purikura').length,1);assert.equal(f.state.money,999999-1200);
+});
+await check('PFC18 picker: slot-limited pictures, untaken first, then any; no pictures gives null',async f=>{
+ const at=(slot,history=[])=>({slot,flags:{_ageha_purikura_history:history}});
+ for(let i=0;i<20;i++)assert.equal(f.pick('hiyori',{rand:()=>i/20,save:at(0)}).cg,'cg_purikura_hiyori_naisho','after-work picture only at night');
+ assert.equal(f.pick('hiyori',{rand:()=>0.99,save:at(1,[{cg:'cg_purikura_hiyori_naisho'}])}).cg,'cg_purikura_hiyori_otsukare');
+ assert.equal(f.pick('rio',{rand:()=>0,save:at(0,[{cg:'cg_purikura_rio_tamaniwa'}])}).cg,'cg_purikura_rio_record');
+ assert.match(f.pick('rio',{rand:()=>0,save:at(0,[{cg:'cg_purikura_rio_tamaniwa'},{cg:'cg_purikura_rio_record'}])}).cg,/^cg_purikura_rio_/);
+ assert.equal(f.pick('adam',{save:at(0)}),null);assert.equal(f.pick('kuraudo',{save:at(0)}),null);
 });
 console.log(JSON.stringify({groups,failures,scope:'actual offer/keepsakes/travel/photo and actual addMoney; controlled VM/state/VN/UI/Map-JSON, not browser/menu LOAD'}));
 if(failures)process.exitCode=1;

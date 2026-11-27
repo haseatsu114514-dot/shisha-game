@@ -1351,6 +1351,47 @@
       ]
     },
     {
+      "dialogue_id": "remake_ch2_purikura_trio",
+      "comment": "神崎と2回目以降に撮る時、あげはが入って3人で撮る一枚（PFC18・core/purikura-data.js の trio）。写真は呼出元が出す。",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "神崎さん、よかったら、また一緒に撮りませんか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "また写真かい。……あんちゃんの誘いなら、断るスジもねえ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "待って、今日はうちも入る！ 3人ぷり撮ろ！"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "surprise",
+          "text": "店主が入っちまって、店の方はいいんですかい"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "一回だけ！ お客さん、今みんな一服中だし"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "狭いブースに、三人でぎゅっと並んだ。神崎さんは、また背筋を伸ばしている。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "はい、さん、に、いち！ 3人ぷり、優勝〜！"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_ch2_purikura_ryuji",
       "lines": [
         {
