@@ -947,9 +947,9 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .phone[data-kind="craft"] .btn-a.sub.l { right: auto; top: auto; left: var(--edge); bottom: var(--low); width: var(--ok); height: var(--ok); margin: 0; }
 .phone[data-scene="water"] .btn-a.center.pour { top: auto; bottom: var(--low); width: var(--ok); height: var(--ok); margin-left: calc(var(--ok) / -2); }
 .phone[data-kind="craft"][data-scene="water"] .pic { height: calc(100% - var(--low) - var(--ok) - 1.2rem); } /* 上の絵は、いちばん下の段のすぐ上まで続ける（VPL111。下の画面の空きを詰める） */
-.phone[data-scene="water"] .water-a { --bw: min(19rem, calc((100cqh - var(--cp) - 8.4rem) / 1.63)); }
+.phone[data-scene="water"] .water-a { --bw: min(21.5rem, calc((100cqh - var(--cp) - 16rem) / 1.63)); } /* 上の画面の余裕の分、流し台ごと少し大きく（VPL112。流し台の左右の端は画面の外へ少し出る） */
 /* カウンターの手前の縁（ボトルの縦 87.5%）が、スミさんの一言の段の真ん中に来る高さ。ボトルの水の線は一言より上に見える */
-.phone[data-scene="water"] .water-a .bottle { left: calc(50% - 3.4rem); bottom: calc(var(--cp) + 2.4rem - var(--low) - var(--ok) - 1.2rem - var(--bw) * 0.185); width: var(--bw); }
+.phone[data-scene="water"] .water-a .bottle { left: calc(50% - var(--bw) * 0.179); bottom: calc(var(--cp) + 2.4rem - var(--low) - var(--ok) - 1.2rem - var(--bw) * 0.185); width: var(--bw); }
 /* 前板の下は、流し台の下の戸棚（ステンレスの扉）で、いちばん下の段の上まで埋める */
 .bottle .cabinet { position: absolute; z-index: 1; left: -41.33%; width: 222.6%; top: calc(106.9% - 0.2rem); height: 60rem; pointer-events: none;
   background: linear-gradient(180deg, #00000066 0, transparent 0.8rem), repeating-linear-gradient(90deg, transparent 0 calc(25% - 0.1rem), #0000004d calc(25% - 0.1rem) 25%), linear-gradient(180deg, #8a6e5c, #5a463d 40%, #2c2027); } /* 流し台の幅（ボトルの約2倍）が画面に収まる大きさ。流し台の真ん中が画面の真ん中に来る（VPL101） */
@@ -1015,11 +1015,21 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .phone[data-kind="craft"] > * { --cp: var(--cp-std); }
 /* 配合は、下の段（グラムの段と決定）を低くし、決定も小さくする（VPL102。844 で 11.2rem→8.8rem）。浮いた分は上の画面へ */
 .phone[data-scene="mix"] > * { --cp: var(--cp-mix); --ok: var(--ok-mix); }
-.phone[data-scene="water"] > * { --cp: var(--cp-water); }
+/* 水入れ・タイマー（VPL112・VPL113）: 下の画面に余裕があるので、3つのボタンを横幅いっぱい近くまで大きくし（844 で 11.2rem→12rem）、
+   下の画面はボタン（とタイマーの早見）の段だけにする。スミさんの一言は、そのすぐ上に出る */
+.phone:is([data-scene="water"], [data-scene="timer"]) > * { --ok: 12rem; --edge: 1rem; }
+@container phone (max-height: 80rem) { .phone:is([data-scene="water"], [data-scene="timer"]) > * { --ok: 10.8rem; } }
+@container phone (max-height: 71rem) { .phone:is([data-scene="water"], [data-scene="timer"]) > * { --ok: 9.6rem; } }
+.phone[data-scene="water"] > * { --cp: calc(var(--low) + var(--ok) + 0.6rem); }
+.phone[data-scene="timer"] > * { --cp: calc(var(--low) + var(--ok) + 7.8rem); }
+/* 雑念よけ（VPL112）: 下の画面の余裕の分、十字キーを大きくし、下の段に寄せる */
+.phone[data-scene="steam"] .ctrl { --ring: 23rem; --pad-top: calc(var(--cp) - var(--ring) - var(--low)); }
+@container phone (max-height: 80rem) { .phone[data-scene="steam"] .ctrl { --ring: 20.6rem; } }
+@container phone (max-height: 71rem) { .phone[data-scene="steam"] .ctrl { --ring: 18.4rem; } }
 
 /* 蒸らしのタイマー（VPL105）: 上の画面に本編のキッチンタイマー（液晶・4つの物理ボタン）と、蒸らし後の温度の目安。下は早見とリセット、分・秒・スタート */
 .timer-a { position: absolute; left: 0; right: 5.6rem; top: 8.4rem; bottom: 6.4rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.4rem; }
-.ktimer { position: relative; flex: none; width: min(30rem, calc((100cqh - var(--cp) - var(--band) - 26rem) * 1.5)); aspect-ratio: 1280 / 853; container-type: inline-size; }
+.ktimer { position: relative; flex: none; width: min(32rem, calc((100cqh - var(--cp) - var(--band) - 26rem) * 1.5)); aspect-ratio: 1280 / 853; container-type: inline-size; }
 .ktimer > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 1.6rem #000b); pointer-events: none; }
 .ktimer .lcd { position: absolute; left: 13.6%; width: 72.8%; top: 22%; height: 33.4%; display: grid; place-items: center; color: #192e28; }
 .ktimer .lcd svg { width: 88%; height: 86%; }

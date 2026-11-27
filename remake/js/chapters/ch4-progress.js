@@ -101,8 +101,10 @@ export const CH4_SCENE_BG = Object.freeze({
   ch4_story_venue: TOURNAMENT_VENUE_BG[4],
   ch4_story_market: "bg_dubai_souq_day",
   ch4_story_sumi_call: "bg_dubai_inn_night",
+  ch4_story_night_seats: "bg_dubai_street_night",
   ch4_story_press: "bg_dubai_grand_smoke_stage",
   ch4_story_yosegaki: "bg_dubai_inn_night",
+  ch4_story_bench: "bg_dubai_street_night",
 });
 
 // ---- BGM の対応表（差し替えは remake/js/core/story-audio.js の STORY_BGM）--------------
@@ -253,9 +255,13 @@ export const CH4_STORY_NIGHTS = Object.freeze([
   { id: "ch4_story_venue", day: 3, label: "会場の下見", beat: "夜。本番の会場を、一度見ておくことにした──", bg: TOURNAMENT_VENUE_BG[4] },
   { id: "ch4_story_market", day: 5, label: "勝負の炭と葉", beat: "夕方。勝負に使う炭と葉を探しに、スークへ──", bg: "bg_dubai_souq_day" },
   { id: "ch4_story_sumi_call", day: 7, label: "時差の電話", beat: "夜。宿の部屋で、スマホが鳴った──", bg: "bg_dubai_inn_night" },
+  // VOL21 第2弾: 通りのカフェの外席で、現地の客の休み方を見る。電話の後に置く（DAY12 の買い出し→電話の救済を崩さない）
+  { id: "ch4_story_night_seats", day: 8, label: "夜に座る街", beat: "夜。この街の人が座る夜を、見に行った──", bg: "bg_dubai_street_night" },
   { id: "ch4_story_press", day: 9, label: "記者会見", beat: "夜。日本代表の記者会見に呼ばれた──", bg: "bg_dubai_grand_smoke_stage" },
   // RLS09（本編・大会を第1章の量に）: 地元の常連さんたちの色紙の写真
   { id: "ch4_story_yosegaki", day: 11, label: "地元からの色紙", beat: "夜。地元から、写真が一枚届いた──", bg: "bg_dubai_inn_night" },
+  // VOL21 第2弾（第4章を第1章の量に）: 宿の夜番のおじさんに、現地の客として一台を作り直す。最後の自由な夜（DAY12）
+  { id: "ch4_story_bench", day: 12, label: "宿の前のベンチ", beat: "夜。宿の前のベンチに、小さな火が見えた──", bg: "bg_dubai_street_night" },
 ].map(entry => Object.freeze(entry)));
 export const CH4_STORY_FILES = Object.freeze({ ch4_dubai_story: Object.freeze(CH4_STORY_NIGHTS.map(entry => entry.id)) });
 // 前夜祭（王煙楼の招待）が始まった印。ここから先は到着を足さない（ロビーの出迎えを前夜祭の後に回さない）。
