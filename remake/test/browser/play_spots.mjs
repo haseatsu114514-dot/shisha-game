@@ -3,13 +3,14 @@ import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
 import { travelToCity as travel } from "./station_helpers.mjs";
 import { flickFromHandle, stanceAt } from "./axe_flick_input.mjs";
-import { startTrpgStory } from "./trpg_start.mjs";
+import { startTrpgStory, turnToTrpgBook } from "./trpg_start.mjs";
 const shots = process.env.COMPARISON_DIR;
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
 const t = id => `[data-test="${id}"]`;
 const map = '[data-destination-selection]:not(.done)';
 async function hit(page, id) {
+  await turnToTrpgBook(page, id); // ボドゲカフェの本の中の操作は、その本の頁を開いてから押す
   const button = page.locator(t(id));
   if (await page.evaluate(() => matchMedia("(pointer:coarse)").matches)) await button.tap(); else await button.click();
 }

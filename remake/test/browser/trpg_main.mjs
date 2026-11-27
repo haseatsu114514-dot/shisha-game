@@ -1,45 +1,80 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, storageSnapshot, assertFits, baseURL } from "./support.mjs";
-import { startTrpgStory } from "./trpg_start.mjs";
+import { startTrpgStory, turnToTrpgBook } from "./trpg_start.mjs";
 
 const book = name => JSON.parse(fs.readFileSync(new URL("../../../data/dialogue/" + name + ".json", import.meta.url), "utf8"));
 const ordinary = book("trpg_ordinary"), shark = book("trpg_shark");
 
-// 1画面で見渡す本棚（#3199・TRF25）: 画面そのものも本の並びも下へ送らず、本の札とそのボタンが全部見えている。
+// 本をめくって選ぶ（TRP11）: 開いた本の見開きに1冊だけ出す。画面そのものは下へ送らず、開いている本の絵・題・押す所が、本の中に全部見えている。
+// 絵と顔を読み込むのは、開いた見開きのぶんだけ（以前は9冊ぶんを一度に描いていた）。
 // allowSideScroll は、行が増える状態（まだ誘っていない人がいる・昼の試遊）で左の列だけ中を送れることを許す。
-async function assertShelfAtAGlance(page, { allowSideScroll = false } = {}) {
+async function assertBookSpread(page, { allowSideScroll = false } = {}) {
+  await page.locator('[data-test="trpg-book-spread"]:not([data-turn])').waitFor();
   const shelf = await page.evaluate(() => {
-    const root = document.querySelector(".trpg-campaign"), side = root.querySelector(".trpg-campaign-side"), books = root.querySelector(".trpg-campaign-books");
-    const stage = (document.querySelector("#stage") || document.documentElement).getBoundingClientRect();
-    const inside = n => { const r = n.getBoundingClientRect(), b = books.getBoundingClientRect();
-      return r.width > 0 && r.height > 0 && r.top >= b.top - 1 && r.bottom <= b.bottom + 1 && r.left >= b.left - 1 && r.right <= b.right + 1 && r.bottom <= stage.bottom + 1; };
-    const cards = [...books.querySelectorAll(".trpg-campaign-book")];
-    return { view: root.dataset.view, root: [root.clientHeight, root.scrollHeight], side: [side.clientHeight, side.scrollHeight], books: [books.clientHeight, books.scrollHeight],
-      // 札の中身（題・今夜の卓・ボタン）が、札の上や下へはみ出して切れていない。表紙の絵は札いっぱいに敷いてあるので数えない。
-      cards: cards.length, cut: cards.filter(card => { const c = card.getBoundingClientRect(), t = card.querySelector(".trpg-campaign-book-copy").getBoundingClientRect();
-        return !inside(card) || t.top < c.top - 1 || t.bottom > c.bottom + 1; }).map(card => card.dataset.test),
-      buttons: cards.flatMap(card => [...card.querySelectorAll("button")]).filter(node => !inside(node)).map(node => node.dataset.test) };
+    const root = document.querySelector(".trpg-campaign"), side = root.querySelector(".trpg-campaign-side"), book = root.querySelector('[data-test="trpg-book-spread"]');
+    const stage = (document.querySelector("#stage") || document.documentElement).getBoundingClientRect(), frame = book.getBoundingClientRect();
+    const inside = n => { const r = n.getBoundingClientRect();
+      return r.width > 0 && r.height > 0 && r.top >= frame.top - 1 && r.bottom <= frame.bottom + 1 && r.left >= frame.left - 1 && r.right <= frame.right + 1 && r.bottom <= stage.bottom + 1; };
+    const cards = [...book.querySelectorAll(".trpg-campaign-book")], open = cards.filter(card => !card.hidden);
+    const copy = open[0]?.querySelector(".trpg-campaign-book-copy"), mid = frame.left + frame.width / 2;
+    const k = stage.width / (document.querySelector("#stage")?.offsetWidth || stage.width);
+    return { view: root.dataset.view, root: [root.clientHeight, root.scrollHeight], side: [side.clientHeight, side.scrollHeight],
+      cards: cards.length, open: open.map(card => card.dataset.test), page: book.dataset.page,
+      // 本は舞台の中。絵は左の頁、題と押す所は右の頁。右の頁の中身は、頁の下へあふれない
+      book: frame.top >= stage.top - 1 && frame.bottom <= stage.bottom + 1 && frame.right <= stage.right + 1,
+      art: open[0] && inside(open[0].querySelector(".trpg-campaign-book-art")) && open[0].querySelector(".trpg-campaign-book-art").getBoundingClientRect().right < mid,
+      copy: copy && inside(copy) && copy.getBoundingClientRect().left > mid && copy.scrollHeight <= copy.clientHeight + 1,
+      cut: copy ? [...copy.children].filter(node => getComputedStyle(node).display !== "none" && !inside(node)).map(node => node.className || node.tagName) : ["no open book"],
+      buttons: open.flatMap(card => [...card.querySelectorAll("button")]).filter(node => !inside(node)).map(node => node.dataset.test),
+      // 読む字は実寸 12px 以上（題は 16px 以上）
+      title: copy ? parseFloat(getComputedStyle(copy.querySelector("h2")).fontSize) * k : 0,
+      small: copy ? Math.min(...[...copy.querySelectorAll("p, small, strong, button")].filter(node => node.getClientRects().length && node.clientWidth > 2).map(node => parseFloat(getComputedStyle(node).fontSize) * k)) : 0,
+      // 絵を作るのは、開いた見開きだけ（まだ開いていない本の絵は読み込まない）。未解放の本は錠の絵で、場面の絵を持たない
+      artLoaded: cards.filter(card => card.querySelector(".trpg-campaign-book-art :is(img, .trpg-scene-fallback)")).map(card => card.dataset.test),
+      openArt: !!open[0] && (open[0].dataset.locked === "true") !== !!open[0].querySelector(".trpg-campaign-book-art :is(img, .trpg-scene-fallback)"),
+      tabs: book.querySelectorAll(".trpg-book-tab").length, current: book.querySelectorAll('.trpg-book-tab[aria-current="true"]').length };
   });
   assert.equal(shelf.view, "shelf");
   assert(shelf.root[1] <= shelf.root[0] + 1, "The shelf screen does not scroll " + JSON.stringify(shelf));
-  assert(shelf.books[1] <= shelf.books[0] + 1, "All the books are in view without scrolling " + JSON.stringify(shelf));
-  assert.deepEqual([shelf.cut, shelf.buttons], [[], []], "Every book card and its buttons are whole " + JSON.stringify(shelf));
+  assert.equal(shelf.open.length, 1, "One book is open at a time " + JSON.stringify(shelf));
+  assert.deepEqual([shelf.tabs, shelf.current], [shelf.cards, 1], "Every book has a tab and one tab is the open book " + JSON.stringify(shelf));
+  assert(shelf.book && shelf.art && shelf.copy, "The open book, its picture (left page) and its text (right page) are in view " + JSON.stringify(shelf));
+  assert.deepEqual([shelf.cut, shelf.buttons], [[], []], "The open page and its buttons are whole " + JSON.stringify(shelf));
+  assert(shelf.title >= 16 && shelf.small >= 12, "The open page is readable " + JSON.stringify(shelf));
+  assert(shelf.openArt && (shelf.cards < 3 || shelf.artLoaded.length < shelf.cards), "The open page has its picture and unopened pages have not loaded theirs " + JSON.stringify(shelf));
   if (!allowSideScroll) assert(shelf.side[1] <= shelf.side[0] + 1, "The members, the rank and the gear are in view without scrolling " + JSON.stringify(shelf));
   return shelf;
 }
-// 左の列は、行が増える状態では中を送れる。各操作へ実際に到達できることを調べる。
+// 本の中の操作は、その本の頁を開いてから押す・確かめる。
+const bookTabs = page => page.locator(".trpg-book-tab").evaluateAll(nodes => nodes.map(node => node.dataset.test.slice("trpg-tab-".length)));
+// 左の列は、行が増える状態では中を送れる。本は1冊ずつめくって、各操作へ実際に到達できることを調べる。
 async function assertShelfControls(page) {
-  for (const control of await page.locator(".trpg-campaign button").all()) {
+  const fits = async control => {
     await control.scrollIntoViewIfNeeded();
     const id = await control.getAttribute("data-test");
     await assertFits(page, `[data-test="${id}"]`);
+  };
+  for (const control of await page.locator(".trpg-campaign button").all()) if (!await control.evaluate(node => !!node.closest(".trpg-campaign-book"))) await fits(control);
+  if (!await page.locator(".trpg-book-tab").count()) return; // 本を出さない場面（部の提案・昼の試遊の途中・卓を終えた後）
+  const opened = await page.locator(".trpg-book-tab[aria-current]").getAttribute("data-test");
+  for (const id of await bookTabs(page)) {
+    await turnToTrpgBook(page, "trpg-book-" + id);
+    for (const control of await page.locator(`[data-test="trpg-book-${id}"] button`).all()) await fits(control);
   }
+  await turnToTrpgBook(page, "trpg-book-" + opened.slice("trpg-tab-".length));
 }
 const button = (page, id) => page.locator('[data-test="' + id + '"]');
 async function hit(page, id) {
+  await turnToTrpgBook(page, id);
   const target = button(page, id);
   if (await page.evaluate(() => matchMedia("(pointer:coarse)").matches)) await target.tap(); else await target.click();
+}
+// 本の中の操作が画面に出るまで待つ（本棚へ戻った直後など）。違う頁なら、その本までめくる。
+async function shown(page, id) {
+  await button(page, id).waitFor({ state: "attached" });
+  await turnToTrpgBook(page, id);
+  await button(page, id).waitFor();
 }
 async function lines(page) { for (let i = 0; i < 35 && await button(page, "trpg-next").isVisible(); i++) await hit(page, "trpg-next"); }
 
@@ -223,13 +258,13 @@ await suite("trpg-main", async check => {
     await prepare(page, { slot: 0 });
     await page.evaluate(() => { __remake.state.flags._intro_sai = true; });
     await open(page);
-    await button(page, "trpg-buy-ordinary-cup").waitFor();
+    await shown(page, "trpg-buy-ordinary-cup");
     const reread = button(page, "trpg-picturebook-ordinary-cup");
     assert.equal(await reread.count(), 0, "a stocked book must be purchased before rereading");
     await hit(page, "trpg-buy-ordinary-cup");
     assert(await button(page, "trpg-play-ordinary-cup").isDisabled(), "the group cannot play a table during the day");
     assert(await reread.isEnabled(), "the owned book can be read without a table");
-    await assertShelfAtAGlance(page, { allowSideScroll: true });
+    await assertBookSpread(page, { allowSideScroll: true });
     const before = await snapshot(page), beforeStorage = await storageSnapshot(page);
     await hit(page, "trpg-picturebook-ordinary-cup");
     const overlay = button(page, "trpg-picturebook");
@@ -258,7 +293,7 @@ await suite("trpg-main", async check => {
     }, { memories, last });
     await open(page);
     assert.equal(await page.locator(".trpg-campaign-book").count(), 9);
-    await assertShelfAtAGlance(page, { allowSideScroll: true }); // PCでも、遊び終えた本・未解放の本を含む9冊が1画面
+    await assertBookSpread(page, { allowSideScroll: true }); // 遊び終えた本・未解放の本を含む9冊を、1冊ずつ見開きで
     assert.match(await button(page, "trpg-book-" + finale.id).innerText(), /5／6/);
     assert.equal(await button(page, "trpg-buy-" + finale.id).count(), 0);
     await hit(page, "trpg-campaign-close");
@@ -299,7 +334,7 @@ await suite("trpg-main", async check => {
     await page.screenshot({ path: (process.env.ARTIFACT_DIR || ".codex/artifacts/trpg") + "/trpg-club-invite-" + label + ".png" });
     await hit(page, "trpg-recruit-next");
     assert.deepEqual(await page.evaluate(() => __trpgCampaignPreview.snapshot().trpg.club.members), {}, "Read the whole acceptance first");
-    await hit(page, "trpg-recruit-next"); await button(page, "trpg-buy-shark-last-order").waitFor();
+    await hit(page, "trpg-recruit-next"); await shown(page, "trpg-buy-shark-last-order");
     assert.equal(await locked.getAttribute("data-locked"), "false");
     assert.notEqual(await locked.locator("h2").textContent(), "？？？？？");
     assert.equal(await button(page, "trpg-demo-meet-samechan").count(), 0);
@@ -625,7 +660,7 @@ await suite("trpg-main", async check => {
     assert.equal(await page.locator('[data-test^="trpg-consult-"]').count(), 2);
     assert.equal(await button(page, "trpg-consult-regulara").count(), 1);
     assert.equal(await button(page, "trpg-consult-regularb").count(), 1);
-    await hit(page, "trpg-exit"); await hit(page, "trpg-exit-confirm"); await button(page, "trpg-play-ordinary-cup").waitFor();
+    await hit(page, "trpg-exit"); await hit(page, "trpg-exit-confirm"); await shown(page, "trpg-play-ordinary-cup");
     // Leaving keeps a bookmark (TMX13) and nothing else: no night, money or clear is spent.
     const left = await snapshot(page);
     assert.equal(left.trpg.bookmark?.id, "ordinary-cup"); delete left.trpg.bookmark;
@@ -715,7 +750,7 @@ await suite("trpg-main", async check => {
       const { showTitle } = await import("./js/scenes/title.js");
       openTrpgRoom(() => showTitle());
     });
-    await button(page, "trpg-buy-ordinary-cup").waitFor();
+    await shown(page, "trpg-buy-ordinary-cup");
     assert(await button(page, "trpg-buy-ordinary-cup").isDisabled());
     assert.equal(await page.locator('[data-test^="trpg-play-"]:enabled').count(), 0);
     await hit(page, "trpg-campaign-close"); await button(page, "title-new").waitFor();
@@ -728,7 +763,7 @@ await suite("trpg-main", async check => {
     await page.evaluate(async () => { const { openTrpgBar } = await import("./js/daily/trpg.js"); openTrpgBar(); });
     await advanceSaiIntro(page);
     await button(page, "trpg-campaign-retry").waitFor(); const before = await storageSnapshot(page);
-    broken = false; await hit(page, "trpg-campaign-retry"); await button(page, "trpg-buy-ordinary-cup").waitFor();
+    broken = false; await hit(page, "trpg-campaign-retry"); await shown(page, "trpg-buy-ordinary-cup");
     await hit(page, "trpg-campaign-close");
     await open(page); await hit(page, "trpg-buy-ordinary-cup"); await hit(page, "trpg-play-ordinary-cup");
     const bought = await storageSnapshot(page);
@@ -747,12 +782,12 @@ await suite("trpg-main", async check => {
     await button(page, "pin-trpg_bar").waitFor();
     await hit(page, "pin-trpg_bar"); await hit(page, "map-go");
     await advanceSaiIntro(page);
-    await button(page, "trpg-buy-ordinary-cup").waitFor();
+    await shown(page, "trpg-buy-ordinary-cup");
     await hit(page, "trpg-buy-ordinary-cup"); await hit(page, "trpg-campaign-close");
     await button(page, "pin-trpg_bar").waitFor();
     assert.equal((await snapshot(page)).slot, 1); assert.equal((await snapshot(page)).money, 2500);
     await hit(page, "pin-trpg_bar"); await hit(page, "map-go");
-    await button(page, "trpg-play-ordinary-cup").waitFor();
+    await shown(page, "trpg-play-ordinary-cup");
     await assertShelfControls(page);
   });
   await check("isolated-demo-and-chapter-gate", async page => {
@@ -786,16 +821,18 @@ await suite("trpg-main", async check => {
     assert.equal(await page.locator('[data-test^="trpg-demo-meet-"]').count(), 0, "Everyone has joined: nobody left to invite");
     // 6人の部員は、横持ちスマホでも切れずに並ぶ（2人ずつ3段）。
     await assertFits(page, ".trpg-campaign-person");
-    // 部員・ランク・マイダイス・本9冊が、横持ちスマホの1画面に収まる（#3199・TRF25）。Safari のバーが出た低い画面でも同じ。
-    assert.equal((await assertShelfAtAGlance(page)).cards, 9);
-    await page.setViewportSize({ width: 844, height: 340 }); await assertShelfAtAGlance(page);
+    // 部員・ランク・マイダイスと、開いた本の見開きが、横持ちスマホの1画面に収まる（#3199・TRF25 → TRP11）。Safari のバーが出た低い画面でも同じ。
+    const firstLook = await assertBookSpread(page);
+    assert.equal(firstLook.cards, 9);
+    assert.deepEqual(firstLook.artLoaded, firstLook.open, "On entry only the open page's picture is loaded");
+    await page.setViewportSize({ width: 844, height: 340 }); await assertBookSpread(page);
     await page.setViewportSize({ width: 844, height: 390 });
     await assertShelfControls(page);
     // 卓は本編と同じもの: 始めて、しおりを挟んで本棚へ戻れる。
     await hit(page, "trpg-play-ordinary-cup");
     await button(page, "trpg-tutorial-panel").waitFor(); await lines(page);
     await startTrpgStory(page); await lines(page); await roll(page);
-    await hit(page, "trpg-exit"); await hit(page, "trpg-exit-confirm"); await button(page, "trpg-play-ordinary-cup").waitFor();
+    await hit(page, "trpg-exit"); await hit(page, "trpg-exit-confirm"); await shown(page, "trpg-play-ordinary-cup");
     assert.equal((await trial()).trpg.bookmark?.id, "ordinary-cup");
     // 始め方を選び直す。
     await hit(page, "trpg-campaign-close"); await button(page, "trpg-tryout-setup").waitFor();

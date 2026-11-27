@@ -13,7 +13,7 @@ await suite("debug-tools", async check => {
     const games = [
       ["axe", "axe-game"], ["camel", "camel-game"], ["desert", "desert-ride"], ["desert-naru", "desert-ride"],
       ["dj-1", "dj-frame"], ["dj-2", "dj-frame"], ["dj-3", "dj-frame"],
-      ["tetsuko", "tetsuko-cat"], ["trpg", "trpg-play-ordinary-cup"], ["ichidai", "ichi-game"], ["floor", "tonari-floor-intro"],
+      ["tetsuko", "tetsuko-cat"], ["trpg", "trpg-book-spread"], ["ichidai", "ichi-game"], ["floor", "tonari-floor-intro"],
     ];
     await page.evaluate(() => localStorage.setItem("suien_remake_save", '{"debugSentinel":true}'));
     for (const [id, screen] of games) {
@@ -521,7 +521,7 @@ await suite("debug-tools", async check => {
 
   await check("minigames-stop-title-bgm-and-restore-on-close-part2", page => verifyTitleBgmLifecycle(page, [
     ["ichidai", "ichi-game", null],
-    ["trpg", "trpg-play-ordinary-cup", "bgm_trpg"],
+    ["trpg", "trpg-book-spread", "bgm_trpg"],
     ["tetsuko", "tetsuko-cat", "bgm_tetsuko_time"],
   ]));
 
