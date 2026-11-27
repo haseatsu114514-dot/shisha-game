@@ -621,9 +621,11 @@
           "text": "（あの人の隣には、誰もいない。でも、むせる人もいない）"
         },
         {
-          "speaker": "dr_charcoal",
+          "speaker": "???",
           "face": "smile",
-          "text": "その器具が、気になりますか"
+          "text": "その器具が、気になりますか",
+          "portrait": "dr_charcoal",
+          "portrait_face": "smile"
         },
         {
           "speaker": "",
@@ -637,24 +639,30 @@
           "portrait": false
         },
         {
-          "speaker": "dr_charcoal",
+          "speaker": "???",
           "face": "normal",
-          "text": "熱を見ています。炭が寄りすぎたら、知らせが出る"
+          "text": "熱を見ています。炭が寄りすぎたら、知らせが出る",
+          "portrait": "dr_charcoal",
+          "portrait_face": "normal"
         },
         {
-          "speaker": "dr_charcoal",
+          "speaker": "???",
           "face": "normal",
-          "text": "作る人が、気づく前に"
+          "text": "作る人が、気づく前に",
+          "portrait": "dr_charcoal",
+          "portrait_face": "normal"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "気づいたら、話していた。このあいだの昼のこと。動画のとおりに作った台のこと。"
+          "text": "いつの間にか、話していた。このあいだの昼のこと。動画のとおりに作った台のこと。"
         },
         {
-          "speaker": "dr_charcoal",
+          "speaker": "???",
           "face": "normal",
-          "text": "その方は、何口目でむせましたか"
+          "text": "その方は、何口目でむせましたか",
+          "portrait": "dr_charcoal",
+          "portrait_face": "normal"
         },
         {
           "speaker": "tsumugi",
@@ -663,14 +671,18 @@
           "portrait": false
         },
         {
-          "speaker": "dr_charcoal",
+          "speaker": "???",
           "face": "normal",
-          "text": "二口目。炭が近かったんでしょう"
+          "text": "二口目。炭が近かったんでしょう",
+          "portrait": "dr_charcoal",
+          "portrait_face": "normal"
         },
         {
-          "speaker": "dr_charcoal",
+          "speaker": "???",
           "face": "smile",
-          "text": "君の手のせいではありません。熱の置き場所が、少しずれただけです"
+          "text": "君の手のせいではありません。熱の置き場所が、少しずれただけです",
+          "portrait": "dr_charcoal",
+          "portrait_face": "smile"
         },
         {
           "speaker": "",
@@ -678,9 +690,11 @@
           "text": "白衣の人は、小さなノートに何かを書いた。"
         },
         {
-          "speaker": "dr_charcoal",
+          "speaker": "???",
           "face": "normal",
-          "text": "記録しておきます。次の誰かが、むせずに済む"
+          "text": "記録しておきます。次の誰かが、むせずに済む",
+          "portrait": "dr_charcoal",
+          "portrait_face": "normal"
         },
         {
           "speaker": "",
@@ -688,14 +702,18 @@
           "text": "やさしい声だった。あの一口が、どこかで役に立つらしかった。"
         },
         {
-          "speaker": "dr_charcoal",
+          "speaker": "???",
           "face": "smile",
-          "text": "誰でも、失敗を怖がらずに作れる。そういう道具を、作っています"
+          "text": "誰でも、失敗を怖がらずに作れる。そういう道具を、作っています",
+          "portrait": "dr_charcoal",
+          "portrait_face": "smile"
         },
         {
-          "speaker": "dr_charcoal",
+          "speaker": "???",
           "face": "normal",
-          "text": "作る人の調子ひとつで、煙が変わらないように"
+          "text": "作る人の調子ひとつで、煙が変わらないように",
+          "portrait": "dr_charcoal",
+          "portrait_face": "normal"
         },
         {
           "speaker": "",
@@ -718,9 +736,11 @@
           "text": "白衣の人は会計を済ませて、器具を鞄にしまった。"
         },
         {
-          "speaker": "dr_charcoal",
+          "speaker": "???",
           "face": "normal",
-          "text": "どちらのお店で？"
+          "text": "どちらのお店で？",
+          "portrait": "dr_charcoal",
+          "portrait_face": "normal"
         },
         {
           "speaker": "tsumugi",
@@ -734,9 +754,11 @@
           "text": "白衣の人は、少しだけ目を細めた。"
         },
         {
-          "speaker": "dr_charcoal",
+          "speaker": "???",
           "face": "smile",
-          "text": "……いいお店です"
+          "text": "……いいお店です",
+          "portrait": "dr_charcoal",
+          "portrait_face": "smile"
         }
       ]
     },

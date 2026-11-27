@@ -1471,7 +1471,7 @@ await suite("ch5-full-flow", async check => {
     // 答えを客席のつむぎが聞き、千須は宿題を一つ残す（2026-11-24 添削 N3・N8。勝敗共通）
     assert.deepEqual(first.slice(-6).map(([, speaker, text]) => [speaker, text]).slice(0, 5), [
       ["sensu", "一つだけ聞く。君が作れない夜に来た客は、どうする"],
-      ["hajime", "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が"],
+      ["hajime", "俺が作れない日は、つむぎちゃんが作ります。つむぎちゃんが作れない日は、俺が"],
       ["", "客席の端で、つむぎがスケッチブックを胸に抱え直した。"],
       ["sensu", "……それを、店と呼ぶんだろうな"],
       ["sensu", "だが、うちの新人の夜には、まだ隣がいない。……そこは、私の宿題だ"],
@@ -1523,7 +1523,7 @@ await suite("ch5-full-flow", async check => {
     await page.locator(scene("ch5_doctor_cocreation")).waitFor();
     const first = await readLines();
     assert(first.includes("……正解の味を、一つだけ探していたのかもしれません"), "The winner's first half keeps the doctor's own words");
-    assert.equal(first.at(-5), "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が");
+    assert.equal(first.at(-5), "俺が作れない日は、つむぎちゃんが作ります。つむぎちゃんが作れない日は、俺が");
     assert.equal(first.at(-4), "客席の端で、つむぎがスケッチブックを胸に抱え直した。");
     await page.locator(dt("ch5-continue")).click();
     await page.locator(scene("ch5_return_to_tonari")).waitFor();
