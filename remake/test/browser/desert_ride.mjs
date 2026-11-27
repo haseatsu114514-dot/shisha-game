@@ -872,9 +872,12 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-quit-confirm")).click();
     await phase(page, "menu");
     assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "quitting mid-boost restores the tempo");
-    // 次の滑走では、一度切り込めたので案内は出ない
+    // 次の滑走では、一度切り込めたので案内は出ない。入口ではなるの札が選ばれたまま（DSR107）なので、段の札を選び直してヌールと滑る
+    assert.equal(await page.locator(t("desert-tier-naru")).getAttribute("aria-checked"), "true", "the menu keeps the last opponent");
+    await page.locator(`${t("desert-tier")}[data-tier="${await page.evaluate(() => window.__desertRide.tier)}"]`).click();
     await page.locator(t("desert-start")).click();
     await phase(page, "run");
+    assert.equal(await page.evaluate(() => window.__desertRide.raceWith), "noor");
     assert.equal(await page.locator(t("desert-versus")).evaluate(node => node.classList.contains("show")), false, "no boss banner against Noor");
     await ride(page, () => window.__desertRide.skipCountdown());
     await ride(page, () => { const r = window.__desertRide; while (r.game.z < 420) r.advance(1 / 60, {}); r.game.x = 0; r.game.vx = 0; });
