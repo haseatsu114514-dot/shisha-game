@@ -13,7 +13,7 @@ import { BOOST, CARVE, EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse
   rivalRun, rivalAt, desertBestKey, desertDisplayBests, RULES_VERSION, DISPLAY, toKmh, toMeters, JUMP, SCORE, RANKS, PLAYER, NEAR, PRACTICE_LESSONS, PRACTICE_WALL, PRACTICE_CURVE, PRACTICE_FLOW, FLOW } from "./desert-ride-model.js";
 import { createReturnGuide } from "./desert-ride-guide.js";
 import { TIERS, TIER_LABEL } from "../core/play-tiers.js";
-import { DESERT_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose, spinFrames, preloadHudArt, warmDesertUi } from "./desert-ride-art.js";
+import { DESERT_ART, DESERT_VALLEY_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose, spinFrames, preloadHudArt, warmDesertUi } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
 import { faceIconUrl } from "../core/data.js";
 import { installRotateGuard, rotateGuarded } from "../core/rotate-guard.js";
@@ -59,10 +59,10 @@ const CAM = { depth: 1.5, height: 2.0, back: 4.5, meterPerLane: 1.6 }; // 疑似
  * 横の作りでは路面の消失線＝遠くの砂丘の足元（HORIZON）なので、路面が平らな台地のまま砂丘へ届いて見えた。
  * 下り坂では、目の高さ（eye: 空と遠くの稜線の境）より下に路面の消失線（ground）を置く。路面は目の高さより下へ続き、
  * その間に坂の下の谷（遠景の絵の谷の部分。縦に広げる）が見える＝見下ろしながら坂を下っている見え方。
- * height は斜面から測ったカメラの高さ（m。横の 2m より高いほど見下ろす）。valley は遠景の横の倍率（小さいほど遠くの谷が広く見える）。
+ * height は斜面から測ったカメラの高さ（m。横の 2m より高いほど見下ろす）。valleyWidth は谷の絵（DESERT_VALLEY_ART）を描く幅（px。縦横同じ倍率）。
  * posts はコースの両端の杭とロープ（every m ごと、reach m 先まで）。坂の下へ細く集まる2本の線で、コースの向きと奥行きを見せる。
  */
-const DOWNHILL = Object.freeze({ eye: 150, ground: 300, height: 2.4, valley: 0.62, posts: Object.freeze({ every: 6, reach: 170, height: 0.85 }) });
+const DOWNHILL = Object.freeze({ eye: 140, ground: 290, height: 2.6, valleyWidth: 700, posts: Object.freeze({ every: 6, reach: 170, height: 0.85 }) });
 const COUNTDOWN = 2.4;           // 本番のスタートの合図（3・2・1・GO）の秒数（その相手との最初の一本）
 /**
  * 手応え（演出）の数値（2026-11-13 オーナー「手応えレビューの内容を実装して、より面白く」）。規則（desert-ride-model.js）と違い凍結しない:
@@ -382,7 +382,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
   const bgmBefore = currentBgm();
   let rideBgm = null;
   const restoreBgm = () => { if (rideBgm && currentBgm() === rideBgm) playBgm(bgmBefore); };
-  const art = loadDesertArt({ rivals: [] });
+  const art = loadDesertArt({ rivals: [], valley: sloped });
   // 対戦相手の絵も、メニューで選んでいる間に読み始めておく（走る前の門で待ち直さない）。
   const menuArt = rivals.length ? loadDesertArt({ rivals }) : art;
   preloadHudArt();
@@ -875,7 +875,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         const tintWho = kind === "practice" ? null : rivals.includes(who) ? who : "noor";
         // 練習か対戦相手が決まったら、最初に鳴らす曲だけを絵・効果音の準備中に先読みする。
         const readyBgm = preloadBgm(RIDE_BGM[tintWho ?? "practice"]);
-        const runArt = loadDesertArt({ rivals: kind === "practice" ? [] : [who] });
+        const runArt = loadDesertArt({ rivals: kind === "practice" ? [] : [who], valley: sloped });
         const warm = () => {
           if (done) return;
           prewarmCanvas();
@@ -2019,18 +2019,26 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     }
     /**
      * 遠景の絵の置き方。横: 絵の縁（lip）の行を HORIZON に合わせる（空・稜線は同じ倍率、縁より下は画面の下端まで伸ばす）。
-     * 下り坂（DOWNHILL）: 空と稜線の境（skyLine）を目の高さ EYE_Y、縁を路面の消失線 GROUND_Y に合わせ、間の谷を縦に広げる（見下ろした谷）。
-     * 横の倍率は DOWNHILL.valley（縦は左右を切って真ん中だけ見せるので、絵を小さくして遠くの砂丘を小さく・谷を広く見せる）。
+     * 下り坂（DOWNHILL）: 空は画面の上から目の高さ EYE_Y の少し下まで。その上に谷の絵（DESERT_VALLEY_ART）を、遠くの稜線の足元が EYE_Y に乗るように縦横同じ倍率で置き、
+     * 路面の消失線 GROUND_Y から下は手前の斜面の砂（陸の絵の縁より下）。谷の絵の下の方は斜面の向こう側に隠れる（坂の上から見えない所）。
+     * 谷の絵がまだ無い時は、陸の絵の稜線を GROUND_Y に乗せる（横と同じ倍率）。
      */
-    function backdropFit() {
+    function backdropFit(valleyArt) {
       const B = DESERT_ART.backdrop, above = B.horizon - DESERT_ART.land.top, below = B.height - B.horizon;
       if (!sloped) {
-        const k = BACKDROP_SCALE;
-        return { dw: Math.round(B.width * k), skyY: HORIZON - B.horizon * k, skyK: k, landY: HORIZON - above * k, landH: above * k, above, below };
+        const k = BACKDROP_SCALE, w = Math.round(B.width * k);
+        return { skySrc: DESERT_ART.sky.size[1], skyW: w, skyY: HORIZON - B.horizon * k, skyH: DESERT_ART.sky.size[1] * k, landW: w, landY: HORIZON - above * k, landH: above * k, above, below };
       }
-      // 空は横と同じく画面の上端より上から（傾き・揺れで上の角が空かないよう 40px 余らせる）
-      const k = DOWNHILL.valley, kv = (GROUND_Y - EYE_Y) / (B.horizon - B.skyLine), skyK = Math.max(k, (EYE_Y + 40) / B.skyLine);
-      return { dw: Math.round(B.width * k), skyY: EYE_Y - B.skyLine * skyK, skyK, landY: EYE_Y - (B.skyLine - DESERT_ART.land.top) * kv, landH: above * kv, above, below };
+      // 空: 空の絵の稜線より上（空だけの行）を、上端は傾き・揺れでも角が空かないよう 40px 上から、下端は目の高さの 30px 下まで
+      const skySrc = B.duneTop - 4, skyK = (EYE_Y + 70) / skySrc, skyW = Math.round(B.width * skyK);
+      if (!valleyArt) {
+        const k = BACKDROP_SCALE;
+        return { skySrc, skyW, skyY: -40, skyH: skySrc * skyK, landW: Math.round(B.width * k), landY: GROUND_Y - above * k, landH: above * k, above, below };
+      }
+      const V = DESERT_VALLEY_ART.valley, [vw, vh] = V.size;
+      // 谷の絵の下端が斜面の消失線より上で切れないよう、必要なら大きくする
+      const kv = Math.max(DOWNHILL.valleyWidth / vw, (GROUND_Y - EYE_Y + 6) / (vh - V.horizon));
+      return { skySrc, skyW, skyY: -40, skyH: skySrc * skyK, landW: Math.round(vw * kv), landY: EYE_Y - V.horizon * kv, landH: vh * kv, above, below, valley: true };
     }
     function drawBackdrop(dusk, progress, present = true) {
       const sky = art.get("sky"), land = art.get("land");
@@ -2042,21 +2050,23 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       const smearKey = !reducedMotion && (view.boost || 0) > 0.2 ? Math.round((view.boost || 0) * 5) : 0;
       const edge = Math.round(world?.slope || 0);
       // 太陽の移動幅は約180pxのため、progress*180 で1px精度を保ちつつ再描画回数を抑える
-      const key = `${Math.round(yawPx / 4)}|${Math.round(dusk * 40)}|${Math.round(progress * 180)}|${smearKey}|${edge}`;
+      const valleyReady = sloped && !!art.get("valley"); // 下り坂の谷の絵が届いたら描き直す
+      const key = `${Math.round(yawPx / 4)}|${Math.round(dusk * 40)}|${Math.round(progress * 180)}|${smearKey}|${edge}|${valleyReady}`;
       if (key !== backdropKey) {
         backdropKey = key;
       const g = backdropLayer.getContext("2d");
       g.setTransform(1, 0, 0, 1, BACKDROP_MARGIN, 0);
-      const B = DESERT_ART.backdrop, fit = backdropFit(), dw = fit.dw, baseX = (W - dw) / 2;
+      const B = DESERT_ART.backdrop, valleyArt = sloped ? art.get("valley") : null, fit = backdropFit(valleyArt);
       // 空はゆっくり、陸は速く横へ流れる（カーブに合わせたパララックス）。絵の地平線の行を HORIZON に合わせる（下り坂は backdropFit）。
       // 曲がっている間は遠くの砂丘が横へ流れ続ける（2026-11-11 オーナー「カーブがほんとにしてるのか分かりづらい」）
-      wrapImage(g, sky, 0, 0, B.width, sky.naturalHeight, baseX - yawPx * 0.5, fit.skyY, dw, sky.naturalHeight * fit.skyK);
+      const skyX = (W - fit.skyW) / 2 - yawPx * 0.5;
+      wrapImage(g, sky, 0, 0, B.width, fit.skySrc, skyX, fit.skyY, fit.skyW, fit.skyH);
       const duskVisible = dusk >= 0.01;
       const duskSky = art.get("duskSky"), duskLand = art.get("duskLand");
       if (duskVisible && duskSky && duskLand) {
         // 同じ構図の夕方の絵を、ゴールへ近づくほど濃く重ねる（0.01 未満は視認不可のため合成を省く）
         g.globalAlpha = dusk;
-        wrapImage(g, duskSky, 0, 0, B.width, duskSky.naturalHeight, baseX - yawPx * 0.5, fit.skyY, dw, duskSky.naturalHeight * fit.skyK);
+        wrapImage(g, duskSky, 0, 0, B.width, fit.skySrc, skyX, fit.skyY, fit.skyW, fit.skyH);
         g.globalAlpha = 1;
       } else if (duskVisible) {
         const tint = g.createLinearGradient(0, 0, 0, EYE_Y + 10);
@@ -2072,16 +2082,20 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       g.fillStyle = mixColor([255, 248, 220], [255, 170, 90], dusk);
       g.beginPath(); g.arc(sunX, sunY, r, 0, Math.PI * 2); g.fill();
       // 陸: 稜線〜縁（lip）は空と同じ倍率、縁より下（手前の斜面の砂）は画面の下端まで伸ばす
-      const landX = baseX - yawPx, { above, below } = fit;
+      const landX = (W - fit.landW) / 2 - yawPx, { above, below } = fit;
+      const groundW = Math.round(B.width * BACKDROP_SCALE), groundX = (W - groundW) / 2 - yawPx;
+      const duskValley = fit.valley && duskVisible ? art.get("duskValley") : null;
       // ブースト中は遠景を左右に少しずらして重ね、流れているように見せる
       const smear = !reducedMotion && (view.boost || 0) > 0.2 ? 14 * (view.boost || 0) : 0;
-      for (const [image, alpha] of [[land, 1], [duskVisible ? duskLand : null, dusk]]) {
+      for (const [image, alpha, valleyImage] of [[land, 1, fit.valley ? valleyArt : null], [duskVisible ? duskLand : null, dusk, duskValley]]) {
         if (!image) continue;
         for (const [shift, a] of smear ? [[0, alpha], [smear, alpha * 0.28], [-smear, alpha * 0.28]] : [[0, alpha]]) {
           g.globalAlpha = a;
           // 砂丘は edge だけ下げる（採用した坂の絵では edgePx=0 なので、縁は HORIZON に乗る）。縁より下は手前の斜面の砂
-          wrapImage(g, image, 0, 0, B.width, above, landX + shift, fit.landY + edge, dw, fit.landH);
-          wrapImage(g, image, 0, above, B.width, below, landX + shift, GROUND_Y, dw, H - GROUND_Y);
+          // 下り坂: 稜線〜谷は谷の絵（目の高さに稜線の足元）。夕方の谷の絵が無ければ、昼の谷の上に陸の夕方を重ねない（谷は全体の暖色で夕方になる）
+          if (fit.valley) { if (valleyImage) wrapImage(g, valleyImage, 0, 0, valleyImage.naturalWidth, valleyImage.naturalHeight, landX + shift, fit.landY, fit.landW, fit.landH); }
+          else wrapImage(g, image, 0, 0, B.width, above, landX + shift, fit.landY + edge, fit.landW, fit.landH);
+          wrapImage(g, image, 0, above, B.width, below, (fit.valley ? groundX : landX) + shift, GROUND_Y, fit.valley ? groundW : fit.landW, H - GROUND_Y);
         }
       }
       g.globalAlpha = 1;
@@ -2870,15 +2884,18 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       vignetteLayer(1);
       const sky = art.get("sky"), land = art.get("land");
       if (sky && land) {
-        const B = DESERT_ART.backdrop, { dw, skyK, landH, above, below } = backdropFit();
-        backdropStrip(sky, 0, 0, B.width, sky.naturalHeight, dw, sky.naturalHeight * skyK);
-        backdropStrip(land, 0, 0, B.width, above, dw, landH);
-        backdropStrip(land, 0, above, B.width, below, dw, H - GROUND_Y);
-        const duskSky = art.get("duskSky"), duskLand = art.get("duskLand");
-        if (duskSky) backdropStrip(duskSky, 0, 0, B.width, duskSky.naturalHeight, dw, duskSky.naturalHeight * skyK);
+        const B = DESERT_ART.backdrop, valleyArt = sloped ? art.get("valley") : null, fit = backdropFit(valleyArt), { skySrc, skyW, skyH, landW, landH, above, below } = fit;
+        const groundW = fit.valley ? Math.round(B.width * BACKDROP_SCALE) : landW;
+        backdropStrip(sky, 0, 0, B.width, skySrc, skyW, skyH);
+        if (fit.valley) backdropStrip(valleyArt, 0, 0, valleyArt.naturalWidth, valleyArt.naturalHeight, landW, landH);
+        else backdropStrip(land, 0, 0, B.width, above, landW, landH);
+        backdropStrip(land, 0, above, B.width, below, groundW, H - GROUND_Y);
+        const duskSky = art.get("duskSky"), duskLand = art.get("duskLand"), duskValley = fit.valley ? art.get("duskValley") : null;
+        if (duskSky) backdropStrip(duskSky, 0, 0, B.width, skySrc, skyW, skyH);
+        if (duskValley) backdropStrip(duskValley, 0, 0, duskValley.naturalWidth, duskValley.naturalHeight, landW, landH);
         if (duskLand) {
-          backdropStrip(duskLand, 0, 0, B.width, above, dw, landH);
-          backdropStrip(duskLand, 0, above, B.width, below, dw, H - GROUND_Y);
+          if (!fit.valley) backdropStrip(duskLand, 0, 0, B.width, above, landW, landH);
+          backdropStrip(duskLand, 0, above, B.width, below, groundW, H - GROUND_Y);
         }
         if (!backdropLayer) {
           drawBackdrop(0, 0, false);

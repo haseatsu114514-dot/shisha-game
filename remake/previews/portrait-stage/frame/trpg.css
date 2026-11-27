@@ -427,7 +427,7 @@ html:root[data-density="phone"][data-layout="portrait"] { --phone-text: 24px; --
 
 /* 札を選ぶ場面（聞き込み・持ち物など）: 札は下に詰め、絵は上に見せる。下だけ薄く暗く */
 #stage .trpg-root.trpg-cinematic .trpg-selection { top: auto; bottom: 108px; height: auto; max-height: calc(var(--stage-h, 1385px) - 250px); justify-content: flex-end; gap: 8px; padding: 0 12px; overflow: visible; }
-#stage .trpg-root.trpg-cinematic .trpg-selection::before { inset: -90px -12px -108px; background: linear-gradient(180deg, #04101100 0%, #04101170 30%, #040e0fc4 100%); }
+#stage .trpg-root.trpg-cinematic .trpg-selection::before { z-index: -1; inset: -90px -12px -108px; background: linear-gradient(180deg, #04101100 0%, #04101170 30%, #040e0fc4 100%); }
 #stage .trpg-root.trpg-cinematic .trpg-selection-title { padding: 6px 14px; border-radius: 14px; background: #050f1199; }
 #stage .trpg-root.trpg-cinematic .trpg-topic-list { gap: 8px; }
 #stage .trpg-root.trpg-cinematic .trpg-topic { min-height: 76px; padding: 6px 18px; border-color: #d2ae6659; background: linear-gradient(170deg, #12302fbf, #0b2125cc); box-shadow: 0 4px 14px #0006; text-shadow: 0 1px 3px #000; }

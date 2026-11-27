@@ -8,8 +8,7 @@ export const DESERT_ART = Object.freeze({
   // 遠景（#3713 の坂の絵）。空と陸を分け、沈む太陽を陸の後ろに描く。horizon は斜面の縁（lip）の行、duneTop は稜線のいちばん上
   sky: Object.freeze({ file: "ui/desert_ride/backdrop_day_sky.webp", size: Object.freeze([1800, 416]) }),
   land: Object.freeze({ file: "ui/desert_ride/backdrop_day_land.webp", size: Object.freeze([1800, 500]), top: 220 }),
-  // skyLine は空と遠くの稜線の境の行（縦の下り坂で目の高さに合わせる。DOWNHILL）
-  backdrop: Object.freeze({ width: 1800, height: 720, horizon: 405, duneTop: 232, skyLine: 250 }),
+  backdrop: Object.freeze({ width: 1800, height: 720, horizon: 405, duneTop: 232 }),
   // 同じ構図の夕方。ゴールへ近づくほど昼の上に重ねる。陸の寸法・基準点は昼と同じ
   duskSky: Object.freeze({ file: "ui/desert_ride/backdrop_dusk_sky.webp", size: Object.freeze([1800, 416]) }),
   duskLand: Object.freeze({ file: "ui/desert_ride/backdrop_dusk_land.webp", size: Object.freeze([1800, 500]), top: 220 }),
@@ -159,10 +158,21 @@ let images = null;
  * 共通画像と選んだ相手だけを準備する。rivals省略時は従来どおり全画像。
  * Mapは共有し、後から相手を替えても取得・decodeを重複させない。
  */
-export function loadDesertArt({ rivals = null } = {}) {
+/**
+ * 縦の下り坂の遠景（2026-11-27。gpt-image-2.6-sunburst 生成・記録は asset_sources/ui/minigame-visuals-20261127/desert/）。
+ * 高い所から見下ろした坂の下の谷。上の空は透明（空は sky を使い、沈む太陽を谷の稜線の後ろに描ける）。horizon は遠くの稜線の足元（目の高さ）の行。
+ * 横（既定）では使わないので DESERT_ART とは分け、下り坂の時だけ読む（loadDesertArt の valley）。夕方は同じ構図・同じ寸法。
+ */
+export const DESERT_VALLEY_ART = Object.freeze({
+  valley: Object.freeze({ file: "ui/desert_ride/valley_day.webp", size: Object.freeze([1536, 652]), horizon: 38 }),
+  duskValley: Object.freeze({ file: "ui/desert_ride/valley_dusk.webp", size: Object.freeze([1536, 652]), horizon: 38 }),
+});
+
+export function loadDesertArt({ rivals = null, valley = false } = {}) {
   images ||= new Map();
   const names = Object.entries(DESERT_ART).filter(([name, def]) => def.file
     && (rivals === null || !/^(noor|naru)(Rider|Spin)/.test(name) || rivals.some(who => name.startsWith(who + "Rider") || name.startsWith(who + "Spin")))).map(([name]) => name);
+  if (valley) names.push(...Object.keys(DESERT_VALLEY_ART));
   if (typeof Image !== "undefined") {
     for (const name of names) {
       if (images.has(name)) continue;
@@ -176,7 +186,7 @@ export function loadDesertArt({ rivals = null } = {}) {
         image.onerror = () => { entry.ready = false; entry.pending = false; resolve(); };
       });
       images.set(name, entry);
-      image.src = imgFileUrl(DESERT_ART[name].file);
+      image.src = imgFileUrl((DESERT_ART[name] || DESERT_VALLEY_ART[name]).file);
     }
   }
   const entries = names.map(name => images.get(name)).filter(Boolean);
