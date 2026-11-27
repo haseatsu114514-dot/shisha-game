@@ -994,11 +994,6 @@
           "text": "現王者さまは、明日のお楽しみ。今年もお顔は、当日までですッ"
         },
         {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "……王者の席だけ、空いたままか"
-        },
-        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（世界の王者は、どんな顔であの席に座るんだろう）"
@@ -1869,7 +1864,7 @@
         {
           "speaker": "emil",
           "face": "thinking",
-          "text": "……Eline sağlık（エリネ・サールク）"
+          "text": "……エリネ・サールク"
         },
         {
           "speaker": "emil",
