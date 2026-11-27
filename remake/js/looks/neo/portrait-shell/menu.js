@@ -1,10 +1,10 @@
 // ボタンが並ぶだけの画面。上画面にその場所の背景と一言、下画面にボタンの一覧を出し、押したら現行のボタンへの click として中継する。
-// 写せる画面（retro/detect.js が見分ける）:
+// 写せる画面（neo/portrait-shell/detect.js が見分ける）:
 //   tonari の行動選びなど（daily/tonari.js の .sub-menu）
 //   第3〜5章の場面カード・大会の案内カード（main.ch2-contest）、第2章の店頭カード（main.ch2-stop）
 //   文と選択肢だけの確かめの小窓（core/ui.js の modal。#modal の .modal-box）
-//   どれも DS風・新版の縦持ちの両方で写す（LK21）
-import { el } from "../../core/util.js";
+//   どれも新版の縦持ちで写す（LK11）
+import { el } from "../../../core/util.js";
 import { readHud } from "./hud.js";
 
 const text = (node) => node?.textContent?.replace(/\s+/g, " ").trim() || "";

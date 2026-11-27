@@ -455,7 +455,7 @@ export async function openConfig(opts = {}) {
   const loadingComics = document.body?.dataset?.screen === "preview" ? null :
     segRow("ロード画面の漫画", "cfg-loading-comics", [["always", "いつも"], ["wait", "待つ時だけ"]],
       comicLoadingRequired() ? "always" : "wait", setLoadingComicsMode);
-  // 見た目の様式（LK01）。既定は縦画面（LK24。旧版へはここで戻せる）。新版は選べない（コードは残してある）。DS風はすべての章でいつでも切り替えられる（LK21）。
+  // 見た目の様式（LK01）。既定は縦画面（LK24。旧版へはここで戻せる）。新版は選べない（コードは残してある）。
   const look = segRow("見た目", "cfg-look", LOOKS.filter(({ id }) => !DISABLED_LOOKS.includes(id)).map(({ id, label }) => [id, label]),
     normalizeLook(config.look), (v) => { setConfig("look", v); setLook(v); });
   // #3795: 通常制作は桜井版。第1章大会の既存の切替だけ残し、次の試合から効かせる。

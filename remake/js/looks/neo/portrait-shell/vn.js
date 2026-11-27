@@ -1,7 +1,7 @@
 // 会話と選択肢。現行の会話欄（#vn の .vn-box / .vn-choices / .vn-controls）を読んで下画面へ写し、タップは現行へ中継する。
 // 文字送りは現行が1字ずつ増やすので、変化のたびに写せばそのまま再現される。
-import { el } from "../../core/util.js";
-import { autoWrap } from "../../vn/text.js";
+import { el } from "../../../core/util.js";
+import { autoWrap } from "../../../vn/text.js";
 import { readHud } from "./hud.js";
 
 // 1行に折る全角の字数。下画面の会話窓の文字の幅は 224 ドット（16 ドットで 14 字、12 ドットで 18 字入る）。

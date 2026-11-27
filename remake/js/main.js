@@ -60,7 +60,7 @@ export async function boot() {
   initIchidaiSwitch(); // カードゲーム「一台勝負」の入口（?ichidai=1 で入・ICG）
   const cfg = loadConfig();
   applyUiTheme(cfg.uiTheme);
-  // 見た目の様式（新版／旧版／DS風・LK01）。既定は新版で、まだ選んでいない端末は一度だけ既定へ移す（LK09）。
+  // 見た目の様式（新版／旧版／縦画面・LK01）。既定は縦画面で、まだ選んでいない端末は一度だけ既定へ移す（LK24）。
   // ?look=neo などで端末の設定ごと切り替えられる。
   migrateLook(cfg);
   const lookParam = new URLSearchParams(location.search).get("look");

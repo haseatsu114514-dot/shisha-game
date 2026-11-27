@@ -1,7 +1,7 @@
 // 覆い（見るだけの場面）: 場面転換・日付の札・章タイトル・巻頭の詩・登場カットイン・読み込みの一言など。
 // 現行の画面へは戻さず、外枠のまま上画面を暗くして、覆いの中に見えている文字と絵だけを読み取って写す。
 // タップは現行ステージ中央の一番上の要素へ中継する（詩の送りなど、覆いがタップを待っている時に詰まらないように）。
-import { el } from "../../core/util.js";
+import { el } from "../../../core/util.js";
 
 const SKIP_TAGS = new Set(["rt", "rp", "script", "style", "svg", "canvas", "img", "button"]);
 const text = (node) => node?.textContent?.replace(/\s+/g, " ").trim() || "";

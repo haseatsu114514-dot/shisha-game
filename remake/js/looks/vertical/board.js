@@ -5,7 +5,7 @@
 // 盤の中身（灯したマス・仮置き・火種・払い方・章で開く所・授業の錠）は本編の盤の画面（daily/growth-board-screen.js）が持っている。
 // ここは本編の盤の「読み取りと操作の口」（boardControl）から状態を読んで描き、押した・灯した・決定したは本編の盤の関数へ渡す
 // （払い方・仮置き・決定・保存・音・はじめての案内・決定の知らせは本編のまま）。本編の盤は演出の層に見えないまま開いている。
-// 盤の上に出る確かめ（決定しますか？）・見方の小窓は、シートの写し（looks/retro/sheet.js）で重ねる。はじめての案内は吹き出しで写す。
+// 盤の上に出る確かめ（決定しますか？）・見方の小窓は、シートの写し（looks/neo/portrait-shell/sheet.js）で重ねる。はじめての案内は吹き出しで写す。
 import { el } from "../../core/util.js";
 import { state } from "../../core/state.js";
 import {
@@ -15,7 +15,7 @@ import {
 import { HIDANE_KEYS, gaugeInfo } from "../../core/growth.js";
 import { displayName } from "../../core/data.js";
 import { paginateForBox } from "../../vn/layout.js";
-import { createSheetScene as createRetroSheet } from "../retro/sheet.js";
+import { createSheetScene as createRetroSheet } from "../neo/portrait-shell/sheet.js";
 import { escapeHtml as esc, textOf, liveBackground, cssUrl } from "./frame.js";
 
 const IMG = new URL("../../../img/", import.meta.url).href;
