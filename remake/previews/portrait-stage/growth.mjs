@@ -292,9 +292,13 @@ export class GrowthScene {
     const { g, s } = this;
     if (node.kind === "lesson") return lessonKnown(node, g, s) ? this.art(`faces/new/${node.who}`) : this.art("silhouette_unknown");
     if (node.kind === "gate") return this.art(`hidane_${node.board}`);
+    if (this.hiddenSkill(node)) return this.art("badge_unknown");
     if (node.kind === "skill") return this.art(`icons/skill_${node.id}`);
     return this.art(`icons/${node.peak ? "peak" : perkIcon(node.perk)}`);
   }
+
+  /** まだ盤に現れていないスキル（開いている章の2つ先から。本編の revealOf と同じ: 次の章＝名前と効果、その先＝伏せる）。 */
+  hiddenSkill(node) { return node.kind === "skill" && node.ring > ringsOpen(this.s) + 1; }
 
   renderBoard(v) {
     const { board, g, s } = this, nodes = boardNodes(board), layout = LAYOUTS[board];
@@ -332,11 +336,12 @@ export class GrowthScene {
         else if (lessonLock(node)) tag = `<span class="gb-tag heart">♥${lessonLock(node).heartNow}/${node.need}</span>`;
         else if (st === "available") tag = `<span class="gb-tag now">今</span>`;
       }
-      const name = node.kind === "stat" ? (perk.notable?.name || perk.name) : node.kind === "gate" ? "色の台座" : node.kind === "lesson" && !known ? "？？？の授業" : node.name;
+      const veiled = this.hiddenSkill(node) || (node.kind === "lesson" && !known);
+      const name = node.kind === "stat" ? (perk.notable?.name || perk.name) : node.kind === "gate" ? "色の台座" : node.kind === "lesson" && !known ? "？？？の授業" : veiled ? "？？？" : node.name;
       return `<button class="gb-node k-${kind} s-${st}${node.notable ? " notable" : ""}${this.fresh.has(node.id) ? " fresh" : ""}" data-act="gb-node" data-id="${node.id}" aria-pressed="${this.selected === node.id}"
           style="left:${x}rem;top:${y}rem" aria-label="${name}（${this.statusWord(node, st)}）">
         <i class="gb-base"></i><img class="gb-ico" src="${this.nodeIcon(node)}" alt="" draggable="false">
-        ${node.kind === "lesson" && !known ? `<b class="gb-q">?</b>` : ""}${node.feature ? `<b class="gb-star">✦</b>` : ""}
+        ${veiled ? `<b class="gb-q">?</b>` : ""}${node.feature ? `<b class="gb-star">✦</b>` : ""}
         ${st === "unlocked" ? `<em class="gb-mark">✓</em>` : st === "pending" ? `<em class="gb-mark plus">＋</em>` : ""}
         ${g.target === node.id && st !== "unlocked" ? `<em class="gb-aim">◎</em>` : ""}
         ${entrance ? `<img class="gb-lock" src="${this.art("wall_seal")}" alt="">` : ""}${tag}
@@ -385,7 +390,7 @@ export class GrowthScene {
       text = `${HIDANE_NAME[node.board]}をはめると先へ進めて、この台座の能力が手に入る`; sub = perk?.text || "";
     } else if (node.kind === "skill") {
       // 章ごとの見せ方（本編の revealOf）: 開いている章＝全部、次の章＝名前と効果、その先＝伏せる
-      const hidden = node.ring > ringsOpen(s) + 1;
+      const hidden = this.hiddenSkill(node);
       kind = "スキル"; name = hidden ? "？？？" : node.name; text = hidden ? "物語が進むと盤に現れる" : node.text; sub = hidden ? "" : `効く場面：${node.scene}・火種${node.cost}`;
     } else if (!known) {
       kind = "授業"; name = "？？？の授業"; text = "まだ出会っていない誰かが、ここで何かを教えてくれるらしい";
@@ -402,7 +407,7 @@ export class GrowthScene {
     this.refs.card.dataset.mode = "node";
     this.refs.card.innerHTML = `
       <div class="gb-card-head k-${node.peak ? "peak" : node.kind} s-${st}">
-        <span class="gb-art"><img src="${this.nodeIcon(node)}" alt="">${node.kind === "lesson" && !known ? `<b>?</b>` : ""}</span>
+        <span class="gb-art"><img src="${this.nodeIcon(node)}" alt="">${(node.kind === "lesson" && !known) || this.hiddenSkill(node) ? `<b>?</b>` : ""}</span>
         <div class="gb-name"><span><small>${esc(kind)}</small><em class="gb-chip s-${st}">${this.statusWord(node, st)}</em></span><b>${esc(name)}</b></div>
         <button class="gb-x" data-act="gb-close" aria-label="選ぶのをやめる">×</button>
       </div>
