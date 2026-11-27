@@ -185,10 +185,12 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_preparation_started", "progression"],
   ["_ch2_preview_seen", "progression"],
   ["_ch2_read_ch2_coal_together", "progression"],
+  ["_ch2_read_ch2_ent_clinic", "progression"], // 耳鼻科（DAY6昼）。朝のメモ（ch2_morning_notes）と採点表（ch2_phone_score_sheet）の条件（VOL17）
   ["_ch2_read_ch2_kumicho_fifth", "person"],
   ["_ch2_read_ch2_kumicho_sixth", "person"],
   ["_ch2_read_ch2_kumicho_third", "person"],
   ["_ch2_read_ch2_lingering_smell", "progression"], // スミさんの飯の接客回（baito_ch2_staff_meal）の条件
+  ["_ch2_read_ch2_morning_notes", "progression"], // 朝のメモ（DAY7朝）。採点表（ch2_phone_score_sheet）の「吸って確かめない」の条件（VOL17）
   ["_ch2_read_ch2_naru_lunch", "person"], // 試煙会（remake_ch2_ageha_tasting）で、前日の昼に聞いた苺の依頼を受けるか（#3922）
   ["_ch2_read_ch2_naru_warm", "person"],
   ["_ch2_read_ch2_naru_window", "person"], // 前夜の振り返りで、休みの店の前に送ったLIMEの返事を待つか（#2720）

@@ -51,21 +51,26 @@ async function readStep(step) {
 
 /**
  * 昼の本筋（CH2_DAY_SCENES）を、出かける前の朝に読む。最後まで読んだ時だけ印を付け、昼の行動を使う。
+ * 行動を使わない家の朝の場面（keepsAction・VOL17）は先に読み、印だけ付けて行動は残す。
  * day は章内日（呼ぶ側の ch2-preparation.js が第2章の開始日から数える）。中断・LOAD では確定しない（同じ朝にもう一度）。
+ * @returns 行動を使う場面まで読み終えたら true
  */
 export async function readChapterTwoDayScene(day) {
   const owner = state;
-  const scene = chapterTwoDaySceneDue(owner, day, DB.dialogues);
-  if (!scene) return false;
-  const place = bgUrl(scene.bg, "day") || bgUrl(scene.bg);
-  if (place && await imageReady(place, 15000)) await setBg(place);
-  if (state !== owner) return false;
-  const result = await play(scene.id);
-  if (state !== owner || !result || result.cancelled) return false;
-  owner.flags[`_ch2_read_${scene.id}`] = true;
-  owner.slot = Math.max(owner.slot, 1);
-  save();
-  return true;
+  for (const keepsAction of [true, false]) {
+    const scene = chapterTwoDaySceneDue(owner, day, DB.dialogues, { keepsAction });
+    if (!scene) continue;
+    const place = bgUrl(scene.bg, "day") || bgUrl(scene.bg);
+    if (place && await imageReady(place, 15000)) await setBg(place);
+    if (state !== owner) return false;
+    const result = await play(scene.id);
+    if (state !== owner || !result || result.cancelled) return false;
+    owner.flags[`_ch2_read_${scene.id}`] = true;
+    if (!keepsAction) owner.slot = Math.max(owner.slot, 1);
+    save();
+    if (!keepsAction) return true;
+  }
+  return false;
 }
 
 export function chapterTwoNights(startDay) {
