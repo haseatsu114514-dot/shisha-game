@@ -1,0 +1,82 @@
+/* 縦画面C案「煙の舞台」: チェキ（cheki.mjs）とプリクラ（purikura.mjs）の縦の画面。長さは rem（スマホの幅 39rem）。
+   上＝店と人物（演出の間は演出が主役）、真ん中＝台詞の帯（押すと次へ）、下（親指の届く所）＝返事・シャッター・撮影スタートの大きな札。十字キーと丸ボタンは置かない。
+   演出の部品の見た目は本編の css/motions/cheki.css・purikura.css をそのまま使い（index.html で読む）、ここでは縦の置き場所だけを決める。 */
+
+.ck-app, .pk-app { position: absolute; inset: 0; display: flex; flex-direction: column; color: #ece6f5; background: #0b0812; }
+.ck-stage, .pk-stage { position: relative; flex: 1 1 0; min-height: 0; overflow: hidden; background: #140d1c; }
+
+/* ───────── 台詞の帯・下の札（共通） ───────── */
+.pt-telop { position: relative; z-index: 6; flex: none; min-height: 10.8rem; margin: -2.4rem 1.2rem 0; padding: 1.3rem 1.6rem 1.5rem; border-radius: 1.6rem; background: #120c1df2; border: 0.1rem solid #ffffff26; box-shadow: 0 0.8rem 2.2rem #000a; cursor: pointer; transition: opacity 0.25s ease; }
+.pt-telop.off { opacity: 0; pointer-events: none; }
+.pt-telop.in { animation: pt-in 0.28s var(--ease-out) both; }
+@keyframes pt-in { from { opacity: 0; transform: translateY(0.6rem); } }
+.pt-name { display: inline-block; margin: 0 0 0.45rem; padding: 0.15rem 1.1rem; border-radius: 1rem; font-size: 1.25rem; font-weight: 800; letter-spacing: 0.12em; color: #170f1f; background: var(--acc); }
+.pt-name[hidden] { display: none; }
+.pt-text { margin: 0; min-height: 3.4em; font-size: 1.62rem; line-height: 1.7; letter-spacing: 0.02em; }
+.pt-telop[data-who="narr"] .pt-text { color: #d9d0e8; }
+.pt-telop.inner .pt-text { color: #bfe3ff; }
+.pt-more { position: absolute; right: 1.5rem; bottom: 1.1rem; width: 0; height: 0; border: 0.6rem solid transparent; border-top: 0.8rem solid var(--acc); border-bottom: 0; opacity: 0; }
+.pt-telop.pt-wait .pt-more { opacity: 1; animation: pt-more 0.9s ease-in-out infinite; }
+@keyframes pt-more { 50% { transform: translateY(0.35rem); } }
+.pt-ctrl { flex: none; min-height: 13rem; display: grid; align-content: center; padding: 1.2rem 1.2rem max(1.6rem, env(safe-area-inset-bottom, 0px)); }
+.pt-ctrl.in > * { animation: pt-in 0.3s var(--ease-out) both; }
+.pt-choices { display: grid; gap: 0.9rem; }
+.pt-choices button { display: flex; align-items: center; justify-content: center; gap: 0.6rem; min-height: 5.4rem; padding: 0 1.6rem; border-radius: 2.7rem; font-size: 1.55rem; font-weight: 800; color: #24160a; background: #fff; box-shadow: 0 0.6rem 1.4rem #0008; }
+.pt-choices button:disabled { opacity: 0.42; }
+.pt-choices button:not(:disabled):active { transform: scale(0.97); }
+.pt-choices.end { grid-template-columns: 1fr 1fr; }
+.pt-choices.end button { color: #ece6f5; background: #ffffff14; border: 0.1rem solid #ffffff33; box-shadow: none; }
+.pt-choices.end button.go { color: #170f1f; background: var(--acc); border: 0; }
+.pt-choices .ic { width: 2rem; height: 2rem; }
+
+/* ───────── チェキ ───────── */
+.ck-bg, .pk-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; }
+.ck-stage::after, .pk-stage::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, #0b0812a6 0, transparent 22%, transparent 70%, #0b0812cc 100%); pointer-events: none; }
+.ck-minto { position: absolute; z-index: 1; left: 50%; bottom: -46%; height: 138%; width: auto; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 1rem 2rem #0009); transition: opacity 0.4s ease; }
+.ck-head, .pk-head { position: absolute; z-index: 5; left: 1.4rem; right: 1.2rem; top: max(1.2rem, env(safe-area-inset-top, 0px)); display: flex; align-items: flex-start; justify-content: space-between; pointer-events: none; }
+.ck-where, .pk-where { display: grid; padding-left: 1rem; border-left: 0.3rem solid var(--acc); line-height: 1.25; text-shadow: 0 0.2rem 0.8rem #000, 0 0 0.3rem #000; }
+.ck-where b, .pk-where b { font-family: var(--mincho); font-size: 2.1rem; letter-spacing: 0.08em; }
+.ck-where small, .pk-where small { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.14em; color: #ffffffcc; }
+.ck-money { display: grid; justify-items: end; padding: 0.5rem 1.2rem; border-radius: 1.4rem; color: #fff; background: #120c1db3; border: 0.1rem solid #ffffff38; line-height: 1.2; }
+.ck-money small { font-size: 1rem; font-weight: 700; letter-spacing: 0.12em; color: #ffc0d3; }
+.ck-money b { font-size: 1.7rem; font-variant-numeric: tabular-nums; }
+/* ファインダー（撮る間）: 四隅の枠と、外側の暗がり */
+.ck-finder { position: absolute; z-index: 2; left: 9%; right: 9%; top: 13%; bottom: 9%; border-radius: 1.2rem; box-shadow: 0 0 0 100rem #0b081299; pointer-events: none; animation: ck-finder 0.35s var(--ease-out) both; }
+.ck-finder[hidden] { display: none; }
+@keyframes ck-finder { from { opacity: 0; transform: scale(1.08); } }
+.ck-finder > i { position: absolute; width: 3.6rem; height: 3.6rem; border: 0 solid #fff; filter: drop-shadow(0 0 0.4rem #0009); }
+.ck-finder > i:nth-child(1) { left: 0; top: 0; border-width: 0.4rem 0 0 0.4rem; border-radius: 1.2rem 0 0 0; }
+.ck-finder > i:nth-child(2) { right: 0; top: 0; border-width: 0.4rem 0.4rem 0 0; border-radius: 0 1.2rem 0 0; }
+.ck-finder > i:nth-child(3) { left: 0; bottom: 0; border-width: 0 0 0.4rem 0.4rem; border-radius: 0 0 0 1.2rem; }
+.ck-finder > i:nth-child(4) { right: 0; bottom: 0; border-width: 0 0.4rem 0.4rem 0; border-radius: 0 0 1.2rem 0; }
+.ck-finder-dot { position: absolute; left: 50%; top: 50%; width: 5rem; height: 5rem; margin: -2.5rem 0 0 -2.5rem; border-radius: 50%; border: 0.25rem solid #ffffffb3; box-shadow: 0 0 0 0.1rem #0006; }
+.ck-show { position: absolute; z-index: 3; inset: 0; pointer-events: none; transition: opacity 0.5s ease; }
+.ck-show.gone { opacity: 0; }
+.ck-show .ck-dark { background: #0b0812e0; }
+.ck-show .ck-dark.full { clip-path: none; }
+.phone[data-ck-view="cheki"] .ck-minto { opacity: 0; }
+/* シャッター: 大きな丸いボタン */
+.ck-shutter { justify-self: center; display: grid; justify-items: center; gap: 0.5rem; }
+.ck-shutter-ring { display: grid; place-items: center; width: 8.6rem; height: 8.6rem; border-radius: 50%; color: #fff; background: radial-gradient(circle, #ff7aa8 0 56%, #fff 57% 70%, #ff7aa8 71%); box-shadow: 0 0.8rem 2rem #ff7aa866, 0 0 0 0.2rem #fff4; }
+.ck-shutter-ring .ic { width: 3.4rem; height: 3.4rem; stroke-width: 2.2; }
+.ck-shutter b { font-size: 1.45rem; letter-spacing: 0.2em; color: #ffd8e6; }
+.ck-shutter:active .ck-shutter-ring { transform: scale(0.94); }
+.ck-toast { position: absolute; z-index: 7; left: 50%; top: 7.4rem; max-width: 34rem; margin: 0; padding: 0.9rem 1.6rem; border-radius: 2rem; font-size: 1.3rem; font-weight: 700; color: #2a1420; background: #fff6fae8; box-shadow: 0 0.6rem 1.6rem #0006; transform: translateX(-50%); white-space: nowrap; }
+.ck-toast[hidden] { display: none; }
+.ck-toast.show { animation: sp-toast 2.6s ease-out both; }
+
+/* ───────── プリクラ ───────── */
+.pk-ageha { position: absolute; z-index: 1; left: 50%; bottom: -40%; height: 132%; width: auto; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 1rem 2rem #0009); transition: opacity 0.4s ease; }
+/* 本編の撮影機の画面（720×840 の場面）。purikura.mjs の relayout が、上の画面に収まるよう縮める */
+.pk-host { position: absolute; z-index: 3; left: 0; top: 0; width: 720px; height: 840px; transform-origin: 0 0; pointer-events: none; --font: var(--gothic); }
+.pk-scene { position: absolute; inset: 0; overflow: hidden; border-radius: 36px; box-shadow: 0 30px 60px #0009; }
+.pk-scene .mo-pk-machine { left: 20px; top: 20px; width: 680px; height: 790px; }
+.pk-stage::before { content: ""; position: absolute; inset: 0; z-index: 2; background: radial-gradient(ellipse at 50% 45%, #ff6db355, #1a0f1df2 70%); opacity: 0; transition: opacity 0.4s ease; pointer-events: none; }
+.phone:is([data-pk-view="machine"], [data-pk-view="sheet"]) .pk-stage::before { opacity: 1; }
+.phone:is([data-pk-view="machine"], [data-pk-view="sheet"]) :is(.pk-ageha, .pk-head) { opacity: 0; }
+.pk-head { transition: opacity 0.3s ease; }
+.pk-start { justify-self: stretch; display: flex; align-items: center; justify-content: center; gap: 1rem; min-height: 6.8rem; border-radius: 3.4rem; font-size: 2rem; font-weight: 900; letter-spacing: 0.08em; color: #fff; background: linear-gradient(180deg, #ff8fc7, #ff3d9a); box-shadow: 0 0 0 0.35rem #fff, 0 0.9rem 2.2rem #ff3d9a66; animation: pk-start 1.4s ease-in-out infinite; }
+.pk-start span { display: grid; place-items: center; width: 4.4rem; height: 4.4rem; border-radius: 50%; background: #fff; color: #ff3d9a; }
+.pk-start .ic { width: 2.6rem; height: 2.6rem; stroke-width: 2.2; }
+@keyframes pk-start { 50% { transform: scale(1.025); } }
+.pk-start:active { transform: scale(0.97); }
