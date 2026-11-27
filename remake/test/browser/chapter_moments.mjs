@@ -17,8 +17,7 @@ const quiet = page => page.evaluate(async () => {
 
 /** 会話を通常速度で送り、演出が始まるか stop の文が出るまで進める */
 async function advanceTo(page, name, stop = null) {
-  // 第4章の大会当日は、名乗りの前に控室と抽選の客の場面がある（VOL21 第2弾。演出の前に台詞が25行）。送りの上限はその分を見込む
-  for (let n = 0; n < 160; n++) {
+  for (let n = 0; n < 80; n++) {
     if (await page.locator(moment(name)).count()) return true;
     if (stop && (await text(page)).includes(stop)) return false;
     await page.keyboard.press("Enter");

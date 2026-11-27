@@ -1207,86 +1207,11 @@
     },
     {
       "dialogue_id": "ch4_tournament_start",
-      "comment": "VOL21 第2弾（2026-11-27）: 冒頭に舞台袖の控室（王煙楼・空いた四つ目の椅子・段取りの紙「各台の前に、抽選で選ばれた客が一人ずつ座る」）、末尾に客の着席（はじめの客は作業着の男。ch4_final の customer）。王者の正体は控室でも伏せる。",
+      "comment": "VOL21 第2弾（2026-11-27）: 末尾に客の着席（はじめの客は作業着の男。ch4_final の customer）。段取りの紙「各台の前に、抽選で選ばれた客が一人ずつ座る」を読む舞台袖の控室は、大会の朝の締め（ch4_morning.json の ch4_tournament_morning_close）の後ろに置く（ここに置くと名乗りの演出 unveil までが長くなり、chapter_moments の送りが届かなかった）。",
       "metadata": {
         "forced_event": true
       },
       "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "開場の一時間前。舞台袖の控室には、椅子が四つと、大きな鏡が一枚あった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "王煙楼は、もう来ていた。上着を椅子に掛けて、湯気の立つ茶を飲んでいる。"
-        },
-        {
-          "speaker": "master_hookah",
-          "face": "smile",
-          "text": "おはよう。少しは眠れたかな"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……少しは"
-        },
-        {
-          "speaker": "master_hookah",
-          "face": "normal",
-          "text": "それでいい。眠りすぎた朝は、手が客より先に動く"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "王煙楼さんでも、緊張するんですか"
-        },
-        {
-          "speaker": "master_hookah",
-          "face": "laugh",
-          "text": "するよ。だから、もう三杯目だ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "四つ目の椅子は、空いたままだった。鏡の前に、白い布の包みが一つ置いてある。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（王者は、控室にも来ないのか）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "係の人が、今日の段取りの紙を配りに来た。通訳アプリで、一行ずつ読む。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "各台の前に、抽選で選ばれた客が一人ずつ座る。最後の一口まで、その人が吸う。"
-        },
-        {
-          "speaker": "naru",
-          "face": "serious",
-          "text": "客は選べない、か。店と同じだな"
-        },
-        {
-          "speaker": "master_hookah",
-          "face": "smile",
-          "text": "誰が座っても、その日のその人の一台になる。店でも、舞台でもね"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ドアの向こうで、パッキーの発声練習が聞こえた。「ぷぷぷっ！」が、三回。"
-        },
-        {
-          "speaker": "naru",
-          "face": "surprise",
-          "text": "……あれ、練習するもんなのか"
-        },
         {
           "speaker": "",
           "face": "",
