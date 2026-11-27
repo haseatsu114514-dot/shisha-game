@@ -13,26 +13,52 @@ import { initPortraitFit, shot, param, tellParent, until } from "./frame.mjs";
 
 const stage = document.getElementById("stage");
 // 舞台（1280×720）の倍率（--z）: 下の操作の板に DECK ぶんを残し、残りの高さいっぱいに舞台を置く。
-// 広げすぎると左右が見えなくなるので 1.15 倍まで、縦が短い端末でも 0.9 倍まで（tetsuko.css が --z で舞台と部品を拡大縮小する）。
-const DECK = 500;
-initPortraitFit(stage, ({ height }) => stage.style.setProperty("--z", String(Math.max(0.9, Math.min(1.15, (height - DECK) / 720)).toFixed(3))));
+// 広げすぎると左右が見えなくなるので 1.25 倍まで、縦が短い端末でも 0.9 倍まで（tetsuko.css が --z で舞台と部品を拡大縮小する）。
+const DECK = 430;
+initPortraitFit(stage, ({ height }) => stage.style.setProperty("--z", String(Math.max(0.9, Math.min(1.25, (height - DECK) / 720)).toFixed(3))));
 // 本編（main.js）と同じく、最初の操作で音を解禁する
 const unlock = () => unlockAudio({ warm: false });
 window.addEventListener("pointerdown", unlock);
 window.addEventListener("keydown", unlock);
 
 const test = name => `[data-test="tetsuko-${name}"]`;
+
+// 見える幅の真ん中に、てつこを映す。本編のカメラは舞台の外を映さないので、端の居場所（ベンチ・寝床）では、てつこが画面の真ん中（x=640）から
+// 左右へ寄る。横の画面では全部見えるが、縦は真ん中しか見せないので、そのぶんだけ舞台の箱ごと横へずらす（--shift。tetsuko.css が使う）。
+// じゃらしの間（カメラは床の真ん中に固定）と、もようがえの間（全体を見せる）は、ずらさない。値は本編が置く --cam-k・--cam-x と、てつこの --x から出す。
+function followCat(screen) {
+  const yard = screen.querySelector(".tt-yard"), cat = screen.querySelector(".tt-cat");
+  const aim = () => {
+    let shift = 0;
+    if (screen.dataset.tool !== "toy" && screen.dataset.panel !== "decor") {
+      const k = parseFloat(yard.style.getPropertyValue("--cam-k")), camX = parseFloat(yard.style.getPropertyValue("--cam-x"));
+      const x = parseFloat(getComputedStyle(cat).getPropertyValue("--x"));
+      if (k > 1 && Number.isFinite(camX) && Number.isFinite(x)) shift = Math.round(640 - (camX + k * x));
+    }
+    const value = `${shift}px`;
+    if (screen.style.getPropertyValue("--shift") !== value) screen.style.setProperty("--shift", value);
+  };
+  const watch = new MutationObserver(aim);
+  watch.observe(yard, { attributes: true, attributeFilter: ["style"] });
+  watch.observe(cat, { attributes: true, attributeFilter: ["style", "data-at", "data-inside"] });
+  watch.observe(screen, { attributes: true, attributeFilter: ["data-tool", "data-panel"] });
+  aim();
+}
+// 画面は来訪のたびに作り直されるので、層に出てきたら、そのつど付ける
+new MutationObserver(() => {
+  const screen = document.querySelector(`${test("time-screen")}:not([data-follow])`);
+  if (screen) { screen.dataset.follow = "1"; followCat(screen); }
+}).observe(document.getElementById("screen"), { childList: true });
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 /** 止め絵の場面を作る（画面のボタンを押して進める。本編の検査と同じ目印 data-test を使う）。 */
 async function pose(name) {
+  // 止め絵は指の代わりに合成の入力を送る。合成の入力では「指をつかまえる」処理（setPointerCapture）が使えないので、止め絵の間だけ何もしない物に替える
+  Element.prototype.setPointerCapture = () => {};
   await until(() => document.querySelector(test("time-screen")));
   await wait(1600); // 入った時の箱が開く演出・カメラが寄るのを待つ
-  if (name === "pet") { // なでる: 頭をなでて、ごろごろ
-    const cat = document.querySelector(test("cat")), box = cat.getBoundingClientRect();
-    const at = (dx, dy) => ({ clientX: box.left + box.width * dx, clientY: box.top + box.height * dy, pointerId: 7, pointerType: "touch", isPrimary: true, bubbles: true, cancelable: true });
-    cat.dispatchEvent(new PointerEvent("pointerdown", at(0.4, 0.25)));
-    for (let i = 0; i < 16; i++) { cat.dispatchEvent(new PointerEvent("pointermove", at(0.4 + 0.2 * Math.sin(i / 2), 0.25))); await wait(60); }
-    cat.dispatchEvent(new PointerEvent("pointerup", at(0.5, 0.25)));
+  if (name === "pet") { // なでる: 3回なでて、ごろごろ
+    const cat = document.querySelector(test("cat"));
+    for (let i = 0; i < 3; i++) { cat.click(); await wait(650); }
   } else if (name === "toy") { // じゃらしを出して振る
     document.querySelector(test("play")).click();
     await wait(900);

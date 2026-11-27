@@ -1,0 +1,77 @@
+/* 縦画面の試作: ボドゲカフェ（短編TRPG）の縦の並べ方（frame/trpg.html が読む）。
+   本編の画面（js/trpg/）の部品をそのまま使い、置き場所と大きさだけ縦用に替える。色・絵・動き・台詞は css/trpg*.css と本編のまま。
+   ステージは幅 640（スマホの幅 390px で 0.61 倍）。字は 22px 以上（実寸 13px）、押す所は 72px 以上（実寸 44px）。
+   文字とタップの大きさは、本編のスマホ向けの決まり（html[data-density="phone"]）を土台にする。
+   並べ方（卓）: 上＝部屋の絵（横長の絵の真ん中を縦長に切り出す）。絵の上の縁に、段の名前と道具（音・ログ・シート・？・戻る）、その下に連携札と盛り上がり。
+                 絵の裾に話している人物、その下に席の並び（4人）、いちばん下に台詞と「次へ」。
+   調べる場面だけは、調べる場所が全部見えるよう絵を横長のまま出し、場所を下の大きな札に並べる（絵には番号の印）。
+   文字を減らす: 英字の飾り・前置きの文・重複する見出しは出さない（下の各所に書く）。台詞と選択肢の文は変えない。 */
+
+#stage .trpg-root.trpg-cinematic { --pic-h: calc(100% - 478px); --seat-h: 92px; background: #071416; }
+
+/* ───────── 部屋の絵 ───────── */
+#stage .trpg-root.trpg-cinematic .trpg-room { inset: 0 0 auto; height: var(--pic-h); }
+#stage .trpg-root.trpg-cinematic .trpg-room > img { object-position: 50% 50%; }
+/* 絵の裾を下の面へ溶かす */
+#stage .trpg-root.trpg-cinematic .trpg-room::after { background: linear-gradient(180deg, #071317c4, transparent 22%, transparent 70%, #071416 100%); }
+
+/* ───────── 上の帯: 段の名前と道具。連携札と盛り上がりは2段目 ───────── */
+#stage .trpg-root.trpg-cinematic .trpg-header { top: 6px; left: 10px; right: 10px; height: 84px; }
+#stage .trpg-root.trpg-cinematic .trpg-heading { position: static; flex: 1 1 0; min-width: 0; gap: 0; padding-left: 12px; }
+#stage .trpg-root.trpg-cinematic .trpg-heading > small { max-width: none; font-size: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#stage .trpg-root.trpg-cinematic .trpg-tools { flex: none; gap: 0; }
+#stage .trpg-root.trpg-cinematic .trpg-tools .trpg-button { width: 78px; min-width: 78px; height: 78px; min-height: 78px; }
+#stage .trpg-root.trpg-cinematic :is(.trpg-teamwork, .trpg-heat) { position: absolute; top: 96px; margin: 0; padding: 6px 12px; border-radius: 999px; background: #071416b8; }
+#stage .trpg-root.trpg-cinematic .trpg-teamwork { left: 6px; }
+#stage .trpg-root.trpg-cinematic .trpg-heat { left: 112px; }
+#stage .trpg-root.trpg-cinematic .trpg-chrome-tip { left: 0; right: 0; top: 150px; max-width: none; white-space: normal; }
+
+/* ───────── 席の並び: 絵のすぐ下に4人を横いっぱい ───────── */
+#stage .trpg-root.trpg-cinematic .trpg-table { left: 6px; right: 6px; top: calc(var(--pic-h) + 6px); bottom: auto; width: auto; height: var(--seat-h); transform: none; translate: none; margin: 0; padding: 6px; gap: 6px; box-sizing: border-box; }
+#stage .trpg-root.trpg-cinematic .trpg-table-person { flex: 1 1 0; min-width: 0; width: auto; height: auto; padding: 4px 4px; gap: 5px; white-space: nowrap; font-size: 22px; letter-spacing: 0; }
+#stage .trpg-root.trpg-cinematic .trpg-table-person > :not(.trpg-seat-face) { min-width: 0; overflow: hidden; text-overflow: clip; }
+
+/* ───────── 台詞: いちばん下。名前・台詞（幅いっぱい）・右下に「次へ」 ───────── */
+#stage .trpg-root.trpg-cinematic .trpg-dock { left: 0; right: 0; top: calc(var(--pic-h) + var(--seat-h) + 12px); bottom: 0; height: auto; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; grid-template-rows: minmax(0, 1fr) auto;
+  gap: 10px 12px; padding: 18px 20px 22px; box-sizing: border-box; background: linear-gradient(180deg, #0a2022, #061214); overflow: visible; }
+#stage .trpg-root.trpg-cinematic .trpg-dock .trpg-speech { grid-column: 1 / -1; grid-row: 1; min-width: 0; padding: 0; margin: 0; text-align: left; flex: none; }
+#stage .trpg-root.trpg-cinematic .trpg-dock .trpg-speech p { margin: 0; max-width: none; }
+#stage .trpg-root.trpg-cinematic .trpg-dock .trpg-speaker-label { justify-content: flex-start; margin: 0 0 8px; }
+#stage .trpg-root.trpg-cinematic .trpg-dock .trpg-skip { grid-column: 2; grid-row: 2; width: 88px; height: 88px; align-self: end; }
+#stage .trpg-root.trpg-cinematic .trpg-dock .trpg-next { grid-column: 3; grid-row: 2; min-width: 200px; height: 88px; align-self: end; }
+/* 話している人物: 絵の裾（席の並びの上）に立つ。GMは丸い顔を名前の左に */
+#stage .trpg-root.trpg-cinematic .trpg-dock .trpg-speaker-art { position: absolute; left: 14px; bottom: calc(100% + var(--seat-h) + 10px); margin: 0; flex: none; }
+#stage .trpg-root.trpg-cinematic .trpg-dock:is([data-kind="pc"], [data-kind="npc"]) .trpg-speaker-art { width: 300px; height: 410px; }
+#stage .trpg-root.trpg-cinematic .trpg-dock[data-kind="pc"] .trpg-speaker-art img { width: 672px; }
+#stage .trpg-root.trpg-cinematic .trpg-dock[data-kind="narration"] .trpg-speech { padding: 0; text-align: center; }
+#stage .trpg-root.trpg-cinematic .trpg-dock[data-kind="narration"] .trpg-speaker-label { justify-content: center; }
+
+/* ───────── 表紙: 上に題と一言、真ん中に卓を囲む4人、下（親指の届く所）に「物語をはじめる」 ───────── */
+#stage .trpg-root.trpg-cinematic .trpg-cover-copy { left: 28px; right: 28px; top: 118px; bottom: 30px; width: auto; max-width: none; display: flex; flex-direction: column; align-items: stretch; }
+#stage .trpg-root.trpg-cinematic .trpg-cover-copy > h1 { margin: 6px 0 14px; }
+#stage .trpg-root.trpg-cinematic .trpg-cover-copy > p { width: auto; max-width: none; font-size: 24px; line-height: 1.7; }
+#stage .trpg-root.trpg-cinematic .trpg-cover-pc { order: 1; margin-top: auto; width: auto; box-sizing: border-box; }
+#stage .trpg-root.trpg-cinematic .trpg-cover-pc > .trpg-button { margin-left: auto; }
+#stage .trpg-root.trpg-cinematic .trpg-cover-copy .trpg-cover-actions { order: 2; margin-top: 14px; display: flex; flex-wrap: wrap; gap: 12px; }
+#stage .trpg-root.trpg-cinematic .trpg-cover-copy .trpg-cover-actions .trpg-button { flex: 1 1 0; min-height: 84px; }
+#stage .trpg-root.trpg-cinematic .trpg-cover-copy .trpg-cover-actions .trpg-button.primary { flex: 1 1 100%; order: 2; min-height: 108px; font-size: 32px; letter-spacing: .14em; }
+#stage .trpg-root.trpg-cinematic .trpg-cover-party { left: 20px; right: 20px; bottom: 372px; width: auto; justify-content: space-between; gap: 8px; }
+#stage .trpg-root.trpg-cinematic .trpg-cover-person { flex: 1 1 0; min-width: 0; }
+
+/* ───────── 重ねて出る札（メモ・遊び方・ログ・シート・宣言・判定など）: 幅いっぱいの1列に ───────── */
+#stage .trpg-root .trpg-overlay, #stage .trpg-root.trpg-cinematic .trpg-overlay:not(:has(.trpg-roll-stage, .trpg-builder-stage)), #stage .trpg-root.trpg-cinematic .trpg-overlay:has(:is(.trpg-roll-stage, .trpg-hypothesis-stage)) { padding: 20px 14px; }
+#stage .trpg-root .trpg-modal, #stage .trpg-root.trpg-cinematic .trpg-modal:is(.trpg-roll-stage, .trpg-hypothesis-stage, .trpg-declare-stage, .trpg-sheet-stage, .trpg-builder-stage, .trpg-notes-stage), #stage .trpg-root .trpg-modal.trpg-shelf-help-card, #stage .trpg-root .trpg-modal-wide { width: 100%; max-width: 100%; max-height: 100%; box-sizing: border-box; }
+
+/* 行動の宣言: 3人の案を縦に並べる（顔・案・成功の見込みを1枚ずつ横長の札に） */
+#stage .trpg-root.trpg-cinematic .trpg-modal.trpg-declare-stage { padding: 10px 6px; }
+#stage .trpg-root.trpg-cinematic .trpg-approach-list { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+#stage .trpg-root.trpg-cinematic .trpg-approach { display: grid; grid-template-columns: 92px minmax(0, 1fr); grid-template-areas: "face copy" "meta meta"; gap: 10px 14px; min-height: 0; padding: 14px 16px; }
+#stage .trpg-root.trpg-cinematic .trpg-approach-face { grid-area: face; width: 92px; height: 92px; }
+#stage .trpg-root.trpg-cinematic .trpg-approach-copy { grid-area: copy; }
+#stage .trpg-root.trpg-cinematic .trpg-approach-meta { grid-area: meta; }
+
+/* 「物語の中へ」（役への変身）: 3枚の札を縦の幅に収める */
+#stage .trpg-root.trpg-cinematic .trpg-incarnate-kicker { top: 20%; }
+#stage .trpg-root.trpg-cinematic .trpg-incarnate-cards { top: 27%; gap: 22px; transform: scale(.74); transform-origin: 50% 0; }
+#stage .trpg-root.trpg-cinematic .trpg-incarnate-place { inset: auto 6% 180px; }
+#stage .trpg-root.trpg-cinematic > .trpg-incarnate-skip { right: 20px; bottom: 30px; }
