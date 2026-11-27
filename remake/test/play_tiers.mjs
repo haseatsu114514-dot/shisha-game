@@ -123,7 +123,8 @@ assert(!T.TIER_GAMES.ichidai, "the card game is on hold");
   assert(g.rewards["camel-hard"]);
   assert(g.earned - start >= 1);
 }
-// てつこは段を持たず、来訪をまたいで溜まる好感度がハート5に届いたら白火1つ（2026-11-20 オーナー「てつこは難易度とかないや」）
+// てつこは段を持たず、来訪をまたいで溜まる、なかよしが肉球5つ（満タン）に届いたら白火1つ（2026-11-20 オーナー「てつこは難易度とかないや」）。
+// 肉球3つ（60）で色つきの火種1つ（2026-11-27 オーナー「仲の良さが一定までいくと何なものくれたり火種とか」）。どちらも一度だけ
 {
   assert(!T.TIER_GAMES.tetsuko, "てつこ has no tiers");
   assert(!PLAY_REWARDS.some(r => r.game === "tetsuko" && r.tier));
@@ -131,21 +132,45 @@ assert(!T.TIER_GAMES.ichidai, "the card game is on hold");
   assert.deepEqual(reward.gift, { any: 1 });
   const tetsuko = await import("../js/minigames/tetsuko-model.js");
   assert.equal(growth.TETSUKO_AFFECTION_FULL, tetsuko.JOY_MAX, "growth's copy of the full-heart value matches the cat's model");
-  assert(tetsuko.VISIT_JOY * 4 < tetsuko.JOY_MAX, "one visit cannot fill five hearts (several visits are needed)");
+  assert(tetsuko.VISIT_JOY * 4 < tetsuko.JOY_MAX, "one visit cannot fill the bond (several visits are needed)");
+  const bond = PLAY_REWARDS.find(r => r.id === "tetsuko-bond");
+  assert.deepEqual(bond.gift, { sense: 1 }, "the three-paw reward is one colored ember");
+  assert.deepEqual([bond.affection, growth.TETSUKO_AFFECTION_FULL], tetsuko.BOND_EMBERS, "growth's ember thresholds match the cat's model");
+  assert.equal(PLAY_REWARDS.filter(r => r.game === "tetsuko" && r.affection).length, tetsuko.BOND_EMBERS.length);
+  assert.equal(tetsuko.BOND_MARKS.filter(mark => mark === "ember").length, tetsuko.BOND_EMBERS.length, "the notebook shows one ember mark per ember reward");
   const { emit } = await import("../js/core/bus.js");
   const s = core.newState();
   core.setState(s);
   const g = growth.ensureGrowth();
   const start = g.earned;
-  s.flags._tetsuko_time = { affection: growth.TETSUKO_AFFECTION_FULL - 1 };
+  s.flags._tetsuko_time = { affection: bond.affection - 1 };
   growth.settleGrowth();
-  assert(!g.rewards["tetsuko-heart"], "not before five hearts");
+  assert(!g.rewards["tetsuko-bond"] && !g.rewards["tetsuko-heart"], "not before three paws");
+  s.flags._tetsuko_time.affection = bond.affection;
+  emit("tetsuko-hearts", { state: s, affection: bond.affection, full: false });
+  assert(g.rewards["tetsuko-bond"], "the three-paw ember is settled on the spot");
+  assert(!g.rewards["tetsuko-heart"], "not before five paws");
+  assert.equal(g.earned - start, 1);
+  s.flags._tetsuko_time.affection = growth.TETSUKO_AFFECTION_FULL - 1;
+  growth.settleGrowth();
+  assert(!g.rewards["tetsuko-heart"], "not before five paws");
+  assert.equal(g.earned - start, 1);
   s.flags._tetsuko_time.affection = growth.TETSUKO_AFFECTION_FULL;
   emit("tetsuko-hearts", { state: s, affection: growth.TETSUKO_AFFECTION_FULL, full: true });
   assert(g.rewards["tetsuko-heart"], "settled on the spot");
-  assert.equal(g.earned - start, 1);
+  assert.equal(g.earned - start, 2);
   growth.settleGrowth();
-  assert.equal(g.earned - start, 1, "never twice");
+  emit("tetsuko-hearts", { state: s, affection: growth.TETSUKO_AFFECTION_FULL, full: true });
+  assert.equal(g.earned - start, 2, "never twice");
+  // an old save that already had the bond (the hearts of the 2026-11-26 rules) gets both at the next settlement, once
+  const old = core.newState();
+  core.setState(old);
+  const og = growth.ensureGrowth();
+  const before = og.earned;
+  old.flags._tetsuko_time = { affection: 70 };
+  growth.settleGrowth();
+  assert(og.rewards["tetsuko-bond"] && !og.rewards["tetsuko-heart"]);
+  assert.equal(og.earned - before, 1);
 }
 // TRPG は三段階にせず、最後の本（サイが立ちはだかる）を初めてクリアしたら白火1つ。ほかの本では出ない
 {
