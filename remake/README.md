@@ -66,6 +66,8 @@ mukaiで行動を使った帰りの裏口では、ふれあいの画面「てつ
 
 縦画面で遊ぶレイアウトの見た目3案（2026-11-27・[要望台帳](../docs/owner_requests.md) の VPL。本編には未接続の見本）は `http://127.0.0.1:8123/remake/previews/portrait-layouts/`。上に絵・真ん中にテロップ・下にパッドや操作パネルの並びを、A 真鍮のゲーム機／B 喫茶の伝票／C 煙の舞台の3案で、同じ4場面（地図・会話・返事・吸い出し）を見比べる。スマホの幅で開くと1台ぶんが画面いっぱいに出て、十字キーとAを押せる（`?view=play&design=a|b|c&scene=map|talk|choice|craft`。PCの一覧は `?view=gallery`）。
 
+縦画面C案「煙の舞台」を第1章の場面で詰めた試作（2026-11-27・要望台帳の VPL03〜07。本編には未接続）は `http://127.0.0.1:8123/remake/previews/portrait-stage/`。橙須の地図（選んだ店へ画面が動く・全体を見る・一覧・「！」の店への案内）、1人と2人の会話の立ち位置、返事、シーシャ作り3工程（詰め・穴あけ・吸い出し）を、大きくしたパッドで実際に押して確かめる（`?view=play&scene=map|minto|tonari|pack|holes|pull`。PCの一覧は `?view=gallery`）。
+
 煙の描き方の見本（2026-11-11〜12・[要望台帳](../docs/owner_requests.md) の KMR。本編には未接続）は `http://127.0.0.1:8123/remake/previews/smoke-styles/`。「いま」の煙（本編の数値の写し）と、もこもこの房で描く3種（繊細ドット・ドット絵もくもく・アニメもくもく）・流体で描く3種（リアル・ドット×リアル・セル画）を、同じ場面で見比べる。絵柄を「ドット絵」にすると、背景と立ち絵も細かいドット絵（`make_pixel_art.py` がゲームの絵から変換した見本用の絵）に替わる。
 
 ラクダレース（第4章ドバイの任意ミニゲーム）の試遊は `http://127.0.0.1:8123/remake/camel-race.html`。レース中は右上のボタン（Esc・P）で一時停止できる。手応えの数値（止め・揺れ・音量など）はコンソールの `__camelRace.feel` か URL の `?feel=stopPerfect:0.2` でその場で変えられ、試遊ページでは `__camelRace.debug` で息・調子・位置を指定できる（[仕様](../docs/spec/camel_race.md) §11）。DJ（`previews/dj/`）は `__dj.feel`・`?feel=`・`__dj.slip()`（[README](previews/dj/README.md) の「手応え」「ズレと皿」）。
