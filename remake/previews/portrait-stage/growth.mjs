@@ -536,7 +536,7 @@ export class GrowthScene {
     const dx = event.clientX - drag.x, dy = event.clientY - drag.y;
     if (!drag.moved && Math.hypot(dx, dy) < 8) return;
     drag.moved = true; this.moved = true;
-    this.refs.view.setPointerCapture?.(event.pointerId);
+    try { this.refs.view.setPointerCapture?.(event.pointerId); } catch { /* 指が離れた後に届いた時は、つかまずに続ける */ }
     this.setCam({ s: drag.cam.s, x: drag.cam.x + dx / r, y: drag.cam.y + dy / r }, false);
   }
 
