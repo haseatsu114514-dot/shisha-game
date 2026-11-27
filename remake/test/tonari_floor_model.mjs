@@ -516,11 +516,11 @@ test("雑談の台本: 味・趣味・何気ない話・愚痴をたっぷり。
   const mob = [...Object.entries(CALLS).filter(([k]) => k !== "chatty").flatMap(([, c]) => c.lines.flatMap((l) => [l.said, l.good])), ...CALL_MISS];
   for (const line of mob) assert.ok(!lines.has(line), line);
   assert.equal(CALLS.chatty.lines, CHAT_COMMON, "どの店でも通る味の話が、頼みの雑談の既定");
-  // 店ごと: 味の話（全店共通）＋その店の客の話。tonari は趣味・何気ない話・愚痴を十本以上ずつ
+  // 店ごと: 味の話（全店共通）＋その店の客の話。どの店（tonari・東京 mukai・ドバイ）も、趣味・何気ない話・愚痴を十本以上ずつ（TFL71）
   const topics = (list) => Object.fromEntries(["taste", "hobby", "daily", "gripe"].map((t) => [t, list.filter((c) => c.topic === t).length]));
-  assert.ok(Object.values(topics(FLOOR_VENUES.tonari.chats)).every((n) => n >= 10), JSON.stringify(topics(FLOOR_VENUES.tonari.chats)));
   for (const v of venues) {
-    assert.ok(v.chats.length >= 30, `${v.id}: 雑談 ${v.chats.length} 本`);
+    assert.ok(Object.values(topics(v.chats)).every((n) => n >= 10), `${v.id}: ${JSON.stringify(topics(v.chats))}`);
+    assert.ok(v.chats.length >= 50, `${v.id}: 雑談 ${v.chats.length} 本`);
     assert.ok(CHAT_COMMON.every((c) => v.chats.includes(c)), v.id);
     assert.ok(v.chats.some((c) => c.at === "day") && v.chats.some((c) => c.at === "night"), `${v.id}: 昼だけ・夜だけの話もある`);
     // レアで来る本編の人物は、全員その人だけの雑談を持つ（三本ずつ。ドバイへ同行した人は二本から）
