@@ -58,6 +58,12 @@ export const DESERT_ART = Object.freeze({
   flag: Object.freeze({ file: "ui/desert_ride/flag_pole.webp", size: Object.freeze([110, 512]), foot: Object.freeze({ x: 0.0591, y: 1 }) }),
   goal: Object.freeze({ file: "ui/desert_ride/goal_banner.webp", size: Object.freeze([1024, 132]) }),
   puff: Object.freeze({ file: "ui/desert_ride/sand_puff.webp", size: Object.freeze([256, 141]) }),
+  // 派手なアクションの絵（DSR100・2026-11-27 オーナー「見本の派手な見た目を本編にも」）。遊び方の図解と同じ画風で生成した（gpt-image-2.6-sunburst。
+  // 原画・プロンプト・検品は asset_sources/ui/minigame-visuals-20261127/desert/）。origin は砂が出る点（絵に対する比率）。左へ飛ばす時は左右を反転して描く。
+  fxPlume: Object.freeze({ file: "ui/desert_ride/fx_plume.webp", size: Object.freeze([512, 505]), origin: Object.freeze({ x: 0.49, y: 0.97 }) }), // 踏み切り: 真上へ扇に噴き上がる砂
+  fxWake: Object.freeze({ file: "ui/desert_ride/fx_wake.webp", size: Object.freeze([640, 242]), origin: Object.freeze({ x: 0.02, y: 0.94 }) }),   // ブースト・着地・鋭く切った時: 右へ低く広がる砂
+  fxWave: Object.freeze({ file: "ui/desert_ride/fx_wave.webp", size: Object.freeze([640, 433]), origin: Object.freeze({ x: 0.06, y: 0.93 }) }),   // カーブ: 右へ巻き上がる砂の波
+  fxBolts: Object.freeze({ file: "ui/desert_ride/fx_bolts.webp", size: Object.freeze([512, 507]), origin: Object.freeze({ x: 0.5, y: 0.5 }) }),   // ブースト: 体のまわりの稲妻（中央は空いている）
   curveLeft: Object.freeze({ file: "ui/desert_ride_controls/curve_left.webp", size: Object.freeze([512, 560]) }),
   curveRight: Object.freeze({ file: "ui/desert_ride_controls/curve_right.webp", size: Object.freeze([512, 560]) }),
 });
@@ -71,7 +77,8 @@ export const DESERT_CONTROL_ART = Object.freeze({
 });
 // desert-ride.css が滑走中の立て直しと結果カードに使う絵。
 const RECOVER_UI_ART = "ui/desert_ride_hud/recover-badge.webp";
-const RESULT_UI_ART = ["board", "ribbon_win", "ribbon_lose", "medal_s", "medal_a", "medal_b", "medal_c", "button_primary", "button_secondary"]
+// メダルはランクごとの絵（DSR106。字は絵に入っている）。ランクの名前は革の名札、自己ベスト更新は漆の札の絵
+const RESULT_UI_ART = ["board", "ribbon_win", "ribbon_lose", "rank_s", "rank_a", "rank_b", "rank_c", "plate_rank", "stamp_best", "button_primary", "button_secondary"]
   .map(name => `ui/desert_ride_result/${name}.webp`);
 const warmedUiImages = new Map();
 function warmUiImage(file) {
@@ -151,10 +158,21 @@ let images = null;
  * 共通画像と選んだ相手だけを準備する。rivals省略時は従来どおり全画像。
  * Mapは共有し、後から相手を替えても取得・decodeを重複させない。
  */
-export function loadDesertArt({ rivals = null } = {}) {
+/**
+ * 縦の下り坂の遠景（2026-11-27。gpt-image-2.6-sunburst 生成・記録は asset_sources/ui/minigame-visuals-20261127/desert/）。
+ * 高い所から見下ろした坂の下の谷。上の空は透明（空は sky を使い、沈む太陽を谷の稜線の後ろに描ける）。horizon は遠くの稜線の足元（目の高さ）の行。
+ * 横（既定）では使わないので DESERT_ART とは分け、下り坂の時だけ読む（loadDesertArt の valley）。夕方は同じ構図・同じ寸法。
+ */
+export const DESERT_VALLEY_ART = Object.freeze({
+  valley: Object.freeze({ file: "ui/desert_ride/valley_day.webp", size: Object.freeze([1536, 652]), horizon: 38 }),
+  duskValley: Object.freeze({ file: "ui/desert_ride/valley_dusk.webp", size: Object.freeze([1536, 652]), horizon: 38 }),
+});
+
+export function loadDesertArt({ rivals = null, valley = false } = {}) {
   images ||= new Map();
   const names = Object.entries(DESERT_ART).filter(([name, def]) => def.file
     && (rivals === null || !/^(noor|naru)(Rider|Spin)/.test(name) || rivals.some(who => name.startsWith(who + "Rider") || name.startsWith(who + "Spin")))).map(([name]) => name);
+  if (valley) names.push(...Object.keys(DESERT_VALLEY_ART));
   if (typeof Image !== "undefined") {
     for (const name of names) {
       if (images.has(name)) continue;
@@ -168,7 +186,7 @@ export function loadDesertArt({ rivals = null } = {}) {
         image.onerror = () => { entry.ready = false; entry.pending = false; resolve(); };
       });
       images.set(name, entry);
-      image.src = imgFileUrl(DESERT_ART[name].file);
+      image.src = imgFileUrl((DESERT_ART[name] || DESERT_VALLEY_ART[name]).file);
     }
   }
   const entries = names.map(name => images.get(name)).filter(Boolean);

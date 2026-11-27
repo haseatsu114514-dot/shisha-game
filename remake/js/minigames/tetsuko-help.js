@@ -14,21 +14,21 @@ export const HELP = Object.freeze([
     Object.freeze({ icon: "treat", name: "おやつ", text: "1日に1回あげられる。" }),
   ]) }),
   Object.freeze({ title: "画面のしるし", rows: Object.freeze([
-    // 好感度（なかよし度）は1日1回、来訪をまたいで溜まる（満タンまでおよそ10回）。
-    Object.freeze({ icon: "heart", name: "ごきげん", text: "1日1回。ごきげんになると、なかよし度が上がる。" }),
+    // ごきげん（その日のハート）は上がり下がりする。なかよし（肉球）は来訪をまたいで溜まり、減らない。
+    Object.freeze({ icon: "heart", name: "ごきげん", text: "嫌がることを続けると減る。いっぱいで、とっておき。" }),
+    Object.freeze({ icon: "paw", name: "なかよし", text: "帰る時のハートが多いほど伸びる。ハートの枠も増える。" }),
     Object.freeze({ icon: "wish", name: "吹き出し", text: "てつこが、今してほしいこと。" }),
-    Object.freeze({ icon: "tap", name: "置いた物", text: "タップすると、てつこを誘える。" }),
     Object.freeze({ icon: "watch", name: "見守る", text: "何もしないでいると、隣で見守ったことになる。" }),
   ]) }),
   Object.freeze({ title: "上の道具", rows: Object.freeze([
-    Object.freeze({ icon: "photo", name: "撮影", text: "しぐさが見えたら、撮影ボタンかPキーで撮る。" }),
-    Object.freeze({ icon: "decor", name: "もようがえ", text: "物を選んで、光った場所をタップ。置いた物はタップで片付く。" }),
+    Object.freeze({ icon: "photo", name: "撮影", text: "ハートが3つあると、しぐさを撮らせてくれる。" }),
+    Object.freeze({ icon: "decor", name: "もようがえ", text: "物を置く。置いた物は、タップでてつこを誘える。" }),
     Object.freeze({ icon: "book", name: "てつこ手帳", text: "しぐさと写真が残る。探すしぐさも選べる。" }),
     Object.freeze({ icon: "back", name: "帰る", text: "遊びを切り上げて裏口を出る。" }),
   ]) }),
 ]);
 
-export const HELP_NOTE = "なかよし度は次の日に引き継がれる。ごきげんな日が10回で、ハートが5つそろう。";
+export const HELP_NOTE = "なかよしは次の日に引き継がれる。節目で、てつこが何かを置いていく。";
 
 /**
  * 「？」の中身を作る（DOM は呼び出し側の el で作る）。

@@ -214,7 +214,7 @@
           "id": "horizontal_2",
           "speaker": "maki",
           "face": "normal",
-          "text": "ボタンかSpaceでも止められるよ。刃は縦に長いけど、横のずれはごまかせない"
+          "text": "ボタンでも止められるよ。刃は縦に長いけど、横のずれはごまかせない"
         },
         {
           "id": "horizontal_3",
@@ -240,7 +240,7 @@
           "id": "vertical_2",
           "speaker": "maki",
           "face": "normal",
-          "text": "上下に動く線を見て、的のタップ、ボタンかSpaceで止めな"
+          "text": "上下に動く線を見て、的のタップかボタンで止めな"
         },
         {
           "id": "vertical_3",
@@ -272,7 +272,7 @@
           "id": "power_3",
           "speaker": "maki",
           "face": "normal",
-          "text": "白い刃先が着地点だよ。「息を整える」かFキーで、1投に1回だけ揺れを抑えられる"
+          "text": "白い刃先が着地点だよ。「息を整える」で、1投に1回だけ揺れを抑えられる"
         },
         {
           "id": "power_4",

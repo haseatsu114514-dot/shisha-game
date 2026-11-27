@@ -188,8 +188,8 @@ export async function runHoles(cs) {
   // リニューアル（CRN02・05・08）: リングが埋まると自動で次へ・判定は穴のそば・刺した点の閃光・結果でアルミを残す。
   // 桜井版（CRN16）: リニューアル前のとおり「次のリングへ」「穴あけを終えて結果へ」のボタン・判定は右の札・小さな火の粉だけ。
   const renewal = renewalCraft(cs);
-  stepPanel("holes", "アルミ穴あけ", renewal ? "光る目印に針が重なったら押し、少し押し込んでから離す（Space長押しでも可）。リングが埋まると次のリングへ進む"
-    : "光る目印に針が重なったら押し、少し押し込んでから離す（Space長押しでも可）。リングが完成したら「次のリングへ」");
+  stepPanel("holes", "アルミ穴あけ", renewal ? "光る目印に針が重なったら押し、少し押し込んでから離す。リングが埋まると次のリングへ進む"
+    : "光る目印に針が重なったら押し、少し押し込んでから離す。リングが完成したら「次のリングへ」");
   const rings = ringsForTemplate(template);
   const slow = skill.slow(cs) * (tutorial ? HOLES_TUNING.lessonSlow : 1);
   const perfWin = HOLES_TUNING.perfectDeg * skill.window(cs, "holes") * (tutorial ? HOLES_TUNING.lessonPerfect : 1);
@@ -590,7 +590,7 @@ export async function runHoles(cs) {
     timeBar.parentElement.style.visibility = "hidden";
     putData(plan, "tone", "warmup");
     plan.setAttribute("aria-live", "polite");
-    putText(plan, "針と目印が重なったら押す。少し待って離す。Spaceでも操作できます。");
+    putText(plan, "針と目印が重なったら押す。少し待って離す。");
     t0 = gameClock.now();
     const start = await new Promise(resolve => {
       finishWarmup = resolve;

@@ -62,7 +62,10 @@
         <div class="channels">
           <div class="meter a" id="meter-a" aria-hidden="true"><i></i></div>
           <span class="led on" id="led-quantize">QUANTIZE</span>
+          <!-- ズレ直しのボタン（縦画面だけ。皿を回すのと同じ働き。app.mjs の nudgePad） -->
+          <button id="nudge-back" class="nudge back" type="button" hidden aria-label="ズレた曲を戻す（皿を左回り）"><i></i><i></i></button>
           <div class="beat" id="beat" data-state="idle" role="img" aria-label="2曲の拍のズレ。金の点が真ん中の枠にあれば合っている"><small id="beat-label">BEAT</small><div class="beat-track"><i class="beat-zone"></i><i class="beat-dot" id="beat-dot"></i></div></div>
+          <button id="nudge-fwd" class="nudge fwd" type="button" hidden aria-label="ズレた曲を進める（皿を右回り）"><i></i><i></i></button>
           <span class="led" id="led-autoeq">AUTO EQ</span>
           <div class="meter b" id="meter-b" aria-hidden="true"><i></i></div>
         </div>
@@ -86,6 +89,7 @@
   <section id="score-result" aria-live="polite"></section>
   <p id="status" class="sr" role="status" aria-live="polite">最初の▶で音声を準備して再生します。</p>
 </main></div>
+<script type="module" src="./portrait.mjs"></script><!-- 縦画面（?layout=portrait の時だけ働く。無ければ何もしない） -->
 <script type="module" src="./controller-fx.mjs"></script>
 <script type="module" src="./app.mjs"></script>
 </html>

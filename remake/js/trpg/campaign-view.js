@@ -39,14 +39,26 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
   let justFounded = false; // 設立した直後だけ、気づけば部長になっていた場面を出す
   let foundingChoice = null;
   let disposed = false, resources = null, busy = false, completed = false, root = null, entrance = null, lastGain = null;
+  let shelfBook = null; // 開いている見開きの本（id）。描き直しても同じ見開きに戻す
   let resolveFinished;
   const finished = new Promise(r => { resolveFinished = r; });
+  // text は文字列か、[見せる字, 読み上げだけの字…] の並び（quiet で包んだ所は字を出さない。textContent は前と同じ）
   const button = (text, test, action, disabled = false) => el("button.trpg-button", {
-    type: "button", text, disabled, dataset: { test }, onclick: () => {
+    type: "button", disabled, dataset: { test }, onclick: () => {
       if (getState() !== owner) { close(); return; }
       if (!disposed && !busy) action();
     },
-  });
+  }, [].concat(text));
+  const quiet = text => el("span.trpg-quiet", { text });
+  // 本の札のボタン（2026-11-27 オーナー「文字で説明しすぎずUIやボタンで視覚的に」・TRP10）: 頭に印（CSS）を付け、見せる字を短くする
+  // 見せる字は2文字にそろえる（横持ちスマホの細い札でも1行に収まる）。「もう一度」は印（↻）で、しおりの2つは「続き」「最初」
+  const SHELF_LABELS = { "この仲間で遊ぶ": () => [quiet("この仲間で"), "遊ぶ"], "もう一度遊ぶ": () => [quiet("もう一度"), "遊ぶ"], "続きから遊ぶ": () => ["続き", quiet("から遊ぶ")],
+    "最初から": () => ["最初", quiet("から")], "絵本をみる": () => ["絵本", quiet("をみる")] };
+  const shelfButton = (label, kind, test, action, disabled = false) => {
+    const node = button(SHELF_LABELS[label]?.() || label, test, action, disabled);
+    node.dataset.kind = kind; node.setAttribute("aria-label", label);
+    return node;
+  };
   function close() {
     if (disposed) return;
     disposed = true; abort.abort(); root?.remove(); entrance?.cancel();
@@ -143,6 +155,12 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         [...(club.branches[foundingChoice] || []), ...club.branches.founded].map(clubLine)));
       justFounded = false;
     }
+    const castFace = id => {
+      const src = portraitUrl(manifest, id);
+      // 顔の切り出しは部員の札と同じ（.trpg-campaign-face の寸法で計算しているので、同じ箱を縮めて使う）
+      return src ? el("span.trpg-campaign-face.trpg-cast-face", { title: name(id) }, el("img", { src, alt: "", style: faceIconStyle(id, undefined, manifest) }))
+        : el("span.trpg-cast-face.trpg-cast-initial", { title: name(id), text: [...name(id)][0] || "?" });
+    };
     const party = el("div.trpg-campaign-party", { "aria-label": "仲間の今夜の予定" });
     for (const person of catalog.participants.filter(p => state?.met?.[p.id])) {
       const status = participantStatus(state, person);
@@ -181,7 +199,12 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     const dice = !readOnly && state ? gearOffer(state, "gear_dice", { isCurrent: () => !disposed && !busy && getState() === owner,
       onBought: item => { save(); render(`「${item.name}」を買った。${item.effect}。`); } }) : null;
     if (dice) root.append(el("div.trpg-campaign-gear", { dataset: { test: "trpg-gear" } }, [dice]));
-    const books = el("div.trpg-campaign-books", { dataset: { many: String(scenarios.length > 2) } });
+    // 本をめくって選ぶ（TRP11・2026-11-27 オーナー「本をめくってシナリオを決めるような洒落たものにしたい」）:
+    // 見開きに1冊だけ出す（左の頁＝絵、右の頁＝題・今夜の卓・ボタン）。絵と顔は、その見開きを初めて開いた時に作る
+    // （以前は9冊ぶんの絵と、全員ぶんの顔を一度に読み込んで描いていた）。
+    const spread = el("div.trpg-flipbook", { dataset: { test: "trpg-book-spread" } });
+    const books = el("div.trpg-campaign-books", [spread]);
+    const fills = new Map();
     for (const scenario of scenarios) {
       const book = catalog.scenarios.find(b => b.id === scenario.id);
       const memory = state?.trpg?.cleared?.[book.id];
@@ -192,11 +215,21 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       const cast = state ? castTrpgTable(state, catalog, scenario, options) : { ok: false };
       const card = el("article.trpg-campaign-book", { title: locked ? null : scenario.presentation.tagline,
         dataset: { theme: scenario.presentation.theme, test: "trpg-book-" + book.id, locked: String(locked), state: memory ? "cleared" : locked ? "locked" : owned ? "owned" : "stock" } });
-      card.append(el("div.trpg-campaign-book-art", [sceneArt(el, locked
-        ? { ...scenario, presentation: { ...scenario.presentation, sceneAlt: "", location: "" } } : scenario),
-        el("span.trpg-campaign-book-badge", { text: memory ? "遊んだ記録" : owned ? "購入済み" : stocked ? "入荷しました" : "🔒 未解放" })]));
+      const art = el("div.trpg-campaign-book-art", [
+        el("span.trpg-campaign-book-badge", { text: memory ? "遊んだ記録" : owned ? "購入済み" : stocked ? "入荷しました" : "🔒 未解放" })]);
+      const faces = el("span.trpg-cast-faces", { "aria-hidden": "true" });
+      // 未解放の本は、鎖と錠の掛かった本の絵（CSS）。場面の絵は読み込まない
+      fills.set(card, () => {
+        if (!locked) art.prepend(sceneArt(el, scenario));
+        if (cast.ok && faces.parentNode) faces.replaceChildren(...cast.participants.map(castFace));
+      });
+      // 左の頁の絵の下: 作者と、かかる時間
+      card.append(art, el("small.trpg-campaign-book-by", { text: locked ? "？？？ / 作 · ？？？" : scenario.collection + " / 作 · " + scenario.author }));
+      if (!locked) card.append(el("small.trpg-campaign-book-time", { text: scenario.duration }));
+      // 今夜の卓は、名前の列の代わりに顔を並べる（名前は title と読み上げ用に残す。顔の絵が無い人は頭文字の丸）
+      const castLine = () => el("p.trpg-campaign-book-cast", { title: cast.ok ? "今夜の卓：" + cast.participants.map(name).join("・") : cast.reason, dataset: { ok: String(!!cast.ok) },
+      }, cast.ok ? [el("span", { text: "今夜の卓：" }), el("span.trpg-cast-names", { text: cast.participants.map(name).join("・") }), faces] : [cast.reason]);
       const copy = el("div.trpg-campaign-book-copy", [
-        el("small.trpg-campaign-book-by", { text: locked ? "？？？ / 作 · ？？？" : scenario.collection + " / 作 · " + scenario.author }),
         el("h2", { text: locked ? "？？？？？" : scenario.title }), el("p.trpg-campaign-book-tagline", { text: locked ? book.finale
           ? progress.reason : "部員との出会いで解放" : scenario.presentation.tagline }),
       ]);
@@ -219,7 +252,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
             (memory.endingsSeen?.length || 1) + " / " + Object.keys(scenario.endings).length + (memory.plays > 1 ? " · " + memory.plays + "回遊んだ" : "")]),
         ]));
         // もう一度遊ぶ（TMX14）: 夜の行動を1つ使う。記録は良い方（星、同じなら盛り上がり）を残す。
-        if (owned) copy.append(...playButtons(book, scenario, cast, "もう一度遊ぶ"));
+        if (owned) copy.append(castLine(), ...playButtons(book, scenario, cast, "もう一度遊ぶ"));
       } else if (locked) {
         copy.append(el("p.trpg-campaign-book-locked", { text: book.finale ? progress.reason : "🔒 まだ選べません" }));
       } else if (!owned) {
@@ -228,24 +261,90 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
             else render("購入できませんでした。所持金と入荷状況を確認してください。");
           }, readOnly || spendableMoney(state) < book.price));
       } else {
-        copy.append(el("p.trpg-campaign-book-cast", { title: cast.ok ? "今夜の卓：" + cast.participants.map(name).join("・") : cast.reason, dataset: { ok: String(!!cast.ok) },
-        }, cast.ok ? [el("span", { text: "今夜の卓：" }), cast.participants.map(name).join("・")] : [cast.reason]),
-          el("small.trpg-campaign-book-time", { text: scenario.duration }), ...playButtons(book, scenario, cast, "この仲間で遊ぶ"));
+        copy.append(castLine(), ...playButtons(book, scenario, cast, "この仲間で遊ぶ"));
       }
       if (owned && state.chapter >= catalog.unlockChapter && progress.ok && hasPictureBook(scenario)) {
-        const read = button("絵本をみる", "trpg-picturebook-" + book.id, () => readPictureBook(scenario));
+        const read = shelfButton("絵本をみる", "book", "trpg-picturebook-" + book.id, () => readPictureBook(scenario));
         read.classList.add("trpg-picturebook-open");
         copy.append(read);
       }
-      card.append(copy); books.append(card);
+      // 押す所は、右の頁の下に1段でまとめる
+      const actions = el("div.trpg-book-actions", [...copy.children].filter(node => node.matches("button")));
+      if (actions.children.length) copy.append(actions);
+      card.append(copy); spread.append(card);
     }
-    // 1画面で見渡す本棚（#3199・TRF25）: 見出しの下を「左＝店主・案内・部員・ランク・道具」「右＝本」に分ける。
-    // 以前は縦1列で、遊べる本が2画面ぶん下にあった。本は3列で、9冊までは下へ送らずに全部見える。
+    const pages = [...spread.children];
+    const playable = card => [...card.querySelectorAll('[data-test^="trpg-play-"], [data-test^="trpg-resume-"]')].some(node => !node.disabled);
+    // 最初に開く見開き: さっきまで開いていた本 → 今夜遊べる本 → 買える本 → 持っている本 → 開ける本
+    let at = scenarios.findIndex(scenario => scenario.id === shelfBook);
+    if (at < 0) at = [playable, card => !!card.querySelector('[data-test^="trpg-buy-"]'), card => card.dataset.state === "owned", card => card.dataset.locked !== "true"]
+      .map(test => pages.findIndex(test)).find(index => index >= 0) ?? 0;
+    const guard = action => () => { if (getState() !== owner) { close(); return; } if (!disposed && !busy) action(); };
+    const leaf = el("i.trpg-page-leaf", { "aria-hidden": "true" });
+    const number = el("span.trpg-page-number", { "aria-hidden": "true" });
+    const arrow = (dir, label, step) => el("button.trpg-page-turn", { type: "button", "aria-label": label,
+      dataset: { test: "trpg-page-" + dir, dir }, onclick: guard(() => turn(at + step)) });
+    const prev = arrow("prev", "前の本へ", -1), next = arrow("next", "次の本へ", 1);
+    // 小口の見出し（しおり）: 何冊目かと、本の状態（遊べる・買える・遊んだ・まだ開けない）が色で分かる。押すとその本へ
+    const tabs = el("div.trpg-book-tabs", { role: "group", "aria-label": "本を選ぶ" }, scenarios.map((scenario, index) =>
+      el("button.trpg-book-tab", { type: "button", "aria-label": pages[index].dataset.locked === "true" ? "まだ開けない本" : scenario.title,
+        dataset: { test: "trpg-tab-" + scenario.id, state: pages[index].dataset.state, ready: String(playable(pages[index])) },
+        onclick: guard(() => turn(index)) }, [el("span", { text: String(index + 1) })])));
+    const FLIP_MS = 460;
+    let flipTimers = [];
+    const settle = () => {
+      for (const timer of flipTimers) clearTimeout(timer);
+      flipTimers = [];
+      pages.forEach((card, index) => { card.hidden = index !== at; delete card.dataset.flip; });
+      delete spread.dataset.turn;
+    };
+    const mark = () => {
+      [...tabs.children].forEach((tab, index) => { if (index === at) tab.setAttribute("aria-current", "true"); else tab.removeAttribute("aria-current"); });
+      prev.disabled = at === 0; next.disabled = at === pages.length - 1;
+      number.textContent = (at + 1) + " / " + pages.length;
+      spread.dataset.page = String(at + 1);
+    };
+    const calm = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // 頁をめくる: 紙が1枚、背を軸に反対の頁へ倒れる。倒れきるまで、着地する側は前の本のまま（紙の下で入れ替える）
+    function turn(to) {
+      to = Math.max(0, Math.min(pages.length - 1, to));
+      if (to === at) return;
+      settle();
+      const from = at, dir = to > from ? "next" : "prev";
+      at = to; shelfBook = scenarios[to].id;
+      fills.get(pages[to])?.(); fills.delete(pages[to]);
+      mark();
+      if (calm()) { settle(); return; }
+      pages[to].hidden = false; pages[from].dataset.flip = "out"; pages[to].dataset.flip = "in";
+      spread.dataset.turn = dir;
+      void leaf.offsetWidth; // 続けてめくった時も、紙の動きを最初からやり直す
+      flipTimers = [setTimeout(() => { pages[from].hidden = true; delete pages[from].dataset.flip; delete pages[to].dataset.flip; }, FLIP_MS * .78),
+        setTimeout(settle, FLIP_MS)];
+    }
+    fills.get(pages[at])?.(); fills.delete(pages[at]);
+    shelfBook = scenarios[at]?.id ?? null;
+    settle(); mark();
+    // 指で横に払ってもめくれる（縦の動きや、ボタンを押しただけの時はめくらない）
+    let swipe = null, swiped = false;
+    spread.addEventListener("pointerdown", event => { swipe = event.isPrimary ? { x: event.clientX, y: event.clientY } : null; swiped = false; });
+    spread.addEventListener("pointerup", event => {
+      if (!swipe) return;
+      const dx = event.clientX - swipe.x, dy = event.clientY - swipe.y, reach = spread.getBoundingClientRect().width * .09;
+      swipe = null;
+      if (Math.abs(dx) < reach || Math.abs(dx) < Math.abs(dy) * 1.6) return;
+      swiped = true; guard(() => turn(at + (dx < 0 ? 1 : -1)))();
+    });
+    spread.addEventListener("pointercancel", () => { swipe = null; });
+    spread.addEventListener("click", event => { if (swiped) { swiped = false; event.stopPropagation(); event.preventDefault(); } }, true);
+    spread.append(tabs, prev, next, number, leaf);
+    root.addEventListener("keydown", event => {
+      if (event.target.closest?.("input, textarea, select, [role='dialog']") || !["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+      if (!books.isConnected || root.querySelector(".trpg-shelf-help, .trpg-picturebook")) return;
+      event.preventDefault(); guard(() => turn(at + (event.key === "ArrowRight" ? 1 : -1)))();
+    });
+    // 見出しの下を「左＝店主・案内・部員・ランク・道具」「右＝開いた本」に分ける（#3199・TRF25 の左右の分け方はそのまま）。
     const side = el("div.trpg-campaign-side", { dataset: { test: "trpg-campaign-side" } });
     for (const node of [...root.children].slice(1)) side.append(node);
-    const rows = Math.max(1, Math.ceil(scenarios.length / 3));
-    books.style.setProperty("--rows", String(Math.min(rows, 3)));
-    books.dataset.rows = String(rows); books.dataset.overflow = String(rows > 3);
     root.dataset.view = "shelf";
     root.append(side, books);
     host.replaceChildren(root); root.focus({ preventScroll: true });
@@ -276,12 +375,13 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     const state = getState();
     const { mark, ok, reason } = cast.ok ? trpgBookmarkFor(state, scenario, cast.assignments) : { mark: null };
     const off = readOnly || !cast.ok;
-    if (!mark) return [button(label, "trpg-play-" + book.id, () => play(scenario), off)];
+    const kind = label === "もう一度遊ぶ" ? "replay" : "play";
+    if (!mark) return [shelfButton(label, kind, "trpg-play-" + book.id, () => play(scenario), off)];
     const note = el("p.trpg-campaign-bookmark", { dataset: { test: "trpg-bookmark-" + book.id },
       text: "しおり：" + (mark.title || "途中") + (ok ? "" : " · " + reason) });
-    return ok ? [note, button("続きから遊ぶ", "trpg-resume-" + book.id, () => play(scenario, { resume: true }), off),
-      button("最初から", "trpg-play-" + book.id, () => play(scenario), off)]
-      : [note, button(label, "trpg-play-" + book.id, () => play(scenario), off)];
+    return ok ? [note, shelfButton("続きから遊ぶ", "play", "trpg-resume-" + book.id, () => play(scenario, { resume: true }), off),
+      shelfButton("最初から", "replay", "trpg-play-" + book.id, () => play(scenario), off)]
+      : [note, shelfButton(label, kind, "trpg-play-" + book.id, () => play(scenario), off)];
   }
 
   async function readPictureBook(scenario) {

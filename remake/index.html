@@ -185,8 +185,6 @@
   };
   place();
   for (const query of queries) query.addEventListener("change", place);
-  // 「進む」の行は見えないまま場所だけ取る（共通ロード画面と同じ文言で同じ高さ）。
-  if (!window.matchMedia("(pointer: coarse)").matches) boot.querySelector(".loading-proceed").textContent = "クリック・Enter で進む";
   const fontsReady = document.fonts
     ? Promise.race([
         Promise.all(["500", "700", "900"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線似顔絵LOADING…準備完了クリックタップで進む"))),

@@ -37,11 +37,11 @@ function menu(result = null) {
   host.replaceChildren(el("div.camel-menu", [
     el("p", { text: "第4章ドバイ編・任意ミニゲーム（試遊ページ）" }),
     // 題名は手描きの字（CR-UI14）。読み終えるまでは出さず（読み込み中の代替文字が手描きへ切り替わるポップインを防ぐ。Issue #3643）、読めなければ文字のまま。
-    el("h1", [el("img.camel-menu-title", { src: imgFileUrl("ui/camel_race/ui/word-title.webp"), alt: "CAMEL RACE",
+    el("h1", [el("img.camel-menu-title", { src: imgFileUrl("ui/camel_race/ui/logo.webp"), alt: "CAMEL RACE", // 題字は生成したロゴ（CRF29）
       style: "opacity:0;transition:opacity .18s ease",
       onload: event => { event.currentTarget.style.opacity = "1"; },
       onerror: event => { event.currentTarget.replaceWith("CAMEL RACE"); } })]),
-    el("p", { text: "ラクダは自分で走る。横を走る車から、ロボット騎手へ「声」と「ムチ」を送るだけ。輪が重なる瞬間に Space（当たるとぐっと伸びる）、X は押している間ムチ（スタミナを使う）。" }),
+    el("p", { text: "ラクダは自分で走る。横を走る車から、ロボット騎手へ「声」と「ムチ」を送るだけ。輪が重なる瞬間に左のボタンで声（当たるとぐっと伸びる）、右のボタンは押している間ムチ（スタミナを使う）。" }),
     el("p", { dataset: { test: "camel-menu-result" }, text: result?.last ? `前回：${result.last.rank}位 ／ スコア ${result.last.total}（${result.last.grade}）${best ? ` ／ 自己ベスト ${best.total}` : ""}` : "まだ記録なし" }),
     ...buttons,
   ]));

@@ -328,3 +328,12 @@
   position: static !important; width: 100% !important; height: auto !important; margin: 5px 0 0 !important;
   clip-path: none; background: #100d0ae8;
 }
+
+/* ---- 2026-11-27 横持ちスマホで小さかった字を上げる（オーナー「UIや文字が全体的に見づらい。サイズ感も工夫して」・AXV02）:
+   右上の投数（実寸 約11px）と「直近」「累計」（約12px）、左上の宣言の札の名前と残り回数（約12px）、「今の刃先」の見出しを、実寸 14px 前後に。
+   置き場所・絵・押せる範囲は変えない ---- */
+html:root[data-density="phone"] .axe-first-person .axe-score-figures { font-size: 27px; }
+html:root[data-density="phone"] .axe-first-person .axe-score-round { font-size: 26px; }
+html:root[data-density="phone"] .axe-first-person .axe-call-controls button { font-size: 27px; }
+html:root[data-density="phone"] .axe-first-person .axe-call-count { font-size: 26px; }
+html:root[data-density="phone"] .axe-game.axe-first-person .axe-panel .axe-live-score .axe-live-label { font-size: 26px; }

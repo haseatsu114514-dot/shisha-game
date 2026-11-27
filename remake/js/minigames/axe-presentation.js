@@ -25,7 +25,8 @@ export function contactHold(shot) {
   return shot.dropReason === "off-board" ? 0 : AXE_FEEL.hitstop.drop;
 }
 
-const spaceAdvice = low => low ? "Spaceを長めに押す" : "Spaceを早めに離す";
+// 長押しで投げた時の助言。キーの名前は出さない（2026-11-27 オーナー「PC版のスペースとかの表示を全てのゲームから無くす」）
+const spaceAdvice = low => low ? "長めに押す" : "早めに離す";
 
 /** The thrower's own rotation, with a correction for the control used to release the axe. */
 export function powerVerdict(power, { inputMode = "gauges", source } = {}) {

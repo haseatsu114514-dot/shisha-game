@@ -160,7 +160,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     // 締めくくりで「二人で見たい」と答えた後の砂丘: 滑ったあと夕日で告白（DSR20）。この日はなるを呼ばない
     // 第5章（帰国後にまたドバイへ来た日・naru: false）は、なるは地元の KEMURIYA にいるので砂丘に来ない。ヌールとだけ滑る
     const rivals = !naru || (confessionDay && !before.naruMet) ? ["noor"] : desertRivals(owner);
-    // ヌールに勝った後の最初の外出: なるが砂丘に来て勝負を持ちかける（一度だけ）
+    // 上級をクリアした後の最初の外出: なるが砂丘に来て勝負を持ちかける（一度だけ。DSR107 より前は、ヌールに一度勝った後）
     if (rivals.includes("naru") && !before.naruMet) {
       if (!await read(DESERT_SCENES.naruArrive, bgUrl(DESERT_BG))) return changed;
       if (markNaruMet(owner)) save();
@@ -178,6 +178,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       onTier: tier => { if (current() && rememberTier(owner, "desert", tier)) save(); },
       reducedMotion: (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches) || !!config.reduceShake,
       guide: name, rivals,
+      // なるの札（段の札の4枚目。開くまでは「？？？」）: 第5章はなるが砂丘に来ないので、札ごと出さない
+      naruSlot: naru,
       onResult: result => {
         if (!current()) return null;
         const saved = recordDesertResult(owner, result, { awardExp: awardActionExp });

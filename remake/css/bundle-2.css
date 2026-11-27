@@ -2547,7 +2547,7 @@ html .bench[data-mode] .wpour-info { color: var(--paper-ink); border: 1px solid 
 html .bench[data-mode] .wpour-head h2 { color: var(--lavender); }
 html .bench[data-mode] .wpour-head small { color: var(--paper-muted); }
 html .bench[data-mode] .wpour-goal { color: var(--amber-ink); }
-html .bench[data-mode] :is(.wpour-status, .wpour-result small, .wpour-keys) { color: var(--paper-muted); }
+html .bench[data-mode] :is(.wpour-status, .wpour-result small) { color: var(--paper-muted); }
 html .bench[data-mode] .wpour[data-pour="on"] .wpour-pour, html .bench[data-mode] .wpour[data-tilt="on"] .wpour-tilt { box-shadow: 0 0 0 3px #d8963f66; }
 html .bench[data-mode] .wpour-spilled { color: var(--cool-ink); }
 html .bench[data-mode] .wpour-spilled b { color: var(--cool-ink); }

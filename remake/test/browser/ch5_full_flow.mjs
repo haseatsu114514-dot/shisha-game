@@ -1102,6 +1102,7 @@ await suite("ch5-full-flow", async check => {
     // 2回目からは練習なしでメニューから。なるとの勝負（裏）は出さない
     await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === "menu", null, { timeout: 90000 });
     assert.equal(await page.locator(dt("desert-start-naru")).count(), 0, "No race against Naru in Chapter 5");
+    assert.equal(await page.locator(dt("desert-tier-naru")).count(), 0, "No Naru card at all in Chapter 5 (DSR107)");
     await page.locator(dt("desert-start")).click();
     await page.evaluate(() => { window.__desertRide.autoplay("perfect"); window.__desertRide.setSpeedUp(8); });
     await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === "result", null, { timeout: 90000 });

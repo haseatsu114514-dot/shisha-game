@@ -177,7 +177,7 @@ export function materializeTrpgCast(scenario, assignments) {
       return [updated];
     });
   }
-  table.presentation.prepareIdle = "準備を選ぼう。仲間がいれば、切り札も頼める";
+  table.presentation.prepareIdle = "準備を選ぼう。仲間がいれば、スキルも頼める";
   table.presentation.endingIdle = "この晩の話は、ここまで。本棚で遊んだ記録を見返せます";
   table.presentation.exitText = "中断した物語は、また遊べます。今夜の行動は使いません。";
   return table;

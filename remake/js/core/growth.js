@@ -599,7 +599,7 @@ function giveFlexibleColor(g, preferred, n) {
   return giveSet(g, { ...gift, any: n });
 }
 
-/** てつこの好感度の満タン（ハート5。minigames/tetsuko-model.js と同じ値。依存を増やさないため写す。テストで照合） */
+/** てつこの、なかよしの満タン（肉球5つ。minigames/tetsuko-model.js の JOY_MAX と同じ値。依存を増やさないため写す。テストで照合） */
 export const TETSUKO_AFFECTION_FULL = 100;
 const RANK_ORDER = ["D", "C", "B", "A", "S"];
 // 斧投げのランクの境目（minigames/axe-challenges.js の RANKS と同じ。依存を増やさないため写す。テストで照合）
@@ -621,7 +621,9 @@ function bestAxeRank(s) {
 function playRewardMet(reward, s) {
   if (reward.master) return masteryRecord(s, reward.game).done;
   if (reward.tier) return tierCleared(s, reward.game, reward.tier);
-  if (reward.game === "tetsuko" && reward.affection) return Number(s.flags?._tetsuko_time?.affection) >= TETSUKO_AFFECTION_FULL;
+  // affection: true は満タン（肉球5つ）、数値はその値（肉球3つ＝60）
+  if (reward.game === "tetsuko" && reward.affection)
+    return Number(s.flags?._tetsuko_time?.affection) >= (reward.affection === true ? TETSUKO_AFFECTION_FULL : reward.affection);
   if (reward.game === "axe") { const rank = bestAxeRank(s); return !!rank && atLeast(rank, reward.rank); }
   if (reward.game === "trpg" && reward.scenario) return !!s.trpg?.cleared?.[reward.scenario];
   if (reward.game === "trpg") {
@@ -812,9 +814,9 @@ on("play-mastery", ({ state: owner, game, newly }) => {
   emit("notice", { text: newly ? `認定：${PLAY_MASTERY[game].title}` : masteryLine(owner, game) });
 });
 
-// てつこの好感度がハート5に届いた（#3779。tetsuko-time.js の確定が一度だけ知らせる）。白火をその場で精算する。
-on("tetsuko-hearts", ({ state: owner, full }) => {
-  if (owner !== state || !full) return;
+// てつこの、なかよしが火種の節目（肉球3つ・5つ）に届いた（#3779。tetsuko-time.js の確定が、節目ごとに一度だけ知らせる）。その場で精算する。
+on("tetsuko-hearts", ({ state: owner }) => {
+  if (owner !== state) return;
   settleGrowth();
 });
 
