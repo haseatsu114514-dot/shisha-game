@@ -258,3 +258,12 @@ html:root[data-density="phone"][data-layout="portrait"] { --phone-text: 24px; --
   .trpg-selection-title > small, .trpg-stage-investigation, .trpg-stage-investigation strong, .trpg-hypothesis-stage .trpg-modal-actions small, .trpg-search-slot, .trpg-search-slot small) { font-size: 22px; }
 #stage .trpg-root.trpg-cinematic .trpg-seat-mark { min-width: 30px; height: 30px; }
 #stage .trpg-root.trpg-cinematic :is(.trpg-tutorial-panel :is(span, i, small), .trpg-ability-receipt, .trpg-dice-near, .trpg-ending .trpg-kicker), #stage .trpg-root.trpg-cinematic > .trpg-incarnate-skip { font-size: 22px; }
+
+/* ───────── 見た目の底上げ（2026-11-27 オーナー「見た目しょぼいのは…」・VPG09）: 本編の卓のテーマと同じ素材（フェルト deep-teal-felt・木と真鍮の枠 walnut-brass-frame）を使う。
+   本編のテーマの決まり（css/trpg-theme.css「新しい画像は追加しない」）に合わせ、ここでも新しい絵は足していない ───────── */
+/* 台詞の帯の地: 塗りだけだった所を、卓のフェルトと真鍮の縁に */
+#stage .trpg-root.trpg-cinematic .trpg-dock { background: linear-gradient(180deg, rgba(5, 37, 41, .5), rgba(4, 20, 24, .88)), url("../../../img/ui/trpg/deep-teal-felt.webp") center / 420px, #082c31;
+  border-top: 3px solid #b08a3e; box-shadow: inset 0 2px 0 rgba(241, 214, 138, .4), inset 0 12px 20px rgba(0, 0, 0, .35); }
+/* 物語選びの題字: 字だけだった所を、木と真鍮の枠の札に（字はそのまま） */
+#stage .trpg-root.trpg-library .trpg-library-header h1 { padding: 6px 22px 8px; border: 16px solid transparent; border-image: url("../../../img/ui/trpg/walnut-brass-frame.webp") 145 / 16px / 0 stretch;
+  background: linear-gradient(180deg, rgba(5, 37, 41, .7), rgba(4, 20, 24, .9)), url("../../../img/ui/trpg/deep-teal-felt.webp") center / 300px; background-clip: padding-box; font-size: 32px; color: #f6e7bd; text-shadow: 0 2px 0 rgba(0, 0, 0, .6); }
