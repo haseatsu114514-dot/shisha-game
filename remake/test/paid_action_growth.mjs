@@ -8,6 +8,8 @@ const browser = await chromium.launch({ headless: true,
 });
 try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+  // バイトは店番（TFL62）。この検査は給料と成長枠を見るだけなので、他のブラウザ検査と同じく店番を通り過ぎる（tonari-floor-view.js の instantFloor）
+  await page.addInitScript(() => { try { localStorage.setItem("suien_floor", "instant"); } catch {} });
   const errors = [];
   page.on("pageerror", e => errors.push(e.message));
   await page.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
