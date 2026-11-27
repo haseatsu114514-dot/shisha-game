@@ -214,14 +214,16 @@ const CUT_HOLD = 3800; // 紹介を見せる長さ（ms）。横画面の今の�
 const WATER = { low: 0.44, high: 0.56, stem: 0.3, deep: 0.85, pour: 0.18, drain: 0.03 };
 const waterZone = (w) => w <= 0 ? "empty" : w < WATER.stem ? "none" : w < WATER.low ? "shallow" : w <= WATER.high ? "ideal" : "deep";
 const WATER_SAY = { none: "ステムに届いてないぞ", shallow: "浅いな。吸いが軽くなる", ideal: "いい浸かり具合だ", deep: "深いな。吸いが重くなる" };
-// 水入れのボトル（VPL81）: 口の開いたガラスのベース単体（ステムは外してある）を、蛇口の下で少し傾けて満たす。
-// 絵は img/ui-bottle-open.webp（540×711）。本編の大会公式モデルの台のベース（VPL46）を入力にした生成で、ガラスの面は半透明にしてある（水が透けて見える）。
-// inner＝内側の形（絵の輪郭からガラスの厚みだけ内へ）。底（y=668）から口の下（y=30）まで。
-// ちょうどいい水位（0.44〜0.56）が、ボトルの高さの約6割に来る（VPL81）。口の下まで来たら満杯（WATER_MAX）
-const BOTTLE = { w: 540, h: 711, cx: 270, base: 668, top: 30, pivot: [270, 690], mouth: [270, 20], rest: 8, drain: 17,
-  inner: "M179 30 L185 44 L189 58 L192 72 L194 86 L195 100 L196 114 L196 128 L195 142 L193 156 L189 170 L184 184 L176 198 L167 212 L157 226 L146 240 L135 254 L125 268 L116 282 L108 296 L102 310 L97 324 L94 338 L92 352 L91 366 L90 380 L90 394 L90 408 L90 422 L89 436 L88 450 L86 464 L83 478 L80 492 L75 506 L68 520 L59 534 L47 548 L38 562 L27 576 L21 590 L19 604 L21 618 L26 632 L34 646 L48 660 L59 668 L481 668 L492 660 L506 646 L514 632 L519 618 L520 604 L518 590 L513 576 L502 562 L493 548 L480 534 L471 520 L465 506 L460 492 L456 478 L453 464 L451 450 L450 436 L449 422 L449 408 L449 394 L448 380 L448 366 L447 352 L445 338 L442 324 L437 310 L431 296 L423 282 L414 268 L403 254 L393 240 L382 226 L371 212 L362 198 L355 184 L349 170 L345 156 L343 142 L342 128 L342 114 L343 100 L344 86 L347 72 L349 58 L353 44 L360 30Z" };
+// 水入れのボトル（VPL81・VPL82）: 台から外したガラスのベース単体を、蛇口の下で少し傾けて満たす。
+// 口は、ステムがカチッとはまる黒と金の受け口（ベース側のクリック式の金具。内側にゴムのパッキン）が、ガラスの肩のすぐ上に付いた形（VPL82）。
+// 実物（日本の店で多いロシア系の台）も、ベースの口は短くまっすぐな太い首で、ステムの下の接続部がそこへ差し込まれてはまる。くびれた口にはしない。
+// 絵は img/ui-bottle-open.webp（540×800）。本編の大会公式モデルの台（img/ui/scene_props/shisha_home_pro.webp）の襟から下を入力にした生成で、ガラスの面は半透明にしてある（水が透けて見える）。
+// inner＝ガラスの内側の形（絵の輪郭からガラスの厚みだけ内へ）。底（y=755）から受け口のすぐ下（y=209）まで。受け口の中は見えないので水は描かない。
+// ちょうどいい水位（0.44〜0.56）が、ガラスの胴の高さの約6割に来る（VPL81）。肩の上まで来たら満杯（WATER_MAX）
+const BOTTLE = { w: 540, h: 800, cx: 270, base: 755, top: 209, pivot: [270, 790], mouth: [270, 32], rim: 50, rest: 8, drain: 17, // rim＝受け口の穴の手前の縁（水流はここから下は受け口の陰）
+  inner: "M185 209 L187 223 L186 237 L183 251 L179 265 L173 279 L166 293 L157 307 L146 321 L135 335 L123 349 L114 363 L105 377 L99 391 L93 405 L89 419 L86 433 L84 447 L83 461 L83 475 L83 489 L83 503 L83 517 L82 531 L81 545 L79 559 L77 573 L72 587 L66 601 L58 615 L45 629 L30 643 L20 657 L21 671 L19 685 L20 699 L24 713 L31 727 L44 741 L63 755 L477 755 L496 741 L508 727 L515 713 L519 699 L520 685 L518 671 L520 657 L509 643 L495 629 L482 615 L473 601 L467 587 L463 573 L460 559 L458 545 L457 531 L457 517 L457 503 L457 489 L457 475 L456 461 L455 447 L453 433 L450 419 L446 405 L441 391 L434 377 L426 363 L416 349 L405 335 L393 321 L383 307 L373 293 L366 279 L360 265 L356 251 L354 237 L353 223 L354 209Z" };
 const waterY = (w) => BOTTLE.base - w * (BOTTLE.base - BOTTLE.top) * 1.2;
-const WATER_MAX = 0.86;
+const WATER_MAX = 0.8;
 // ボトルを ang 度傾けた時の、絵の中の点（x, y）の画面上の位置
 const tiltPoint = (x, y, ang) => { const r = ang * Math.PI / 180, [px, py] = BOTTLE.pivot, dx = x - px, dy = y - py; return [px + dx * Math.cos(r) - dy * Math.sin(r), py + dx * Math.sin(r) + dy * Math.cos(r)]; };
 // 内側の左右の壁（高さ y での x）。水面の波を壁で跳ね返すのに使う
@@ -1013,6 +1015,7 @@ class Phone {
         <image class="w-faucet" href="${IMG.faucet}" x="${n(F.x)}" y="${n(F.y)}" width="${n(F.w)}" height="${n(F.h)}" mask="url(#${id}k)"/>
         <g clip-path="url(#${id})"><path class="w-body" fill="url(#${id}g)" d=""/><path class="w-deep" d=""/>
           <g class="w-bubbles">${`<circle r="0"/>`.repeat(12)}</g>
+          <path class="w-stream in" fill="url(#${id}s)" d=""/>
           <path class="w-surf" d=""/><path class="w-line" d=""/></g>
       </svg>`;
   }
@@ -1020,7 +1023,9 @@ class Phone {
   /** ガラスの手前に重ねる分: 蛇口の水流と、水面で跳ねるしぶき（ガラスの白に埋もれないように）。 */
   bottleFxSvg() {
     const id = `bw${this.uid}`, { w, h } = BOTTLE;
-    return `<svg class="bottle-svg fx" viewBox="0 0 ${w} ${h}" aria-hidden="true"><path class="w-stream" fill="url(#${id}s)" d=""/><g clip-path="url(#${id})"><g class="w-drops">${`<circle r="0"/>`.repeat(7)}</g></g></svg>`;
+    // 水流は、受け口の穴の手前の縁より上だけ手前に描く（その下は受け口の陰。胴の中の分は奥の SVG の .w-stream.in がガラス越しに見せる）
+    return `<svg class="bottle-svg fx" viewBox="0 0 ${w} ${h}" aria-hidden="true"><defs><clipPath id="${id}f"><rect class="w-fxclip" x="-400" y="-900" width="${w + 800}" height="0"/></clipPath></defs>
+      <g clip-path="url(#${id}f)"><path class="w-stream" fill="url(#${id}s)" d=""/></g><g clip-path="url(#${id})"><g class="w-drops">${`<circle r="0"/>`.repeat(7)}</g></g></svg>`;
   }
 
   /** 水入れ（VPL46・VPL81）: 蛇口の下で、口の開いたボトルを少し傾けて満たす。水位計は出さない。二本の線が目安 */
@@ -1043,7 +1048,7 @@ class Phone {
     if (!S || S.svg !== svg) {
       const q = (c) => root.querySelector(c);
       S = this.wsim = { svg, h: new Float32Array(N), v: new Float32Array(N), ang: BOTTLE.rest, angV: 0, slope: 0, slopeV: 0, head: null, tail: null, bub: [], drops: [], spawn: 0, was: false,
-        glass: root.querySelector(".b-glass"), clip: q(".w-clip"), body: q(".w-body"), deep: q(".w-deep"), surf: q(".w-surf"), line: q(".w-line"), stream: q(".w-stream"),
+        glass: root.querySelector(".b-glass"), clip: q(".w-clip"), body: q(".w-body"), deep: q(".w-deep"), surf: q(".w-surf"), line: q(".w-line"), stream: q(".fx .w-stream"), streamIn: q(".w-stream.in"), fxClip: q(".w-fxclip"),
         bubEls: [...root.querySelectorAll(".w-bubbles circle")], dropEls: [...root.querySelectorAll(".w-drops circle")] };
     }
     const w = this.st.water, still = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1108,8 +1113,9 @@ class Phone {
       const t = now / 1000, wob = (yy) => Math.sin(t * 19 + yy * 0.045) * 1.6 + Math.sin(t * 31 + yy * 0.09) * 0.8, y0 = S.tail, y1 = S.head, seg = 6;
       let lft = "", rgt = "";
       for (let k = 0; k <= seg; k++) { const yy = y0 + (y1 - y0) * k / seg, half = 13 - 4.5 * k / seg + Math.sin(t * 23 + k) * 0.7, cx = F.nx + (still ? 0 : wob(yy)); lft += `${k ? "L" : "M"}${(cx - half).toFixed(1)} ${yy.toFixed(1)} `; rgt = `L${(cx + half).toFixed(1)} ${yy.toFixed(1)} ` + rgt; }
-      S.stream.setAttribute("d", `${lft}${rgt}Z`);
-    } else S.stream.setAttribute("d", "");
+      S.stream.setAttribute("d", `${lft}${rgt}Z`); S.streamIn.setAttribute("d", `${lft}${rgt}Z`);
+    } else { S.stream.setAttribute("d", ""); S.streamIn.setAttribute("d", ""); }
+    S.fxClip.setAttribute("height", (tiltPoint(BOTTLE.mouth[0], BOTTLE.rim, ang)[1] + 900).toFixed(1));
     // 泡としぶき
     if (hitting && !still) {
       S.spawn += dt;
