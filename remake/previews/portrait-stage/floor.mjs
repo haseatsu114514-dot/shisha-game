@@ -5,7 +5,9 @@
 // 卓のボックスを押すと、下の画面がその卓のものに替わる（オーナー「卓をタップすると下画面がそれに応じたUIになる感じがいいかも」）:
 //   上から、その卓の客と一言／ミックス案（2列×3段。注文を聞いている間は押して出す。頼みを聞いている間は、4つの手に替わる）／シャッフル・フィーバー・休止。
 //   注文と頼みを聞いている間は、店の時間が止まる（本編の「接客の画面」と同じ）。炭の調整・会計は、押したらその場で済む（本編と同じ）。
-// 上の画面は広めに取り（VPM23）、卓のボックス・残り時間・店の売上・評判を置く。はじめの印が、選んだ卓へ動く。
+// 上の画面（画面の上半分ほど。VPM25）は、tonari のフロアの絵（カウンターの中から見た店内。この画面に合わせて作った正方形の絵）で、
+//   客は、絵の中の5つの席（奥に3つ・手前に2つ。規則的な並びではなく、絵の家具の位置）に座って見える。空いた席は、番号の小さな札だけ。
+//   ほかに置くのは、残り時間・店の売上・評判。はじめの印が、選んだ席へ動く（VPM23）。
 // ── 試作だけの決まり（本編の規則 tonari-floor-model.js は変えていない。合格したら本編へ移す） ──
 //   評判（VPM20）: ◎を出すと＋2、○を出すと＋1。下がらずに積み上がる。節目で、客が一人増える／本編の人物（レア客）が遊びに来る。
 //   ミックス案（VPM21）: はじめは4つ。心得の盤で6つまで開く（開くまでは鎖）。本編の規則の handSize を、店の差し替えで渡す。
@@ -14,7 +16,7 @@
 // 本編の進行・所持金・保存には触れない。
 import {
   createFloorNight, createFloorTutorial, floorTick, floorAct, floorTap, floorTutorialCue, floorHint, floorResult,
-  floorUrgency, floorWaitLeft, floorStayLeft, floorCoalLeft, floorTendDue, floorHand, floorShuffleLeft, floorTimeLeft, floorStage,
+  floorUrgency, floorWaitLeft, floorStayLeft, floorTendDue, floorHand, floorShuffleLeft, floorTimeLeft, floorStage,
   floorFeverReady, floorOutlook, floorPlan, floorCallLine, floorDusk, floorBill, mixName, mixFlavorNames, mixIsSingle,
   floorFeverMax, floorFeverCost, floorFeverLength, FLOOR_TICK_MS,
 } from "../../js/daily/tonari-floor-model.js";
@@ -41,8 +43,13 @@ const talker = (by) => CHAT_SPEAKERS[by] || CHAT_SPEAKERS.hajime;
 const BAND_MS = 1500; // 画面を横切る帯（営業開始・フィーバー・営業終了）が出ている長さ。本編と同じ
 const SALES_STEP = 10000;
 
-// 卓の並び: 上に3つ・下に2つ（卓の番号の若い順に座るので、上の段から埋まる）。x は画面の幅に対する %
-const SEATS = [[17.6, 0], [50, 0], [82.4, 0], [33.8, 1], [66.2, 1]];
+// 席の並び（VPM25）: 店内の絵（img/floor-tonari-day.webp / -night.webp。正方形）の中の、5つの席。
+//   x・y＝客の絵の「裾のまん中」を置く所（絵の幅・高さに対する %。ソファの座面の手前）。row＝0 奥の列（客の絵は小さめ。札は頭の上＝壁の所）／
+//   1 手前の列（大きめ。札は裾の下＝テーブルの上。頭の上だと、奥の列の客に重なる）。絵を替える時は、この表も合わせる
+const SEATS = [{ x: 20, y: 50, row: 0 }, { x: 51, y: 50, row: 0 }, { x: 81.5, y: 50.5, row: 0 }, { x: 21, y: 72, row: 1 }, { x: 75, y: 72, row: 1 }];
+// 本編の人物（レア客）は、立ち絵（新版・896×1200）の胸から上を切り出して座らせる。[左, 上, 一辺]。
+//   顔の位置の記録（data/portrait_metrics.json の styles.new の crown・chin・cheeks）から計算した値（一辺＝頭の高さ×1.72。ふつうの客の絵と同じ構図になる）
+const RARE_BUST = { tsumugi: [304, 280, 270], naru: [302, 36, 272], adam: [289, 35, 287] };
 const UPPER = [1, 2, 3], LOWER = [4, 5];
 // 上下キーで段を移る時の相手（来た卓を覚えていれば、そこへ戻る）
 const ROW_MATE = { 1: 4, 2: 4, 3: 5, 4: 1, 5: 3 };
@@ -118,7 +125,7 @@ export class FloorScene {
     options: { name: "shift", default: "usual", values: Object.fromEntries(Object.entries(FLOOR_SHIFTS).map(([id, shift]) => [id, shift.name])) },
     gallery: {
       title: "店番（tonari のフロア営業）",
-      note: "本編の店番（バイト）を縦へ。ルール・数値・客・ミックス・台詞は本編のものを使い、画面を縦に組んだ。上に店内と卓のボックス、下は選んだ卓の専用の画面（ミックス案は2列×3段）。試作だけの決まり: 評判（◎＋2・○＋1。節目で客が増える）・ミックス案は4つから（盤で6つまで）・ケアは温度調整を入れた4つの手。",
+      note: "本編の店番（バイト）を縦へ。ルール・数値・客・ミックス・台詞は本編のものを使い、画面を縦に組んだ。上半分は tonari のフロアの絵（この画面に合わせて作った絵）で、客は絵の中の席に座る。下は選んだ席の専用の画面（ミックス案は2列×3段）。試作だけの決まり: 評判（◎＋2・○＋1。節目で客が増える）・ミックス案は4つから（盤で6つまで）・ケアは温度調整を入れた4つの手。",
       shots: [
         { caption: "開店前", shot: "intro" },
         { caption: "営業中（下は、選んでいる卓の客と、ミックス案）", shot: "live" },
@@ -144,8 +151,10 @@ export class FloorScene {
     Object.assign(kit.ICONS, FL_ICONS);
     this.shiftId = FLOOR_SHIFTS[shift] ? shift : "usual";
     this.art = (name) => `${kit.REMAKE_IMG}ui/tonari-floor/${name}.webp`;
-    this.roomDay = `${kit.REMAKE_IMG}backgrounds/bg_tonari_inside_day.webp`;
-    this.roomNight = `${kit.REMAKE_IMG}backgrounds/bg_tonari_inside_night.webp`;
+    // 店内の絵（VPM25）: この画面に合わせて作った、カウンターの中から見た tonari のフロア（昼と夜。同じ構図）
+    this.roomDay = new URL("./img/floor-tonari-day.webp", import.meta.url).href;
+    this.roomNight = new URL("./img/floor-tonari-night.webp", import.meta.url).href;
+    this.sprite = (id) => `${kit.REMAKE_IMG}sprites/character_variants/new/${id}/chr_${id}_normal.webp`;
     this.face = (id) => `${kit.REMAKE_IMG}ui/face_icons/new/face_${id}.webp`;
     this.timers = new Set();
     this.reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -210,7 +219,7 @@ export class FloorScene {
   preload() {
     const urls = [...Object.values(MOOD_ART), "verdict-best", "verdict-bad", ...Object.values(MEDAL)].map((name) => this.art(name));
     for (const guest of Object.values(this.s.guests)) {
-      if (guest.charId) continue;
+      if (guest.charId) { if (RARE_BUST[guest.charId]) urls.push(this.sprite(guest.charId)); continue; } // 本編の人物は、席に座らせる立ち絵
       const id = guest.art || guest.kind;
       urls.push(this.art(`guest-${id}`), this.art(`guest-${id}-happy`));
     }
@@ -234,15 +243,15 @@ export class FloorScene {
 
   html() {
     const { kit } = this, { icon } = kit;
-    const tables = SEATS.map(([x, row], i) => `<button class="fl-table" data-act="fl-table" data-id="${i + 1}" data-phase="empty" data-row="${row}" style="--x:${x}%">
+    const tables = SEATS.map(({ x, y, row }, i) => `<button class="fl-table" data-act="fl-table" data-id="${i + 1}" data-phase="empty" data-row="${row}" style="--x:${x}%;--y:${y}%">
+        <i class="fl-spot"></i>
+        <span class="fl-box"><i class="fl-burst"></i><span class="fl-who"></span><i class="fl-anger">${icon("anger")}</i></span>
+        <i class="fl-no">${i + 1}</i><span class="fl-cell"></span><span class="fl-count"></span>
         <span class="fl-head"><span class="fl-want"></span><span class="fl-fx"></span></span>
-        <span class="fl-box"><i class="fl-burst"></i><span class="fl-who"></span><i class="fl-no">${i + 1}</i><span class="fl-cell"></span>
-          <i class="fl-anger">${icon("anger")}</i><span class="fl-bar"><i></i></span></span>
-        <i class="fl-pie"></i><span class="fl-count"></span>
       </button>`).join("");
     return `
       <img class="amb" src="${this.roomDay}" alt="">
-      <div class="pic fl-room"><img class="bg" src="${this.roomDay}" alt=""><img class="bg fl-night" src="${this.roomNight}" alt=""><i class="fl-lights"></i></div>
+      <div class="pic fl-room"><div class="fl-floor"><img class="bg" src="${this.roomDay}" alt=""><img class="bg fl-night" src="${this.roomNight}" alt=""><i class="fl-lights"></i></div></div>
       <i class="veil"></i>
       <div class="fl-hud">
         <span class="pill fl-status fl-status-clock">
@@ -284,7 +293,7 @@ export class FloorScene {
     const { el } = this, q = (sel) => el.querySelector(sel);
     this.refs = {
       room: q(".fl-room"), tables: [...el.querySelectorAll(".fl-table")].map((root) => ({ root, want: root.querySelector(".fl-want"), fx: root.querySelector(".fl-fx"),
-        who: root.querySelector(".fl-who"), cell: root.querySelector(".fl-cell"), bar: root.querySelector(".fl-bar i"), count: root.querySelector(".fl-count"), keys: {} })),
+        who: root.querySelector(".fl-who"), cell: root.querySelector(".fl-cell"), count: root.querySelector(".fl-count"), keys: {} })),
       clock: q(".fl-clock b"), timebar: q(".fl-timebar i"), sales: q(".fl-sales b"), outlook: q(".fl-outlook"),
       band: q(".fl-band"), notice: q(".fl-notice"), flash: q(".fl-flash"), line: q(".fl-line"),
       coach: q(".fl-coach"), coachText: q(".fl-coach .say-text"), deck: q(".fl-deck"), who: q(".fl-guest"), rows: q(".fl-rows"), head: q(".fl-mixhead"), busy: q(".fl-busy"), me: q(".fl-me"), door: q(".fl-door"),
@@ -581,8 +590,14 @@ export class FloorScene {
     return `<span class="fl-wish${[...label].length > 6 ? " long" : ""}" style="--c:${w.color}">${refill ? `<i class="fl-again">${this.kit.icon("top")}</i>` : ""}${this.kit.icon(WISH_ICON[w.id])}<b>${this.kit.esc(label)}</b></span>`;
   }
 
-  guestImg(guest, happy = false) {
-    if (guest.charId) return `<img src="${this.face(guest.charId === "minto" ? "minto_private" : guest.charId)}" alt="">`;
+  /** 客の絵。bust＝席に座らせる絵（胸から上・背景なし）。本編の人物は、席では立ち絵の胸から上、下の画面では顔のアイコン。 */
+  guestImg(guest, happy = false, bust = false) {
+    if (guest.charId) {
+      const cut = bust && RARE_BUST[guest.charId];
+      if (!cut) return `<img src="${this.face(guest.charId === "minto" ? "minto_private" : guest.charId)}" alt="">`;
+      const [x, y, size] = cut, pct = (n) => `${(n / size * 100).toFixed(2)}%`;
+      return `<span class="fl-bust"><img src="${this.sprite(guest.charId)}" alt="" style="width:${pct(896)};left:-${pct(x)};top:-${pct(y)}"></span>`;
+    }
     return `<img src="${this.art(`guest-${guest.art || guest.kind}${happy ? "-happy" : ""}`)}" alt="">`;
   }
 
@@ -618,7 +633,6 @@ export class FloorScene {
     Object.assign(spot.root.dataset, {
       phase: table.phase, tone: want[2], sel: String(this.sel === table.id), rare: String(!!guest?.charId),
       urgent: urgency > 0.66 ? "high" : urgency > 0.33 ? "mid" : "", mood: stage?.id || "",
-      gauge: table.phase === "prep" ? "make" : table.phase === "enjoy" ? "coal" : "",
       leaving: String(table.phase === "enjoy" && stay > 0 && stay <= 0.3),
     });
     spot.root.style.setProperty("--stay", stay.toFixed(3));
@@ -626,7 +640,7 @@ export class FloorScene {
     // 客の顔（大満足の客は笑顔の絵）
     const happy = !!stage && table.mood >= 85;
     const whoKey = guest ? `${guest.id}/${happy}` : "";
-    if (k.who !== whoKey) { k.who = whoKey; spot.who.innerHTML = guest ? this.guestImg(guest, happy) : ""; }
+    if (k.who !== whoKey) { k.who = whoKey; spot.who.innerHTML = guest ? this.guestImg(guest, happy, true) : ""; }
     // 見出し: 注文待ちの間は客の気分（色と印と名前）、押すと進む用件はその名前
     const wantKey = !guest ? "" : table.phase === "order" ? `w/${guest.order.wish}/${guest.order.pref?.label || ""}/${table.refill}` : want[3] ? `h/${want[0]}/${want[1]}/${want[2]}` : "";
     if (k.want !== wantKey) {
@@ -645,9 +659,6 @@ export class FloorScene {
         : table.phase === "prep" ? (making ? `${icon("cook")}<b>${seconds(table.make.left)}</b>` : icon("clock"))
         : stage ? `<img src="${this.art(MOOD_ART[stage.id])}" alt="${stage.label}">` : table.phase === "cool" ? icon("clean") : "";
     }
-    // 箱の下の棒: 仕込みの進み。提供後は炭の残り
-    const bar = table.phase === "prep" ? 1 - table.make.left / table.make.total : table.phase === "enjoy" ? floorCoalLeft(s, table.id) : 0;
-    spot.bar.style.width = `${Math.round(bar * 100)}%`;
     // 頼み・会計を待たせている残り（秒）
     const countKey = (table.call || table.phase === "bill") && left != null ? (left > 0 ? String(seconds(left)) : "!") : "";
     if (k.count !== countKey) { k.count = countKey; spot.count.innerHTML = countKey ? `${icon("clock")}<b>${countKey === "!" ? "！" : countKey}</b>` : ""; }
@@ -681,7 +692,7 @@ export class FloorScene {
       html = () => list.map((mix, i) => {
         const ok = !live || !this.coach || this.coachExpects({ type: "order", tableId: table.id, mix: mix.id }); // チュートリアル: 今の段でやる一つだけを押せる
         const len = [...mix.name].length;
-        return `<button class="fl-opt" data-act="fl-pick" data-i="${i}" data-rating="${mix.rating || ""}" data-len="${len >= 11 ? "xxl" : len >= 10 ? "xl" : len >= 9 ? "l" : len >= 8 ? "m" : ""}"
+        return `<button class="fl-opt" data-act="fl-pick" data-i="${i}" data-rating="${mix.rating || ""}" data-len="${len >= 11 ? "xxl" : len >= 10 ? "xl" : len >= 9 ? "l" : len >= 8 ? "m" : len >= 7 ? "s" : ""}"
           aria-label="${mix.full}、${WISH[mix.main].label}${mix.sub ? `・${WISH[mix.sub].label}` : ""}${mix.rating ? `、${table.id}卓に${RATE_MARK[mix.rating]}` : ""}"${live && !ok ? " disabled" : ""}${live && this.coach && ok ? ` data-coach="true"` : ""}>
           ${attrHtml(this.art, mix.id)}<span class="fl-opt-text"><b>${esc(mix.name)}</b>${mix.single ? "" : `<small>${mix.recipe.map(esc).join("・<wbr>")}</small>`}</span>
           ${mix.rating ? `<i class="fl-opt-rate" data-rating="${mix.rating}">${RATE_MARK[mix.rating]}</i>` : ""}</button>`;
@@ -754,7 +765,7 @@ export class FloorScene {
     who.dataset.key = key;
     who.dataset.verdict = "";
     who.dataset.guest = String(!!guest);
-    who.style.setProperty("--sx", `${(SEATS[table.id - 1][0] / 100 * 39 - 1.2).toFixed(2)}rem`); // 上の卓のボックスの真下に、つなぐ印を出す（画面の幅39rem・左右の余白1.2rem）
+    who.style.setProperty("--sx", `${(SEATS[table.id - 1].x / 100 * 39 - 1.2).toFixed(2)}rem`); // 上の席の真下に、つなぐ印を出す（画面の幅39rem・左右の余白1.2rem）
     // 札: 注文の気分／押すと進む用件（頼み・炭の調整・会計）／仕込み中／吸っている一台
     const chip = !guest ? "" : table.phase === "order" ? this.wishChip(guest.order, { refill: table.refill })
       : ["care", "tend", "bill"].includes(tap) ? `<span class="fl-need" data-tone="${want[2]}">${icon(want[0])}<b>${want[1]}</b></span>`
@@ -765,11 +776,14 @@ export class FloorScene {
     const GO = { order: ["order", "聞く"], care: ["ask", "聞く"], tend: ["add", "整える"], bill: ["bill", "会計"] };
     const go = need ? `<button class="fl-go" data-act="fl-table" data-id="${table.id}" data-need="${need}"${shuffling ? " disabled" : ""}${glow ? ` data-coach="true"` : ""}>${icon(GO[need][0])}<b>${shuffling ? "入替中" : GO[need][1]}</b></button>` : "";
     who.innerHTML = `<span class="fl-guest-face">${guest ? this.guestImg(guest, happy) : ""}<b class="fl-guest-no" aria-label="${table.id}卓">${table.id}</b>${mood}<i class="fl-guest-mark" aria-hidden="true"></i></span>
-      <div class="fl-guest-side">
-        <div class="fl-guest-top"><b class="fl-guest-name">${guest ? esc(guest.name) : table.phase === "cool" ? "片付け中" : "空席"}</b>${chip}${side}</div>
-        <p class="fl-quote" data-sight="${sight}"><span class="fl-q"></span></p>
+      <div class="fl-guest-side">${need
+        // 用件がある席（まだ聞いていない）: 上の行は呼び名だけ、下の行に用件の札（会計は金額も）。右の押す所と並んでも切れないように
+        ? `<div class="fl-guest-top"><b class="fl-guest-name">${esc(guest.name)}</b></div><div class="fl-guest-need">${chip}${side}</div>`
+        : `<div class="fl-guest-top"><b class="fl-guest-name">${guest ? esc(guest.name) : table.phase === "cool" ? "片付け中" : "空席"}</b>${chip}${side}</div>
+        <p class="fl-quote" data-sight="${sight}"><span class="fl-q"></span></p>`}
       </div>${go}`;
-    this.fitText(who.querySelector(".fl-q"), lead); // 吹き出しの余白の内側（.fl-q）の幅で測って折る
+    const q = who.querySelector(".fl-q");
+    if (q) this.fitText(q, lead); // 吹き出しの余白の内側（.fl-q）の幅で測って折る
   }
 
   /* ── 評判（VPM20。試作だけの決まり）: ◎○を出すと上がり、下がらずに積み上がる。節目で、取っておいた客が来る ── */
@@ -828,8 +842,9 @@ export class FloorScene {
   moveMe() {
     const me = this.refs?.me;
     if (!me) return;
-    const [x, row] = SEATS[this.sel - 1];
+    const { x, y, row } = SEATS[this.sel - 1];
     me.style.setProperty("--x", `${x}%`);
+    me.style.setProperty("--y", `${y}%`);
     Object.assign(me.dataset, { row: String(row), off: String(["empty", "cool"].includes(this.s.tables[this.sel - 1].phase)) });
   }
 
