@@ -1,0 +1,107 @@
+/* 縦画面C案「煙の舞台」: LIME（メッセージ）の縦の画面（lime.mjs）。長さは rem（スマホの幅 39rem）。
+   縦のチャット画面なので、十字キーと丸ボタンは置かない。上＝帯、真ん中＝トーク一覧／吹き出し（指でスクロール）、下＝返事の札（親指の届く所）。
+   見た目は、あえて LINE の配色に寄せる（2026-11-27 オーナー「ライムの画面はあえてLINEの色とかに寄せたい　トークリストとか」・VPM10）:
+   トーク一覧は白地に黒い名前・灰色の最後の一言・緑の未読数、トークは青みのある背景に白（相手）と緑（自分）の吹き出し、自分の吹き出しに「既読」、
+   返事の欄は白地に緑の札。ロゴは本作の「LIME」のまま（LINE のロゴ・名前は使わない）。 */
+
+.phone[data-kind="lime"] {
+  --ln-green: #06c755; --ln-green-ink: #04913f; --ln-green-soft: #e7f8ed;
+  --ln-chat: #8cabd8; --ln-me: #8de055; --ln-ink: #111; --ln-sub: #8a929e; --ln-faint: #b2b8c1; --ln-line: #eceef1;
+  --ln-orange: #f08a24;
+}
+.phone[data-kind="lime"] .lm-amb { display: none; }
+.lm-app { position: absolute; z-index: 2; inset: 0; display: flex; flex-direction: column; color: var(--ln-ink); background: var(--ln-chat); }
+.phone[data-lm-view="list"] .lm-app { background: #fff; }
+
+/* ───────── 上の帯（白）: 一覧は「トーク」と未読の合計、トークは 戻る・相手の顔・名前 ───────── */
+.lm-head { flex: none; display: flex; align-items: center; gap: 1rem; min-height: 6.4rem; padding: max(1.1rem, env(safe-area-inset-top, 0px)) 1.5rem 1rem; color: var(--ln-ink); background: #fff; border-bottom: 0.1rem solid var(--ln-line); }
+.lm-title { font-size: 2.5rem; font-weight: 800; letter-spacing: 0.02em; line-height: 1.2; }
+.lm-when { margin-left: auto; display: flex; align-items: center; gap: 0.9rem; font-size: 1.25rem; font-weight: 700; letter-spacing: 0.06em; color: var(--ln-sub); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.lm-logo { flex: none; height: 2.5rem; padding: 0 0.9rem; display: grid; place-items: center; border-radius: 0.8rem; font-size: 1.2rem; font-weight: 900; letter-spacing: 0.08em; line-height: 1; color: #fff; background: var(--ln-green); }
+.lm-count { flex: none; min-width: 2.3rem; height: 2.3rem; padding: 0 0.65rem; display: grid; place-items: center; border-radius: 1.2rem; font-style: normal; font-size: 1.25rem; font-weight: 700; line-height: 1; color: #fff; background: var(--ln-green); font-variant-numeric: tabular-nums; }
+.lm-back { flex: none; width: 4.4rem; height: 4.4rem; margin: -0.3rem -0.4rem -0.3rem -0.8rem; display: grid; place-items: center; border-radius: 50%; font-size: 2.8rem; color: var(--ln-ink); }
+.lm-back:active { background: #0000000f; }
+.lm-face { flex: none; width: 4.2rem; height: 4.2rem; border-radius: 50%; object-fit: cover; background: #dfe3e8; box-shadow: 0 0 0 0.1rem #00000014; }
+.lm-face.blank { display: grid; place-items: center; font-size: 2rem; font-weight: 700; color: #fff; background: #b8c2cf; }
+.lm-face.sm { width: 3.8rem; height: 3.8rem; }
+.lm-face.gap { visibility: hidden; }
+.lm-name { min-width: 0; font-size: 1.9rem; font-weight: 700; letter-spacing: 0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ───────── トーク一覧（白地。行は区切り線なしで、押すと薄い緑） ───────── */
+.lm-chat { flex: 1 1 0; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 0.9rem; padding: 1.4rem 1.2rem 1.6rem; scrollbar-width: none; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+.lm-chat::-webkit-scrollbar { display: none; }
+.lm-chat.list { gap: 0; padding: 0.4rem 0 1rem; background: #fff; }
+.lm-empty { margin: auto; font-size: 1.5rem; color: var(--ln-sub); }
+.lm-row { flex: none; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.3rem; min-height: 7.8rem; padding: 0.9rem 1.6rem; text-align: left; color: var(--ln-ink); background: #fff; animation: rise 0.3s var(--ease-out) backwards; animation-delay: calc(var(--i) * 45ms); transition: background 0.15s; }
+.lm-row:active { background: var(--ln-green-soft); }
+.lm-row-face { display: grid; }
+.lm-row .lm-face { width: 5.6rem; height: 5.6rem; }
+.lm-row-main { min-width: 0; display: grid; gap: 0.3rem; }
+.lm-row-main b { font-size: 1.72rem; font-weight: 700; letter-spacing: 0.01em; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lm-row-main span { font-size: 1.42rem; line-height: 1.4; color: var(--ln-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lm-row-side { align-self: stretch; display: grid; align-content: center; justify-items: end; gap: 0.6rem; }
+.lm-row-side small { font-size: 1.2rem; color: var(--ln-faint); white-space: nowrap; }
+.lm-row-marks { display: flex; align-items: center; gap: 0.5rem; min-height: 2.3rem; }
+.lm-tag { height: 2.3rem; padding: 0 0.9rem; display: grid; place-items: center; border-radius: 1.2rem; font-size: 1.2rem; font-weight: 700; line-height: 1; white-space: nowrap; }
+.lm-tag.invite { color: #402b00; background: var(--ln-orange); }
+.phone[data-lm-keys="true"] .lm-row[aria-current="true"] { background: var(--ln-green-soft); box-shadow: inset 0.4rem 0 0 var(--ln-green); }
+.phone[data-lm-keys="true"] .lm-reply[aria-current="true"] { outline: 0.22rem solid var(--ln-green); outline-offset: 0.2rem; }
+
+/* ───────── トーク（青みのある背景。相手は白、自分は緑の吹き出し。続けて届く2つ目からは、顔としっぽを省く） ───────── */
+.lm-msg { flex: none; display: flex; align-items: flex-start; gap: 0.9rem; animation: lm-pop 0.22s ease-out both; }
+.lm-msg.past { animation: none; }
+.lm-msg.me { justify-content: flex-end; align-items: flex-end; gap: 0.6rem; }
+@keyframes lm-pop { from { opacity: 0; transform: translateY(0.8rem) scale(0.96); } }
+.lm-bubble { position: relative; max-width: 74%; padding: 0.95rem 1.4rem 1rem; border-radius: 1.8rem; font-size: 1.7rem; font-weight: 500; line-height: 1.55; letter-spacing: 0.01em; word-break: break-word; word-break: auto-phrase; overflow-wrap: anywhere; }
+.lm-msg.peer .lm-bubble { color: var(--ln-ink); background: #fff; }
+.lm-msg.me .lm-bubble { color: var(--ln-ink); background: var(--ln-me); }
+/* しっぽ: 相手は左上、自分は右上（その人の続きの吹き出しには付けない） */
+.lm-msg.peer:has(> .lm-face:not(.gap)) .lm-bubble::before, .lm-msg.me .lm-bubble::before { content: ""; position: absolute; top: 0.5rem; width: 1.3rem; height: 1.3rem; background: inherit; }
+.lm-msg.peer:has(> .lm-face:not(.gap)) .lm-bubble::before { left: -0.55rem; clip-path: polygon(0 0, 100% 0, 100% 100%); }
+.lm-msg.me .lm-bubble::before { right: -0.55rem; clip-path: polygon(0 0, 100% 0, 0 100%); }
+.lm-msg.me + .lm-msg.me .lm-bubble::before { display: none; }
+.lm-msg.peer .lm-bubble.typing::before { display: none; }
+.lm-read { flex: none; margin-bottom: 0.2rem; font-size: 1.1rem; line-height: 1.2; color: #f4f7fb; text-shadow: 0 0.1rem 0.2rem #2d3e5a66; }
+.lm-bubble.typing { display: flex; gap: 0.5rem; padding: 1.5rem 1.6rem; }
+.lm-bubble.typing i { width: 0.8rem; height: 0.8rem; border-radius: 50%; background: #9aa3ae; animation: lm-dot 0.9s infinite; }
+.lm-bubble.typing i:nth-child(2) { animation-delay: 0.15s; } .lm-bubble.typing i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes lm-dot { 0%, 100% { opacity: 0.55; } 30% { transform: translateY(-0.35rem); opacity: 1; } }
+.lm-media { border-radius: 1.6rem; overflow: hidden; }
+.lm-media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* スタンプ・画像（この試作の style.css に .stamp＝定休日の判 があるので、名前を分ける） */
+.lm-media.lm-stamp { width: 15rem; border-radius: 0; }
+.lm-media.lm-image { width: 24rem; max-width: 70%; box-shadow: 0 0.2rem 0.6rem #2d3e5a40; }
+.lm-media.fallback { padding: 1rem 1.4rem; font-size: 1.4rem; color: var(--ln-sub); background: #fff; }
+/* 日付と、出来事のひとこと（LINE の日付の札と同じく、背景に溶ける半透明の札） */
+.lm-note { align-self: center; max-width: 92%; padding: 0.3rem 1.2rem; border-radius: 2rem; font-size: 1.22rem; font-weight: 700; line-height: 1.5; text-align: center; color: #fff; background: #2d3e5a3d; }
+.lm-note.day { margin: 0.6rem 0 0.2rem; padding: 0.3rem 1.4rem; font-size: 1.18rem; letter-spacing: 0.08em; }
+
+/* ───────── 下: 返事の札（白地に緑の縁。親指の届く所）。雑談は返事、誘いは 行く／断る／あとで ───────── */
+.lm-actions { flex: none; display: grid; gap: 0.8rem; padding: 1.1rem 1.2rem max(1.6rem, env(safe-area-inset-bottom, 0px)); background: #fff; border-top: 0.1rem solid var(--ln-line); }
+.lm-actions:empty { padding-block: 0.6rem; }
+.lm-hint { margin: 0 0.5rem 0.1rem; font-size: 1.28rem; line-height: 1.5; color: #6b7482; }
+.lm-reply { display: flex; align-items: center; justify-content: space-between; gap: 1rem; width: 100%; min-height: 5.4rem; padding: 0.9rem 1.7rem; border: 0.16rem solid var(--ln-green); border-radius: 2.8rem; font-size: 1.68rem; font-weight: 700; line-height: 1.4; letter-spacing: 0.02em; text-align: left; color: var(--ln-green-ink); background: #fff; animation: rise 0.32s var(--ease-out) backwards; animation-delay: calc(var(--i, 0) * 60ms); transition: transform 0.1s, background 0.15s; }
+.lm-reply > span { min-width: 0; word-break: auto-phrase; }
+.lm-reply:active { transform: scale(0.98); background: var(--ln-green-soft); }
+.lm-reply em { flex: none; display: flex; gap: 0.5rem; font-style: normal; }
+.lm-reply em i { display: flex; align-items: center; gap: 0.3rem; height: 2.7rem; padding: 0 0.9rem 0 0.7rem; border-radius: 1.4rem; font-style: normal; font-size: 1.22rem; white-space: nowrap; color: #3c4654; background: #f1f3f6; }
+.lm-reply em .ic { font-size: 1.5rem; color: var(--ln-green-ink); }
+.lm-reply.later { min-height: 4.8rem; border-color: #c9ced6; font-size: 1.48rem; color: #5a6472; }
+.lm-reply.ghost { justify-content: center; gap: 0.8rem; min-height: 5.4rem; border-color: transparent; color: #fff; background: var(--ln-green); animation: none; }
+.lm-reply.ghost:active { background: var(--ln-green-ink); }
+.lm-reply.ghost .ic { font-size: 2.3rem; }
+.lm-reply[disabled] { opacity: 0.45; }
+
+/* ───────── 背の低い画面 ───────── */
+@container phone (max-height: 80rem) {
+  .lm-head { min-height: 6rem; padding-bottom: 0.9rem; }
+  .lm-row { min-height: 7.2rem; } .lm-reply { min-height: 5rem; }
+}
+@container phone (max-height: 71rem) {
+  .lm-head { min-height: 5.6rem; padding-top: max(0.9rem, env(safe-area-inset-top, 0px)); padding-bottom: 0.8rem; } .lm-title { font-size: 2.2rem; } .lm-back { width: 4.2rem; height: 4.2rem; }
+  .lm-face { width: 3.8rem; height: 3.8rem; } .lm-face.sm { width: 3.4rem; height: 3.4rem; } .lm-name { font-size: 1.76rem; }
+  .lm-chat { padding: 1.1rem 1.2rem 1.2rem; gap: 0.7rem; } .lm-row { min-height: 6.6rem; padding-block: 0.6rem; } .lm-row .lm-face { width: 5rem; height: 5rem; } .lm-row-main b { font-size: 1.64rem; }
+  .lm-bubble { font-size: 1.58rem; padding: 0.8rem 1.3rem 0.9rem; } .lm-media.lm-stamp { width: 12.5rem; } .lm-media.lm-image { width: 21rem; }
+  .lm-actions { gap: 0.6rem; padding-top: 0.9rem; padding-bottom: max(1.2rem, env(safe-area-inset-bottom, 0px)); } .lm-reply { min-height: 4.6rem; padding-block: 0.6rem; font-size: 1.56rem; } .lm-reply.later { min-height: 4.4rem; } .lm-reply.ghost { min-height: 4.6rem; }
+}
+@media (prefers-reduced-motion: reduce) { .lm-msg, .lm-row, .lm-reply, .lm-bubble.typing i { animation: none; } }
