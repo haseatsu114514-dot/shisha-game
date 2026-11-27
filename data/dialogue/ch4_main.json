@@ -205,7 +205,7 @@
         {
           "speaker": "sumi",
           "face": "thinking",
-          "text": "マスターの古い友達が、一度、異国の台を持ってきてな"
+          "text": "マスターの古い友達が、たまに異国の台を持ってきてな"
         },
         {
           "speaker": "sumi",
@@ -605,6 +605,16 @@
           "text": "隣の換気扇が止まり、台の周りに熱がこもる。炭を少し離して、煙の立ち方を見直す。"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……燃やすんじゃなくて、蒸らす"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "口癖の独り言まで、通訳アプリが拾って読み上げた。男の手が、一瞬止まった。"
+        },
+        {
           "speaker": "traveler",
           "face": "normal",
           "text": "……値段の話より、先にそれを見るのか"
@@ -657,12 +667,12 @@
         {
           "speaker": "traveler",
           "face": "normal",
-          "text": "君の国に、古い友がいた。葉より先に、客の顔を見る男だった"
+          "text": "さっきの独り言だ。燃やすな、蒸らせ。……どこかで、聞いた気がする"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（葉より先に、顔。……スミさんが、マスターの言葉だって言ってた）"
+          "text": "（スミさんの口癖だ。……ドバイでも、通じるんだな）"
         },
         {
           "type": "remember",
@@ -1585,7 +1595,22 @@
         {
           "speaker": "sheikh",
           "face": "normal",
-          "text": "君の国に、古い友がいた。葉巻の店の主人だ。客に、まず水を置く男だった"
+          "text": "君の独り言で、やっと分かった。燃やすな、蒸らせ。……あれは、私の言葉だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……え"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "若い頃、君の国の古い友の店へ、台を持ち込んでいた。葉巻の店だ"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "主人が私の話を訳して、奥の席の若いのに聞かせていた"
         },
         {
           "speaker": "hajime",
@@ -1600,7 +1625,7 @@
         {
           "speaker": "sheikh",
           "face": "surprise",
-          "text": "……では、あの店の奥の席で、私の台をずっと見ていた若いのが"
+          "text": "……では、あの奥の席の若いのが、路地裏の"
         },
         {
           "speaker": "sheikh",
@@ -1610,12 +1635,12 @@
         {
           "speaker": "sheikh",
           "face": "smile",
-          "text": "……そうか。あの水は、あいつの水だったか"
+          "text": "あいつは、私の言葉を、いつも少し乱暴に訳した。……そのまま、残ったか"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（マスターの水が、スミさんを通って、ここまで来てたんだ）"
+          "text": "（スミさんの口癖は、マスターが訳した、シェイクの言葉だったんだ）"
         },
         {
           "speaker": "sheikh",
@@ -1810,6 +1835,16 @@
           "speaker": "sumi",
           "face": "normal",
           "text": "あの人が、ここへ異国の台を持ってきた。……俺の、最初のシーシャだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "『燃やす』『蒸らす』も、シェイクの言葉だって"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "……マスターの訳だ。旦那の言い方は、もっと丁寧だった"
         },
         {
           "speaker": "hajime",
