@@ -87,6 +87,8 @@
 /* ───────── 下: 選んだマスの札と押す所（十字キーの代わりの専用UI） ───────── */
 .gb-panel { position: absolute; z-index: 6; left: 0; right: 0; bottom: 0; height: var(--gb-panel); display: flex; flex-direction: column; gap: 0.9rem; padding: 0.9rem 1.2rem max(1.2rem, env(safe-area-inset-bottom, 0px)); background: linear-gradient(180deg, #120c1df2, #0b0812); box-shadow: 0 -0.1rem 0 color-mix(in srgb, var(--bc) 60%, transparent), 0 -1.4rem 2.4rem #000a; }
 .gb-card { position: relative; flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; gap: 0.5rem; padding: 1.1rem 1.3rem 1.2rem; border: 0.1rem solid #ffffff30; border-radius: 1.9rem; background: linear-gradient(180deg, #1e163299, #0e0a18cc); box-shadow: inset 0 0.1rem 0 #ffffff3d; }
+.gb-card > * { flex: none; }
+.gb-fitted { white-space: nowrap; }
 .gb-card-head { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1rem; }
 .gb-art { position: relative; width: 5.2rem; height: 5.2rem; display: grid; place-items: center; border-radius: 50%; background: url("../../img/ui/growth_board/socket.webp") center / 100% 100% no-repeat; box-shadow: 0 0 0 0.16rem var(--bc), 0 0 1rem color-mix(in srgb, var(--bc) 50%, transparent); }
 .gb-art img { width: 60%; height: 60%; object-fit: contain; } .gb-art b { position: absolute; font-size: 2.4rem; font-weight: 900; }
@@ -127,13 +129,14 @@
 .gb-perk > i { position: absolute; left: 0.6rem; right: 0.6rem; bottom: 0.25rem; height: 0.26rem; border-radius: 1rem; background: #ffffff26; overflow: hidden; } .gb-perk > i > i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--bc); transition: width 0.4s; }
 .gb-perk.up b { color: var(--gold); } .gb-perk.up { box-shadow: inset 0 0 0 0.12rem #ffe2a680; }
 .gb-sum-label { margin-top: 0.2rem; font-size: 1.16rem; font-weight: 700; letter-spacing: 0.14em; color: #ffffff99; }
-.gb-goals { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
-.gb-goal { min-width: 0; display: grid; grid-template-columns: auto 1fr; grid-template-rows: 1fr auto; align-items: center; gap: 0.2rem 0.6rem; padding: 0.6rem 0.7rem; border: 0.1rem solid #ffffff38; border-radius: 1.3rem; text-align: left; background: #ffffff12; }
-.gb-goal-ico { grid-row: 1 / 3; width: 3.4rem; height: 3.4rem; display: grid; place-items: center; border-radius: 50%; background: url("../../img/ui/growth_board/socket.webp") center / 100% 100% no-repeat; }
+.gb-card > .gb-goals { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+.gb-goal { min-width: 0; display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto 1fr; align-items: center; gap: 0.3rem 0.6rem; padding: 0.6rem 0.7rem 0.7rem; border: 0.1rem solid #ffffff38; border-radius: 1.3rem; text-align: left; background: #ffffff12; }
+.gb-goal-ico { width: 3.2rem; height: 3.2rem; display: grid; place-items: center; border-radius: 50%; background: url("../../img/ui/growth_board/socket.webp") center / 100% 100% no-repeat; }
 .gb-goal-ico img { width: 60%; height: 60%; object-fit: contain; } .gb-goal.k-lesson .gb-goal-ico img, .gb-item .k-lesson img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: 50% 20%; }
-.gb-goal b { min-width: 0; max-height: 2.5em; font-size: 1.18rem; line-height: 1.25; word-break: auto-phrase; overflow: hidden; }
+.gb-goal b { grid-column: 1 / -1; align-self: start; min-width: 0; max-height: 2.5em; font-size: 1.24rem; line-height: 1.25; word-break: auto-phrase; overflow: hidden; }
+.gb-goal em { justify-self: end; }
 .gb-goal em { display: flex; align-items: center; gap: 0.2rem; font-style: normal; font-size: 1.3rem; font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; } .gb-goal em img { width: 1.7rem; height: 1.7rem; }
-.gb-goal em.now { justify-self: start; padding: 0 0.6rem; border-radius: 1rem; color: #1a1228; background: #fff; } .gb-goal em.lock { color: #ffb3c8; }
+.gb-goal em.now { padding: 0 0.6rem; border-radius: 1rem; color: #1a1228; background: #fff; } .gb-goal em.lock { color: #ffb3c8; }
 
 /* ───────── 決定のまとめの札 ───────── */
 .gb-result { position: absolute; z-index: 30; inset: 0; display: grid; place-items: center; padding: 1.6rem; background: #0b0812cc; -webkit-backdrop-filter: blur(0.4rem); backdrop-filter: blur(0.4rem); animation: gb-fade 0.25s ease-out; }
@@ -147,7 +150,7 @@
 .gb-gains { position: relative; width: 100%; margin: 0; padding: 0.9rem 1.2rem; list-style: none; display: grid; gap: 0.5rem; border-radius: 1.4rem; background: #0b081299; }
 .gb-gains li { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0.9rem; font-size: 1.6rem; } .gb-gains img { width: 2.6rem; height: 2.6rem; } .gb-gains b { font-size: 2rem; color: var(--gold); font-variant-numeric: tabular-nums; }
 .gb-item { position: relative; width: 100%; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 1.1rem; padding: 0.9rem 1.2rem; border-radius: 1.4rem; background: #0b081299; }
-.gb-item .gb-goal-ico { width: 4.6rem; height: 4.6rem; grid-row: auto; } .gb-item small { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.1em; color: var(--gold); }
+.gb-item .gb-goal-ico { width: 4.6rem; height: 4.6rem; } .gb-item small { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.1em; color: var(--gold); }
 .gb-item b { display: block; font-size: 1.8rem; line-height: 1.3; } .gb-item p { margin: 0.1rem 0 0; font-size: 1.36rem; line-height: 1.5; color: #ffffffcc; word-break: auto-phrase; }
 .gb-result-card .gb-btn { position: relative; width: 100%; margin-top: 0.4rem; }
 
@@ -163,6 +166,6 @@
   .gb-sub { font-size: 1.5rem; margin-top: 0; } .gb-text { font-size: 1.44rem; line-height: 1.5; } .gb-sub.gb-small { font-size: 1.3rem; } .gb-text.gb-small { font-size: 1.26rem; } .gb-state { font-size: 1.18rem; }
   .gb-btn { height: 4.4rem; font-size: 1.5rem; } .gb-foot .gb-btn.big, .gb-foot .gb-btn:not(.big) { height: 4.6rem; font-size: 1.64rem; }
   .gb-perk { padding: 0.3rem 0.2rem 0.6rem; } .gb-perk img { width: 2.1rem; height: 2.1rem; } .gb-perk b { font-size: 1.36rem; } .gb-perk small { font-size: 0.96rem; }
-  .gb-sum-head b { font-size: 1.8rem; } .gb-goal { padding: 0.4rem 0.6rem; } .gb-goal-ico { width: 3rem; height: 3rem; } .gb-zoom { height: 4.4rem; top: 0.8rem; }
+  .gb-sum-head b { font-size: 1.8rem; } .gb-goal { padding: 0.4rem 0.6rem 0.5rem; } .gb-goal-ico { width: 2.7rem; height: 2.7rem; } .gb-goal b { font-size: 1.16rem; } .gb-zoom { height: 4.4rem; top: 0.8rem; }
 }
 @media (prefers-reduced-motion: reduce) { .gb-node .gb-base, .gb-lines line, .gb-hub img, .gb-rays, .gb-node[aria-pressed="true"]::after { animation: none !important; } }

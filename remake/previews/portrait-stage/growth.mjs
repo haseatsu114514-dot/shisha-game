@@ -436,7 +436,7 @@ export class GrowthScene {
     const rows = goals.slice(0, 3).map(({ n, st, cost }) => {
       const name = n.kind === "gate" ? perkOf(n)?.name || "" : n.feature ? FEATURES[n.feature].name : n.notable ? NOTABLES[n.notable].name : n.name;
       const side = st === "sealed" ? `<em class="lock">♥${n.need}</em>` : cost ? `<em><img src="${this.art("hidane_any")}" alt="">${cost}</em>` : `<em class="now">今</em>`;
-      return `<button class="gb-goal k-${n.kind}" data-act="gb-goal" data-id="${n.id}" aria-label="${esc(name)} 火種${cost}"><span class="gb-goal-ico"><img src="${this.nodeIcon(n)}" alt=""></span><b>${esc(name)}</b>${side}</button>`;
+      return `<button class="gb-goal k-${n.kind}" data-act="gb-goal" data-id="${n.id}" aria-label="${esc(name)} 火種${cost}"><span class="gb-goal-ico"><img src="${this.nodeIcon(n)}" alt=""></span>${side}<b>${esc(name)}</b></button>`;
     }).join("");
     return `<div class="gb-sum-head"><b>${BOARD_JA[board]}盤</b><span>${statCount(board, v.unlocked)}/${statTotal(board)}</span></div>
       <div class="gb-perks">${perks}</div>
@@ -458,7 +458,7 @@ export class GrowthScene {
     for (const node of this.refs.card.querySelectorAll("[data-fit]")) {
       const text = node.dataset.full ?? node.textContent;
       node.dataset.full = text;
-      node.classList.remove("gb-small", "gb-paged");
+      node.classList.remove("gb-small", "gb-paged", "gb-fitted");
       node.textContent = text;
       if (!text || !node.clientWidth) continue;
       let pages = paginateForBox(text, node);
@@ -467,6 +467,7 @@ export class GrowthScene {
       if (pages.length > 1) { node.classList.add("gb-paged"); pages = paginateForBox(text, node); }
       const at = Math.min(Number(node.dataset.page) || 0, pages.length - 1);
       node.innerHTML = plain(pages[at]);
+      node.classList.add("gb-fitted"); // 折る所は決めてあるので、ブラウザには折り直させない
       if (pages.length > 1) { node.dataset.act = "gb-more"; node.dataset.pages = String(pages.length); node.dataset.page = String(at); }
     }
   }
