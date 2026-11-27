@@ -117,3 +117,148 @@ Composition: the mouthpiece lies on a 45 degree diagonal, hose stub at the lower
 Do not draw: hands, a person, a hookah body, bowl, charcoal, smoke, a chain, a forked or second hose, text, letters, logos, watermark, shadow on the ground, frames or borders.
 ```
 
+## 3回目: 作り直した絵と、専用の見た目の部品（VPL37・VPL38・15枚）
+
+オーナー「グラム決めや水入れや雑念弾幕はもっと専用の見た目にしてクオリティ高く見せたいのでデザインして　3種類ずつ候補みたい」「画像生成とかも使ってもいい」「あとはじての吸ってる姿とかも新たに作っていい　ボトルやハガルも昔のやつで見た目しょぼいのでAPI使っていいから」。
+`gpt-image-2.6-sunburst`（品質 medium）で作った。原画は `v2/`（WebP・Git LFS）、試作が読む切り出しは `remake/previews/portrait-stage/img/`。
+ハガルのふんわり・ノーマル・デンスは、空のハガル（`v2/bowl-empty-original.webp`）を入力にした編集（images/edits）で、器の形・角度をそろえた。はじめの吸い出しは、正規の立ち絵 `chr_hajime_normal.webp` を入力にした編集で本人の見た目をそろえた。
+ボトルは1回目（ステムの先が胴の上の方で終わり、本編の目安＝ステムの先が水位の下から3割に合わなかった）を使わず、ステムを深くした2回目を使う（生成は計15回）。
+
+| 原画（v2/） | 試作で使う絵（img/） | 使う所 |
+|---|---|---|
+| `bottle-original.webp` | `ui-bottle.webp`（640×631） | 水入れのボトル（案A・案B）。案Cは同じ形を線で描く |
+| `bowl-empty/airy/normal/firm-original.webp` | `ui-bowl-empty/airy/normal/firm.webp`（512×512・同じ範囲で切り出し） | 配合の器（空→ふんわり→ノーマルと満ちる）、詰め方の3枚の札 |
+| `hajime-pull-original.webp` | `craft-pull-hajime.webp`（900×1350） | 吸い出しの一枚絵 |
+| `gauge-original.webp` | `ui-gauge.webp` | 水入れ案B の水位計 |
+| `scale-original.webp` | `ui-scale.webp` | 配合案A のはかり |
+| `bowl-top-original.webp` | `ui-bowl-top.webp` | 配合案B の真上から見た器 |
+| `leaf-texture-original.webp` | `ui-leaf-texture.webp` | 配合案B の葉の模様 |
+| `tins-original.webp` | `ui-tin-apple/mint/lemon.webp`（1枚を3つに分けた） | 配合案C の葉の缶 |
+| `bg-water/smoke/washi-original.webp` | `ui-bg-water/smoke/washi.webp`（780×1170） | 雑念よけ案A・B・C の背景 |
+
+### 生成前に決めたこと（§4.3）
+
+```text
+ボトル
+人物      : なし
+場面      : 水入れ（ボトル単体）
+台の型    : 日本のバーのワイドなガラスベースに、細いステンレスのステムがゴムの栓を通って真っすぐ入る（上は見切れ）
+HMD       : なし／炭: なし／ホース: なし／吸い口: なし
+構図      : 正面・水は入れない（水はコードで描く）。ステムの先は胴の下から約1/3
+
+ハガル（空・ふんわり・ノーマル・デンス・真上）
+人物      : なし
+場面      : 配合・詰め方（器単体）
+台の型    : 写さない
+HMD       : なし／炭: なし／ホース: なし／吸い口: なし
+構図      : 黒いシリコンの器（銅色の縁・底に5つの穴）。斜め上30度、真上は真上から。葉は口より少し下で平ら（デンスは押し固める・ふんわりはすき間あり）
+
+はじめの吸い出し
+人物      : はじめ（正規の立ち絵を入力。黒いキャップの煙の印・黒いパーカー）
+場面      : 吸い出し（夜のシーシャバー、上半身）
+台の型    : 写さない
+HMD       : なし／炭: なし
+ホース    : 1本。硬いハンドルの根元の真鍮の金具から出て、右下で画面の外へ
+吸い口    : ハンドル＋青緑の使い捨てチップ（口に当てる）
+構図      : 縦長の一枚絵。人物はやや左、頭は上の1/3
+```
+
+生成後の確認（§4.4・素材規約の必須チェック）: ボトルは水が無く、ステムは栓を通って真っすぐ。ハガル4枚は形・角度・大きさがそろい、炭・アルミ・HMDが無い。はじめはホースが1本で、ハンドル→金具→ホースの順につながり、分岐・第三の端・台本体が無い。帽子の印・服装は立ち絵と同じ。どの絵にも文字・ロゴ・透かしが無い。テカリ・汎用顔・擬似文字・小物の崩れも見当たらない。いずれも合格。
+
+### ボトル（2回目・使う方）
+
+```text
+Game asset, transparent background: the glass base (water bottle) of a modern hookah as used in present-day Japanese shisha bars. Polished anime game illustration style with clean dark outlines and two or three tone cel shading, no airbrushed gloss. Crisp glass highlights.
+The base: a wide, low, round-bottomed clear glass vase with a short neck, slightly smoky glass with subtle violet reflections. A slim polished stainless-steel stem goes straight down into the neck through a black rubber grommet and continues deep inside the glass: its open tip ends low in the bowl of the vase, at about one third of the vase body's height above the inner bottom, clearly visible inside the empty glass. Only the lower part of the stem is shown: it is cut off by the top edge of the image.
+The bottle is empty: no water. Front view at eye level, centered, the bottle filling about 80 percent of the width.
+Do not draw: water, liquid, hose, bowl, charcoal, smoke, hands, text, logos, watermark, table, shadow on the ground.
+```
+
+### ハガル（空）
+
+```text
+Game asset, transparent background: an empty shisha tobacco bowl as used in present-day Japanese shisha bars: a black silicone bowl with a slightly glossy surface and a thin warm copper rim line, a wide shallow cup on a slim waisted neck, five small holes visible in the flat floor of the cup.
+Seen from the front and slightly above (about 30 degrees), centered, filling about 80 percent of the image. Polished anime game illustration style with clean dark outlines and two or three tone cel shading, no airbrushed gloss.
+Empty. Do not draw: tobacco, foil, charcoal, smoke, hands, text, logos, watermark, shadow on the ground.
+```
+
+### 水位計
+
+```text
+Game UI asset, transparent background: an elegant vertical water-level gauge instrument: a tall clear glass tube held in an antique brass frame with top and bottom caps and small screws, fine engraved tick marks along the brass frame on both sides (no numbers), the glass tube empty.
+Front view, perfectly vertical, centered, the instrument filling about 90 percent of the image height and about 30 percent of its width. Polished anime game illustration style with clean dark outlines and two or three tone cel shading, no airbrushed gloss. Crisp highlights on glass and brass.
+Do not draw: water, liquid, text, numbers, logos, watermark.
+```
+
+### はかり
+
+```text
+Game UI asset, transparent background: a compact digital kitchen scale for weighing shisha tobacco, seen from the front and slightly above (about 25 degrees): a flat square platform of black glass on a slim brushed brass body, a small dark empty display window on the front edge (completely dark, no digits) and two small round buttons beside it.
+Centered, filling about 85 percent of the width. Polished anime game illustration style with clean dark outlines and two or three tone cel shading, no airbrushed gloss. Subtle reflections. Nothing on the platform.
+Do not draw: text, digits, numbers, logos, watermark, shadow on the ground.
+```
+
+### 真上から見た器
+
+```text
+Game UI asset, transparent background: a black silicone shisha tobacco bowl seen exactly from directly above (top-down view), perfectly circular: a thin warm copper rim ring, a wide flat inner floor with five small holes in the center.
+Centered, filling about 90 percent of the image. Empty. Polished anime game illustration style with clean dark outlines and two or three tone cel shading, no airbrushed gloss.
+Do not draw: tobacco, foil, charcoal, smoke, text, logos, watermark.
+```
+
+### 葉の模様
+
+```text
+Seamless tileable texture: top-down close-up of moist shredded shisha tobacco leaves in a neutral light grey-beige color (so it can be tinted later), slightly glossy with molasses, fine shreds evenly spread to all edges, even soft lighting.
+Polished anime game illustration style with clean shapes. No bowl, no objects, no text.
+```
+
+### 葉の缶
+
+```text
+Game UI asset, transparent background: three small round metal tins of shisha flavor tobacco, side by side with even spacing, seen from the front and slightly above, each tin open with its lid leaning against it, showing moist shredded tobacco inside.
+Tin colors: left tin deep apple red, middle tin fresh mint green, right tin lemon yellow; plain enamel finish with a thin gold rim, no labels. Polished anime game illustration style with clean dark outlines and two or three tone cel shading, no airbrushed gloss.
+Do not draw: text, letters, labels, logos, watermark, shadow on the ground.
+```
+
+### 雑念よけ案A 夜の水面
+
+```text
+Vertical game background, no characters: a calm dark water surface at night seen from directly above, deep indigo and violet, faint concentric ripples spreading slowly, a soft blurred reflection of pale moonlight near the upper area, tiny floating specks of light.
+Very low contrast in the center so small glowing text and symbols can be read on top. Polished anime game background art, painterly but clean. No text, no objects, no frames.
+```
+
+### 雑念よけ案B 煙の夜空
+
+```text
+Vertical game background, no characters: a dreamy inner mind space made of slowly drifting shisha smoke, deep plum and charcoal colors with soft violet and warm amber glows, layered wisps of smoke curling like a night nebula, a few tiny stars, darker toward the edges and calm in the center so small glowing text can be read on top.
+Polished anime game background art, painterly but clean. No text, no objects, no frames.
+```
+
+### 雑念よけ案C 和紙と墨
+
+```text
+Vertical game background, no characters: a sheet of handmade Japanese washi paper with visible fibers in warm ivory, with very faint pale grey sumi ink wash strokes resembling drifting smoke near the edges, the center mostly plain and light so black brush text can be read on top.
+Flat, evenly lit. No text, no seals, no stamps, no frames, no objects.
+```
+
+### はじめの吸い出し（立ち絵を入力した編集）
+
+```text
+Use the reference image as the exact character design: the same face, short messy black hair, black baseball cap with the white smoke-line emblem, black zip hoodie with white drawstrings, black t-shirt.
+Create a new vertical game illustration (CG): an upper-body shot of this young man in a calm, cozy Japanese shisha bar at night, taking a slow draw from a hookah hose. He holds a rigid black hose handle in his right hand near his mouth; the short translucent teal disposable tip touches his lips; his eyes are half-closed in focus. A single soft black hose continues from the bottom end of the handle through a small brass adapter and leaves the frame at the lower right. A thin wisp of pale smoke drifts up beside his face.
+Background: warm indirect lighting, a blurred wooden counter and hanging glass lanterns as soft bokeh, low saturation so the character reads clearly. Composition: the character slightly left of center, head in the upper third, some calm background space on the right.
+Polished anime game illustration style with clean dark outlines and two or three tone cel shading, no airbrushed gloss.
+Do not draw: a second hose, a forked hose, the hookah body, a bowl, charcoal, text, letters, logos other than the cap emblem, watermark.
+```
+
+### ハガルのふんわり・ノーマル・デンス（空のハガルを入力した編集）
+
+```text
+bowl_normal: Fill this same bowl with moist shredded shisha tobacco, packed evenly and level about 2 mm below the rim, dark reddish-brown shreds glossy with molasses. Keep the bowl's shape, color, angle, size and position exactly the same. Transparent background. No foil, no charcoal, no smoke, no text.
+
+bowl_airy: Fill this same bowl loosely with fluffy moist shredded shisha tobacco, airy with visible gaps, slightly lower than the rim, dark reddish-brown shreds. Keep the bowl's shape, color, angle, size and position exactly the same. Transparent background. No foil, no charcoal, no smoke, no text.
+
+bowl_firm: Fill this same bowl densely with moist shredded shisha tobacco pressed flat and tight up to just below the rim, a compact dark reddish-brown surface glossy with molasses. Keep the bowl's shape, color, angle, size and position exactly the same. Transparent background. No foil, no charcoal, no smoke, no text.
+```
+

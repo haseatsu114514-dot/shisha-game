@@ -27,21 +27,31 @@ const IMG = {
   faceTsumugi: `${REMAKE_IMG}ui/face_icons/new/face_tsumugi.webp`,
   faceNaru: `${REMAKE_IMG}ui/face_icons/new/face_naru.webp`,
   faceAdam: `${REMAKE_IMG}ui/face_icons/new/face_adam.webp`,
-  bowl_airy: `${REMAKE_IMG}ui/making/bowl_packed_airy.webp`,
-  bowl_normal: `${REMAKE_IMG}ui/making/bowl_packed_normal.webp`,
-  bowl_firm: `${REMAKE_IMG}ui/making/bowl_packed_firm.webp`,
   foil: `${REMAKE_IMG}ui/making/foil_interactive_top.webp`,
-  pullActor: `${REMAKE_IMG}ui/making/hajime_craft_pull.webp`,
   leaf: `${REMAKE_IMG}ui/making/ui_mockup_flavor_leaf.webp`,
   smoke: `${REMAKE_IMG}ui/making/smoke_thick.webp`,
   ciMinto: `${REMAKE_IMG}ui/character_intros/graphic/minto.webp`,
   ciBgMinto: `${REMAKE_IMG}ui/character_intros/graphic/bg_minto.webp`,
   ciSumi: `${REMAKE_IMG}ui/character_intros/graphic/sumi.webp`,
   ciBgSumi: `${REMAKE_IMG}ui/character_intros/graphic/bg_sumi.webp`,
-  // 水入れ・配合・雑念よけの絵（本編の制作で使う絵・VPL36）
-  bottle: `${REMAKE_IMG}ui/making/hookah_base.webp`,
-  bowlEmpty: `${REMAKE_IMG}ui/making/bowl_empty_silicone.webp`,
-  mindWorld: `${REMAKE_IMG}ui/making/steam_mind_world.webp`,
+  // 作り直した絵（gpt-image-2.6-sunburst・VPL38）: ボトル・ハガル（空・ふんわり・ノーマル・デンス）・はじめの吸い出し
+  bottle: `${OWN_IMG}ui-bottle.webp`,
+  bowlEmpty: `${OWN_IMG}ui-bowl-empty.webp`,
+  bowl_airy: `${OWN_IMG}ui-bowl-airy.webp`,
+  bowl_normal: `${OWN_IMG}ui-bowl-normal.webp`,
+  bowl_firm: `${OWN_IMG}ui-bowl-firm.webp`,
+  pullHajime: `${OWN_IMG}craft-pull-hajime.webp`,
+  // 専用の見た目の部品（VPL37）: 水位計・はかり・真上から見た器・葉の模様・葉の缶・雑念の場の背景3枚
+  gauge: `${OWN_IMG}ui-gauge.webp`,
+  scale: `${OWN_IMG}ui-scale.webp`,
+  bowlTop: `${OWN_IMG}ui-bowl-top.webp`,
+  leafTex: `${OWN_IMG}ui-leaf-texture.webp`,
+  tin_apple: `${OWN_IMG}ui-tin-apple.webp`,
+  tin_mint: `${OWN_IMG}ui-tin-mint.webp`,
+  tin_lemon: `${OWN_IMG}ui-tin-lemon.webp`,
+  bgWater: `${OWN_IMG}ui-bg-water.webp`,
+  bgSmoke: `${OWN_IMG}ui-bg-smoke.webp`,
+  bgWashi: `${OWN_IMG}ui-bg-washi.webp`,
   // 制作ランクの絵（本編の D〜SSS・CSL10）
   ...Object.fromEntries(["D", "C", "B", "A", "S", "SS", "SSS"].map((g) => [`rank${g}`, `${REMAKE_IMG}ui/craft-rank/rank-${g}.webp`])),
   ...(globalThis.PORTRAIT_STAGE_ASSETS || {}),
@@ -166,9 +176,9 @@ const CUT_HOLD = 3800; // 紹介を見せる長さ（ms）。横画面の今の�
 const WATER = { low: 0.44, high: 0.56, stem: 0.3, deep: 0.85, pour: 0.18, drain: 0.03 };
 const waterZone = (w) => w <= 0 ? "empty" : w < WATER.stem ? "none" : w < WATER.low ? "shallow" : w <= WATER.high ? "ideal" : "deep";
 const WATER_SAY = { none: "ステムに届いてないぞ", shallow: "浅いな。吸いが軽くなる", ideal: "いい浸かり具合だ", deep: "深いな。吸いが重くなる" };
-// ボトル（img/ui/making/hookah_base.webp・1280×1133）の内側の形。水位0〜1を底（y=990）から肩（y=470）へ当てる
-const BOTTLE_IN = "M510 130 L520 150 L532 170 L536 190 L536 210 L542 230 L542 250 L546 270 L546 350 L542 370 L536 390 L532 410 L520 430 L510 450 L494 470 L470 490 L436 510 L406 530 L378 550 L356 570 L338 590 L322 610 L310 630 L296 650 L290 670 L284 690 L278 710 L274 730 L274 790 L278 810 L284 830 L292 850 L300 870 L314 890 L330 910 L352 930 L378 950 L402 970 L436 1000 L840 1000 L874 970 L898 950 L924 930 L946 910 L960 890 L974 870 L982 850 L992 830 L996 810 L1000 790 L1000 730 L996 710 L992 690 L984 670 L978 650 L966 630 L956 610 L938 590 L920 570 L900 550 L870 530 L838 510 L806 490 L782 470 L766 450 L756 430 L746 410 L736 390 L730 370 L730 350 L726 330 L726 270 L730 250 L730 230 L736 210 L736 190 L740 170 L750 150 L760 130 Z";
-const waterY = (w) => 990 - w * 520;
+// 新しいボトル（img/ui-bottle.webp・640×631・VPL38）の内側の形。水位0〜1を底（y=598）から上へ当てる。ステムの先（y=485）が水位0.30になる
+const BOTTLE_IN = "M255 190 L255 210 L254 220 L253 230 L251 240 L249 250 L245 260 L242 270 L234 280 L222 290 L205 300 L182 310 L157 320 L135 330 L114 340 L96 350 L80 360 L68 370 L57 380 L47 390 L39 400 L33 410 L27 420 L23 430 L19 440 L17 450 L15 460 L15 480 L16 490 L18 500 L20 510 L24 520 L28 530 L34 540 L41 550 L49 560 L58 570 L69 580 L81 590 L97 598 L542 598 L558 590 L570 580 L581 570 L590 560 L598 550 L605 540 L611 530 L615 520 L619 510 L622 500 L623 490 L624 480 L624 460 L622 450 L620 440 L616 430 L611 420 L606 410 L600 400 L591 390 L582 380 L571 370 L558 360 L543 350 L525 340 L505 330 L481 320 L457 310 L434 300 L417 290 L405 280 L396 270 L394 260 L390 250 L388 240 L386 230 L385 220 L384 210 L384 190 Z";
+const waterY = (w) => 598 - w * 377;
 // 配合（VPL36）。本編 steps.js の stepMix: 葉を1gずつ器へ。器（シリコン）は12g、第1章の課題はレモン2g以上
 const MIX = [
   { id: "apple", name: "ダブルアップル", color: "#e0524d" },
@@ -189,6 +199,25 @@ const DODGE_WORDS = [
 ];
 const DODGE = { time: 9000, ready: 1200, every: 460, speed: [105, 145], wave: 2800, warn: 750, invuln: 900, bombCool: 8000, bombR: 120, move: 220, slow: 95, core: 4 };
 const HEART = typeof Path2D === "function" ? new Path2D("M0 7C-11-1-11-10-4.5-10-1.5-10 0-7.5 0-6.5 0-7.5 1.5-10 4.5-10 11-10 11-1 0 7Z") : null;
+
+// 専用の見た目（VPL37）: 水入れ・配合・雑念よけを3案ずつ。?look=a|b|c、1台表示の右上のつまみ →「見た目」で切り替える
+const LOOKS = {
+  water: {
+    a: { name: "ボトルの大写し", lead: "作り直したボトルを大きく。ガラスの中だけに水が満ち、注いでいる間は泡が上がる。ステムの先と金の二本線がそのまま目安" },
+    b: { name: "真鍮の水位計", lead: "右に真鍮とガラスの水位計を立て、目安の帯とステムの先の印を目盛りで見せる。左のボトルにも同じ水位が入る" },
+    c: { name: "ネオンの線画", lead: "暗い舞台にボトルを光る線で描き、水も光で満ちる。絵を使わず、線と色だけで見せる" },
+  },
+  mix: {
+    a: { name: "はかりで量る", lead: "はかりに器を載せ、表示窓の数字が1gずつ増える。器は葉で満ちていく" },
+    b: { name: "真上から見た器", lead: "器を真上から見て、12に分けた扇を葉の色で埋めていく。器そのものが配合の円グラフになる" },
+    c: { name: "缶から器へ", lead: "上に葉の缶を3つ並べ、選んだ缶が持ち上がる。缶から器へ葉が落ち、下の12の枠が埋まる" },
+  },
+  steam: {
+    a: { name: "夜の水面", lead: "心を夜の水面に見立て、雑念は水面に浮かぶ文字と泡。ハートは小さな灯り" },
+    b: { name: "煙の夜空", lead: "煙が星雲のように渦を巻く心の中。雑念の言葉は淡く光る" },
+    c: { name: "和紙と墨", lead: "生成りの和紙に、雑念が墨の文字と墨の粒で降ってくる。ハートは朱" },
+  },
+};
 
 const SCENES = ["map", "minto", "tonari", "water", "mix", "pack", "holes", "steam", "pull", "cutin"];
 const SCENE_LABEL = { map: "地図", minto: "1人", tonari: "2人", water: "水", mix: "配合", pack: "詰め", holes: "穴あけ", steam: "弾幕", pull: "吸う", cutin: "登場" }; // 1台表示の切り替え
@@ -357,7 +386,7 @@ function meterHtml() {
 /* ───────── 1台ぶん ───────── */
 
 class Phone {
-  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", grade = 0, gradeP = 0, water = 0, mix = null } = {}) {
+  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", grade = 0, gradeP = 0, water = 0, mix = null, look = "a" } = {}) {
     this.el = el;
     el.lang = "ja";
     this.fixed = fixed; // 一覧では場面を固定し、その場面の中の操作だけ動かす
@@ -367,6 +396,8 @@ class Phone {
     this.uid = (Phone.seq = (Phone.seq || 0) + 1); // SVG の id を台ごとに分ける
     this.keys = new Set();
     this.rankAt = RANK_PLACES[rank] ? rank : "d"; // ランクの置き場所の案
+    this.lookAt = ["a", "b", "c"].includes(look) ? look : "a"; // 水入れ・配合・雑念よけの見た目の案
+    el.dataset.look = this.lookAt;
     el.dataset.rank = this.rankAt;
     this.st = { scene, sel: DEFAULT_SPOT, step, page: 0, grade: Math.max(0, Math.min(6, Number(grade) || 0)), gradeP: Number(gradeP) || 0, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0, temp: 0.4,
       water: Number(water) || 0, mix: Array.isArray(mix) ? [...mix] : [0, 0, 0], mixSel: 0, slow: false,
@@ -751,7 +782,7 @@ class Phone {
     const pic = st.scene === "pack" ? `<img class="bg" src="${IMG.tonari}" alt=""><img class="bowl" src="${IMG[`bowl_${PACKS[st.pack].id}`]}" alt="">`
       : st.scene === "holes" ? `<img class="bg" src="${IMG.tonari}" alt=""><div class="foil"><img src="${IMG.foil}" alt=""><svg viewBox="-100 -100 200 200" class="foil-marks"></svg></div>`
       : st.scene === "water" ? this.waterPic() : st.scene === "mix" ? this.mixPic() : st.scene === "steam" ? this.steamPic()
-      : `<img class="bg" src="${IMG.tonari}" alt=""><img class="pull-actor" src="${IMG.pullActor}" alt=""><img class="puff" src="${IMG.smoke}" alt="">`;
+      : `<img class="bg pull-cg" src="${IMG.pullHajime}" alt=""><img class="puff" src="${IMG.smoke}" alt="">`;
     // 日付・体力・お金は出さない。上は工程の並びだけ。名前の文字は出さず、今の工程は光る丸で示す（VPL31）
     return `
       <img class="amb" src="${IMG.tonari}" alt="">
@@ -824,31 +855,49 @@ class Phone {
     }).catch(() => {});
   }
 
-  /* ── 水入れ（VPL36）: 押している間だけ水が動く。ステムの先が少し浸かる、二本の金の線のあいだがちょうどいい ── */
-  waterPic() {
+  /* ── 水入れ（VPL36・VPL37）: 押している間だけ水が動く。ステムの先が少し浸かる、二本の線のあいだがちょうどいい ── */
+  /** ボトルの水（3案で共通）。作り直したボトルの内側の形で切り抜く。neon は絵を使わず光る線で描く。 */
+  bottleSvg(neon = false) {
     const id = `bw${this.uid}`, line = (w) => waterY(w).toFixed(0);
-    return `<img class="bg" src="${IMG.tonari}" alt=""><div class="bottle" data-zone="empty"><img src="${IMG.bottle}" alt="">
-      <svg class="bottle-svg" viewBox="0 0 1280 1133" aria-hidden="true"><defs><clipPath id="${id}"><path d="${BOTTLE_IN}"/></clipPath>
-        <linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#74d9ea"/><stop offset="1" stop-color="#3582b4"/></linearGradient></defs>
-        <path class="w-stream" d="M640 -60V400"/>
-        <rect class="w-stem" x="622" y="20" width="36" height="${(waterY(WATER.stem) - 20).toFixed(0)}" rx="12"/>
-        <g clip-path="url(#${id})"><rect class="w-body" x="0" y="1000" width="1280" height="0" fill="url(#${id}g)"/><rect class="w-surf" x="0" y="1000" width="1280" height="12"/>
-          <path class="w-line" d="M200 ${line(WATER.low)}H1080M200 ${line(WATER.high)}H1080"/></g>
-      </svg></div>`;
+    const bubbles = [0, 1, 2, 3, 4].map((i) => `<circle cx="${300 + (i % 3) * 22 - 20}" cy="560" r="${5 + (i % 2) * 3}" style="--i:${i}"/>`).join("");
+    return `<svg class="bottle-svg" viewBox="0 0 640 631" aria-hidden="true"><defs><clipPath id="${id}"><path d="${BOTTLE_IN}"/></clipPath>
+        <linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fe3f2"/><stop offset="1" stop-color="#2f78b0"/></linearGradient></defs>
+        ${neon ? `<path class="n-glass" d="${BOTTLE_IN}"/><path class="n-stem" d="M320 -10V485"/>` : ""}
+        <path class="w-stream" d="M320 -40V200"/>
+        <g clip-path="url(#${id})"><rect class="w-body" x="0" y="631" width="640" height="0" fill="url(#${id}g)"/><rect class="w-surf" x="0" y="631" width="640" height="7"/>
+          <g class="w-bubbles">${bubbles}</g>
+          <path class="w-line" d="M0 ${line(WATER.low)}H640M0 ${line(WATER.high)}H640"/></g>
+      </svg>`;
+  }
+
+  waterPic() {
+    const look = this.lookAt, pct = (v) => `${(v * 100).toFixed(1)}%`;
+    if (look === "b") {
+      // 真鍮の水位計: ガラス管の中（縦16〜86%）に水を立て、目安の帯（0.44〜0.56）とステムの先（0.30）を目盛りに描く
+      return `<img class="bg" src="${IMG.tonari}" alt=""><div class="water-b" data-zone="empty">
+        <div class="bottle small"><img src="${IMG.bottle}" alt="">${this.bottleSvg()}</div>
+        <div class="wgauge"><img src="${IMG.gauge}" alt=""><span class="g-tube"><i class="g-water"></i>
+          <i class="g-band" style="bottom:${pct(WATER.low)};height:${pct(WATER.high - WATER.low)}"></i><i class="g-stem" style="bottom:${pct(WATER.stem)}"></i></span></div></div>`;
+    }
+    if (look === "c") return `<div class="water-c" data-zone="empty"><div class="bottle neon">${this.bottleSvg(true)}</div></div>`;
+    return `<img class="bg" src="${IMG.tonari}" alt=""><div class="water-a" data-zone="empty"><div class="bottle big"><img src="${IMG.bottle}" alt="">${this.bottleSvg()}</div></div>`;
   }
 
   syncWater() {
     const { st, el } = this, w = st.water, y = waterY(w);
-    const bottle = el.querySelector(".bottle");
-    if (!bottle) return;
-    const body = bottle.querySelector(".w-body"), surf = bottle.querySelector(".w-surf");
-    body.setAttribute("y", y.toFixed(1)); body.setAttribute("height", w > 0 ? (1000 - y).toFixed(1) : "0");
-    surf.setAttribute("y", (y - 6).toFixed(1)); surf.style.opacity = w > 0 ? "1" : "0";
-    bottle.querySelector(".w-stream").setAttribute("d", `M640 -60V${y.toFixed(0)}`);
+    const root = el.querySelector(".water-a, .water-b, .water-c");
+    if (!root) return;
+    root.style.setProperty("--w", w.toFixed(3));
+    for (const svg of root.querySelectorAll(".bottle-svg")) {
+      const body = svg.querySelector(".w-body"), surf = svg.querySelector(".w-surf");
+      body.setAttribute("y", y.toFixed(1)); body.setAttribute("height", w > 0 ? (631 - y).toFixed(1) : "0");
+      surf.setAttribute("y", (y - 3.5).toFixed(1)); surf.style.opacity = w > 0 ? "1" : "0";
+      svg.querySelector(".w-stream").setAttribute("d", `M320 -40V${y.toFixed(0)}`);
+    }
     const zone = waterZone(w);
-    if (bottle.dataset.zone !== zone) bottle.dataset.zone = zone;
-    bottle.classList.toggle("pouring", !!this.pouring);
-    bottle.classList.toggle("draining", !!this.draining);
+    if (root.dataset.zone !== zone) root.dataset.zone = zone;
+    root.classList.toggle("pouring", !!this.pouring);
+    root.classList.toggle("draining", !!this.draining);
     const ok = el.querySelector('[data-act="decide"]');
     if (ok) { ok.disabled = w <= 0; ok.classList.toggle("hot", zone === "ideal"); }
     el.querySelector(".btn-a.pour")?.classList.toggle("pressing", !!this.pouring);
@@ -876,10 +925,33 @@ class Phone {
     this.fitCoach();
   }
 
-  /* ── 配合（VPL36）: 葉を1gずつ器へ。器が満ちていき、下の12の枠が葉の色で埋まる ── */
+  /* ── 配合（VPL36・VPL37）: 葉を1gずつ器へ ── */
+  mixBowl(cls = "") {
+    return `<div class="mixbowl ${cls}"><img class="b-empty" src="${IMG.bowlEmpty}" alt=""><img class="b-airy" src="${IMG.bowl_airy}" alt=""><img class="b-full" src="${IMG.bowl_normal}" alt=""></div>`;
+  }
+
   mixPic() {
-    return `<img class="bg" src="${IMG.tonari}" alt=""><div class="mixbowl"><img class="b-empty" src="${IMG.bowlEmpty}" alt=""><img class="b-airy" src="${IMG.bowl_airy}" alt=""><img class="b-full" src="${IMG.bowl_normal}" alt=""></div>
-      <div class="mixbar" aria-hidden="true"><span class="slots"></span><b class="mixsum"></b></div>`;
+    const look = this.lookAt, { st } = this;
+    const bar = `<div class="mixbar" aria-hidden="true"><span class="slots"></span><b class="mixsum"></b></div>`;
+    if (look === "a") {
+      // はかり: 器を載せ、前の表示窓（横30〜63%・縦82〜96%）に重さを出す
+      return `<img class="bg" src="${IMG.tonari}" alt=""><div class="mix-a"><div class="scale"><img src="${IMG.scale}" alt="">${this.mixBowl("on-scale")}<b class="digits" aria-hidden="true"><span class="d-num">00</span><span class="d-unit">g</span></b></div></div>`;
+    }
+    if (look === "b") {
+      // 真上から見た器: 12の扇（1つ＝1g）を葉の模様と葉の色で埋める
+      const id = `mx${this.uid}`, wedge = (i) => {
+        const a0 = (i * 30 - 90) * Math.PI / 180, a1 = ((i + 1) * 30 - 90) * Math.PI / 180, r = 66;
+        return `<path class="wedge" data-i="${i}" d="M0 0L${(r * Math.cos(a0)).toFixed(2)} ${(r * Math.sin(a0)).toFixed(2)}A${r} ${r} 0 0 1 ${(r * Math.cos(a1)).toFixed(2)} ${(r * Math.sin(a1)).toFixed(2)}Z"/>`;
+      };
+      return `<img class="bg" src="${IMG.tonari}" alt=""><div class="mix-b"><svg class="topbowl" viewBox="-100 -100 200 200" aria-hidden="true">
+        <defs><pattern id="${id}p" patternUnits="userSpaceOnUse" width="60" height="60"><image href="${IMG.leafTex}" width="60" height="60"/></pattern></defs>
+        <image href="${IMG.bowlTop}" x="-100" y="-100" width="200" height="200"/>
+        <g class="wedges">${Array.from({ length: MIX_CAP }, (_, i) => wedge(i)).join("")}</g><circle class="tex" r="66" fill="url(#${id}p)"/>
+        <g class="ticks">${Array.from({ length: MIX_CAP }, (_, i) => { const a = (i * 30 - 90) * Math.PI / 180; return `<path d="M${(70 * Math.cos(a)).toFixed(1)} ${(70 * Math.sin(a)).toFixed(1)}L${(80 * Math.cos(a)).toFixed(1)} ${(80 * Math.sin(a)).toFixed(1)}"/>`; }).join("")}</g>
+      </svg><b class="mixsum center-sum"></b></div>`;
+    }
+    // 缶から器へ: 上に葉の缶、選んだ缶が持ち上がる。下に器と12の枠
+    return `<img class="bg" src="${IMG.tonari}" alt=""><div class="mix-c"><div class="tins">${MIX.map((f, i) => `<button class="tin${i === st.mixSel ? " on" : ""}" data-act="mixsel" data-i="${i}" aria-label="${f.name} ${st.mix[i]}g" style="--c:${f.color}"><img src="${IMG[`tin_${f.id}`]}" alt=""><b><em>${st.mix[i]}</em>g</b>${f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : ""}</button>`).join("")}</div>${this.mixBowl()}${bar}</div>`;
   }
 
   mixTotal() { return this.st.mix.reduce((a, b) => a + b, 0); }
@@ -887,15 +959,26 @@ class Phone {
 
   syncMix() {
     const { st, el } = this, total = this.mixTotal(), t = total / MIX_CAP;
-    const bowl = el.querySelector(".mixbowl");
-    if (!bowl) return;
     const clamp = (v) => Math.max(0, Math.min(1, v)).toFixed(2);
-    bowl.querySelector(".b-airy").style.opacity = clamp((t - 0.08) / 0.4);
-    bowl.querySelector(".b-full").style.opacity = clamp((t - 0.55) / 0.45);
+    const bowl = el.querySelector(".mixbowl");
+    if (bowl) {
+      bowl.querySelector(".b-airy").style.opacity = clamp((t - 0.08) / 0.4);
+      bowl.querySelector(".b-full").style.opacity = clamp((t - 0.55) / 0.45);
+    }
     const colors = MIX.flatMap((f, i) => Array(st.mix[i]).fill(f.color));
-    el.querySelector(".mixbar .slots").innerHTML = Array.from({ length: MIX_CAP }, (_, i) => `<i${colors[i] ? ` style="--c:${colors[i]}"` : ""}></i>`).join("");
-    el.querySelector(".mixsum").innerHTML = `${total}<small>/${MIX_CAP}g</small>`;
-    el.querySelector(".mixbar").classList.toggle("full", total === MIX_CAP);
+    const slots = el.querySelector(".mixbar .slots");
+    if (slots) slots.innerHTML = Array.from({ length: MIX_CAP }, (_, i) => `<i${colors[i] ? ` style="--c:${colors[i]}"` : ""}></i>`).join("");
+    el.querySelectorAll(".wedge").forEach((w, i) => { w.style.setProperty("--c", colors[i] || "transparent"); w.classList.toggle("on", !!colors[i]); });
+    el.querySelectorAll(".mixsum").forEach((sum) => { sum.innerHTML = `${total}<small>/${MIX_CAP}g</small>`; });
+    el.querySelector(".mixbar")?.classList.toggle("full", total === MIX_CAP);
+    el.querySelector(".mix-b")?.classList.toggle("full", total === MIX_CAP);
+    const num = el.querySelector(".digits .d-num");
+    if (num) { num.textContent = String(total).padStart(2, "0"); el.querySelector(".digits").classList.toggle("full", total === MIX_CAP); }
+    el.querySelectorAll(".tins .tin").forEach((tin, i) => {
+      tin.classList.toggle("on", i === st.mixSel);
+      tin.querySelector("em").textContent = String(st.mix[i]);
+      tin.querySelector(".need")?.classList.toggle("met", st.mix[i] >= (MIX[i].need || 0));
+    });
   }
 
   addMix(by) {
@@ -936,7 +1019,8 @@ class Phone {
 
   /* ── 弾幕＝蒸らしの雑念よけ（VPL36）: 上の絵いっぱいが雑念の場。十字キー（スティック）か、場を指でなぞって動く ── */
   steamPic() {
-    return `<div class="dodge" data-warn="" style="background-image:url(${IMG.mindWorld})"><canvas></canvas><i class="d-time"><i></i></i><div class="d-stamp" hidden></div></div>`;
+    const bg = { a: IMG.bgWater, b: IMG.bgSmoke, c: IMG.bgWashi }[this.lookAt];
+    return `<div class="dodge" data-warn="" style="background-image:url(${bg})"><canvas></canvas><i class="d-time"><i></i></i><div class="d-stamp" hidden></div></div>`;
   }
 
   dodgeSize() {
@@ -1052,41 +1136,62 @@ class Phone {
     const size = this.dodgeSize(), d = this.dodge;
     if (!size || !d) return;
     const { ctx, u, field } = size;
+    // 案ごとの描き方（VPL37）: a 夜の水面（泡と石・灯り）、b 煙の夜空（光の粒・炭）、c 和紙と墨（墨の文字・墨の粒・朱のハート）
+    const look = this.lookAt, css = getComputedStyle(field);
+    const P = {
+      a: { word: "#e2efff", glow: "rgba(110, 190, 255, 0.9)", ring: "160, 220, 255", heart: "#ffd49a", heartGlow: "#ffb45a", core: "#ffffff", font: `700 13.5px ${css.fontFamily}` },
+      b: { word: "#efe6ff", glow: "rgba(11, 8, 18, 0.95)", ring: "255, 226, 166", heart: "#ff5f7e", heartGlow: "#ff5f7e", core: "#ffffff", font: `700 13.5px ${css.fontFamily}` },
+      c: { word: "#1d1510", glow: "rgba(60, 40, 25, 0.25)", ring: "217, 65, 43", heart: "#d9412b", heartGlow: "rgba(217, 65, 43, 0.5)", core: "#fff8ee", font: `700 15.5px ${css.getPropertyValue("--mincho") || "serif"}` },
+    }[look];
     ctx.setTransform(u, 0, 0, u, 0, 0);
     ctx.clearRect(0, 0, 390, d.H);
     for (const r of d.rings) {
       const k = (now - r.at) / 520;
       if (k > 1) continue;
       ctx.beginPath(); ctx.arc(r.x, r.y, DODGE.bombR * k, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(255, 226, 166, ${(1 - k).toFixed(2)})`; ctx.lineWidth = 4; ctx.stroke();
+      ctx.strokeStyle = `rgba(${P.ring}, ${(1 - k).toFixed(2)})`; ctx.lineWidth = 4; ctx.stroke();
     }
     const fade = d.over ? Math.max(0, 1 - (now - d.endAt) / 500) : 1;
     ctx.globalAlpha = fade;
-    ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.font = `700 13.5px ${getComputedStyle(field).fontFamily}`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.font = P.font;
     for (const b of d.bullets) {
       if (b.word) {
-        ctx.shadowColor = "rgba(11, 8, 18, 0.95)"; ctx.shadowBlur = 5; ctx.fillStyle = "#efe6ff"; ctx.fillText(b.word, b.x, b.y); ctx.shadowBlur = 0;
+        ctx.shadowColor = P.glow; ctx.shadowBlur = look === "c" ? 2 : 6; ctx.fillStyle = P.word; ctx.fillText(b.word, b.x, b.y); ctx.shadowBlur = 0;
+        continue;
+      }
+      ctx.beginPath();
+      if (look === "a") {
+        if (b.kind === "orb") { ctx.arc(b.x, b.y, b.r + 1, 0, Math.PI * 2); ctx.strokeStyle = "rgba(190, 230, 255, 0.95)"; ctx.lineWidth = 1.6; ctx.stroke(); ctx.beginPath(); ctx.arc(b.x - 2, b.y - 2, 1.6, 0, Math.PI * 2); ctx.fillStyle = "#ffffff"; ctx.fill(); }
+        else if (b.kind === "coal") { ctx.ellipse(b.x, b.y, 8, 6, 0.4, 0, Math.PI * 2); ctx.fillStyle = "#243149"; ctx.strokeStyle = "#86b8ff"; ctx.lineWidth = 1.5; ctx.fill(); ctx.stroke(); }
+        else { const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r * 1.6); g.addColorStop(0, "rgba(210, 230, 255, 0.55)"); g.addColorStop(1, "rgba(210, 230, 255, 0)"); ctx.fillStyle = g; ctx.arc(b.x, b.y, b.r * 1.6, 0, Math.PI * 2); ctx.fill(); }
+      } else if (look === "c") {
+        if (b.kind === "coal") { ctx.roundRect?.(b.x - 7, b.y - 7, 14, 14, 2); ctx.fillStyle = "#1d1510"; ctx.strokeStyle = "#d9412b"; ctx.lineWidth = 1.6; ctx.fill(); ctx.stroke(); }
+        else { const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r * 1.5); g.addColorStop(0, b.kind === "orb" ? "rgba(29, 21, 16, 0.95)" : "rgba(60, 45, 35, 0.4)"); g.addColorStop(0.6, b.kind === "orb" ? "rgba(29, 21, 16, 0.75)" : "rgba(60, 45, 35, 0.2)"); g.addColorStop(1, "rgba(29, 21, 16, 0)"); ctx.fillStyle = g; ctx.arc(b.x, b.y, b.r * 1.5, 0, Math.PI * 2); ctx.fill(); }
       } else if (b.kind === "coal") {
         ctx.fillStyle = "#2a2230"; ctx.strokeStyle = "#ff8a4c"; ctx.lineWidth = 2; ctx.shadowColor = "#ff8a4c"; ctx.shadowBlur = 8;
-        ctx.beginPath(); ctx.roundRect?.(b.x - 7, b.y - 7, 14, 14, 3); ctx.fill(); ctx.stroke(); ctx.shadowBlur = 0;
+        ctx.roundRect?.(b.x - 7, b.y - 7, 14, 14, 3); ctx.fill(); ctx.stroke(); ctx.shadowBlur = 0;
       } else if (b.kind === "orb") {
         const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r * 1.8);
         g.addColorStop(0, "#ffffff"); g.addColorStop(0.35, "#d9c8ff"); g.addColorStop(1, "rgba(195, 176, 255, 0)");
-        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(b.x, b.y, b.r * 1.8, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = g; ctx.arc(b.x, b.y, b.r * 1.8, 0, Math.PI * 2); ctx.fill();
       } else {
-        ctx.fillStyle = "rgba(225, 220, 238, 0.5)"; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "rgba(225, 220, 238, 0.5)"; ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
       }
     }
     ctx.globalAlpha = 1;
-    // ハート: 当たるのは白い芯だけ。当たった直後は桃色で点滅
+    // ハート: 当たるのは芯だけ。当たった直後は点滅。夜の水面では足もとに小さな波紋
     const h = d.heart, hurt = now < d.safeUntil;
+    if (look === "a") {
+      const k = (now % 1400) / 1400;
+      ctx.beginPath(); ctx.ellipse(h.x, h.y + 9, 10 + k * 16, 3 + k * 5, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(255, 212, 154, ${(0.6 * (1 - k)).toFixed(2)})`; ctx.lineWidth = 1.2; ctx.stroke();
+    }
     if (HEART && !(hurt && Math.floor(now / 90) % 2)) {
       ctx.save(); ctx.translate(h.x, h.y + 1.5); ctx.scale(1.15, 1.15);
-      ctx.shadowColor = hurt ? "#ef8795" : "#ff5f7e"; ctx.shadowBlur = 10;
-      ctx.fillStyle = hurt ? "#ef8795" : "#ff5f7e"; ctx.fill(HEART); ctx.restore();
+      ctx.shadowColor = hurt ? "#ef8795" : P.heartGlow; ctx.shadowBlur = 10;
+      ctx.fillStyle = hurt ? "#ef8795" : P.heart; ctx.fill(HEART); ctx.restore();
     }
-    ctx.shadowColor = "#ffffff"; ctx.shadowBlur = 6; ctx.fillStyle = "#ffffff";
+    ctx.shadowColor = look === "c" ? "rgba(0, 0, 0, 0)" : "#ffffff"; ctx.shadowBlur = 6; ctx.fillStyle = P.core;
     ctx.beginPath(); ctx.arc(h.x, h.y - 1.5, DODGE.core, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
   }
 
@@ -1161,7 +1266,7 @@ class Phone {
     const { st } = this;
     let cards = st.scene === "pack" ? `<div class="cards">${PACKS.map((p, i) => `<button class="card${p.locked ? " locked" : ""}" data-act="pack" data-pack="${i}" aria-current="${i === st.pack}">
       <img src="${IMG[`bowl_${p.id}`]}" alt=""><b>${p.name}</b><span class="dens">${[1, 2, 3].map((n) => `<i class="${n <= p.dens ? "on" : ""}"></i>`).join("")}</span>${p.locked ? icon("lock") : ""}</button>`).join("")}</div>` : "";
-    if (st.scene === "mix") cards = `<div class="cards mixcards">${MIX.map((f, i) => `<button class="card mixcard${f.need && st.mix[i] >= f.need ? " met" : ""}" data-act="mixsel" data-i="${i}" aria-current="${i === st.mixSel}" aria-label="${f.name} ${st.mix[i]}g">
+    if (st.scene === "mix" && this.lookAt !== "c") cards = `<div class="cards mixcards">${MIX.map((f, i) => `<button class="card mixcard${f.need && st.mix[i] >= f.need ? " met" : ""}" data-act="mixsel" data-i="${i}" aria-current="${i === st.mixSel}" aria-label="${f.name} ${st.mix[i]}g">
       <span class="leaf" style="--c:${f.color}"><img src="${IMG.leaf}" alt=""></span><b>${f.name}</b><span class="grams"><em>${st.mix[i]}</em>g</span>${f.need ? `<small class="need">${f.need}g〜</small>` : ""}</button>`).join("")}</div>`;
     return `<button class="coach" data-act="coach" aria-label="スミさんの一言"><img src="${IMG.faceSumi}" alt=""><span class="say"><span class="say-text">${esc(COACH[st.scene])}</span></span></button>${cards}`;
   }
@@ -1553,10 +1658,15 @@ function showGallery() {
       <li><b>補助ボタン</b>案1「名前つきの段」で確定（絵記号に短い名前を添えて横いっぱいに大きく）</li>
       <li><b>登場カットイン</b>案A「縦のポスター」で確定</li>
       <li><b>出すもの</b>地図は章・日付・レベル・体力・お金（天気は降る雨で見せる）。会話は場所の名前だけ、シーシャ作りは工程の並び（絵記号だけ）・熱ゲージ・ランクだけ</li>
+      <li><b>作る場面の見た目</b>水入れ・配合・雑念よけに専用の見た目を3案ずつ（下）。ボトル・ハガル・吸い出しのはじめは作り直した絵</li>
       <li><b>ランク</b>工程を終えた時に上の絵へどかっと出て、右上へ移る（案D・オーナー案）。見比べ用に案A〜Cも残す（下）</li>
     </ul>
     <p class="g-note">絵・立ち絵・台詞は本編の素材、配置と動きが今回の案です。本編の進行や保存には触れません。<a href="?view=play" data-go="play">1台で通して触る</a></p>
     <div class="g-grid">${GALLERY.map((item, i) => `<figure class="g-cell"><article class="phone" data-i="${i}"></article><figcaption>${item.caption}</figcaption></figure>`).join("")}</div>
+    <h2 class="g-sub">水入れ・配合・雑念よけの見た目（3案ずつ）</h2>
+    <p class="g-note">シーシャ作りの3つの工程に、それぞれ専用の見た目を3案。ボトル・ハガル・水位計・はかり・缶・背景は画像生成（gpt-image-2.6-sunburst）で作り、水や葉の量・数字・弾はコードで重ねる。遊び方は3案とも同じ。1台表示の右上のつまみ →「見た目」で案を替えて触れる。</p>
+    ${["water", "mix", "steam"].map((scene) => `<section class="g-aux"><h3>${{ water: "水入れ", mix: "配合（グラム決め）", steam: "蒸らし（雑念よけ）" }[scene]}<a href="?view=play&scene=${scene}">1台で動きを見る</a></h3>
+      <div class="g-grid">${Object.entries(LOOKS[scene]).map(([v, look]) => `<figure class="g-cell"><article class="phone" data-lk="${v}" data-scene="${scene}"></article><figcaption><b>案${v.toUpperCase()} ${look.name}</b><br>${look.lead}</figcaption></figure>`).join("")}</div></section>`).join("")}
     <h2 class="g-sub">ランクの出し場所</h2>
     <p class="g-note">本編の制作ランク（D〜SSS の絵）を縦画面のどこに置くか。どの案も、工程を終えてランクが上がった瞬間は舞台の真ん中に大きく出し（下の英語まで読める）、置き場所へ縮めて収める。1台表示の右上のつまみ →「ランク」で案を替え、「↑」で上がる動きを何度でも見られる。</p>
     ${Object.entries(RANK_PLACES).map(([v, place]) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}${v === "d" ? "（オーナー案）" : ""}</small>${place.name}<a href="?view=play&scene=holes&rank=${v}">1台で動きを見る</a></h3><p>${place.lead}</p>
@@ -1567,6 +1677,7 @@ function showGallery() {
   </main>`;
   app.querySelectorAll(".phone[data-i]").forEach((el) => { const item = GALLERY[Number(el.dataset.i)]; phones.push(new Phone(el, item.scene, { fixed: true, ...item })); });
   app.querySelectorAll(".phone[data-ci]").forEach((el) => phones.push(new Phone(el, "cutin", { fixed: true, ci: el.dataset.ci, who: el.dataset.who })));
+  app.querySelectorAll(".phone[data-lk]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, look: el.dataset.lk, water: 0.5, mix: [7, 3, 2], grade: 1, gradeP: 0.4 })));
   app.querySelectorAll(".phone[data-gp]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, rank: el.dataset.rank, grade: Number(el.dataset.grade), gradeP: Number(el.dataset.gp) })));
   scrollTo(0, 0);
 }
@@ -1589,12 +1700,13 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
     <button class="grip" data-grip aria-expanded="false" aria-label="切り替えを開く"><i></i></button>
     <div class="panel"><div>${SCENES.map((id) => `<button data-scene="${id}" aria-pressed="${id === scene}">${SCENE_LABEL[id]}</button>`).join("")}</div>
       <div><small>登場</small>${[["minto", "みんと"], ["sumi", "スミ"]].map(([id, name]) => `<button data-who="${id}" aria-pressed="${id === who}">${name}</button>`).join("")}<a href="?view=gallery" data-go="gallery">一覧</a></div>
+      <div><small>見た目</small>${["a", "b", "c"].map((v) => `<button data-look="${v}" aria-pressed="${v === (params.get("look") || "a")}">案${v.toUpperCase()}</button>`).join("")}</div>
       <div><small>ランク</small>${Object.keys(RANK_PLACES).map((v) => `<button data-rank="${v}" aria-pressed="${v === (params.get("rank") || "d")}">案${v.toUpperCase()}</button>`).join("")}<button data-rankup aria-label="ランクを上げる">↑</button></div></div></nav>`}</div>`;
   const el = app.querySelector(".phone");
   // 先に大きさを決めてから描く（立ち絵と地図の位置は絵の大きさから決まる）
   const box = app.getBoundingClientRect(), rem = Math.min(box.width / 39, box.height / 66);
   root.style.fontSize = `${rem}px`; el.style.height = `${Math.min(box.height, rem * 92)}px`;
-  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", grade: params.get("grade"), ...opts });
+  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", look: params.get("look") || "a", grade: params.get("grade"), ...opts });
   current = make(scene);
   const nav = app.querySelector(".switch");
   if (!nav) return;
@@ -1608,6 +1720,12 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
     if ("grip" in button.dataset) return open(!nav.classList.contains("open"));
     open(true);
     if (button.dataset.scene) current.setScene(button.dataset.scene);
+    else if (button.dataset.look) {
+      // 水入れ・配合・雑念よけの見た目の案を替える。その3場面でなければ水入れへ
+      current.lookAt = button.dataset.look; current.el.dataset.look = button.dataset.look;
+      nav.querySelectorAll("[data-look]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.look === current.lookAt)));
+      if (["water", "mix", "steam"].includes(current.st.scene)) current.setScene(current.st.scene); else current.setScene("water");
+    }
     else if (button.dataset.rank || "rankup" in button.dataset) {
       // ランクの置き場所の案を替える／上がる動きを見る。作る場面でなければ穴あけへ
       const crafting = CRAFT_SCENES.includes(current.st.scene);
