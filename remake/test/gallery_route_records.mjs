@@ -13,8 +13,11 @@ const context = vm.createContext({ console, localStorage: {
   },
 } });
 const mod = new vm.SourceTextModule(fs.readFileSync(new URL("gallery-progress.js", root), "utf8"), { context });
+// 記録は保存の読み取りと、写真の記念品の一覧（チェキ・PFC14。それ自体は何も読み込まないデータだけ）にしか依存しない
+const leafData = fs.readFileSync(new URL("minto-cheki-data.js", root), "utf8");
+assert(!/^\s*import\b/m.test(leafData), "minto-cheki-data.js stays a data-only leaf");
 await mod.link(spec => {
-  assert.equal(spec, "./legacy-cast-save.js");
+  assert(["./legacy-cast-save.js", "./minto-cheki-data.js"].includes(spec), spec);
   return new vm.SourceTextModule(fs.readFileSync(new URL(spec, root), "utf8"), { context });
 });
 await mod.evaluate();

@@ -1300,6 +1300,12 @@
       "run": ["node --experimental-vm-modules remake/test/minto_story_visits.mjs"]
     },
     {
+      "id": "minto-cheki-collection",
+      "title": "Minto chekis at PEPPERMINT: no-repeat random picks, secret plain-clothes ones after the reveal and her name, offered after ordinary visits (PFC14)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/minto_cheki_collection.mjs"]
+    },
+    {
       "id": "minto-later-visits",
       "title": "Minto timer handoff and unposted cheki, once each after her visit sequence (#3081)",
       "kind": "quick",

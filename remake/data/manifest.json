@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-21 10:43 UTC",
+ "generated": "2026-11-27 18:08 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -676,8 +676,23 @@
   "cg_mashiro_double_apple.png",
   "cg_minto_casual.png",
   "cg_minto_cheki.png",
+  "cg_minto_cheki_cheek_heart.png",
+  "cg_minto_cheki_cheek_peace.png",
+  "cg_minto_cheki_chin_rest.png",
+  "cg_minto_cheki_devil_horns.png",
+  "cg_minto_cheki_drink.png",
+  "cg_minto_cheki_finger_heart.png",
+  "cg_minto_cheki_half_heart.png",
+  "cg_minto_cheki_heart.png",
+  "cg_minto_cheki_horns_prank.png",
+  "cg_minto_cheki_mint_sprig.png",
+  "cg_minto_cheki_salute.png",
+  "cg_minto_cheki_side_by_side.png",
+  "cg_minto_cheki_stiff_peace.png",
   "cg_minto_confession.png",
   "cg_minto_first_cheki.png",
+  "cg_minto_secret_cheki_blush.png",
+  "cg_minto_secret_cheki_hush.png",
   "cg_naru_after_hours.png",
   "cg_naru_last_chance.png",
   "cg_naru_next_entry.png",
@@ -3839,7 +3854,22 @@
   "cgs/cg_ch5_party_toast.png",
   "cgs/cg_ch5_regular_hose_lap.png",
   "cgs/cg_ch5_sumi_pulls_chair.png",
-  "cgs/cg_ch5_tsumugi_serves_hajime.png"
+  "cgs/cg_ch5_tsumugi_serves_hajime.png",
+  "cgs/cg_minto_cheki_cheek_heart.png",
+  "cgs/cg_minto_cheki_cheek_peace.png",
+  "cgs/cg_minto_cheki_chin_rest.png",
+  "cgs/cg_minto_cheki_devil_horns.png",
+  "cgs/cg_minto_cheki_drink.png",
+  "cgs/cg_minto_cheki_finger_heart.png",
+  "cgs/cg_minto_cheki_half_heart.png",
+  "cgs/cg_minto_cheki_heart.png",
+  "cgs/cg_minto_cheki_horns_prank.png",
+  "cgs/cg_minto_cheki_mint_sprig.png",
+  "cgs/cg_minto_cheki_salute.png",
+  "cgs/cg_minto_cheki_side_by_side.png",
+  "cgs/cg_minto_cheki_stiff_peace.png",
+  "cgs/cg_minto_secret_cheki_blush.png",
+  "cgs/cg_minto_secret_cheki_hush.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
