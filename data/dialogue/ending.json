@@ -99,13 +99,57 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "duck": true,
-          "text": "tonariは任せた。お前の店の名前は、その先まで取っとけ"
+          "text": "……で、お前の店の話だ"
         },
         {
           "speaker": "hajime",
+          "face": "surprise",
+          "text": "え"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "駅の向こうの喫茶店が、近いうちに閉めるそうだ。カウンターのいい店だ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "半分、俺が出す。残りは、お前の手で返せ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……スミさん、それ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "人を見る目も、休みの回し方も、もう覚えたろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……tonariは"
+        },
+        {
+          "speaker": "sumi",
           "face": "smile",
-          "text": "はい。いつか、ちゃんと看板にします"
+          "text": "……休みの日は、誰が開ける"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……休みの日も、そうじゃない日も）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "つむぎちゃんに、頼みます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "なら、名前はそれまでに決めとけ。今度は、書けるだろ"
         },
         {
           "speaker": "",
@@ -1182,6 +1226,89 @@
           "speaker": "",
           "face": "",
           "text": "スミさんが、昔からそうしてきたように。"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_cafe_day.png"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "半年後。駅の向こうの、元は喫茶店だった小さな店。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターは、前の店のまま残した。窓から差す光が、木目を柔らかく照らしている。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "開店祝いだ。……出資者の顔で、見に来ただけだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "半分、ちゃんと返しますから"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "利子は、一台でいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店先の黒板には、葉っぱの耳の猫が座っていた。今朝早く、つむぎが描いていったらしい。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隅に、小さな字。『はじめての方も、どうぞ』。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "……tonariは"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "今朝は、つむぎちゃんが開けてます。……鍵、まだ返してもらってないんで"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "……返さなくていい鍵もある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "買い物メモの裏に、店の名前を書いた。今度は、最後まで書けた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水を一杯、カウンターに置く。まだ誰も座っていない席の前に。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入口の灯りを、一つ点けた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手のひらの鍵束が、思ったより重かった。"
+        },
+        {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いらっしゃいませ"
         }
       ],
       "branches": {

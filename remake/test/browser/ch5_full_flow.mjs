@@ -124,7 +124,7 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5.prologueRoute, "tsumugi");
     assert.equal(state.flags._ch5.read.ch5_tsumugi_interview, true, "The interview is read before the chapter title");
     assert.equal(state.flags._ch4_cleared, true, "The Chapter 4 clear record must stay");
-    for (const id of ["ch5_tsumugi_first_day", "ch5_tsumugi_cough", "ch5_tsumugi_doctor", "ch5_tsumugi_look_first",
+    for (const id of ["ch5_tsumugi_first_day", "ch5_tsumugi_lessons", "ch5_tsumugi_cough", "ch5_tsumugi_doctor", "ch5_tsumugi_look_first",
       "ch5_tsumugi_full_house", "ch5_tsumugi_third", "ch5_shop_hands", "ch5_opening"]) {
       await page.locator(scene(id)).waitFor();
       await page.locator(dt("ch5-continue")).click();
@@ -133,7 +133,7 @@ await suite("ch5-full-flow", async check => {
     await mapReady(page, { day: 51, slot: 0 });
     state = await get(page);
     assert.equal(state.flags._ch5.part, "free");
-    assert.equal(state.flags._ch5.stage, 9);
+    assert.equal(state.flags._ch5.stage, 10);
     assert.equal(state.flags._ch5.matchDay, undefined);
     assert.match(await page.locator(".hud").innerText(), /勝負の日まで[\s\S]*未定/);
     // ヒロインの店は、会ったことがあれば第5章の通いの小会話で出る（#2033 F）。この保存では会っていない。
@@ -154,7 +154,7 @@ await suite("ch5-full-flow", async check => {
     const resumed = await get(page);
     assert.equal(resumed.flags._ch5.part, "free");
     assert.equal(resumed.flags._ch5.read.ch5_free_mashiro_visit, true);
-    assert.equal(resumed.flags._ch5.stage, 9, "Reload must not replay the prologue");
+    assert.equal(resumed.flags._ch5.stage, 10, "Reload must not replay the prologue");
 
     // 4. 夜は家で休んで翌日（DAY2）。新人編から入った保存に「初めての客」は無い（#4253）。閉店後の練習は夜だけ。
     await go(page, "rest");
@@ -1551,10 +1551,12 @@ await suite("ch5-full-flow", async check => {
       "閉店の少し前。奥まった席に、いつもの鉄仮面さんが座った。",
       "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。",
       "戸締まり、頼める？ 明日の朝、返して",
-      "スミさんが、昔からそうしてきたように。"].map(text => lines.indexOf(text));
+      "スミさんが、昔からそうしてきたように。",
+      "手のひらの鍵束が、思ったより重かった。",
+      "いらっしゃいませ"].map(text => lines.lastIndexOf(text));
     assert(order.every((index, i) => index >= 0 && (i === 0 || index > order[i - 1])), `finale order: ${order}`);
-    // 最後の画は、第1章の戸締まりの夜を写した場面の、入口の灯り（2026-11-27 オーナー「バトンが渡るとこにエモさ」）
-    assert.equal(order.at(-1), lines.length - 1, "The last picture is the light Tsumugi leaves on");
+    // 最後は、半年後の自分の店の「いらっしゃいませ」（2026-11-27 オーナー「自分の店を持てるようになるとこで終わりたい」）
+    assert.equal(order.at(-1), lines.length - 1, "The story ends on the first welcome of Hajime's own shop");
     assert.equal(order[5], order[4] + 1, "The name scene follows the daily scene without a break");
   });
 });

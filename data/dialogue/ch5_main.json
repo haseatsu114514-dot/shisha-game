@@ -454,6 +454,201 @@
       ]
     },
     {
+      "dialogue_id": "ch5_tsumugi_lessons",
+      "comment": "第5章冒頭の新人編（つむぎ目線・#4253）。はじめが、これまで教わった人の手つきを、名前と一緒につむぎへ渡す（2026-11-27 オーナー「色んなキャラから教わった教えをつむぎに教えるシーンが5章の初めの方では欲しい」）。相手はどの保存でも必ず会っている大会の相手。つむぎは一つ教わるたびにノートへ猫を一匹描き、「全部、はじめさんなのに」と思う（自分も作品も出会った人の集合という本人の見方。第5章の結論「混ざったままで、俺だった」の種。言葉にはさせない）。「何を見て決めるか」はまだ言葉にならない（面接・手順書の線）。塗って書き戻した名前の跡は、第3章でその場面を読んだ保存だけ（_stk_ch3_names_blacked）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二週目の閉店後。はじめさんが、カウンターにボウルを二つ並べた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、炭の置き方をやろうか",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめさんが、使い込んだノートを開いた。手順の横に、人の名前が書いてある。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_stk_ch3_names_blacked",
+          "next_true": "names_blacked"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "最後の炭は、お客さんがホースを置くのを待ってから、外へ寄せる",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……なるの置き方。ケムリクサの",
+          "portrait": "hajime",
+          "portrait_face": "smile"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートの端に、バニラの袋を抱えた猫を描いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "蒸らしの間は、タイマーを置く。急ぎたくなったら、タイマーを見る",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "これは、東京のスティーブさん",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "タイマーの横で、寝そべっている猫。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "熱は、手だけじゃなくて計器でも見る。……ヴォルクさんの測り方",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "温度計を抱えた猫。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "迷った時は、人の答えを待たないで、自分で決める。綾取さんとの勝負で覚えた",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートを胸に抱えた猫。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "疲れてそうな人には、先に椅子と水。ドバイの、太陽さんの店がそうだった",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大きな口で笑っている猫。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それから……相手の息を、一回待つ。王煙楼さん",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "龍の煙を、尻尾にした猫。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートには、まだ名前が続いていた。アダム、みんと、神崎、クラウド、あげは。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……みんな、ばらばらの手ですね",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。……ほとんど、もらいものなんだ",
+          "portrait": "hajime",
+          "portrait_face": "smile"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "描き終えたページを見た。猫が、六匹並んでいる。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……じゃあ、はじめさんの猫は、どれですか",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……え",
+          "portrait": "hajime",
+          "portrait_face": "surprise"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめさんは、ノートと私のページを見比べて、答えなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（……全部、はじめさんなのに）"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "炭を替える時は、どこを見ればいいですか",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……それは、まだ、うまく言えない",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "一緒に、見てて",
+          "portrait": "hajime",
+          "portrait_face": "smile"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートの猫は、一匹ずつ違う方を向いていた。"
+        }
+      ],
+      "branches": {
+        "names_blacked": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "名前のいくつかには、一度黒く塗って、書き直した跡があった。"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "ch5_tsumugi_cough",
       "comment": "つむぎの失敗。つむぎ目線（#4253・2026-11-27 オーナー）。地の文・心の声はつむぎ（私）。つむぎの台詞は portrait:false で本人の立ち絵を出さず、はじめは portrait 指定で立ち絵を出す。恋愛状態で分岐しない。初めての一人の昼番（シーシャ屋は一人で回す時間が長い。2026-11-27 オーナー）。動画を見て来た客に、動画どおりの一台を出して二口目でむせさせる（人の手でやった9000の小型版。決戦の一台目で9000が咳にすぐ炭をずらす場面と対）。半分残す絵は第2章からの酸っぱい顔の客の線（_stk_title_customer_half）なので使わない。はじめには言わない。",
       "lines": [

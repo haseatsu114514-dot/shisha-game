@@ -207,7 +207,7 @@ rejects(value, advanceToChapterFive);
 roundTrip(value);
 
 // プロローグ: つむぎ目線の新人編から挑戦状まで、順番どおりに1回ずつ（#4253）。順番違い・別partの場面は確定しない。
-assert.deepEqual(CH5_PROLOGUE.map(scene => scene.id), ["ch5_tsumugi_interview", "ch5_tsumugi_first_day", "ch5_tsumugi_cough",
+assert.deepEqual(CH5_PROLOGUE.map(scene => scene.id), ["ch5_tsumugi_interview", "ch5_tsumugi_first_day", "ch5_tsumugi_lessons", "ch5_tsumugi_cough",
   "ch5_tsumugi_doctor", "ch5_tsumugi_look_first", "ch5_tsumugi_full_house", "ch5_tsumugi_third", "ch5_shop_hands", "ch5_opening"]);
 for (const wrong of ["ch5_opening", "ch5_bridge_after_return", "ch5_tsumugi_serving", "ch5_unrecorded_day", "ch5_schedule_contact", "ch5_timeout"])
   rejects(value, v => completeChapterFiveScene(v, wrong));
@@ -825,14 +825,19 @@ for (const scenes of [
   const endingLines = id => files.ending.find(row => row.dialogue_id === id).lines.map(line => [line.speaker || "", line.text]);
   const normal = endingLines("ending_normal");
   const at = text => normal.findIndex(([, body]) => body === text);
+  // 賄いの後半はスミさんの出資の話（2026-11-27 オーナー「すみさんが出資して新店を任されて、ついに自分の店を持てる」）。
+  // tonari は、はじめがつむぎに頼む。店の名前は、最後の場面で「今度は、最後まで書けた」
   const order = ["裏返して、店の名前を書きかけたところで、ペンを止めた。",
     "三ヶ月目に決めた名前は、もう書けなかった。あれは、俺ひとりの城の名前だった。",
     "店はもう、お前が回してる。俺が言うことも、だいぶ減ったな",
     "スミさん。tonariって、どうしてこの名前なんですか",
     "客の隣に座れる店にしたかった……それだけだ",
-    "tonariは任せた。お前の店の名前は、その先まで取っとけ"].map(at);
+    "……で、お前の店の話だ"].map(at);
   assert(order.every((index, i) => index >= 0 && (i === 0 || index === order[i - 1] + 1)), `ending_normal order: ${order}`);
   assert.deepEqual(order.map(index => normal[index][0]), ["", "", "sumi", "hajime", "sumi", "sumi"]);
+  for (const text of ["半分、俺が出す。残りは、お前の手で返せ", "つむぎちゃんに、頼みます", "なら、名前はそれまでに決めとけ。今度は、書けるだろ"])
+    assert(normal.some(([, body]) => body === text), text);
+  assert(!normal.some(([, body]) => body === "tonariは任せた。お前の店の名前は、その先まで取っとけ"), "The old ending line is replaced");
   assert.deepEqual(endingLines("ending_salaryman_name").filter(([speaker]) => speaker).slice(0, 5).map(([, text]) => text), [
     "ダブルアップルにミント少し、ですね", "……今日の、[pause]良かったよ", "……笑いました？",
     "……表です。表克己。いつも、ありがとうございます", "ありがとうございます……また明日"]);
@@ -858,7 +863,14 @@ for (const scenes of [
     const mirror = name.lines.slice(trophy + 3).map(line => line.text).filter(Boolean);
     for (const text of ["炭を扱う前に、息を吐くようになったね", "暇だったから", "戸締まり、頼める？ 明日の朝、返して",
       "マスター、俺、ひより、はじめ、……それから、お前だ"]) assert(mirror.includes(text), text);
-    assert.equal(mirror.at(-1), "スミさんが、昔からそうしてきたように。");
+    assert(mirror.includes("スミさんが、昔からそうしてきたように。"));
+    // 物語の最後は、半年後の自分の店の最初の朝。第1章の最初の一文と鍵束の重さを写し、「いらっしゃいませ」で終わる
+    const shop = mirror.slice(mirror.indexOf("スミさんが、昔からそうしてきたように。") + 1);
+    assert.equal(shop[0], "半年後。駅の向こうの、元は喫茶店だった小さな店。");
+    for (const text of ["買い物メモの裏に、店の名前を書いた。今度は、最後まで書けた。", "手のひらの鍵束が、思ったより重かった。"])
+      assert(shop.includes(text), text);
+    assert(closing.includes("裏口の閉まる音。手のひらの鍵束が、思ったより重かった。"), "The first chapter's key ring line");
+    assert.equal(shop.at(-1), "いらっしゃいませ");
     const met = name.lines.find(line => line.type === "condition" && line.condition_type === "met");
     assert.deepEqual([met.char_id, met.next_true, met.next_false], ["hiyori", "hiyori_met", "hiyori_unmet"]);
     assert.equal(name.branches.hiyori_unmet[0].text, "ひより？");
@@ -878,7 +890,7 @@ for (const scenes of [
   assert(before.every(line => !line.text || !/つむぎ|はじめ|tonari|スミ|私|俺|パーカー|タブレット/.test(line.text)), "Nothing gives her away before the call");
   assert.deepEqual(before.filter(line => line.speaker).map(line => [line.speaker, line.text]), [["???", "……あの。面接、ここで合ってますか"]]);
   assert.equal(interview[reveal - 1].type, "bg", "The tonari background appears with the reveal");
-  const pov = ["ch5_tsumugi_interview", "ch5_tsumugi_first_day", "ch5_tsumugi_cough", "ch5_tsumugi_doctor",
+  const pov = ["ch5_tsumugi_interview", "ch5_tsumugi_first_day", "ch5_tsumugi_lessons", "ch5_tsumugi_cough", "ch5_tsumugi_doctor",
     "ch5_tsumugi_look_first", "ch5_tsumugi_full_house"];
   for (const id of pov) {
     const rows = [...scene(id).lines, ...Object.values(scene(id).branches || {}).flat()];
@@ -902,6 +914,10 @@ for (const scenes of [
   for (const id of ["ch5_tsumugi_first_day", "ch5_tsumugi_cough", "ch5_tsumugi_look_first"]) assert(colorLines(id) >= 1, id);
   assert(!third.slice(swap).some(line => /色/.test(line.text || "")), "No smoke colors in Hajime's eyes");
   assert.equal(colorLines("ch5_shop_hands"), 0);
+  // 教わった手つきを名前と一緒に渡す（2026-11-27 オーナー）。どの保存でも会っている大会の相手だけを名指しし、つむぎは猫を描く
+  const lessons = scene("ch5_tsumugi_lessons").lines.map(line => line.text || "");
+  for (const name of ["なる", "スティーブ", "ヴォルク", "綾取", "太陽", "王煙楼"]) assert(lessons.some(text => text.includes(name)), name);
+  assert(lessons.includes("（……全部、はじめさんなのに）"));
   // 満席の夜の三番と五番はプレイヤーが選ぶ。どちらも失敗にしない（両方の分岐に戻り先の台詞がある）。
   const house = scene("ch5_tsumugi_full_house");
   const choice = house.lines.find(line => line.type === "choice");

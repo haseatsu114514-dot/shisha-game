@@ -36,6 +36,7 @@ export const CH5_SCENE_BG = Object.freeze({
   // つむぎ目線の新人編（#4253）。面接は街の道中から入り、台本の bg 行で判明の時に tonari へ替える
   ch5_tsumugi_interview: "bg_street_day",
   ch5_tsumugi_first_day: "bg_tonari_opening_coal",  // 開店前の炭（一週間後は台本の bg 行で昼）
+  ch5_tsumugi_lessons: "bg_tonari_inside_night",     // 閉店後、教わった手つきを名前と一緒に渡す
   ch5_tsumugi_cough: "bg_tonari_inside_day",         // 一人の昼番（夕方は台本の bg 行）
   ch5_tsumugi_doctor: "bg_c_station_night",          // C.STATION のカウンターの端（cs_kemuri_sample と同じ席）
   ch5_tsumugi_look_first: "bg_tonari_inside_day",    // 昼のノート（夕方の二人連れは台本の bg 行）
