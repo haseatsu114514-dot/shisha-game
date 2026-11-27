@@ -531,15 +531,10 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 /* 刺す・吸うは道具の白い図形（VPL34）。ボタンいっぱいの 100×100 */
 /* ボタンの縁から離すため、真ん中の78%に収める（VPL35） */
 .tool-svg { position: absolute; inset: 11%; width: 78%; height: 78%; overflow: visible; fill: currentColor; filter: drop-shadow(0 0.2rem 0.5rem #0b0812) drop-shadow(0 0 0.15rem #0b0812); }
-/* 刺す: 押し具合（--level）で針が下がってアルミを突く。満ちた所で金の火花、深すぎると針がさらに沈む */
-.tool-needle .gl-needle { transform: translateY(calc(var(--level, 0) * 8px)); transition: transform 0.2s var(--ease-out); }
+/* 刺す（VPL58）: 穴あけの道具を少し斜めに置くだけ。押し具合（--level）で、道具の向き（先の方）へ突き出て、離すと戻る。深すぎるとさらに沈む */
+.tool-needle .gl-needle { transform: translateY(calc(var(--level, 0) * 7px - 3px)); transition: transform 0.2s var(--ease-out); }
 .btn-a.hold.pressing .tool-needle .gl-needle { transition: none; }
-.btn-a.hold[data-zone="over"] .tool-needle .gl-needle { transform: translateY(11px); }
-.tool-needle .gl-foil, .tool-needle .gl-dent { fill: none; stroke: currentColor; stroke-width: 3.4; stroke-linecap: round; }
-.tool-needle .gl-dent { opacity: clamp(0, calc((var(--level, 0) - 0.55) * 4), 1); }
-.tool-needle .gl-spark { fill: none; stroke: #ffcf6b; stroke-width: 3.2; stroke-linecap: round; opacity: 0; transition: opacity 0.12s; }
-.btn-a.hold[data-zone="good"] .gl-spark, .btn-a.hold.res-good .gl-spark { opacity: 1; }
-.btn-a.hold[data-zone="good"] .gl-spark { stroke: #b06d10; }
+.btn-a.hold[data-zone="over"] .tool-needle .gl-needle { transform: translateY(8px); }
 /* 吸う: 持ち手の細い溝と、少し透けた吸い口。吸うたびに少し動いて光る */
 .tool-mouthpiece .gl-ring { fill: none; stroke: #0b0812; stroke-opacity: 0.55; stroke-width: 1.4; }
 .tool-mouthpiece .gl-tip { opacity: 0.72; }
@@ -615,60 +610,49 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 @keyframes bubble { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 0.8; } 100% { transform: translateY(-110px); opacity: 0; } }
 .water-a { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 42% at 50% 44%, #ffe2a61f, transparent 70%); }
 .water-a .bottle { position: absolute; left: 50%; top: 5.6rem; width: 26.5rem; transform: translateX(-50%); }
-/* 配合: 器が葉で満ちていき、下の12の枠が葉の色で埋まる */
+/* 配合（VPL56）: 上ははかりと器、下は画面の半分を使うフレーバーの一覧。葉は本編のパッケージ、ジャンルの印は店番と同じ */
+.phone[data-scene="mix"] .ctrl { height: 50cqh; }
+.phone[data-scene="mix"] .pic { height: calc(50cqh - 5.6rem); -webkit-mask-image: linear-gradient(180deg, #000 0, #000 90%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 90%, transparent 100%); }
+.phone[data-scene="mix"] .veil { top: calc(50cqh - 10rem); }
 .mixbowl { position: absolute; left: 50%; top: 6.4rem; width: 21rem; aspect-ratio: 1; transform: translateX(-50%); }
 .mixbowl img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 1rem 1.4rem #000a); }
 .mixbowl .b-airy, .mixbowl .b-full { opacity: 0; transition: opacity 0.25s; }
-.leaf-drop { position: absolute; top: 20%; width: 3rem; height: 3rem; pointer-events: none; }
-.leaf-drop img { width: 100%; height: 100%; filter: drop-shadow(0 0 0.35rem var(--c)); }
-.mixbar { position: absolute; left: 50%; top: 28rem; transform: translateX(-50%); display: flex; align-items: center; gap: 1rem; padding: 0.6rem 1.2rem; border: 0.1rem solid #ffffff26; border-radius: 3rem; background: #0b0812b3; }
+.leaf-bit { position: absolute; top: 16%; width: 1.5rem; height: 1.15rem; border-radius: 40% 60% 45% 55%; background-size: 420% auto; pointer-events: none; }
+.pkg { position: relative; display: block; flex: none; overflow: hidden; filter: drop-shadow(0 0.4rem 0.6rem #000a); }
+.pkg img { position: absolute; max-width: none; height: auto; }
+.genre { display: inline-flex; align-items: center; gap: 0.2rem; height: 2rem; padding: 0 0.5rem; border-radius: 1rem; font-style: normal; color: var(--g); background: color-mix(in srgb, var(--g) 20%, #120c1d); box-shadow: inset 0 0 0 0.1rem var(--g); }
+.genre svg { width: 1.3rem; height: 1.3rem; }
+.genre b { font-size: 1.1rem; color: #fff; white-space: nowrap; }
+/* はかり: 幅は画面の高さに合わせて決まる（--sw）。器ははかりの台の半分ほどの幅で、台の真ん中に載る。表示窓（横30〜63%・縦82〜96%）に重さ */
+.mix-a { position: absolute; inset: 0; --sw: min(34rem, 38.5cqh); }
+.mix-a .scale { position: absolute; left: 50%; top: calc(6.2rem + var(--sw) * 0.09); width: var(--sw); aspect-ratio: 720 / 525; transform: translateX(-50%); }
+.mix-a .scale > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 1.6rem #000b); }
+.mixbowl.on-scale { top: auto; bottom: 46%; width: calc(var(--sw) * 0.47); }
+.digits { position: absolute; left: 30.5%; width: 32.5%; top: 82.5%; height: 13.5%; display: flex; align-items: center; justify-content: center; gap: 0.3rem; font-variant-numeric: tabular-nums; font-weight: 800; color: #7dffb0; text-shadow: 0 0 0.6rem #3dff8f; }
+.digits .d-num { font-size: calc(var(--sw) * 0.084); letter-spacing: 0.12em; } .digits .d-unit { font-size: calc(var(--sw) * 0.042); opacity: 0.8; }
+.digits.full { color: #ffe2a6; text-shadow: 0 0 0.7rem #ffcf6b; }
+/* 下の画面: 縦にスライドするフレーバーの行（パッケージ・名前・ジャンル・−／＋・g）。下の段に合計の12の枠（ジャンルの色）と「決定」 */
+.picker { position: absolute; left: 0; right: 0; top: 0.4rem; scrollbar-width: none; overscroll-behavior: contain; }
+.picker::-webkit-scrollbar { display: none; }
+.picker.rows { bottom: 10.6rem; display: grid; align-content: start; gap: 0.6rem; padding: 0.2rem 1.2rem 2.4rem; overflow-y: auto; scroll-snap-type: y proximity; -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 2.6rem), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 2.6rem), transparent); }
+.mixrow { position: relative; display: grid; grid-template-columns: auto 1fr auto 4.2rem auto; align-items: center; gap: 0.8rem; min-height: 6.8rem; padding: 0.4rem 0.9rem; border: 0.1rem solid #ffffff30; border-radius: 1.6rem; background: #120c1dc7; scroll-snap-align: start; }
+.mixrow.on { border-color: var(--acc); background: color-mix(in srgb, var(--acc) 16%, #120c1de0); }
+.mr-name { display: grid; gap: 0.4rem; min-width: 0; } .mr-name b { display: flex; align-items: baseline; gap: 0.6rem; font-size: 1.65rem; white-space: nowrap; }
+.mr-tags { display: flex; align-items: center; gap: 0.35rem; } .mr-name .need { font-size: 1.2rem; font-weight: 700; color: #ffd35a; } .mr-name .need.met { color: #5fe39a; }
+.mr-btn { width: 4.8rem; height: 4.8rem; display: grid; place-items: center; border: 0.12rem solid #ffffff4d; border-radius: 50%; background: radial-gradient(circle at 50% 30%, #3a2a4a, #120c1d); color: #fff; font-size: 2.4rem; line-height: 1; touch-action: manipulation; }
+.mr-btn:active { scale: 0.92; background: radial-gradient(circle at 50% 30%, #5a4470, #1e1430); }
+.mr-g { text-align: center; font-size: 1.2rem; color: #ffffffa6; } .mr-g em { font-style: normal; font-size: 2.7rem; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+.mixfoot { position: absolute; left: 1.2rem; right: 11.6rem; bottom: 2.4rem; }
+.mixbar { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; padding: 0.7rem 1rem; border: 0.1rem solid #ffffff26; border-radius: 3rem; background: #0b0812b3; }
 .mixbar .slots { display: flex; gap: 0.3rem; }
-.mixbar .slots i { width: 1.5rem; height: 1.9rem; border-radius: 0.4rem; background: var(--c, #ffffff14); box-shadow: inset 0 0 0 0.1rem #ffffff26; }
-.mixsum { font-size: 2.2rem; font-variant-numeric: tabular-nums; } .mixsum small { margin-left: 0.2rem; font-size: 1.2rem; color: #ffffffa6; }
+.mixbar .slots i { width: 1.08rem; height: 1.9rem; border-radius: 0.4rem; background: var(--c, #ffffff14); box-shadow: inset 0 0 0 0.1rem #ffffff26; }
+.mixbar .slots i.cut { margin-left: 0.35rem; }
+.mixsum { font-size: 2.1rem; white-space: nowrap; font-variant-numeric: tabular-nums; } .mixsum small { margin-left: 0.15rem; font-size: 1.1rem; color: #ffffffa6; }
 .mixbar.full { border-color: #ffe2a6; box-shadow: 0 0 1.4rem #ffcf6b80; } .mixbar.full .mixsum { color: #ffe2a6; }
 .mixbar.nudge { animation: nudge 0.3s; }
 @keyframes nudge { 25% { translate: -0.5rem 0; } 75% { translate: 0.5rem 0; } }
-
-/* 配合の3案（VPL48）: 葉は本編のパッケージ、ジャンルの印は店番と同じ */
-.pkg { position: relative; display: block; flex: none; overflow: hidden; filter: drop-shadow(0 0.4rem 0.6rem #000a); }
-.pkg img, .card .pkg img { position: absolute; max-width: none; height: auto; object-fit: initial; filter: none; }
-.genre { display: inline-flex; align-items: center; gap: 0.2rem; height: 1.9rem; padding: 0 0.45rem; border-radius: 1rem; font-style: normal; color: var(--g); background: color-mix(in srgb, var(--g) 20%, #120c1d); box-shadow: inset 0 0 0 0.1rem var(--g); }
-.genre svg { width: 1.3rem; height: 1.3rem; }
-.genre b { font-size: 1.05rem; color: #fff; white-space: nowrap; }
-.leaf-bit { position: absolute; top: 16%; width: 1.5rem; height: 1.15rem; border-radius: 45% 55% 40% 60%; background-size: 1000% auto; pointer-events: none; }
-.mixcard .pkg { margin-top: 0.2rem; }
-.mixcard .mc-tags { display: flex; gap: 0.3rem; }
-.mixcard .grams { font-size: 1.2rem; color: #ffffffa6; } .mixcard .grams em { font-style: normal; font-size: 2.3rem; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
-.mixcard .need { position: absolute; right: 0.7rem; top: 0.5rem; font-size: 1.1rem; color: #ffd35a; } .mixcard.met .need { color: #5fe39a; }
-.mixbar .slots i.cut { margin-left: 0.35rem; }
-/* 案A はかりで量る: 器ははかりに見合う大きさ（VPL43） */
-.mix-a { position: absolute; inset: 0; }
-.mix-a .scale { position: absolute; left: 50%; top: 15rem; width: 35rem; aspect-ratio: 720 / 525; transform: translateX(-50%); }
-.mix-a .scale > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 1.6rem #000b); }
-.mixbowl.on-scale { top: auto; bottom: 47%; width: 13.6rem; }
-.digits { position: absolute; left: 30.5%; width: 32.5%; top: 82.5%; height: 13.5%; display: flex; align-items: center; justify-content: center; gap: 0.3rem; font-variant-numeric: tabular-nums; font-weight: 800; color: #7dffb0; text-shadow: 0 0 0.6rem #3dff8f; }
-.digits .d-num { font-size: 2.8rem; letter-spacing: 0.12em; } .digits .d-unit { font-size: 1.4rem; opacity: 0.8; }
-.digits.full { color: #ffe2a6; text-shadow: 0 0 0.7rem #ffcf6b; }
-/* 案B パッケージから注ぐ: 選んだパッケージが器の上で傾き、1gごとに少し大きく傾く */
-.mix-b { position: absolute; inset: 0; }
-.mix-b .pour-pkg { position: absolute; left: 2.6rem; top: 12rem; rotate: -24deg; transform-origin: 85% 15%; }
-.mix-b .pour-pkg.tip { animation: pkg-tip 0.34s var(--ease-out); }
-@keyframes pkg-tip { 50% { rotate: -8deg; translate: 0.6rem 0.4rem; } }
-.mix-b .mixbowl { top: 17rem; left: 60%; width: 21rem; }
-.mix-b .mixbar { top: 29.2rem; }
-/* 案C 本編の配合を縦に: 器と合計の帯、テロップの所に葉の行 */
-.mix-c { position: absolute; inset: 0; }
-.mix-c .mixbowl { top: 11rem; width: 26rem; }
-.mix-c .mixbar { top: 19rem; }
-.mixrows { display: grid; gap: 0.6rem; margin-top: 0.8rem; }
-.mixrow { position: relative; display: grid; grid-template-columns: auto 1fr auto 3.8rem auto; align-items: center; gap: 0.7rem; padding: 0.4rem 0.8rem; border: 0.1rem solid #ffffff30; border-radius: 1.4rem; background: #120c1d8c; }
-.mixrow.on { border-color: var(--acc); background: color-mix(in srgb, var(--acc) 16%, #120c1dcc); }
-.mr-name { display: grid; gap: 0.25rem; min-width: 0; } .mr-name b { font-size: 1.5rem; white-space: nowrap; }
-.mr-tags { display: flex; align-items: center; gap: 0.3rem; } .mr-tags .need { font-size: 1.05rem; color: #ffd35a; } .mixrow.met .need { color: #5fe39a; }
-.ratio { font-size: 1.1rem; color: #ffffffa6; }
-.mr-btn { width: 4.2rem; height: 4.2rem; display: grid; place-items: center; border: 0.1rem solid #ffffff40; border-radius: 50%; background: radial-gradient(circle at 50% 30%, #3a2a4a, #120c1d); color: #fff; font-size: 2.2rem; line-height: 1; }
-.mr-btn:active { scale: 0.94; }
-.mr-g { text-align: center; font-size: 1.2rem; color: #ffffffa6; } .mr-g em { font-style: normal; font-size: 2.4rem; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+.btn-a.mix-ok { left: auto; right: 1.4rem; top: auto; bottom: 0.8rem; width: 9rem; height: 9rem; margin: 0; }
+.btn-a.mix-ok .t { font-size: 2.7rem; }
 
 /* 雑念よけ: 上の絵いっぱいが雑念の場。上の細い線が残り時間、予告の波は来る縁が金に光る */
 .dodge { position: absolute; inset: 0; background: #0b0812 center / cover no-repeat; touch-action: none; }
@@ -703,74 +687,58 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .slowbtn { position: absolute; right: 2rem; top: calc(var(--pad-top) - 5.8rem); width: 5.4rem; height: 5.4rem; display: grid; place-items: center; border: 0.12rem solid #ffffff40; border-radius: 50%; background: radial-gradient(circle at 50% 30%, #2a2040, #0b0812); color: #ffd35a; font-size: 2.6rem; opacity: 0.85; }
 .slowbtn.on { border-color: #ffd35a; box-shadow: 0 0 1.2rem #ffd35a80; opacity: 1; }
 
-/* 配合の下の画面（VPL52）: 十字キーの代わりにフレーバーの一覧。案A・B は横、案C は縦にスライド。下の段に合計の12の枠と「決定」 */
-.mixbowl .b-airy, .mixbowl .b-full { opacity: 0; transition: opacity 0.25s; }
-.leaf-bit { background-size: 420% auto; border-radius: 40% 60% 45% 55%; }
-.picker { position: absolute; left: 0; right: 0; top: 0.6rem; scrollbar-width: none; overscroll-behavior: contain; }
-.picker::-webkit-scrollbar { display: none; }
-.picker.strip { display: flex; gap: 0.9rem; padding: 0.4rem 1.4rem 0.6rem; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 1.4rem; -webkit-mask-image: linear-gradient(90deg, transparent, #000 1.2rem, #000 calc(100% - 2.4rem), transparent); mask-image: linear-gradient(90deg, transparent, #000 1.2rem, #000 calc(100% - 2.4rem), transparent); }
-.pcard { position: relative; flex: none; width: 11.2rem; display: grid; justify-items: center; gap: 0.25rem; padding: 0.5rem 0.4rem 0.5rem; border: 0.1rem solid #ffffff30; border-radius: 1.6rem; background: #120c1db3; scroll-snap-align: start; }
-.pcard.on { border-color: var(--acc); background: color-mix(in srgb, var(--acc) 18%, #120c1dd9); box-shadow: 0 0 1.4rem color-mix(in srgb, var(--acc) 40%, transparent); }
-.pc-name { font-size: 1.35rem; white-space: nowrap; }
-.pc-tags { display: flex; gap: 0.3rem; }
-.pc-g { display: flex; align-items: center; gap: 0.3rem; }
-.pc-g .mr-btn { width: 3.4rem; height: 3.4rem; font-size: 1.9rem; }
-.pc-g .mr-g { min-width: 3.4rem; }
-.pcard .need { position: absolute; right: 0.6rem; top: 0.4rem; font-size: 1.05rem; color: #ffd35a; } .pcard .need.met { color: #5fe39a; }
-.picker.rows { display: grid; align-content: start; gap: 0.5rem; padding: 0.2rem 1.2rem; bottom: 9.4rem; overflow-y: auto; scroll-snap-type: y mandatory; -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 2rem), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 2rem), transparent); }
-.picker.rows .mixrow { scroll-snap-align: start; }
-.picker.rows .mixrow .need.met { color: #5fe39a; }
-.mixfoot { position: absolute; left: 1.2rem; right: 11rem; bottom: 1.4rem; display: flex; align-items: center; }
-.mixfoot .mixbar { position: static; transform: none; flex: 1; justify-content: space-between; padding: 0.5rem 1rem; }
-.mixfoot .mixbar .slots i { width: 1.2rem; height: 1.8rem; }
-.btn-a.mix-ok { left: auto; right: 1.4rem; top: auto; bottom: 0.4rem; width: 8.2rem; height: 8.2rem; margin: 0; }
-.btn-a.mix-ok .t { font-size: 2.6rem; }
-
-/* 炭焼き（VPL54・VPL55）: 下の画面は本編の電熱コンロ。炭は黒い面（cold）と赤（lit）の絵を重ね、--red で焼け、--ash で灰をまとう */
-.stove { position: absolute; left: 50%; top: 0.2rem; width: 36rem; aspect-ratio: 1280 / 853; transform: translateX(-50%); }
+/* 炭焼き（VPL54・VPL57）: 下の画面は本編の電熱コンロを幅いっぱいに。炭は大きくし、押せる範囲も絵より広い。
+   炭は黒い面（cold）と赤（lit）の絵を重ね、--red で焼け、--ash で灰をまとう */
+.phone[data-scene="coal"] .ctrl { height: 26.8rem; }
+.phone[data-scene="coal"] .pic { height: calc(100% - 26.8rem - 5.6rem); -webkit-mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); }
+.phone[data-scene="coal"] .veil { top: calc(100% - 39rem); }
+.stove { position: absolute; left: -3.5rem; top: -2.9rem; width: 47rem; aspect-ratio: 1280 / 853; }
 .stove > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 1.6rem #000b) brightness(0.8); transition: filter 0.6s; }
 .stove.on > img { filter: drop-shadow(0 1rem 1.6rem #000b) brightness(1); }
 .stove::after { content: ""; position: absolute; left: 22%; top: 12%; width: 44%; height: 62%; border-radius: 50%; background: radial-gradient(closest-side, #ff5a2a59, transparent); opacity: 0; transition: opacity 0.8s; pointer-events: none; }
 .stove.on::after { opacity: 1; }
-.coal { --cw: 7.4rem; position: absolute; z-index: 1; width: var(--cw); height: calc(var(--cw) * 0.805); transform: translate(-50%, -50%); padding: 0; border: 0; background: none; touch-action: manipulation; }
+.coal { --cw: 9.6rem; position: absolute; z-index: 1; width: var(--cw); height: calc(var(--cw) * 0.805); transform: translate(-50%, -50%); padding: 0; border: 0; background: none; touch-action: manipulation; }
+.coal::before { content: ""; position: absolute; inset: -1.3rem; border-radius: 30%; }
 .coal img { position: absolute; left: calc(var(--cw) * -0.3638); top: calc(var(--cw) * -0.3737); width: calc(var(--cw) * 1.7241); max-width: none; pointer-events: none; }
 .coal .c-lit { opacity: var(--red, 0); filter: saturate(calc(1 - var(--ash, 0) * 0.7)) drop-shadow(0 0 calc(var(--red, 0) * 1.4rem) #ff5a2acc); }
 .coal .c-ash { position: absolute; inset: 6% 4%; border-radius: 22%; background: radial-gradient(ellipse at 50% 40%, #e9e4e0, #b9b2ad 70%, #8f8884); mix-blend-mode: screen; opacity: calc(var(--ash, 0) * 0.85); pointer-events: none; }
 .coal::after { content: ""; position: absolute; inset: -0.6rem; border-radius: 30%; box-shadow: 0 0 0 0.25rem #fff3b0, 0 0 1.4rem #ffcf6b; opacity: 0; pointer-events: none; }
 .coal.blink::after { animation: coal-blink 0.32s ease-out; }
 @keyframes coal-blink { 40% { opacity: 1; } 100% { opacity: 0; } }
+.coal:active { scale: 0.95; }
 .coal.taken { animation: coal-take 0.36s var(--ease-out) forwards; pointer-events: none; }
 @keyframes coal-take { to { transform: translate(-50%, -260%) scale(0.6); opacity: 0; } }
 .coal.dropped { animation: coal-drop 0.6s ease-in forwards; pointer-events: none; }
 @keyframes coal-drop { to { transform: translate(-50%, -30%) scale(0.85); opacity: 0; filter: grayscale(1); } }
-/* 上の画面の3案 */
+/* 上の画面: 炭壺とトングを持つはじめ（背景なしの人物。会場の背景に重ねる）。コンロが点くと、下から熱の明かりが差す。取った炭は炭壺の中へ */
 .coal-up { position: absolute; inset: 0; }
-.tcoal { position: relative; display: block; width: 5.2rem; height: calc(5.2rem * 0.805); }
-.tcoal img { position: absolute; left: calc(5.2rem * -0.3638); top: calc(5.2rem * -0.3737); width: calc(5.2rem * 1.7241); max-width: none; }
-.tcoal .lit { opacity: 1; filter: drop-shadow(0 0 0.8rem #ff5a2acc); }
-.tcoal.pre .lit { opacity: 0.8; } .tcoal.raw .lit, .tcoal.early .lit { opacity: 0.35; filter: none; } .tcoal.hot .lit { filter: saturate(0.7) drop-shadow(0 0 0.6rem #ff5a2a99); } .tcoal.over .lit, .tcoal.ash .lit { opacity: 0.4; filter: grayscale(0.8); }
-/* 案A トングを持つはじめ: 取った炭がトングの先へ */
-.up-a .tongs { position: absolute; left: 50%; top: 14rem; width: 46rem; aspect-ratio: 1280 / 853; transform: translateX(-48%); }
-.up-a .tongs > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 2rem #000a); }
-.up-a .tip { position: absolute; left: 81%; top: 79%; transform: translate(-50%, -50%) rotate(-24deg); }
-.up-a .tip.got .tcoal { animation: tip-got 0.4s var(--ease-out); }
-@keyframes tip-got { from { transform: translateY(14rem) scale(1.3); opacity: 0.2; } }
-/* 案B 炭壺へ入れる: 本編の炭壺を真上から。取った炭が壺の中へ落ちて並ぶ */
-.up-b .carrier { position: absolute; left: 50%; top: 10rem; width: 27rem; aspect-ratio: 1264 / 1244; transform: translateX(-50%); }
-.up-b .carrier > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 1.8rem #000b); }
-/* 案C HMDへ載せる: ハガルの上のHMDの中へ並ぶ */
-.up-c .hmdbowl { position: absolute; left: 50%; top: 8.4rem; width: 23rem; aspect-ratio: 412 / 640; transform: translateX(-50%); }
-.up-c .hmdbowl > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 1.8rem #000b); }
-.slots { position: absolute; inset: 0; }
+.coal-hero { --hw: min(35rem, calc((100cqh - 36.8rem) * 0.7)); position: absolute; left: 50%; top: 4.4rem; width: var(--hw); aspect-ratio: 2 / 3; transform: translateX(-50%); }
+.coal-hero > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 2rem #000a) brightness(0.86); transition: filter 0.8s; }
+.coal-up.on .coal-hero > img { filter: drop-shadow(0 1rem 2rem #000a) brightness(1.04); }
+.heat-glow { position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; height: 52%; background: radial-gradient(ellipse 75% 100% at 50% 100%, #ff6a2a80, #ff6a2a2e 48%, transparent 74%); mix-blend-mode: screen; opacity: 0; transition: opacity 0.8s; pointer-events: none; }
+.coal-up.on .heat-glow { opacity: 1; animation: heat-breathe 2.6s ease-in-out infinite; }
+@keyframes heat-breathe { 50% { opacity: 0.72; } }
+.coal-hero .slots { position: absolute; inset: 0; }
 .slot { position: absolute; transform: translate(-50%, -50%); animation: slot-in 0.45s var(--ease-out); }
-.up-c .slot .tcoal { width: 4.4rem; height: calc(4.4rem * 0.805); } .up-c .slot .tcoal img { left: calc(4.4rem * -0.3638); top: calc(4.4rem * -0.3737); width: calc(4.4rem * 1.7241); }
-@keyframes slot-in { from { transform: translate(-50%, 260%) scale(1.3); opacity: 0.2; } }
-/* 判定の札（本編の EXCELLENT・GOOD・MISS） */
-.judges { position: absolute; right: 1.4rem; top: 9rem; display: grid; justify-items: end; gap: 0.5rem; pointer-events: none; }
+@keyframes slot-in { from { transform: translate(-50%, 240%) scale(1.5); opacity: 0.2; } }
+.tcoal { --tw: calc(var(--hw, 35rem) * 0.135); position: relative; display: block; width: var(--tw); height: calc(var(--tw) * 0.805); }
+.tcoal img { position: absolute; left: calc(var(--tw) * -0.3638); top: calc(var(--tw) * -0.3737); width: calc(var(--tw) * 1.7241); max-width: none; }
+.tcoal .lit { opacity: 1; filter: drop-shadow(0 0 0.8rem #ff5a2acc); }
+.tcoal.pre .lit { opacity: 0.8; } .tcoal.raw .lit, .tcoal.early .lit { opacity: 0.35; filter: none; } .tcoal.hot .lit { filter: saturate(0.7) drop-shadow(0 0 0.6rem #ff5a2a99); } .tcoal.over .lit { opacity: 0.4; filter: grayscale(0.8); }
+/* 判定の札（本編の EXCELLENT・GOOD・MISS）: 左上に積む */
+.judges { position: absolute; z-index: 2; left: 1.4rem; top: 7.4rem; display: grid; justify-items: start; gap: 0.5rem; pointer-events: none; }
 .jtag { padding: 0.2rem 1rem; border-radius: 0.6rem; font-size: 1.9rem; font-weight: 900; font-style: italic; letter-spacing: 0.04em; color: #fff; background: #0b0812b3; box-shadow: 0 0 0 0.12rem #ffffff40; animation: jtag-in 0.35s cubic-bezier(0.2, 0.8, 0.3, 1.3); transition: opacity 0.4s; }
 .jtag.excellent { color: #ffe2a6; box-shadow: 0 0 0 0.14rem #ffcf6b, 0 0 1.2rem #ffcf6b80; } .jtag.miss { color: #ff8a7a; box-shadow: 0 0 0 0.12rem #ff6b5e80; }
 .jtag.out { opacity: 0.35; }
 @keyframes jtag-in { from { transform: scale(1.8); opacity: 0; } }
+/* 雑念よけ（VPL59）: 場を下のパッドの際まで広げ、下の余白をなくす。場の下端は線で区切り、暗い幕は掛けない。
+   スミさんの一言は始まる時だけ場の下に重なり、始まったら顔ごと消える（場を指でなぞれるよう、重なる所は指を通す） */
+.phone[data-scene="steam"] .pic { height: calc(100% - var(--ctrl-h) - var(--aux-h, 0rem)); -webkit-mask-image: none; mask-image: none; box-shadow: 0 0.15rem 0 #ffffff33; }
+.phone[data-scene="steam"] .veil { display: none; }
+.phone[data-scene="steam"] .body { pointer-events: none; } .phone[data-scene="steam"] .ctrl { pointer-events: auto; }
+.phone[data-scene="steam"] .coach { transition: opacity 0.3s; } .phone[data-scene="steam"] .coach.quiet { opacity: 0; }
+.phone[data-scene="steam"] .thermo { bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 2rem); }
+.slowbtn { right: 1.6rem; top: 0.3rem; width: 5rem; height: 5rem; font-size: 2.5rem; }
 /* 工程の並びを詰め、右上の「？」と並べる（VPL51） */
 .phone[data-kind="craft"] .steps span { width: 2.6rem; height: 2.6rem; font-size: 1.55rem; }
 .phone[data-kind="craft"] .steps span.now { width: 3.8rem; height: 3rem; font-size: 1.9rem; }
@@ -816,29 +784,16 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 }
 
 @container phone (max-height: 80rem) {
-  .water-a .bottle { width: 23rem; }   .btn-a.center.pour { top: calc(9.4rem + var(--aux-g, 0rem)); width: 12.4rem; height: 12.4rem; margin-left: -6.2rem; } .btn-a.sub { top: calc(11.6rem + var(--aux-g, 0rem)); width: 8rem; height: 8rem; }
+  .water-a .bottle { width: 23rem; } .btn-a.center.pour { top: calc(9.4rem + var(--aux-g, 0rem)); width: 12.4rem; height: 12.4rem; margin-left: -6.2rem; } .btn-a.sub { top: calc(11.6rem + var(--aux-g, 0rem)); width: 8rem; height: 8rem; }
+  .mixrow { min-height: 6.2rem; } .mr-btn { width: 4.4rem; height: 4.4rem; } .picker.rows { bottom: 9.6rem; } .mixfoot { bottom: 1.8rem; } .btn-a.mix-ok { width: 8rem; height: 8rem; bottom: 0.6rem; }
+  .slowbtn { width: 4.4rem; height: 4.4rem; top: 0.1rem; }
 }
 @container phone (max-height: 71rem) {
-  .water-a .bottle { width: 18rem; top: 5.4rem; }   .btn-a.center.pour { top: calc(7.8rem + var(--aux-g, 0rem)); width: 10.6rem; height: 10.6rem; margin-left: -5.3rem; } .btn-a.sub { top: calc(9.6rem + var(--aux-g, 0rem)); width: 7rem; height: 7rem; } .btn-a.sub .t { font-size: 2.2rem; }
+  .water-a .bottle { width: 18rem; top: 5.4rem; } .btn-a.center.pour { top: calc(7.8rem + var(--aux-g, 0rem)); width: 10.6rem; height: 10.6rem; margin-left: -5.3rem; } .btn-a.sub { top: calc(9.6rem + var(--aux-g, 0rem)); width: 7rem; height: 7rem; } .btn-a.sub .t { font-size: 2.2rem; }
   .d-time { top: 7rem; } .d-stamp { font-size: 3.6rem; }
-}
-
-@container phone (max-height: 80rem) {
-  .pcard { width: 10.2rem; padding: 0.4rem 0.3rem; gap: 0.2rem; } .pcard .pkg { scale: 0.85; margin: -0.4rem 0; } .picker.rows { bottom: 8.6rem; }
-  .mixfoot { bottom: 1rem; } .btn-a.mix-ok { width: 7.4rem; height: 7.4rem; }
-}
-@container phone (max-height: 71rem) {
-  .pcard { width: 9.2rem; } .pcard .pkg { scale: 0.62; margin: -0.9rem 0; } .pc-tags { display: none; } .pc-name { font-size: 1.15rem; } .pc-g .mr-btn { width: 2.9rem; height: 2.9rem; font-size: 1.6rem; } .pc-g .mr-g em { font-size: 2rem; } .picker.rows { bottom: 7.4rem; } .picker.rows .mixrow .pkg { scale: 0.75; margin: -0.6rem -0.6rem; }
-  .mixfoot { bottom: 0.8rem; } .mixfoot .mixbar { scale: 0.88; transform-origin: 0 50%; } .btn-a.mix-ok { width: 6.4rem; height: 6.4rem; } .btn-a.mix-ok .t { font-size: 2rem; }
-}
-
-@container phone (max-height: 80rem) {
-  .stove { width: 31rem; } .coal { --cw: 6.4rem; } .up-a .tongs { width: 40rem; top: 9.6rem; } .up-b .carrier { width: 22rem; top: 6.8rem; } .up-c .hmdbowl { width: 18.6rem; top: 6.6rem; }
-  .mix-a .scale { width: 30rem; top: 9.6rem; } .mixbowl.on-scale { width: 11.6rem; } .mix-b .pour-pkg { top: 7rem; scale: 0.85; transform-origin: 0 0; } .mix-b .mixbowl { top: 11rem; width: 17rem; } .mix-c .mixbowl { top: 6.6rem; width: 20rem; }
-}
-@container phone (max-height: 71rem) {
-  .stove { width: 26rem; } .coal { --cw: 5.4rem; } .up-a .tongs { width: 33rem; top: 8rem; } .up-b .carrier { width: 17rem; top: 6rem; } .up-c .hmdbowl { width: 14rem; top: 5.8rem; } .judges { top: 7rem; } .jtag { font-size: 1.5rem; }
-  .mix-a .scale { width: 23rem; top: 7.4rem; } .mixbowl.on-scale { width: 8.8rem; } .mix-b .pour-pkg { top: 6rem; scale: 0.62; } .mix-b .mixbowl { top: 7.8rem; width: 12rem; } .mix-c .mixbowl { top: 5.8rem; width: 13.4rem; }
+  .mixrow { min-height: 5.6rem; padding: 0.2rem 0.8rem; } .mixrow .pkg { scale: 0.86; margin: -0.4rem -0.3rem; } .mr-name b { font-size: 1.5rem; } .mr-btn { width: 4rem; height: 4rem; font-size: 2rem; } .mr-g em { font-size: 2.3rem; }
+  .picker.rows { bottom: 8.4rem; gap: 0.5rem; } .mixfoot { bottom: 1.4rem; } .mixbar { padding: 0.5rem 0.9rem; } .btn-a.mix-ok { width: 7rem; height: 7rem; bottom: 0.5rem; } .btn-a.mix-ok .t { font-size: 2.2rem; }
+  .judges { top: 6.6rem; } .jtag { font-size: 1.5rem; } .slowbtn { width: 3.8rem; height: 3.8rem; top: -0.4rem; font-size: 2rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

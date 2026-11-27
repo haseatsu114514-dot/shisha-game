@@ -377,3 +377,35 @@ Seen from the front and slightly above (about 35 degrees), centered, the bowl an
 The HMD is empty. Do not draw: charcoal, foil, tobacco, smoke, flames, a lid, a chimney, hands, tongs, text, logos, watermark, shadow on the ground. Transparent background.
 ```
 
+## 7回目: 炭焼きのはじめ（VPL57・1枚）
+
+オーナー「炭壺のとこにはコンロを持って少し熱の明かりに照らされてるはじめをかく　背景は会場によって変わる」「ヒートマネジメントに乗せる描写はいらない」。
+炭壺とトングを持ち、コンロの熱の明かりに下から照らされたはじめを、背景なしの人物で生成した（会場の背景に重ねる）。入力は、新バージョンと現行の立ち絵、本編の炭壺の絵（`heat_carrier.webp`）、本編のトングを持つはじめ（`hajime_craft_heat.webp`）の4枚。原画は `v3/hajime-coal-original.webp`、試作が読むのは `img/craft-coal-hajime.webp`（800×1200）。取った炭は、左手の炭壺の口の中（絵の横73〜84%・縦80〜84%）にコードで重ねる。
+6回目のHMD（`v3/hmd-original.webp`）は、この指摘で試作から外した（原画は記録として残す）。
+
+### 生成前に決めたこと（§4.3）
+
+```text
+人物      : はじめ（新バージョンと現行の立ち絵を入力。黒いキャップの煙の印・黒いパーカー・ネックレスなし）
+場面      : 炭焼き（コンロは画面の下の外。写さない）
+台の型    : 写さない
+HMD       : なし
+炭        : なし（炭壺は空。取った炭はコードで重ねる）
+ホース    : なし
+吸い口    : なし
+構図      : 縦長・上半身・背景なし。右手のトングは下の真ん中へ向け、左手の銅の炭壺（弓形の持ち手）は腰の高さで口が見える向き。下からコンロの暖かい明かり
+```
+
+生成後の確認（§4.4・素材規約の必須チェック）: 炭・台・HMD・ホースが無い。炭壺は本編の絵と同じ銅の壺で空。トングは1本。帽子の印・服装・顔は立ち絵と同じで、汎用の別人でない。背景・文字・ロゴが無い。テカリ・擬似文字・小物の崩れも見当たらない。合格（生成は1回）。
+
+```text
+The first and second reference images are two official versions of the same character, Hajime (the first is the new version, the second is the previous version). Draw exactly this character, keeping both references consistent: the same face and age (22-year-old young man, ordinary and friendly), short messy black hair, black baseball cap with the white smoke-line emblem, black zip hoodie with white drawstrings, black t-shirt. Follow the first reference for the outfit (no necklace) and the clean line art; use the second reference for the slightly more mature face and the richer shading of cloth and hair.
+The third reference image shows his charcoal carrier seen from above: a round hammered-copper pot with an arched copper handle. The fourth reference shows him holding long slim steel tongs.
+Create a new vertical game illustration of this young man only (upper body, from the head down to the waist), on a fully transparent background. He is tending charcoal on a small electric stove that is just below the bottom edge of the frame; the stove itself is NOT shown.
+Pose: he leans slightly forward and looks down toward the bottom of the frame, concentrating. In his right hand he holds the long slim stainless-steel tongs, angled downward toward the bottom center of the image, the tips near the bottom edge. In his left hand he holds the copper charcoal carrier by its arched handle at about waist height on the right side of the image, tilted a little toward the viewer so that its round open mouth is clearly visible. The carrier is empty.
+Lighting: the main light is the warm orange-red glow of the stove coming from below: gentle underlighting on his chin, cheeks, the underside of the cap brim, his hands, the tongs, the copper carrier and the front folds of the hoodie; the upper parts stay in calm shadow. Subtle and natural, not exaggerated.
+Expression: calm and focused, natural, the same face as the references.
+Polished anime game illustration style with clean dark outlines and two or three tone cel shading, no airbrushed gloss.
+Do not draw: any background, the stove, charcoal pieces, flames, sparks, smoke, a hookah, a bowl, a hose, a necklace, text, letters, logos other than the cap emblem, watermark, frame.
+```
+
