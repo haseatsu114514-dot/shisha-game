@@ -785,6 +785,18 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .act-swap svg { width: 62%; height: 62%; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 .act-swap:active { scale: 0.92; }
 
+/* 大会の観客のニコ動風コメント（VPL68・本編 craft.css の .nico と同じ色）: ランクが出る時だけ、上の画面を右から左へ流れる。ランクの絵の後ろを通る */
+.nico-lane { position: absolute; z-index: 25; left: 0; right: 0; top: 7.2rem; height: calc(100% - var(--ctrl-h) - var(--aux-h, 0rem) - 15rem); overflow: hidden; pointer-events: none; container-type: inline-size; }
+.nico { position: absolute; left: 0; white-space: nowrap; font-size: 2.2rem; font-weight: 800; color: #fff; text-shadow: 0 0.1rem 0.3rem #000e, 0 0 0.7rem #0009, 0.1rem 0 0 #000a, -0.1rem 0 0 #000a; transform: translateX(100cqw); animation: nico-fly 3.8s linear both; will-change: transform; }
+.nico.perfect { color: #ffe79a; } .nico.miss { color: #ff9a9a; }
+.nico.still { animation: none; transform: none; }
+@keyframes nico-fly { from { transform: translateX(100cqw); } to { transform: translateX(-100%); } }
+.rank-burst.still { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .nico { transform: none; left: 7%; animation: nico-hold 3.8s ease forwards; }
+  @keyframes nico-hold { 0% { opacity: 0; } 8%, 85% { opacity: 1; } 100% { opacity: 0; } }
+}
+
 /* ───────── 背の低い画面 ───────── */
 @container phone (max-height: 80rem) {
   .body, .pic, .smoke, .sheet, .thermo, .cv-c { --ctrl-h: 26.2rem; } .ctrl { --ctrl-h: 26.2rem; --ring: 18.2rem; --a: 13.2rem; --pad-base: 6.3rem; } .chip { width: 3.9rem; height: 3.9rem; font-size: 1.9rem; } .chips { padding-top: 1rem; }

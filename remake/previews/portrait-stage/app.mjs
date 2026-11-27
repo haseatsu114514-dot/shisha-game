@@ -246,6 +246,15 @@ const heatJudge = (p, jw) => p < 0.35 ? ["raw", 15, "MISS"] : p < 0.7 ? ["early"
 const COAL_AT = [[0.5, 0.32], [0.33, 0.62], [0.67, 0.62]];
 // 取った炭の置き場所（はじめの絵 1024×1536 に対する割合）: 左手に持った炭壺の口の中
 const POT_SLOTS = [[0.735, 0.8], [0.835, 0.8], [0.785, 0.84]];
+// 大会の観客のニコ動風コメント（VPL68）。文面は本編の remake/data/broadcast.json（broadcast.js が読むもの）をそのまま使う。
+// 1枚の HTML の試作ページでは、組み立て時に同じ中身を PORTRAIT_STAGE_BROADCAST に入れる
+let BROADCAST = globalThis.PORTRAIT_STAGE_BROADCAST || null;
+if (!BROADCAST && typeof fetch === "function") fetch(new URL("../../data/broadcast.json", import.meta.url)).then((r) => r.json()).then((d) => { BROADCAST = d; }).catch(() => {});
+// 試作の工程 → broadcast.json の completion の工程名
+const NICO_STEP = { holes: "holes", coal: "heat", steam: "steam", pull: "pull" };
+// 点（0〜100）→ 観客の反応の段階（本編 broadcast.js の judgeOf と同じ境目）
+const nicoJudge = (score) => score >= 88 ? "perfect" : score >= 74 ? "great" : score >= 55 ? "good" : "miss";
+
 // 会場（作る場面の背景）
 const VENUES = { tonari: "tonari", shop: "PEPPERMINT", stage: "大会の会場" };
 
@@ -282,6 +291,7 @@ const GALLERY = [
   { scene: "holes", caption: "作る・穴あけ" },
   { scene: "coal", caption: "作る・炭焼き（tonari）" },
   { scene: "coal", caption: "作る・炭焼き（大会の会場に替えた例）", venue: "stage" },
+  { scene: "holes", caption: "大会でランクが出る瞬間（観客のコメントが流れる）", venue: "stage", nico: true, grade: 3 },
   { scene: "steam", caption: "作る・蒸らし（雑念よけ）" },
   { scene: "steam", caption: "作る・蒸らし（アタックを覚えた後）", attack: true },
   { scene: "pull", caption: "作る・吸い出し（tonari）" },
@@ -497,10 +507,12 @@ class Phone {
     el.dataset.kind = this.talk || st.scene === "cutin" ? "talk" : st.scene === "map" ? "map" : "craft";
     el.style.setProperty("--acc", st.scene === "map" ? "#c3b0ff" : this.talk ? this.talk.acc : st.scene === "cutin" ? CUTINS[st.who].acc : "#ffc978");
     clearTimeout(this.ciTimer);
+    const lane = el.querySelector(".nico-lane"); // 流れているコメントは場面が替わっても流れ切るまで残す
     if (st.scene === "map") el.innerHTML = this.mapHtml();
     else if (this.talk) el.innerHTML = this.talkHtml();
     else if (st.scene === "cutin") { el.innerHTML = this.cutinSceneHtml(); this.playCutin(); return; }
     else el.innerHTML = this.craftHtml();
+    if (lane?.children.length) el.append(lane);
     if (st.scene === "map") { this.cam = null; this.camera(false); this.syncMap(); }
     if (this.talk) { this.cast = {}; this.applyLine({ instant, delay }); }
     if (st.scene === "holes") this.drawHoles();
@@ -879,6 +891,7 @@ class Phone {
   /** 工程を終えたら1段上げる。舞台の真ん中に大きく出し（下の英語まで読める）、置き場所へ縮めて収める（本編の burstRank と同じ流れ）。 */
   rankUp({ loop = false } = {}) {
     const { st, el } = this;
+    if (this.venue === "stage") this.nicoBurst(this.stepJudge || "great");
     if (st.grade >= GRADES.length - 1) { if (!loop) return; st.grade = -1; }
     st.grade += 1; st.gradeP = 0;
     const place = el.querySelector(".rank");
@@ -1378,12 +1391,13 @@ class Phone {
     const stamp = field?.querySelector(".d-stamp");
     if (stamp) {
       stamp.textContent = d.hits === 0 ? "無心" : d.hits <= 2 ? "持ちこたえた" : "雑念まみれ";
+      this.stepJudge = nicoJudge(100 - 14 * d.hits); // 本編の点（100−14×被弾）
       stamp.dataset.kind = d.hits === 0 ? "good" : d.hits <= 2 ? "ok" : "bad";
       stamp.hidden = false;
     }
     this.st.gradeP = 1; this.syncRank();
     setTimeout(() => this.rankUp(), 1000);
-    setTimeout(() => { if (this.st.scene === "steam") this.setScene("pull"); }, 4100);
+    setTimeout(() => { if (this.st.scene === "steam") this.setScene("pull"); }, this.venue === "stage" ? 5400 : 4100);
   }
 
   /** 十字キーをスティックとして使う: 押した所の向きと、真ん中からの距離で動く。 */
@@ -1484,9 +1498,40 @@ class Phone {
     h.done = true;
     this.st.gradeP = 1; this.syncRank();
     const score = Math.round(h.coals.reduce((n, c) => n + c.judge[1], 0) / h.coals.length);
+    this.stepJudge = nicoJudge(score);
     this.say(score >= 90 ? "火が素直だ。いい焼け具合" : score >= 70 ? "まあまあだ。次は色をよく見ろ" : "早すぎか遅すぎだ。全面の赤を待て");
     setTimeout(() => this.rankUp(), 700);
-    setTimeout(() => { if (this.st.scene === "coal") this.setScene("steam"); }, 3600);
+    setTimeout(() => { if (this.st.scene === "coal") this.setScene("steam"); }, this.venue === "stage" ? 5000 : 3600);
+  }
+
+  /** 大会の観客のコメントを右から左へ流す（VPL68）。工程に触れたコメント2本＋短い歓声3本（共通と1章の分を混ぜる。本編 broadcast.js の completed と同じ組み方）。 */
+  nicoBurst(kind, { frozen = false } = {}) {
+    const B = BROADCAST;
+    if (!B) return;
+    const gk = kind === "great" ? "perfect" : kind, step = NICO_STEP[this.st.scene];
+    const draw = (pool, n, used) => {
+      const rest = [...new Set(pool || [])].filter((t) => !used.has(t)), out = [];
+      while (out.length < n && rest.length) out.push(...rest.splice(Math.floor(Math.random() * rest.length), 1));
+      out.forEach((t) => used.add(t));
+      return out;
+    };
+    const used = new Set();
+    const told = draw(B.completion?.[step]?.[kind] || [], 2, used); // 工程に触れた2本だけ色を付け、残りはニコ動らしく白
+    const lines = [
+      ...told,
+      ...draw([...(B.nico?.[gk] || []), ...(B.chapter1?.nico?.[gk] || [])], 3, used),
+    ];
+    let lane = this.el.querySelector(".nico-lane");
+    if (!lane) { lane = document.createElement("div"); lane.className = "nico-lane"; lane.setAttribute("aria-hidden", "true"); this.el.append(lane); }
+    const rows = 8, start = Math.floor(Math.random() * rows);
+    lines.forEach((text, i) => {
+      const c = document.createElement("div");
+      c.className = i < told.length ? `nico ${gk}` : "nico"; c.textContent = text;
+      c.style.top = `calc(${((start + i * 3) % rows) * 12.5}% + 0.2rem)`;
+      if (frozen) { c.classList.add("still"); c.style.left = `${8 + ((i * 37) % 60)}%`; }
+      else { c.style.animationDelay = `${i * 0.28}s`; c.addEventListener("animationend", () => c.remove(), { once: true }); }
+      lane.append(c);
+    });
   }
 
   /** 熱ゲージ（温度帯）。シーシャ作りの間ずっと右に大きく出す。色の意味は本編と同じ（緑＝適温の目安、虹＝合わせやすい範囲、炎＝焦げる）。 */
@@ -1713,7 +1758,7 @@ class Phone {
       if (this.hold || st.pulls >= 5) return;
       st.pulls = Math.min(5, st.pulls + 1);
       st.gradeP = st.pulls / 5; this.syncRank();
-      if (st.pulls >= 5) setTimeout(() => this.rankUp(), 500);
+      if (st.pulls >= 5) { this.stepJudge = "great"; setTimeout(() => this.rankUp(), 500); }
       // 吸うたびに温度が動く（上げ吸いで上がり、下げ吸いで下がる）
       st.temp = Math.min(0.95, Math.max(0.06, st.temp + 0.05 + ((this.needleT ?? 0.5) - 0.5) * 0.32));
       this.hold = performance.now();
@@ -1721,7 +1766,7 @@ class Phone {
       this.patch();
       this.syncThermo();
       setTimeout(() => { this.hold = 0; if (st.pulls >= 5 && this.fixed) { st.pulls = 0; st.temp = 0.4; st.gradeP = 0; this.patch(); this.syncThermo(); this.syncRank(); } }, 700);
-      if (st.pulls >= 5 && !this.fixed) setTimeout(() => this.setScene("map"), 3300);
+      if (st.pulls >= 5 && !this.fixed) setTimeout(() => this.setScene("map"), this.venue === "stage" ? 4800 : 3300);
     }
   }
 
@@ -1781,8 +1826,9 @@ class Phone {
     btn?.classList.add(zone === "good" ? "res-good" : "res-off");
     setTimeout(() => btn?.classList.remove("res-good", "res-off"), 520);
     // 10個開け終えたら穴あけの工程が済み、ランクが1段上がる。大きく出たランクが収まってから次の工程へ
+    if (st.holes.length >= HOLE_COUNT) { const g = st.holes.filter((x) => x.good).length / HOLE_COUNT; this.stepJudge = g >= 0.9 ? "perfect" : g >= 0.7 ? "great" : g >= 0.4 ? "good" : "miss"; }
     if (st.holes.length >= HOLE_COUNT) setTimeout(() => this.rankUp(), 500);
-    if (st.holes.length >= HOLE_COUNT) setTimeout(() => { if (this.fixed) { st.holes = []; st.gradeP = 0; this.patch(); this.drawHoles(); this.syncRank(); } else this.setScene("coal"); }, 3300);
+    if (st.holes.length >= HOLE_COUNT) setTimeout(() => { if (this.fixed) { st.holes = []; st.gradeP = 0; this.patch(); this.drawHoles(); this.syncRank(); } else this.setScene("coal"); }, this.venue === "stage" ? 4800 : 3300);
   }
 
   /** 地図から店へ: 選んだ店へ寄ってから、煙の幕で店内へ替える。 */
@@ -1923,7 +1969,15 @@ function showGallery() {
     ${["a"].map((v) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}で決定</small>${CUT_VARIANTS[v].name}<a href="?view=play&scene=cutin&ci=${v}" data-go="play" data-ci="${v}">1台で動きを見る</a></h3><p>${CUT_VARIANTS[v].lead}</p>
       <div class="g-grid">${["minto", "sumi"].map((who) => `<figure class="g-cell"><article class="phone" data-ci="${v}" data-who="${who}"></article><figcaption>${who === "minto" ? "みんと" : "スミさん"}</figcaption></figure>`).join("")}</div></section>`).join("")}
   </main>`;
-  app.querySelectorAll(".phone[data-i]").forEach((el) => { const item = GALLERY[Number(el.dataset.i)]; phones.push(new Phone(el, item.scene, { fixed: true, ...item })); });
+  app.querySelectorAll(".phone[data-i]").forEach((el) => {
+    const item = GALLERY[Number(el.dataset.i)], phone = new Phone(el, item.scene, { fixed: true, ...item });
+    phones.push(phone);
+    // 大会のコメントの見本: ランクの絵を真ん中に大きく出し、コメントを流れの途中で止めて見せる
+    if (item.nico) {
+      const show = () => { const img = document.createElement("img"); img.className = "rank-burst still"; img.alt = ""; img.src = IMG[`rank${GRADES[phone.st.grade]}`]; el.append(img); phone.nicoBurst("perfect", { frozen: true }); };
+      if (BROADCAST) show(); else setTimeout(show, 700);
+    }
+  });
   app.querySelectorAll(".phone[data-ci]").forEach((el) => phones.push(new Phone(el, "cutin", { fixed: true, ci: el.dataset.ci, who: el.dataset.who })));
   app.querySelectorAll(".phone[data-gp]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, rank: el.dataset.rank, grade: Number(el.dataset.grade), gradeP: Number(el.dataset.gp) })));
   scrollTo(0, 0);
