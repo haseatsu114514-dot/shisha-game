@@ -322,3 +322,8 @@ Expression: calm and natural, the same face as the references, eyes gently open 
 Polished anime game illustration style with clean dark outlines and two or three tone cel shading, no airbrushed gloss.
 Do not draw: any background, a necklace, a second hose, a forked hose, the hookah body, a bowl, charcoal, text, letters, logos other than the cap emblem, watermark, frame.
 ```
+
+## VPL39〜48 で使わなくなった絵
+
+オーナーの指摘（缶は変・水位計はいらない・雑念よけは本編の横画面のデザインを縦に）を受けて、3回目の絵のうち次は試作から外した（原画とプロンプトは記録として残す）: `v2/tins-original.webp`（葉の缶。本編の店のパッケージ `remake/img/shop/heaven10/` に替えた）、`v2/gauge-original.webp`（水位計）、`v2/bottle-original.webp`（ボトル。本編の大会公式モデルの台 `remake/img/ui/scene_props/shisha_home_pro.webp` のガラスのベースを切り出した `ui-bottle-pro.webp` に替えた）、`v2/bowl-top-original.webp`・`v2/leaf-texture-original.webp`（真上から見た器の案）、`v2/bg-water/smoke/washi-original.webp`（雑念よけの3案の背景。本編の `steam_mind_world.webp` に戻した）、`v2/bowl-airy/normal/firm-original.webp`（葉が糸状に見えたので v3 に替えた）。試作の `img/` に残るのは、ボタンの面2枚・はかり・ボトル（大会仕様の切り出し）・器5枚・吸い出しのはじめ。
+
