@@ -22,6 +22,8 @@ export const CAFE_PLACES = Object.freeze(["center_cafe", "alley_cafe"]);
 export const TALKS_AFTER_ORDER = Object.freeze([
   "ch4_cafe_culture_hose", "ch4_cafe_culture_coffee", "ch4_alley_culture_clay", "ch4_alley_culture_majlis", "ch4_alley_talk_c",
   "ch4_alley_talk_d", "ch4_alley_talk_e", "ch4_alley_talk_f", // #3097: 吸い終えた後・吸っている間・会計の後
+  // 第4章ボリューム第2便: 自分の一台の二口目を軽くしてもらう（中心地）・ゴールの間の炭替え／盤に負けて一台作る（路地裏）
+  "ch4_cafe_talk_g", "ch4_alley_talk_g", "ch4_alley_talk_h",
 ]);
 // 場面の中で一台を吸う（作る）ので、注文を重ねない（旅装の男との約束・あの男の葉を一口もらう回）。
 export const SMOKED_IN_SCENE = Object.freeze(["ch4_stranger_second", "ch4_alley_cafe_quiet"]);

@@ -318,7 +318,7 @@ console.log('PASS: #1925 actual normal/after-close/rest invitation paths return 
     assert(!/大会|本番|県大会|優勝|審査|味/.test(JSON.stringify(dlg)), `${scene.id}: any day of the preparation, before or after the taste trouble`);
     commuteDB.dialogues[scene.id] = dlg;
   }
-  assert.equal(COMMUTE_SCENES.map(scene => scene.leg).join(), 'morning,return,morning,return');
+  assert.equal(COMMUTE_SCENES.map(scene => scene.leg).join(), 'morning,return,morning,return,morning,return,morning,return,morning,return');
   const { CH2_COMMUTE_IDS } = await import(new URL('remake/js/chapters/ch2-city-data.js', root));
   assert.equal(COMMUTE_SCENES.map(scene => scene.id).join(), CH2_COMMUTE_IDS.join(), 'the chapter 2 loader publishes every commute scene');
   const readTo = n => Object.fromEntries(COMMUTE_SCENES.slice(0, n).map(scene => [scene.flag, true]));
@@ -344,8 +344,8 @@ console.log('PASS: #1925 actual normal/after-close/rest invitation paths return 
   assert.equal(lastDialogue.dialogue_id, '__ch2_return_train');
   assert.equal(lastDialogue.lines.map(line => line.speaker).join(), ',hajime');
   assert.equal(commuteSceneDue({ ...state, day: 19 }, 'morning', commuteDB.dialogues), null, 'tonari scene is still next');
-  // 四本を読み終えたら、いつもの短い場面に戻る。第5章の帰り道にも出さない
-  reset(); Object.assign(state.flags, readTo(4));
+  // 八本を読み終えたら、いつもの短い場面に戻る。第5章の帰り道にも出さない
+  reset(); Object.assign(state.flags, readTo(COMMUTE_SCENES.length));
   await commute.namespace.returnCityHome(); assert.equal(lastDialogue.dialogue_id, '__ch2_return_train');
   reset(); state.chapter = 5;
   await commute.namespace.returnCityHome(); assert.equal(lastDialogue.dialogue_id, '__ch2_return_train');

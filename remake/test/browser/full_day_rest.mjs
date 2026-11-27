@@ -159,6 +159,8 @@ await suite("full-day-rest", async check => {
       await mapAt(page, 4, 0); await goHome(page, touch);
       await page.getByText(/スミさんとの今夜のLIMEの約束には参加/).waitFor();
       await page.locator('[data-test="rest-full"]').click();
+      // 体力10のまま夜の約束（店番）へ向かうので、行動後の体力の確認が出る（休んだ日でも確認は出す。2026-11-27 オーナー判断）
+      await page.getByText("行動後の体力に注意").waitFor(); await page.locator('[data-test="stamina-go"]').click();
       // シフトは店番（TFL62。この検査では回さない）。「今日の注文」は無い（TFL63）
       await page.locator('[data-test="after-none"]').waitFor();
       const before = await page.evaluate(() => ({ shifts: R.core.state.baitoCount, money: R.core.state.money,

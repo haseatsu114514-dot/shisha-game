@@ -351,7 +351,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 @keyframes res-off { 20% { translate: -0.6rem 0; } 45% { translate: 0.5rem 0; } 70% { translate: -0.3rem 0; } 100% { translate: 0 0; } }
 /* 熱ゲージ: 右に大きく。本編（remake/css/craft.css の .thermo-*）と同じ色の意味。緑の帯＝適温の目安（両端に白い刻み）、
    真ん中の虹＝合わせやすい範囲（中央に白線）、一番上＝焦げる帯（炎の印）。今の温度は外から指す矢印と管を横切る線。今より上は少し暗い */
-.thermo { position: absolute; z-index: 5; right: 1.1rem; top: 9.6rem; bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 10.2rem); width: 5.4rem; display: grid; grid-template-rows: auto 1fr; justify-items: center; gap: 0.6rem; pointer-events: none; }
+.thermo { position: absolute; z-index: 5; right: 1.1rem; top: 10.8rem; bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 10.2rem); width: 5.4rem; display: grid; grid-template-rows: auto 1fr; justify-items: center; gap: 0.6rem; pointer-events: none; }
 .th-icon { width: 3.6rem; height: 3.6rem; display: grid; place-items: center; border-radius: 50%; font-size: 2.3rem; color: #fff; background: #120c1dcc; box-shadow: 0 0 0 0.12rem #ffffff40, 0 0.4rem 1rem #0009; transition: color 0.3s, background 0.3s, box-shadow 0.3s; }
 .th-bar { position: relative; width: 3rem; height: 100%; border-radius: 1.6rem; overflow: hidden; box-shadow: 0 0 0 0.25rem #120c1dd9, 0 0 0 0.38rem #ffffff59, 0 1rem 2rem #000b; }
 .th-bar::before { content: ""; position: absolute; inset: 0; z-index: 4; pointer-events: none; background: repeating-linear-gradient(0deg, transparent 0 calc(10% - 0.1rem), #0b081233 calc(10% - 0.1rem) 10%), linear-gradient(90deg, transparent 14%, #ffffff40 22%, transparent 34%); }
@@ -595,8 +595,8 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 
 /* 案D（VPL33・VPL35）: 工程を終えた時に上の絵へどかっと出て、右上（工程の並びの右、熱ゲージの上）へ収まる */
 .rank-d { z-index: 5; right: 0.9rem; top: max(0.6rem, calc(env(safe-area-inset-top, 0px) - 0.6rem)); }
-.rank-d .rank-box { width: 9.8rem; height: 7.3rem; filter: drop-shadow(0 0.3rem 0.6rem #000b); } /* 気持ち大きく（VPL97。前は 8.2rem×6.1rem）。温度計はその分下げた */
-.rank-d .rank-meter { width: 7.6rem; height: 0.85rem; margin-top: 0.1rem; border: 0.1rem solid #ffffff2e; box-shadow: inset 0 0.1rem 0.3rem #000c, 0 0.2rem 0.6rem #000a; } /* 太く（VPL98。前は 0.45rem） */
+.rank-d .rank-box { width: 11.2rem; height: 8.35rem; filter: drop-shadow(0 0.3rem 0.6rem #000b); } /* もう少し大きく（VPL97 で 8.2rem×6.1rem→9.8rem×7.3rem、VPL115 で 11.2rem×8.35rem）。温度計はその分下げた */
+.rank-d .rank-meter { width: 8.6rem; height: 0.85rem; margin-top: 0.1rem; border: 0.1rem solid #ffffff2e; box-shadow: inset 0 0.1rem 0.3rem #000c, 0 0.2rem 0.6rem #000a; } /* 太く（VPL98。前は 0.45rem） */
 .rank-d .rank-meter i { background: linear-gradient(180deg, #fff3d6, #ffcf6b 55%, #e9a93e); }
 .phone[data-rank="d"] .steps { left: 1rem; transform: none; }
 .rank-impact { position: absolute; z-index: 29; left: 50%; top: 34%; width: 26rem; height: 26rem; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); background: radial-gradient(circle, transparent 52%, #ffe2a6cc 58%, #ffcf6b66 64%, transparent 72%); }
@@ -637,7 +637,12 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .w-body { opacity: 0.94; } .w-deep { fill: #123f80; opacity: 0.22; }
 .w-surf { fill: none; stroke: #e8fbff; stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.2s; }
 [data-zone="none"] .w-surf { stroke: #ff8a8a; } [data-zone="ideal"] .w-surf { stroke: #7df0b0; } [data-zone="shallow"] .w-surf, [data-zone="deep"] .w-surf { stroke: #ffe07a; }
-.w-line { fill: none; stroke: #fff3b0; stroke-width: 3.6; stroke-dasharray: 12 8; }
+.w-line { display: none; } /* ガラスの奥の線はやめ、手前の .w-line2 に描く（VPL119） */
+.w-band { fill: #7df0b0; opacity: 0.16; transition: opacity 0.2s; } [data-zone="ideal"] .w-band { opacity: 0.32; }
+.w-line2 { fill: none; stroke: #fff6c8; stroke-width: 6; stroke-dasharray: 18 10; filter: drop-shadow(0 0 2px #0b0812) drop-shadow(0 0 5px #0b0812); }
+[data-zone="ideal"] .w-line2 { stroke: #7df0b0; }
+.w-mark rect { fill: #120c1de6; stroke: #fff6c8; stroke-width: 3; } .w-mark text { fill: #fff6c8; font-size: 30px; font-weight: 800; text-anchor: middle; }
+[data-zone="ideal"] .w-mark rect { stroke: #7df0b0; } [data-zone="ideal"] .w-mark text { fill: #7df0b0; }
 [data-zone="ideal"] .w-line { stroke: #5fe39a; }
 .w-stream { opacity: 0.8; filter: drop-shadow(0 0 3px #bfeaff); } .w-stream.in { opacity: 1; } /* 胴の中の水流はガラス越しなので濃いめ */
 .bottle-svg.fx { pointer-events: none; }
@@ -877,7 +882,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 @container phone (max-height: 80rem) {
   .body, .pic, .smoke, .sheet, .thermo, .cv-c { --ctrl-h: 26.2rem; } .ctrl { --ctrl-h: 26.2rem; --ring: 18.2rem; --a: 13.2rem; --pad-base: 6.3rem; } .chip { width: 3.9rem; height: 3.9rem; font-size: 1.9rem; } .chips { padding-top: 1rem; }
   .btn-a.center { top: calc(14.2rem + var(--aux-g, 0rem)); width: 11.6rem; height: 11.6rem; margin-left: -5.8rem; } .gauge { left: 4.6rem; right: 4.6rem; top: calc(6.2rem + var(--aux-g, 0rem)); } .foil { width: 25rem; } .ctrl .leaves { top: 1rem; height: 3.9rem; }
-  .thermo { top: 9.6rem; }
+  .thermo { top: 10.8rem; }
 }
 @container phone (max-height: 80rem) {
   .chips.labeled .chip { height: 4.8rem; font-size: 1.9rem; } .phone[data-aux="1"] .serve, .phone[data-aux="3"] .serve { height: 4.8rem; } .sh { height: 4.6rem; } .phone[data-aux="2"] .serve { height: 4.6rem; }
@@ -903,7 +908,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
   .who .ava { width: 4.6rem; height: 4.6rem; } .card img { width: 5.4rem; height: 5.4rem; } .card { padding: 0.5rem 0.4rem 0.8rem; } .coach img { width: 4.4rem; height: 4.4rem; } .coach .say { font-size: 1.62rem; padding: 0.9rem 1.3rem 1rem; } .steps span { width: 2.8rem; height: 2.8rem; }
   .chips.labeled .chip { height: 4.3rem; font-size: 1.7rem; } .chips.labeled .chip span { font-size: 1rem; } .phone[data-aux="1"] .serve, .phone[data-aux="3"] .serve { height: 4.3rem; } .sh { height: 4.2rem; font-size: 2rem; } .sh span { font-size: 1.3rem; } .phone[data-aux="2"] .serve { height: 4.2rem; }
   .tabbar { height: 4.7rem; } .tab { font-size: 1.9rem; } .phone[data-aux="3"] .btn-a.center { scale: 0.84; }
-  .phone[data-scene="pack"] .thermo { bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 15.6rem); } .thermo { top: 9.6rem; width: 4.4rem; } .th-bar { width: 2.4rem; } .th-icon { width: 3rem; height: 3rem; font-size: 1.9rem; }
+  .phone[data-scene="pack"] .thermo { bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 15.6rem); } .thermo { top: 10.8rem; width: 4.4rem; } .th-bar { width: 2.4rem; } .th-icon { width: 3rem; height: 3rem; font-size: 1.9rem; }
 }
 
 @container phone (max-height: 80rem) {
@@ -947,9 +952,9 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .phone[data-kind="craft"] .btn-a.sub.l { right: auto; top: auto; left: var(--edge); bottom: var(--low); width: var(--ok); height: var(--ok); margin: 0; }
 .phone[data-scene="water"] .btn-a.center.pour { top: auto; bottom: var(--low); width: var(--ok); height: var(--ok); margin-left: calc(var(--ok) / -2); }
 .phone[data-kind="craft"][data-scene="water"] .pic { height: calc(100% - var(--low) - var(--ok) - 1.2rem); } /* 上の絵は、いちばん下の段のすぐ上まで続ける（VPL111。下の画面の空きを詰める） */
-.phone[data-scene="water"] .water-a { --bw: min(19rem, calc((100cqh - var(--cp) - 8.4rem) / 1.63)); }
+.phone[data-scene="water"] .water-a { --bw: min(21.5rem, calc((100cqh - var(--cp) - 16rem) / 1.63)); } /* 上の画面の余裕の分、流し台ごと少し大きく（VPL112。流し台の左右の端は画面の外へ少し出る） */
 /* カウンターの手前の縁（ボトルの縦 87.5%）が、スミさんの一言の段の真ん中に来る高さ。ボトルの水の線は一言より上に見える */
-.phone[data-scene="water"] .water-a .bottle { left: calc(50% - 3.4rem); bottom: calc(var(--cp) + 2.4rem - var(--low) - var(--ok) - 1.2rem - var(--bw) * 0.185); width: var(--bw); }
+.phone[data-scene="water"] .water-a .bottle { left: calc(50% - var(--bw) * 0.179); bottom: calc(var(--cp) + 2.4rem - var(--low) - var(--ok) - 1.2rem - var(--bw) * 0.185); width: var(--bw); }
 /* 前板の下は、流し台の下の戸棚（ステンレスの扉）で、いちばん下の段の上まで埋める */
 .bottle .cabinet { position: absolute; z-index: 1; left: -41.33%; width: 222.6%; top: calc(106.9% - 0.2rem); height: 60rem; pointer-events: none;
   background: linear-gradient(180deg, #00000066 0, transparent 0.8rem), repeating-linear-gradient(90deg, transparent 0 calc(25% - 0.1rem), #0000004d calc(25% - 0.1rem) 25%), linear-gradient(180deg, #8a6e5c, #5a463d 40%, #2c2027); } /* 流し台の幅（ボトルの約2倍）が画面に収まる大きさ。流し台の真ん中が画面の真ん中に来る（VPL101） */
@@ -1015,11 +1020,25 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .phone[data-kind="craft"] > * { --cp: var(--cp-std); }
 /* 配合は、下の段（グラムの段と決定）を低くし、決定も小さくする（VPL102。844 で 11.2rem→8.8rem）。浮いた分は上の画面へ */
 .phone[data-scene="mix"] > * { --cp: var(--cp-mix); --ok: var(--ok-mix); }
-.phone[data-scene="water"] > * { --cp: var(--cp-water); }
+/* 水入れ・タイマー（VPL112・VPL113）: 下の画面に余裕があるので、3つのボタンを横幅いっぱい近くまで大きくし（844 で 11.2rem→12rem）、
+   下の画面はボタン（とタイマーの早見）の段だけにする。スミさんの一言は、そのすぐ上に出る */
+.phone:is([data-scene="water"], [data-scene="timer"]) > * { --ok: 12rem; --edge: 1rem; }
+@container phone (max-height: 80rem) { .phone:is([data-scene="water"], [data-scene="timer"]) > * { --ok: 10.8rem; } }
+@container phone (max-height: 71rem) { .phone:is([data-scene="water"], [data-scene="timer"]) > * { --ok: 9.6rem; } }
+.phone[data-scene="water"] > * { --cp: calc(var(--low) + var(--ok) + 0.6rem); }
+.phone[data-scene="timer"] > * { --cp: calc(var(--low) + var(--ok) + 7.8rem); }
+/* 雑念よけ（VPL117）: 弾幕の場は、上の工程の並びとランクの下から始める（場を少し狭く）。時間の線は場の上の端 */
+.phone[data-scene="steam"] .pic { background: #0b0812; }
+.phone[data-scene="steam"] .dodge { top: 10.8rem; border-top: 0.1rem solid #ffffff1f; }
+.phone[data-scene="steam"] .d-time { top: 0.8rem; }
+/* 雑念よけ（VPL112）: 下の画面の余裕の分、十字キーを大きくし、下の段に寄せる */
+.phone[data-scene="steam"] .ctrl { --ring: 23rem; --pad-top: calc(var(--cp) - var(--ring) - var(--low)); }
+@container phone (max-height: 80rem) { .phone[data-scene="steam"] .ctrl { --ring: 20.6rem; } }
+@container phone (max-height: 71rem) { .phone[data-scene="steam"] .ctrl { --ring: 18.4rem; } }
 
 /* 蒸らしのタイマー（VPL105）: 上の画面に本編のキッチンタイマー（液晶・4つの物理ボタン）と、蒸らし後の温度の目安。下は早見とリセット、分・秒・スタート */
 .timer-a { position: absolute; left: 0; right: 5.6rem; top: 8.4rem; bottom: 6.4rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.4rem; }
-.ktimer { position: relative; flex: none; width: min(30rem, calc((100cqh - var(--cp) - var(--band) - 26rem) * 1.5)); aspect-ratio: 1280 / 853; container-type: inline-size; }
+.ktimer { position: relative; flex: none; width: min(32rem, calc((100cqh - var(--cp) - var(--band) - 15.6rem) / 0.9)); aspect-ratio: 1280 / 1150; container-type: inline-size; } /* 下の目安の札をなくした分、縦にも大きく（VPL116。絵を縦に約3割のばす） */
 .ktimer > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 1.6rem #000b); pointer-events: none; }
 .ktimer .lcd { position: absolute; left: 13.6%; width: 72.8%; top: 22%; height: 33.4%; display: grid; place-items: center; color: #192e28; }
 .ktimer .lcd svg { width: 88%; height: 86%; }
@@ -1051,7 +1070,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 
 /* 温度計（VPL103）: 配合・詰め方・吸い出しで、上端・長さ・太さをそろえる。長さは、いちばん狭い配合の上の画面に合わせる（下の段の高さ --cp-mix から決める）。
    いちばん下の一言の段（配合の「この配合の適温」など）は、どの場面でも同じ高さを取っておく（空でも管の長さが変わらない） */
-.phone[data-kind="craft"] .thermo { top: 9.6rem; bottom: auto; height: calc(100cqh - var(--cp-mix) - var(--band) - 14rem); grid-template-rows: auto 1fr 2.8rem; }
+.phone[data-kind="craft"] .thermo { top: 10.8rem; bottom: auto; height: calc(100cqh - var(--cp-mix) - var(--band) - 15.2rem); grid-template-rows: auto 1fr 2.8rem; }
 .phone[data-kind="craft"] .thermo .th-note { align-self: start; margin: 0.2rem -2rem 0; } /* 一言が温度計の幅を広げて、管の位置がずれないように */
 
 @media (prefers-reduced-motion: reduce) {
