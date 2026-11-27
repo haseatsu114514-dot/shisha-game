@@ -1,4 +1,5 @@
 import { guardCompletionCardInput, trackCompletionTaps } from "./completion-card-input.js";
+import { createChapterCard } from "../core/chapter-card.js";
 import { ROOMS } from "./ch2-city-data.js";
 import { playEntrance } from "./tournament-entrance.js";
 import { defeatFade } from "../core/transitions.js";
@@ -81,16 +82,10 @@ function hud(owner, visible = false) {
   layers.hud.replaceChildren(...(visible ? [el("div.ch2-tournament-vn-menu", [menuButton(owner)])] : []));
   layers.hud.classList.toggle("show", visible);
 }
-function card(owner, name, title, description, actions = [], extra = []) {
-  hud(owner);
-  // 完了カードは章のクリア画面（レベルアップの札を本文の外へ寄せる・#3938）。
-  const panel = el(`main.ch2-contest${name === "complete" ? ".chapter-clear" : ""}`, { dataset: { test: id(name) } }, [
-    el("header.ch2-contest-header", [el("div", [el("p", { text: "第二章・DAY14 ／ HAZE: OPEN CLOUD" }), el("h1", { text: title })]), menuButton(owner)]),
-    typeof description === "string" ? el("p.ch2-contest-description", { text: description }) : description, ...extra,
-    el("div.ch2-contest-actions", actions),
-  ]);
-  return showScreen("ch2-tournament", name === "complete" ? guardCompletionCardInput(panel, owner.completionTaps) : panel);
-}
+const card = createChapterCard({ hud, screen: "ch2-tournament", test: id,
+  heading: "第二章・DAY14 ／ HAZE: OPEN CLOUD", menuButton, guardCompletionCardInput,
+  includeScene: false, returnScreen: true });
+
 async function read(owner, name) {
   if (!live(owner)) return false;
   const key = `ch2_tournament_${name}`;
@@ -166,7 +161,7 @@ export async function runChapterTwoTournament() {
 function renderEntry(owner) {
   card(owner, "entry", "県大会の朝。", "はじめ・あげは・神崎竜二・クラウド。4人一斉、一台を仕上げる一発勝負。", [
     button(owner, "LIMEを読んで会場へ", "start", async () => { checkpoint("morning"); await drive(owner); }, true),
-  ], [el("p.ch2-contest-note", { text: "課題はストロベリー。アフサールの新作を主催者が支給。制作から提供、その後の調整まで同じ一台で行います。" })]);
+  ], "課題はストロベリー。アフサールの新作を主催者が支給。制作から提供、その後の調整まで同じ一台で行います。");
 }
 function renderReady(owner) {
   card(owner, "ready", "一台で、最後まで。", "予選・準決勝はありません。提供後も、客席で吸われた一台を2回調整します。", [
@@ -259,7 +254,7 @@ function renderVotes(owner, final = false, { splash = false } = {}) {
         if (final && p.result.rank === 1) clearContinueHistory(state);
         checkpoint(final ? p.result.rank === 1 ? "farewell" : "defeat" : "craft"); await drive(owner);
       }, true),
-    ], [final ? null : reason,
+    ], "", "", [final ? null : reason,
       p.baseVotes ? el("p.ch2-contest-note", { text: "全出場者に基礎票1点" }) : null,
       el("section.ch2-contest-board", [judgeLegend(JUDGES), el("ol.ch2-contest-ranking", rows.map(row))]), judges,
       final ? reason : null, review,
@@ -323,7 +318,7 @@ function renderComplete(owner) {
     await mod.beginChapterThree();
   }, true);
   const actions = completionActions(owner, button, next, { onSave: saveFlow, onTitle: () => { save(); location.reload(); } });
-  card(owner, "complete", "第二章・完", "優勝トロフィーと、東京行きの切符。味のしない舌は、そのままだった。", actions, [
+  card(owner, "complete", "第二章・完", "優勝トロフィーと、東京行きの切符。味のしない舌は、そのままだった。", actions, "", "", [
     // 賞金は recordResult で優勝確定時に一度だけ加算済み。ここでは受け取ったことだけを見せる。
     state.flags._ch2_tournament?.prizePaid ? el("p.ch2-contest-note", { dataset: { test: id("prize") }, text: Number.isFinite(state.flags._ch2_tournament.prizeReceived)
       ? state.flags._ch2_tournament.prizeReceived > 0 ? `優勝賞金 ${yen(state.flags._ch2_tournament.prizeReceived)} を受け取った。` : "優勝賞金は所持金の上限に達したため加算されなかった。"

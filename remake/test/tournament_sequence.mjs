@@ -80,20 +80,28 @@ for(const insight of [0,30]){
 // #2035: the real chapter-3 tournament buttons keep their session/error contract.
 {
  const chapterSource=fs.readFileSync(new URL('../js/chapters/ch3-tournament.js',import.meta.url),'utf8');
- const helperSource=fs.readFileSync(new URL('../js/core/chapter-actions.js',import.meta.url),'utf8');
  const errors=[],screens=[];const chapterState={chapter:3};
  const node=(selector,attrs={},children=[])=>({selector,...(Array.isArray(attrs)?{children:attrs}:{...attrs,children})});
+ const showScreen = (name, root) => {
+  screens.push({ name, root });
+  return root;
+ };
  const context=vm.createContext({console:{error:(...args)=>errors.push(args)}});
  const runner=new vm.SourceTextModule(chapterSource+`\nexport {button,perform}; export function owner(){return session={state,active:true,busy:false};}`,{context});
  let stateModule;
  await runner.link(async spec=>{
-  if(spec==='../core/chapter-actions.js'){
-   const helper=new vm.SourceTextModule(helperSource,{context});
-   await helper.link(()=>new vm.SyntheticModule(['el'],function(){this.setExport('el',node);},{context}));return helper;
+  if (spec === '../core/chapter-actions.js' || spec === '../core/chapter-card.js') {
+   const helperSource = fs.readFileSync(new URL(`../js/${spec.slice(3)}`, import.meta.url), 'utf8');
+   const helper = new vm.SourceTextModule(helperSource, { context });
+   await helper.link(dependency => {
+    const [name, value] = dependency === './util.js' ? ['el', node] : ['showScreen', showScreen];
+    return new vm.SyntheticModule([name], function () { this.setExport(name, value); }, { context });
+   });
+   return helper;
   }
   const names=spec==='../craft/broadcast.js'?['block','judge','judgeOf','burst','clearComments']:
    [...chapterSource.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)].filter(m=>m[2]===spec).flatMap(m=>m[1].split(',').map(s=>s.trim()));
-  const values={state:chapterState,el:node,chapterRecoveryActions:()=>[],layers:{hud:{replaceChildren(){},classList:{toggle(){}}}},showScreen:(name,root)=>screens.push({name,root})};
+  const values={state:chapterState,el:node,chapterRecoveryActions:()=>[],layers:{hud:{replaceChildren(){},classList:{toggle(){}}}},showScreen};
   const stub=new vm.SyntheticModule(names,function(){for(const n of names)this.setExport(n,values[n]??(()=>{}));},{context});
   if(spec==='../core/state.js')stateModule=stub;return stub;
  });await runner.evaluate();const api=runner.namespace;
