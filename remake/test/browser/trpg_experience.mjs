@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { startTrpgStory } from "./trpg_start.mjs";
+import { rollTrpgCheck, startTrpgStory } from "./trpg_start.mjs";
 
 const { chromium } = createRequire(import.meta.url)("playwright");
 const base = new URL("trpg-preview.html", process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
@@ -124,16 +124,47 @@ async function forecast(page, supported = false, conditional = false) {
   assert.match(await control(page, "trpg-forecast").textContent(), /30/);
   await fits(page);
 }
-async function roll(page, { trap = false } = {}) {
-  await hit(page, "trpg-roll");
-  if (trap) {
-    await page.keyboard.press("Tab");
-    assert(await page.evaluate(() => !!document.activeElement.closest('[role="dialog"]')),
-      "Tab stays inside the modal while all rolling controls are disabled");
-    await page.keyboard.press("Escape");
-    assert.equal(await page.locator('[role="dialog"]').count(), 1, "A committed roll cannot be dismissed");
-  }
-  await control(page, "trpg-settle").waitFor();
+// 振って結果の窓まで。スキルは劇場を出せる時は劇場の中で、動きを減らす設定では窓で選ぶ（rollTrpgCheck）。
+// support: 助力を借りる仲間。aidOdds: 劇場の中の「スキルを使う？」に出るはずの見込み（{ plain, aided }）。keyboard: 劇場の中の札をキーで押す。
+// 劇場の中の「スキルを使う？」に出る見込み: 窓の見通しと同じ計算で、使わない時と使った時（＋7）の成功。見立ての正誤は振るまで分からないので「〜」の幅。
+async function aidOddsOf(page, conditional = false) {
+  const base = await declaredBase(page) + (await state(page)).momentum * 4;
+  const success = extra => {
+    let count = 0;
+    for (let a = 1; a <= 20; a++) for (let b = 1; b <= 20; b++) if (a === 20 || b === 20 || a + b + base + extra >= 30) count++;
+    return Math.round(count / 4);
+  };
+  const pct = aid => { const lo = success(aid), hi = success(aid + (conditional ? 5 : 0)); return Math.min(lo, hi) + (conditional ? "〜" + Math.max(lo, hi) : "") + "%"; };
+  return { plain: pct(0), aided: pct(7) };
+}
+async function roll(page, { trap = false, support = null, aidOdds = null, keyboard = false } = {}) {
+  const touch = await page.evaluate(() => navigator.maxTouchPoints > 0);
+  const press = async selector => {
+    if (keyboard && selector.includes("trpg-show-")) {
+      // 劇場の中の札はキーでも押せる（最初の札に焦点がある。Tab で移り、Space で押す）
+      const test = /data-test="([^"]+)"/.exec(selector)[1];
+      for (let n = 0; n < 4 && await page.evaluate(() => document.activeElement?.dataset.test) !== test; n++) await page.keyboard.press("Tab");
+      assert.equal(await page.evaluate(() => document.activeElement?.dataset.test), test, "The show's choice takes the keyboard focus");
+      await page.keyboard.press("Space");
+      return;
+    }
+    if (touch) await page.locator(selector).tap(); else await page.locator(selector).click();
+    if (trap && selector === '[data-test="trpg-roll"]') {
+      await page.keyboard.press("Tab");
+      assert(await page.evaluate(() => !!document.activeElement.closest('[role="dialog"]')),
+        "Tab stays inside the modal while all rolling controls are disabled");
+      await page.keyboard.press("Escape");
+      assert.equal(await page.locator('[role="dialog"]').count(), 1, "A committed roll cannot be dismissed");
+    }
+  };
+  await rollTrpgCheck(page, { support, press, onChoice: async kind => {
+    if (kind !== "aid" || !aidOdds) return;
+    assert.equal((await page.locator(".trpg-rs-choose-prompt").innerText()).trim(), "スキルを使う？");
+    const card = control(page, "trpg-show-support");
+    assert.match(await card.innerText(), /[+＋]\s*7[\s\S]*札\s*1/);
+    assert.equal(await card.locator(".trpg-rs-pick-odds").innerText(), "成功 約" + aidOdds.plain + " → " + aidOdds.aided, "The show's aid odds match the forecast");
+    assert.equal((await control(page, "trpg-show-nosupport").innerText()).replace(/\s+/g, ""), "使わずに振る（約" + aidOdds.plain + "）");
+  } });
   const announcement = page.locator('.trpg-dice-total[role="status"]');
   assert.equal(await announcement.count(), 1, "The settled total and grade are announced");
   assert.match(await announcement.textContent(), /合計/);
@@ -169,9 +200,7 @@ async function twistStep(page) {
   const card = page.locator('[data-test^="trpg-approach-"]').first();
   if (touch) await card.tap(); else await card.click();
   for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
-  const roll = page.locator('[data-test="trpg-roll"]');
-  if (touch) await roll.tap(); else await roll.click();
-  await page.locator('[data-test="trpg-settle"]').waitFor();
+  await rollTrpgCheck(page); // 振り直せる出目は、劇場の中の「振り直す？」で「このまま続ける」
   const settle = page.locator('[data-test="trpg-settle"]');
   if (touch) await settle.tap(); else await settle.click();
   for (let i = 0; i < 60 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
@@ -374,18 +403,28 @@ async function ordinary(page, keyboard) {
   await hit(page, "trpg-prepare-open");
   await declare(page);
   await closedDetails(page);
-  const aid = await control(page, "trpg-support-adam").evaluate(n => n.closest("label")?.textContent || n.getAttribute("aria-label"));
-  assert.match(aid, /[+＋]\s*7/);
-  assert.match(aid, /札\s*1/);
-  assert(await control(page, "trpg-support-adam").isEnabled(), "Support remains usable without opening the probability details");
-  if (keyboard) await page.screenshot({ path: path.join(artifacts, "ordinary-roll-stage-pc.png") });
-  await forecast(page);
-  await control(page, "trpg-support-adam").focus();
-  await page.keyboard.press("Space");
-  assert(await control(page, "trpg-support-adam").isChecked(), "Space still operates the support checkbox");
-  await forecast(page, true);
-  if (keyboard) await page.screenshot({ path: path.join(artifacts, "ordinary-supported-forecast-pc.png") });
-  await roll(page);
+  if (await page.evaluate(() => matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+    // 劇場を出せない時（動きを減らす設定）は、今までどおり窓の助力のチェックで選ぶ
+    const aid = await control(page, "trpg-support-adam").evaluate(n => n.closest("label")?.textContent || n.getAttribute("aria-label"));
+    assert.match(aid, /[+＋]\s*7/);
+    assert.match(aid, /札\s*1/);
+    assert(await control(page, "trpg-support-adam").isEnabled(), "Support remains usable without opening the probability details");
+    await forecast(page);
+    await control(page, "trpg-support-adam").focus();
+    await page.keyboard.press("Space");
+    assert(await control(page, "trpg-support-adam").isChecked(), "Space still operates the support checkbox");
+    await forecast(page, true);
+    await roll(page);
+  } else {
+    // スキルは劇場の中で選ぶ（2026-11-27 オーナー決定）: 窓に助力の札は無く、振ると劇場の幕の上で「スキルを使う？」。
+    // 札には ＋7・連携札1枚と、窓の見通しと同じ計算の見込み（使わない時 → 使った時）。札はキーでも押せる（Space）。
+    assert.equal(await control(page, "trpg-support-adam").count(), 0, "The aid is chosen in the show, not in the window");
+    if (keyboard) await page.screenshot({ path: path.join(artifacts, "ordinary-roll-stage-pc.png") });
+    await forecast(page);
+    const aidOdds = await aidOddsOf(page);
+    await roll(page, { support: "adam", aidOdds, keyboard });
+  }
+  assert.equal((await state(page)).pending.bonus, await declaredBase(page) + 7 + (await state(page)).pending.momentum * 4, "The aid adds +7 to the roll");
   await settle(page);
   await currentStep(page);
   await compare(page, 3);
@@ -448,9 +487,9 @@ async function shark(page, correct) {
   const preview = (await control(page, "trpg-forecast").textContent()).replace(/\s+/g, " ").trim();
   if (correct) sharkForecast = preview;
   else assert.equal(preview, sharkForecast, "The forecast cannot reveal whether the chosen hypothesis matches the hidden profile");
-  await hit(page, "trpg-support-hiyori");
-  await forecast(page, true, true);
-  await roll(page);
+  // スキルは劇場の中で選ぶ（2026-11-27 オーナー決定）。見込みは窓の見通しと同じ計算で、見立ての正誤が分からない分の幅（〜）も同じ
+  assert.equal(await control(page, "trpg-support-hiyori").count(), 0, "The aid is chosen in the show, not in the window");
+  await roll(page, { support: "hiyori", aidOdds: await aidOddsOf(page, true) });
   const result = (await state(page)).pending;
   // The aid card was selected after declaring. Compare the declaration as it was offered.
   const unaided = result.bonus - 7;
@@ -532,9 +571,17 @@ try {
       await startTrpgStory(page); await dialogue(page); await declare(page);
       await page.setViewportSize({ width: 390, height: 844 });
       await page.waitForFunction(() => Math.abs(Number(document.getElementById("stage").style.getPropertyValue("--k")) - 390 / 1280) < 1e-9);
-      await hit(page, "trpg-roll"); await control(page, "trpg-settle").waitFor();
-      const model = await state(page);
+      const reachable = test => control(page, test).evaluate(n => { const r = n.getBoundingClientRect(), h = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return r.x >= 0 && r.right <= innerWidth + 1 && r.y >= 0 && r.bottom <= innerHeight + 1 && !!h && n.contains(h); });
+      await hit(page, "trpg-roll");
+      // 振り直せる出目は、劇場を閉じずに劇場の中で「振り直す？」（2026-11-27 オーナー決定）。縦持ちの画面でも札は見えて押せる
+      await control(page, "trpg-show-reroll-0").waitFor({ timeout: 20000 });
       assert.match(await page.locator(".trpg-roll-context").textContent(), /判定 0\/4 · 連携札 2\/2/);
+      for (const test of ["trpg-show-reroll-0", "trpg-show-reroll-1", "trpg-show-keep"]) assert(await reachable(test), "Portrait roll control must remain visible and clickable: " + test);
+      await hit(page, "trpg-show-reroll-0");
+      await page.waitForFunction(() => document.querySelector('[data-test="trpg-settle"]') && !document.querySelector(".trpg-roll-show"), null, { timeout: 20000 });
+      const model = await state(page);
+      assert.equal(model.pending.rerolled, true);
+      assert.match(await page.locator(".trpg-roll-context").textContent(), /連携札 1\/2/);
       assert.equal(await page.locator(".trpg-dice-total > strong").textContent(), "合計 " + (model.pending.dice[0] + model.pending.dice[1] + model.pending.bonus));
       await page.evaluate(() => {
         Object.defineProperty(document, "hidden", { configurable: true, value: true });
@@ -548,15 +595,9 @@ try {
       assert.deepEqual(await page.locator(".trpg-roll-fx").evaluate(n => n.getAnimations({ subtree: true }).map(a => a.currentTime)), times);
       assert.deepEqual(await state(page), model, "Pausing presentation cannot change the roll or resources");
       await page.evaluate(() => { delete document.hidden; document.dispatchEvent(new Event("visibilitychange")); });
-      for (const test of ["trpg-reroll-0", "trpg-reroll-1", "trpg-settle"]) {
-        const node = control(page, test); if (!await node.count()) continue;
-        await node.scrollIntoViewIfNeeded();
-        const visible = await node.evaluate(n => { const r = n.getBoundingClientRect(), h = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return r.x >= 0 && r.right <= innerWidth + 1 && r.y >= 0 && r.bottom <= innerHeight + 1 && !!h && n.contains(h); });
-        assert(visible, "Portrait roll control must remain visible and clickable: " + test);
-      }
-      await hit(page, "trpg-reroll-0");
-      assert.match(await page.locator(".trpg-roll-context").textContent(), /連携札 1\/2/);
-      assert.equal(await control(page, "trpg-reroll-0").count(), 0);
+      await control(page, "trpg-settle").scrollIntoViewIfNeeded();
+      assert(await reachable("trpg-settle"), "Portrait roll control must remain visible and clickable: trpg-settle");
+      assert.equal(await page.locator('[data-test^="trpg-show-"], [data-test="trpg-reroll-0"]').count(), 0, "The spent reroll is not offered again");
     });
 } finally {
   await browser.close();

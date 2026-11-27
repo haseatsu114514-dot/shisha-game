@@ -62,7 +62,7 @@ function validate(rel) {
   const gm = gms[0]?.id;
   need(MEMBERS.has(gm) || s.zeroMemberCast?.includes(gm), "GM '" + gm + "' は部員か常連卓の配役から選ぶ");
   const player = s.cast.find(c => c.id === "hajime");
-  need(player?.sheet && player.abilityType === "reroll", "はじめ（PL・切り札は振り直し）が必要");
+  need(player?.sheet && player.abilityType === "reroll", "はじめ（PL・スキルは振り直し）が必要");
   const seats = s.cast.filter(c => c.part !== "GM" && c.id !== "hajime");
   need(seats.length === 2, "はじめ以外のPL席は2つ");
   for (const c of s.cast) {
@@ -71,10 +71,10 @@ function validate(rel) {
     need(c.sheet?.name && c.sheet.title && c.sheet.trait, c.id + " の sheet（name/title/trait）");
     need(STATS.every(k => Number.isInteger(c.sheet?.stats?.[k]) && c.sheet.stats[k] >= 1 && c.sheet.stats[k] <= 5), c.id + " の能力値は各1〜5");
     need(Object.values(c.sheet?.stats || {}).reduce((n, v) => n + v, 0) <= 11, c.id + " の能力値の合計は11以下");
-    need(c.ability && c.abilityText && c.abilityType, c.id + " の切り札（ability/abilityText/abilityType）");
+    need(c.ability && c.abilityText && c.abilityType, c.id + " のスキル（ability/abilityText/abilityType）");
   }
   const helperTypes = seats.map(c => c.abilityType).sort().join(",");
-  need(helperTypes === "prepare,serve", "仲間2人の切り札は prepare と serve に1つずつ");
+  need(helperTypes === "prepare,serve", "仲間2人のスキルは prepare と serve に1つずつ");
   // Builder and companions.
   const b = s.builder;
   need(b.seat === "hajime" && b.points === 11 && b.min === 1 && b.max === 5, "builder: seat hajime / points 11 / min 1 / max 5");
@@ -137,7 +137,7 @@ function validate(rel) {
       }
     }
   }
-  need(s.checks.prepare.helper === seats.find(c => c.abilityType === "prepare")?.id && s.checks.serve.helper === seats.find(c => c.abilityType === "serve")?.id, "prepare/serve の helper は切り札の持ち主");
+  need(s.checks.prepare.helper === seats.find(c => c.abilityType === "prepare")?.id && s.checks.serve.helper === seats.find(c => c.abilityType === "serve")?.id, "prepare/serve の helper はスキルの持ち主");
   // Story parts.
   need(s.spots.length === 6 && s.spots.every(p => p.id && p.label && p.short && p.x >= 6 && p.x <= 94 && p.y >= 15 && p.y <= 88), "調査地点は6つ（x 6〜94, y 15〜88）");
   need(s.profiles.length === 3, "隠れた事情（profiles）は3つ");
