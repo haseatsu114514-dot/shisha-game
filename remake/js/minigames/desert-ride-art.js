@@ -159,9 +159,9 @@ let images = null;
  * Mapは共有し、後から相手を替えても取得・decodeを重複させない。
  */
 /**
- * 縦の下り坂の遠景（2026-11-27。gpt-image-2.6-sunburst 生成・記録は asset_sources/ui/minigame-visuals-20261127/desert/）。
+ * 下り坂の遠景（2026-11-27。縦のために作り、同日に横にも当てた。gpt-image-2.6-sunburst 生成・記録は asset_sources/ui/minigame-visuals-20261127/desert/）。
  * 高い所から見下ろした坂の下の谷。上の空は透明（空は sky を使い、沈む太陽を谷の稜線の後ろに描ける）。horizon は遠くの稜線の足元（目の高さ）の行。
- * 横（既定）では使わないので DESERT_ART とは分け、下り坂の時だけ読む（loadDesertArt の valley）。夕方は同じ構図・同じ寸法。
+ * 下り坂の見え方を外した時（downhill: false）は使わないので DESERT_ART とは分け、下り坂の時だけ読む（loadDesertArt の valley）。夕方は同じ構図・同じ寸法。
  */
 export const DESERT_VALLEY_ART = Object.freeze({
   valley: Object.freeze({ file: "ui/desert_ride/valley_day.webp", size: Object.freeze([1536, 652]), horizon: 38 }),

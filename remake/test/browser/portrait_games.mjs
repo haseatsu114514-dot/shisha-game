@@ -43,6 +43,9 @@ await suite("portrait-games", async check => {
       await page.evaluate(() => window.__desertRide.start("run", "noor"));
       await page.waitForFunction(() => window.__desertRide.mode === "run" && window.__desertRide.game, null, { timeout: 30000 });
       await page.evaluate(() => window.__desertRide.skipCountdown());
+      // 縦の下り坂の見え方（DSR109）: 人物の足元は画面の少し下寄り（612px）。横に当てた時の調整（横は 502px）で縦は変えない
+      const stance = await page.evaluate(() => { const r = window.__desertRide; r.redraw(); return r.fx; });
+      assert(stance.downhill && Math.abs(stance.riderGround - 612) < 0.5, `portrait keeps its downhill stance (${stance.riderGround})`);
       // 絵は横長のまま、左右を切って置く（画面より広い）。押す所は絵の下の板に並ぶ
       const view = page.viewportSize(), canvas = await page.locator(".dr-canvas").boundingBox();
       assert(canvas.width > view.width * 1.5 && canvas.x < 0, `the 16:9 picture is cropped at both sides: ${JSON.stringify(canvas)}`);
