@@ -230,7 +230,7 @@ const pkgHtml = (f, h) => {
   const [x, y, w, hh] = f.box, k = h / hh, r = (v) => `${(v * k).toFixed(2)}rem`;
   return `<span class="pkg" style="width:${r(w)};height:${h}rem"><img src="${IMG[`pkg_${f.id}`]}" alt="" style="width:${r(512)};left:${r(-x)};top:${r(-y)}"></span>`;
 };
-const genreHtml = (id, named = true) => `<i class="genre" style="--g:${GENRES[id].color}"><svg viewBox="0 0 24 24" aria-hidden="true">${GENRES[id].icon}</svg>${named ? `<b>${GENRES[id].name}</b>` : ""}</i>`;
+const genreHtml = (id, named = true) => `<i class="genre" style="--g:${GENRES[id].color}"${named ? "" : ` role="img" aria-label="${GENRES[id].name}"`}><svg viewBox="0 0 24 24" aria-hidden="true">${GENRES[id].icon}</svg>${named ? `<b>${GENRES[id].name}</b>` : ""}</i>`;
 const MIX_CAP = 12;
 // 弾幕＝蒸らしの雑念よけ（VPL36）。本編 steam.js の runSteamDodge と steam-patterns.js の calm（第1章）。3分蒸らし＝9秒。
 // 弾は4辺からハートを狙い、5つに4つが雑念の言葉。2.8秒ごとに0.75秒の予告（縁が金に光る）のあと波が来る。
@@ -263,6 +263,11 @@ let BROADCAST = globalThis.PORTRAIT_STAGE_BROADCAST || null;
 const BROADCAST_READY = BROADCAST ? Promise.resolve(BROADCAST) : fetch(new URL("../../data/broadcast.json", import.meta.url)).then((r) => r.json()).then((d) => (BROADCAST = d)).catch(() => null);
 // 試作の工程 → broadcast.json の completion の工程名
 const NICO_STEP = { holes: "holes", coal: "heat", steam: "steam", pull: "pull" };
+// ニコニコ動画のコメントの色（一般会員の色）と、出来ごとに色が付く割合。ほかは白
+const NICO_COLOR = { red: "#ff0000", pink: "#ff8080", orange: "#ffc000", yellow: "#ffff00", green: "#00ff00", cyan: "#00ffff", purple: "#c000ff" };
+const NICO_TINT = { perfect: [["yellow", "orange", "pink", "cyan", "green", "red"], 0.3], good: [["cyan", "green", "yellow"], 0.18], miss: [["pink", "cyan", "purple"], 0.14] };
+const NICO_SPAN = 2.4; // 秒。この間に出し切る（次の場面へ移る前に）
+const NICO_FLY = 4; // 秒。画面を横切る時間（ニコ動と同じく、長さによらず一定。長い文ほど速い）
 // 点（0〜100）→ 観客の反応の段階（本編 broadcast.js の judgeOf と同じ境目）
 const nicoJudge = (score) => score >= 88 ? "perfect" : score >= 74 ? "great" : score >= 55 ? "good" : "miss";
 
@@ -1039,7 +1044,7 @@ class Phone {
     const rows = this.mixOrder().map((i) => {
       const f = MIX[i], match = !st.mixSort || f.genre === st.mixSort || f.sub === st.mixSort;
       return `<div class="mixrow${i === st.mixSel ? " on" : ""}${match ? "" : " dim"}" data-act="mixsel" data-i="${i}" role="option" aria-selected="${i === st.mixSel}">
-      ${pkgHtml(f, 7)}<span class="mr-name"><b>${f.name}${f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : ""}</b><span class="mr-tags">${genreHtml(f.genre, true)}${f.sub ? genreHtml(f.sub, false) : ""}</span></span>
+      ${pkgHtml(f, 7)}<span class="mr-name"><b>${f.name}${f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : ""}</b><span class="mr-tags">${genreHtml(f.genre, false)}${f.sub ? genreHtml(f.sub, false) : ""}</span></span>
       ${btn(i, -1, f)}<span class="mr-g"><em>${st.mix[i]}</em>g</span>${btn(i, 1, f)}</div>`;
     }).join("");
     return `${chips}<div class="picker rows" role="listbox" aria-label="フレーバー">${rows}</div>`;
@@ -1535,34 +1540,76 @@ class Phone {
     setTimeout(() => { if (this.st.scene === "coal") this.setScene("steam"); }, this.venue === "stage" ? 5000 : 3600);
   }
 
-  /** 大会の観客のコメントを右から左へ流す（VPL68）。工程に触れたコメント2本＋短い歓声3本（共通と1章の分を混ぜる。本編 broadcast.js の completed と同じ組み方）。 */
+  /**
+   * 大会の観客のコメントを右から左へ流す（VPL68・VPL72・VPL73）。ニコニコ動画のように画面を埋める。
+   * 文面は本編 broadcast.json（工程に触れた4本＋短い歓声。同じ短い一言は何人かが重ねて打つ）。
+   * 見た目もニコ動に寄せる: 白い文字に黒い縁、一部だけニコ動の色、長さによらず約4秒で横切る、上の行から空いている所へ入る、
+   * 上出来は上に止まる大きな一言、失敗は下に止まる一言。
+   */
   nicoBurst(kind, { frozen = false } = {}) {
     const B = BROADCAST;
     if (!B) return;
     const gk = kind === "great" ? "perfect" : kind, step = NICO_STEP[this.st.scene];
-    const draw = (pool, n, used) => {
+    const used = new Set();
+    const draw = (pool, n) => {
       const rest = [...new Set(pool || [])].filter((t) => !used.has(t)), out = [];
       while (out.length < n && rest.length) out.push(...rest.splice(Math.floor(Math.random() * rest.length), 1));
       out.forEach((t) => used.add(t));
       return out;
     };
-    const used = new Set();
-    const told = draw(B.completion?.[step]?.[kind] || [], 2, used); // 工程に触れた2本だけ色を付け、残りはニコ動らしく白
-    const lines = [
-      ...told,
-      ...draw([...(B.nico?.[gk] || []), ...(B.chapter1?.nico?.[gk] || [])], 3, used),
-    ];
+    const shuffle = (list) => { for (let i = list.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [list[i], list[j]] = [list[j], list[i]]; } return list; };
+    const pool = [...(B.nico?.[gk] || []), ...(B.chapter1?.nico?.[gk] || [])];
+    // 止まる一言（上出来は上・失敗は下）。短い一言から選ぶ
+    const fixedPos = gk === "perfect" ? "ue" : gk === "miss" ? "shita" : "";
+    const fixed = fixedPos ? draw(pool.filter((t) => [...t].length <= 12), 1)[0] : null;
+    const told = draw(B.completion?.[step]?.[kind] || [], 4);
+    const cheers = draw(pool, 10);
+    const echo = shuffle(pool.filter((t) => [...t].length <= 6)).slice(0, 2).flatMap((t) => Array(1 + Math.floor(Math.random() * 2)).fill(t));
+    const lines = [...told.slice(0, 2), ...shuffle([...told.slice(2), ...cheers, ...echo])];
     let lane = this.el.querySelector(".nico-lane");
     if (!lane) { lane = document.createElement("div"); lane.className = "nico-lane"; lane.setAttribute("aria-hidden", "true"); this.el.append(lane); }
-    const rows = 8, start = Math.floor(Math.random() * rows);
-    lines.forEach((text, i) => {
+    const [tints, rate] = NICO_TINT[gk] || NICO_TINT.good;
+    const make = (text, cls = "") => {
       const c = document.createElement("div");
-      c.className = i < told.length ? `nico ${gk}` : "nico"; c.textContent = text;
-      c.style.top = `calc(${((start + i * 3) % rows) * 12.5}% + 0.2rem)`;
-      if (frozen) { c.classList.add("still"); c.style.left = `${8 + ((i * 37) % 60)}%`; }
-      else { c.style.animationDelay = `${i * 0.28}s`; c.addEventListener("animationend", () => c.remove(), { once: true }); }
-      lane.append(c);
+      c.className = `nico ${cls}`.trim(); c.textContent = text;
+      if (Math.random() < rate) c.style.color = NICO_COLOR[tints[Math.floor(Math.random() * tints.length)]];
+      return c;
+    };
+    // 流れる分: 出る時刻を NICO_SPAN 秒に散らし、幅を測ってから行を決める
+    const W = lane.clientWidth, H = lane.clientHeight;
+    const comments = lines.map((text, i) => {
+      const c = make(text, Math.random() < 0.15 ? "small" : "");
+      c.style.visibility = "hidden"; lane.append(c);
+      return { c, t: i === 0 ? 0 : Math.random() * NICO_SPAN };
+    }).sort((a, b) => a.t - b.t);
+    // 行の高さは普通の文字（2.3rem）から決める。止まる一言の行（上出来は一番上・失敗は一番下）は、流れる分に使わない
+    const rowH = parseFloat(getComputedStyle(document.documentElement).fontSize) * 2.3 * 1.36;
+    const rows = Math.max(5, Math.floor(H / rowH)), last = Array(rows).fill(null);
+    if (fixed) last[fixedPos === "ue" ? 0 : rows - 1] = { t: Infinity };
+    const T = 2.9; // 一覧の見本で止める時刻（秒）。出し切った直後で、画面の左右に散って見える
+    comments.forEach((m) => {
+      m.w = m.c.offsetWidth; m.v = (W + m.w) / NICO_FLY;
+      // 前のコメントの尻尾が画面に入りきり、前が抜けるまで追いつかない行（上から順に）
+      const free = (p) => !p || (p.t !== Infinity && m.t >= p.t + (p.w + rowH * 1.6) / p.v && m.t >= p.t + NICO_FLY - W / m.v);
+      let r = last.findIndex(free);
+      if (r < 0) r = (fixedPos === "ue" ? 1 : 0) + Math.floor(Math.random() * (rows - 1)); // 混んだら重なる（ニコ動の弾幕と同じ）
+      last[r] = m;
+      const c = m.c; c.style.top = `${r * rowH}px`; c.style.visibility = "";
+      if (frozen) {
+        const x = W - m.v * (T - m.t);
+        if (m.t > T || x < -m.w) { c.remove(); return; }
+        c.classList.add("still"); c.style.transform = `translateX(${x}px)`;
+      } else {
+        c.style.animationDelay = `${m.t.toFixed(2)}s`; c.style.animationDuration = `${NICO_FLY}s`;
+        c.addEventListener("animationend", () => c.remove(), { once: true });
+      }
     });
+    if (fixed) {
+      const c = make(fixed, `${fixedPos} big`);
+      c.style.color = NICO_COLOR[gk === "perfect" ? "yellow" : "pink"];
+      if (frozen) c.classList.add("still"); else { c.style.animationDelay = "0.35s"; c.addEventListener("animationend", () => c.remove(), { once: true }); }
+      lane.append(c);
+    }
   }
 
   /** 熱ゲージ（温度帯）。シーシャ作りの間ずっと右に大きく出す。色の意味は本編と同じ（緑＝適温の目安、虹＝合わせやすい範囲、炎＝焦げる）。 */
