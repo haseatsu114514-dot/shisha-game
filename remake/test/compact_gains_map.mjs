@@ -151,8 +151,12 @@ try {
   assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').count(),1);
   await page.evaluate(async () => {
     for (const id of T.spots.RIO_STORY_EXTRAS) T.core.state.flags[`_spot_seen_${id}`] = true;
+    // 固有会話を読み終えた状態では、みんとの2ショットチェキ（PFC17。2回目の固有会話の後、来店の流れで一本ずつ）も
+    // 本当に「新しい話」として出る。ここでは凛想の印が消えることを見るので、2ショットも読んだことにして地図全体の印を0にする
+    for (const id of T.spots.MINTO_TWOSHOT_EVENTS) T.core.state.flags[`_spot_seen_${id}`] = true;
     await T.openMap();
   });
+  assert.equal(await page.evaluate(() => T.spots.mintoTwoShotDue()), null);
   await page.locator('.map:not(.done) [data-test="pin-shop"]').waitFor();
   assert.equal(await page.evaluate(() => T.spots.rioStoryExtraDue()), null);
   assert.equal(await page.locator(".evt-badge.story").count(),0);
