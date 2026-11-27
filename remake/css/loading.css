@@ -229,20 +229,22 @@ body.reduce-shake :is(.loading-gate, .boot-gate).is-ready .loading-bar::after { 
 /* Phone/tablet portrait = 縦画面C案「煙の舞台」のロード画面（2026-11-27 オーナー「縦画面をメインに」・要望台帳 LDC44。
    試作 previews/portrait-stage/loading.css と同じ形）。上にロゴ、真ん中に紙面（2コマを上下に積んで幅いっぱいに）、
    下の親指の届く所に、バー・LOADING の印・大きな「進む」の札（タイトルのメニューの行と同じ角丸の札）。
-   cq units here are the gate (= visible viewport). The card width is capped by height so logo + two panels + gauge + status +
-   proceed stay on screen: 2 panels of 3:2 take 4/3 of the panel width, everything else ~21.5cqh + 205px.
+   cq units here are the gate (= visible viewport). The sheet always spans the width (title and one-line note keep a readable size);
+   on a short screen only the two panels narrow so logo + panels + gauge + status + proceed stay on screen:
+   2 panels of 3:2 take 4/3 of the panel width, everything else ~21.5cqh + 205px.
    「進む」の札は準備中も同じ場所・同じ大きさで暗く「準備しています…」を出し、準備完了で灯る（起動画面からの引き継ぎで位置を動かさない）。 */
 @media (orientation: portrait) {
   :is(.loading-gate, .boot-gate) { --loading-unit: calc(100cqw / 720); --loading-backdrop-art-pos: 70% 50%; --loading-gutter: 1.5cqh;
     --vt-pad: max(14px, 3.6cqw); --vt-go-h: clamp(44px, 6.4cqh, 56px);
     padding: max(10px, env(safe-area-inset-top, 0px)) var(--vt-pad) max(12px, env(safe-area-inset-bottom, 0px)); }
   .loading-logo { width: min(250px, 60cqw); height: 7.2cqh; margin: 0 0 1.3cqh; }
-  .loading-card { width: min(calc(100cqw - 2 * var(--vt-pad) + 6px), calc(.75 * (78.5cqh - 205px) + 5.4cqw)); padding: 1.3cqh 2.7cqw 1.1cqh; }
+  .loading-card { --vt-card-w: calc(100cqw + 4px); width: var(--vt-card-w); padding: 1.3cqh 2.7cqw 1.1cqh; }
   :is(.loading-comic-title, .loading-blank-title) { font-size: clamp(18px, 5.3cqw, 28px); margin-bottom: 1cqh; padding-bottom: .8cqh; letter-spacing: .06em; }
-  .loading-panels { grid-template-columns: 1fr; }
+  .loading-panels { grid-template-columns: 1fr; width: min(100%, calc(.75 * (78.5cqh - 205px))); margin-inline: auto; }
   .loading-panels::after { transform: translate(-50%, -50%) rotate(90deg); }
-  :is(.loading-comic-caption, .loading-blank-caption) { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; white-space: normal; font-size: clamp(12px, 3.6cqw, 17px); margin-top: 1cqh; line-height: 1.35; height: 2.7em; }
-  :is(.loading-comic-caption, .loading-blank-caption)::before { display: none; }
+  /* 一行解説は必ず一行（2026-11-27 オーナー「漫画の解説は一行で収まるように」）。解説は全角18字まで（loading_comics_spec.mjs が止める）なので、
+     紙面の内側の幅（紙面の幅 − 左右の余白）を、18字と琥珀の印の分（約19.6字）で割った大きさを字の上限にする。 */
+  :is(.loading-comic-caption, .loading-blank-caption) { margin-top: 1cqh; height: 1.4em; font-size: min(clamp(12px, 4.2cqw, 17px), calc((var(--vt-card-w) - 5.4cqw - 6px) / 19.6)); }
   .loading-gauge { margin-top: 1.9cqh; }
   .loading-gauge::before, .loading-gauge::after { display: none; }
   .loading-bar { width: 70cqw; height: clamp(8px, 1.1cqh, 12px); }

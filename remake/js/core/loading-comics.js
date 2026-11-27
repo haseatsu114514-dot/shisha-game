@@ -21,7 +21,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2258:sumi-cold-tea）",
-    caption: "シーシャの話になると、時間を忘れる二人。",
+    caption: "シーシャの話は、つい長くなる二人。",
     panels: [
       { src: imgFileUrl("loading/sumi-cold-tea-1.webp"), alt: "左: はじめが冷めた紅茶を見て「お茶、冷めました。」。右のスミさんは頬杖で「話しすぎたな。」。" },
       { src: imgFileUrl("loading/sumi-cold-tea-2.webp"), alt: "スミさんが指を立てて楽しそうに話を続け、はじめはノートを開く。はじめ「話はまだ熱い。」。" },
@@ -34,7 +34,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2229:sumi-cloth-fold（復刻一覧の restored-44 と同じ画像））",
-    caption: "掃除のあと、ふきんを畳む練習をしていたら。",
+    caption: "スミさんに、ふきんの畳み方を習う。",
     panels: [
       { src: imgFileUrl("loading/sumi-cloth-fold-1.webp"), alt: "左: はじめが清潔な白いふきんを持ち「畳み方は？」。スミさんが「角をそろえろ。」。" },
       { src: imgFileUrl("loading/sumi-cloth-fold-2.webp"), alt: "はじめが折り紙の鶴そっくりに畳んだ白ふきんを手にして困惑「鶴になった。」。スミさんは無言で眼鏡をずらし驚く。布の鶴は飛ばない。" },
@@ -47,7 +47,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2246:sweet-unit）",
-    caption: "なるは、甘さをお菓子で考える作り手です。",
+    caption: "なるは、甘さをお菓子で量る作り手。",
     panels: [
       { src: imgFileUrl("loading/sweet-unit-1.webp"), alt: "左: はじめがメニューを持って「甘さ控えめで。」。右のなるが考えて「ケーキなら何口？」。" },
       { src: imgFileUrl("loading/sweet-unit-2.webp"), alt: "なるがショートケーキの一切れとフォークを示して好みを確かめる。はじめは苦笑いで「単位が独特。」。" },
@@ -73,7 +73,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2246:mint-ranking）",
-    caption: "ぺぱーみんとのキャストは、みんと一人です。",
+    caption: "みんとの店のキャストは、みんとだけ。",
     panels: [
       { src: imgFileUrl("loading/mint-ranking-1.webp"), alt: "左: はじめがメニューを見て「人気一位は？」。右のみんとが自分を指して「みんとです♡」。" },
       { src: imgFileUrl("loading/mint-ranking-2.webp"), alt: "みんとはウインク。はじめがメニューのミントとチョコの絵を指して「味の方です。」。" },
@@ -112,7 +112,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2258:adam-photo-album）",
-    caption: "アダムの旅行の思い出は、いつも同じ主役。",
+    caption: "アダムの旅の写真は、いつも同じ主役。",
     panels: [
       { src: imgFileUrl("loading/adam-photo-album-1.webp"), alt: "左: はじめがアダムのアルバムをのぞいて「旅行の写真です？」。右のアダムが満足げに「いい記録だ。」。" },
       { src: imgFileUrl("loading/adam-photo-album-2.webp"), alt: "開いたアルバムの写真は、山も海も赤リンゴと青リンゴが主役。はじめ「全部リンゴだ。」。" },
@@ -125,7 +125,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-01）",
-    caption: "強面の店主・りゅうじの店は、ちゃんとシーシャ屋です。",
+    caption: "強面の店主でも、ここはシーシャ屋。",
     panels: [
       { src: imgFileUrl("loading/restored-01-1.webp"), alt: "重い扉を開けたはじめ「店、間違えた……」。白いチェックのスーツにサングラスのりゅうじが「苦手なもんはあるか。」。はじめ「えっ。」。" },
       { src: imgFileUrl("loading/restored-01-2.webp"), alt: "りゅうじが果物の絵のメニューを広げて「フレーバーの話だ。」。はじめはほっとして「シーシャ屋だ……」。りゅうじ「ゆっくりしてけ。」。" },
@@ -151,7 +151,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 4,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-05）",
-    caption: "噂の「シガーマン」の正体は、本人だけが知らない。",
+    caption: "噂のシガーマン、正体はすぐそばに。",
     panels: [
       { src: imgFileUrl("loading/restored-05-1.webp"), alt: "りゅうじが黒い煙の化け物を思い浮かべながら「シガーマン……化け物だ。」。はじめは聞き入っている。" },
       { src: imgFileUrl("loading/restored-05-2.webp"), alt: "明るい喫茶店で、ましろが紅茶を手に震えて「こわいねぇ……」。ましろに「本人」の札が向いている。はじめ「……」。" },
@@ -164,7 +164,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-08）",
-    caption: "ぺぱーみんとの持ちネタ、「人気No.1」。",
+    caption: "みんとの持ちネタ、「人気No.1」。",
     panels: [
       { src: imgFileUrl("loading/restored-08-1.webp"), alt: "みんとが「人気No.1」の自分のポスターの前で「人気No.1♡」。はじめは感心して「おぉ…！」。" },
       { src: imgFileUrl("loading/restored-08-2.webp"), alt: "キャスト紹介の壁には、みんとの写真が一枚だけ。はじめ「ほかのキャストは？」。みんとがウインクして「みんと♡」。" },
@@ -177,7 +177,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-12）",
-    caption: "香りの感想を言葉にするのは、意外とむずかしい。",
+    caption: "香りを言葉にするのは、意外と難しい。",
     panels: [
       { src: imgFileUrl("loading/restored-12-1.webp"), alt: "凛想がクリップボードとペンを差し出して「正直に書いてね。」。はじめは真剣に考えている。" },
       { src: imgFileUrl("loading/restored-12-2.webp"), alt: "はじめが見せた紙には大きく「いい匂い」の一言。凛想が頬杖をついて「語彙も貸そうか。」。" },
@@ -190,7 +190,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-13）",
-    caption: "サメちゃんは、サメ映画の時だけ少し強がり。",
+    caption: "サメちゃん、サメ映画では強がり。",
     panels: [
       { src: imgFileUrl("loading/restored-13-1.webp"), alt: "ソファでサメ映画を見ながら、サメちゃんが王冠のサメのぬいぐるみを抱いて「怖くないのじゃ。」。隣のはじめはポップコーンを持って笑顔。" },
       { src: imgFileUrl("loading/restored-13-2.webp"), alt: "サメちゃんはぬいぐるみで目を隠して震えている。「側近よ、目を開けろ。」。はじめは目を閉じたまま笑っている。" },
@@ -203,7 +203,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-15）",
-    caption: "ムカイさんは、渋い見た目で甘いもの好き。",
+    caption: "渋いムカイさん、実はかわいい物好き。",
     panels: [
       { src: imgFileUrl("loading/restored-15-1.webp"), alt: "帽子を目深にかぶったムカイさんが渋く「いつものを。」。注文を取るはじめ「はい。」。" },
       { src: imgFileUrl("loading/restored-15-2.webp"), alt: "出てきたのはクマの顔のラテアート。ムカイさん「耳、大きめで。」。はじめはにこにこしている。" },
@@ -216,7 +216,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-17）",
-    caption: "つむぎの絵には、いつも少し遊び心があります。",
+    caption: "つむぎの似顔絵は、なぜか猫になる。",
     panels: [
       { src: imgFileUrl("loading/restored-17-1.webp"), alt: "タブレットで絵を描くつむぎに、はじめが身を乗り出して「俺も描いて。」。" },
       { src: imgFileUrl("loading/restored-17-2.webp"), alt: "つむぎが見せた絵は、はじめの帽子とパーカーの猫。はじめ「猫になった。」。つむぎ「似てます。」。" },
@@ -229,7 +229,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-18）",
-    caption: "ひよりは、弱音を吐きながらも仕事が速い。",
+    caption: "弱音を吐いても、ひよりは仕事が速い。",
     panels: [
       { src: imgFileUrl("loading/restored-18-1.webp"), alt: "ノートパソコンの前で、ひよりが頬杖をついて「私、壊れてしまいそう……」。はじめは心配そう。" },
       { src: imgFileUrl("loading/restored-18-2.webp"), alt: "画面には「議事録」「経費」「引継ぎ」がすべて済みの印。ひより「全部、送信しました。」。はじめ「仕事は速い。」。" },
@@ -242,7 +242,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-19）",
-    caption: "ボードゲームカフェの部活は、気づけば始まっています。",
+    caption: "ボドゲカフェの部活は、気づけば入部。",
     panels: [
       { src: imgFileUrl("loading/restored-19-1.webp"), alt: "ボードゲームカフェで、サイが穏やかに「見学だけでも。」。はじめ「はい！」。" },
       { src: imgFileUrl("loading/restored-19-2.webp"), alt: "はじめはいつの間にか「部長」の腕章をつけ、ゲームの箱を抱えている。サイ「では、部長。」。はじめ「いつの間に？」。" },
@@ -255,7 +255,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-21）",
-    caption: "りゅうじは、客の苦手を絶対に出しません。",
+    caption: "客の苦手は、りゅうじが絶対に守る。",
     panels: [
       { src: imgFileUrl("loading/restored-21-1.webp"), alt: "はじめがりゅうじに「ミント、苦手で。」。りゅうじは手帳に書き留めている。" },
       { src: imgFileUrl("loading/restored-21-2.webp"), alt: "店に「ミント出禁」の札。りゅうじが判を押して「徹底する。」。はじめ「国家？」。" },
@@ -268,7 +268,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-26）",
-    caption: "アダムのダブルアップル愛は、一生ものです。",
+    caption: "アダムのダブルアップル愛は一生もの。",
     panels: [
       { src: imgFileUrl("loading/restored-26-1.webp"), alt: "アダムが改まって招待状を差し出し「大事な報告だ。」。はじめは身構えている。" },
       { src: imgFileUrl("loading/restored-26-2.webp"), alt: "結婚式場で、タキシードのアダムが赤リンゴと青リンゴに「生涯、これだけ。」。はじめ「相手、味？」。" },
@@ -294,7 +294,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-32）",
-    caption: "あげはのぬいぐるみ集めは、止まりません。",
+    caption: "あげはのぬいぐるみ集めは止まらない。",
     panels: [
       { src: imgFileUrl("loading/restored-32-1.webp"), alt: "ぬいぐるみに囲まれた店で、あげはがピンクのクマを抱いて「あと一匹だけ♡」。はじめは困り顔。" },
       { src: imgFileUrl("loading/restored-32-2.webp"), alt: "店がクマのぬいぐるみで埋まっている。はじめ「店がクマ。」。" },
@@ -320,7 +320,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-38）",
-    caption: "凛想の香りの問題は、ときどき意地悪です。",
+    caption: "凛想の香りの問題は、ときどき意地悪。",
     panels: [
       { src: imgFileUrl("loading/restored-38-1.webp"), alt: "凛想が細い試香紙を差し出して「何の香り？」。はじめは香りを確かめている。" },
       { src: imgFileUrl("loading/restored-38-2.webp"), alt: "香りから月曜の会社の景色が浮かぶ。はじめ「月曜。」。凛想「正解。」。" },
@@ -333,7 +333,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-39）",
-    caption: "なるは、聞かれたら全部教えてくれる人。",
+    caption: "なるは、聞けば全部教えてくれる人。",
     panels: [
       { src: imgFileUrl("loading/restored-39-1.webp"), alt: "はじめがなるに「少しだけ教えて。」。なるがうれしそうにノートを開く。" },
       { src: imgFileUrl("loading/restored-39-2.webp"), alt: "大学の講義室で、角帽のなるが黒板の前に立つ「ノート、持った？」。学生席のはじめ「入学してる。」。" },
@@ -359,7 +359,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2374:allcast-sui-stamp-card）",
-    caption: "C.STATIONは、誰でも入りやすい店です。",
+    caption: "C.STATIONは、誰でも入りやすい店。",
     panels: [
       { src: imgFileUrl("loading/sui-stamp-card-1.webp"), alt: "黒いスーツの千須が、名刺のような紙を差し出して「千須だ。」。はじめは緊張して受け取り「会長さん……」。" },
       { src: imgFileUrl("loading/sui-stamp-card-2.webp"), alt: "はじめが受け取った紙は、マスが並んだスタンプカード。千須は真顔のまま。はじめ「スタンプカードだ。」。" },
@@ -398,7 +398,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2399:allcast-sui-long-review）",
-    caption: "審査員長の千須会長は、口数より感想が多い人。",
+    caption: "千須会長の講評は、一言で終わらない。",
     panels: [
       { src: imgFileUrl("loading/sui-long-review-1.webp"), alt: "店のカウンターで、はじめが紅茶とお菓子を前に「感想、ください。」。腕を組んだ千須が「一言で済む。」。" },
       { src: imgFileUrl("loading/sui-long-review-2.webp"), alt: "千須が巻物を広げると、講評の紙が店の奥まで長く続き、はじめはその紙にぐるぐる巻きにされている。はじめ「一言じゃない。」。" },
@@ -411,7 +411,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 4,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2399:allcast-sheikh-camel-gift）",
-    caption: "シェイクの好きな味はぶどう。お礼も王様の大きさ。",
+    caption: "ぶどう好きのシェイク、お礼も特大。",
     panels: [
       { src: imgFileUrl("loading/sheikh-camel-gift-1.webp"), alt: "異国の街角で、はじめがみかんを一つ差し出して「みかん、どうぞ。」。白い民族衣装のシェイクが胸に手を当てて「礼をしよう。」。" },
       { src: imgFileUrl("loading/sheikh-camel-gift-2.webp"), alt: "シェイクがみかんを手に、ぶどうの大きなかごを両脇に積んだラクダの手綱をはじめに渡している。はじめ「お返しが大きい。」。" },
@@ -424,7 +424,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2399:allcast-uranaishi-kotatsu）",
-    caption: "路上の占い師は、冬でも同じ机で待っている。",
+    caption: "路上の占い師は、冬も同じ机で待つ。",
     panels: [
       { src: imgFileUrl("loading/uranaishi-kotatsu-1.webp"), alt: "雪の降る路地で、マフラー姿のはじめが震えながら「寒くないですか？」。フードの占い師が占いの机の前で「ヒヒ、平気さ。」。" },
       { src: imgFileUrl("loading/uranaishi-kotatsu-2.webp"), alt: "はじめが机の布をめくると、中はこたつ。占い師はみかんを横にお茶を飲んでいる。はじめ「こたつだった。」。" },
@@ -437,7 +437,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2399:allcast-uranaishi-beach）",
-    caption: "路上の占い師は、なぜか思わぬ所にも現れる。",
+    caption: "路上の占い師は、思わぬ所にも現れる。",
     panels: [
       { src: imgFileUrl("loading/uranaishi-beach-1.webp"), alt: "路地の占いの机で、浮き輪を持ったはじめが「明日から海です！」。フードの占い師が頬杖で「ヒヒ、いいねえ。」。" },
       { src: imgFileUrl("loading/uranaishi-beach-2.webp"), alt: "翌日の砂浜。水着で浮き輪を持つはじめの横に、パラソルの下で占いの机を出した占い師がいる。はじめ「海にもいる。」。" },
@@ -450,7 +450,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2399:allcast-samechan-watermelon-bite）",
-    caption: "サメちゃんは、笑うとギザ歯が見える店主です。",
+    caption: "サメちゃんは、ギザ歯がのぞく店主。",
     panels: [
       { src: imgFileUrl("loading/samechan-watermelon-bite-1.webp"), alt: "海辺の店で、はじめが丸ごとのスイカを抱えて「スイカ、切ります？」。サメのパペットを持ったサメちゃんが「そのままでよいのじゃ。」。" },
       { src: imgFileUrl("loading/samechan-watermelon-bite-2.webp"), alt: "スイカにサメの歯型そのままのギザギザの大きなかじり跡。サメちゃんは満足げにもぐもぐしている。はじめ「歯型がサメだ。」。" },
@@ -463,7 +463,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2407:allcast-saku-every-order）",
-    caption: "綾取は客の好みを予想するのが好き。ときどき、ずるい。",
+    caption: "綾取の注文当ては、ときどきずるい。",
     panels: [
       { src: imgFileUrl("loading/saku-every-order-1.webp"), alt: "店のカウンターで、綾取が指を立てて「注文、当ててみせる。」。メニューを持ったはじめが「じゃあ、どうぞ。」。" },
       { src: imgFileUrl("loading/saku-every-order-2.webp"), alt: "カウンターいっぱいに、紅茶・コーヒー・ジュース・ソーダの飲み物がずらりと並び、綾取はピースして得意げ。はじめ「全部出てきた。」。" },
@@ -476,7 +476,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2407:allcast-saku-photo-face）",
-    caption: "片側だけ上がる綾取の笑顔は、写真だと少し怪しい。",
+    caption: "綾取の笑顔は、写真だと少し怪しい。",
     panels: [
       { src: imgFileUrl("loading/saku-photo-face-1.webp"), alt: "店の入口の前で、はじめがスマホを構えて「一枚撮りますね。」。綾取がピースして「かわいく頼むよ。」。" },
       { src: imgFileUrl("loading/saku-photo-face-2.webp"), alt: "はじめが見せるスマホの画面には、稲妻を背に悪役のように笑う綾取が写っている。本人はきょとんとしている。はじめ「悪役の顔だ。」。" },
@@ -489,7 +489,7 @@ export const LOADING_COMICS = [
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2407:allcast-ageha-full-coord）",
-    caption: "あげはは「カワイイは最強」が信条のギャル店長。",
+    caption: "あげはの信条は「カワイイは最強」。",
     panels: [
       { src: imgFileUrl("loading/ageha-full-coord-1.webp"), alt: "ピンクの店内で、あげはが服のハンガーを抱えて「コーデしたげる！」。はじめは少し引いて「お手柔らかに。」。" },
       { src: imgFileUrl("loading/ageha-full-coord-2.webp"), alt: "はじめが帽子からズボンまで全身ヒョウ柄、ハートのサングラスに金のチェーンの姿で光の中に立ち、あげはが両手の親指を立てる。はじめ「全身ヒョウ柄。」。" },
@@ -503,7 +503,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（91-ageha-model-job）",
-    caption: "あげはは、雑誌の読者モデルもしている店長。",
+    caption: "あげはの新しい仕事は、広告モデル。",
     panels: [
       { src: imgFileUrl("loading/ageha-model-job-1.webp"), alt: "あげはの店で、あげはがスマホを高く掲げて大喜び「モデルの仕事取れた！」。はじめが拍手して「雑誌ですか？」。" },
       { src: imgFileUrl("loading/ageha-model-job-2.webp"), alt: "あげはがドヤ顔でピースしながらスマホの画面を突き出す。画面には、両手で口元を覆ったあげはの写真と「うわっ…私のシーシャ、軽すぎ…？」の見出しの広告。はじめは真顔で汗をかき「よく見るやつ…」。" },
@@ -516,7 +516,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-rei-castle-cake）",
-    caption: "黒と赤が好きなクラウドは、ケーキの飾りでも全力。",
+    caption: "クラウドの飾りは、ケーキでも黒と赤。",
     panels: [
       { src: imgFileUrl("loading/rei-castle-cake-1.webp"), alt: "赤いテーブルの店で、はじめが小さなショートケーキを差し出して「飾り、頼めます？」。絞り袋を持ったクラウドが目を閉じて「……任せて。」。" },
       { src: imgFileUrl("loading/rei-castle-cake-2.webp"), alt: "ケーキが黒と赤の何段もの城になり、黒い薔薇と銀の鎖で飾られている。クラウドは小さく親指を立てる。はじめ「城になった。」。" },
@@ -529,7 +529,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-rei-mamachari）",
-    caption: "見た目は夜の住人。でも移動は、ふつうの自転車。",
+    caption: "見た目は夜の住人、移動は自転車。",
     panels: [
       { src: imgFileUrl("loading/rei-mamachari-1.webp"), alt: "夜の店先で、紙袋を両手に提げたはじめが「駅まで遠いな…」。黒と赤のロングコートのクラウドが「……送っていく。」。" },
       { src: imgFileUrl("loading/rei-mamachari-2.webp"), alt: "クラウドが押してきたのは、かごにネギとトイレットペーパーを入れた水色のママチャリ。はじめ「ママチャリだ。」。" },
@@ -542,7 +542,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-steve-lemon-tree）",
-    caption: "スティーブの好きな味は、レモンとライムの組み合わせ。",
+    caption: "スティーブはレモン好き。量も豪快。",
     panels: [
       { src: imgFileUrl("loading/steve-lemon-tree-1.webp"), alt: "ピザ店で、はじめが指を一本立てて「レモン、一個ください。」。エプロン姿のスティーブが親指を立てて「ヘイ、オーケー。」。" },
       { src: imgFileUrl("loading/steve-lemon-tree-2.webp"), alt: "スティーブが台車で運んできたのは、実がたくさんなった鉢植えのレモンの木。はじめ「木ごと来た。」。" },
@@ -555,7 +555,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-steve-magnifier）",
-    caption: "スティーブは、お客さんの表情をよく見ている職人。",
+    caption: "スティーブは、客の顔をよく見る職人。",
     panels: [
       { src: imgFileUrl("loading/steve-magnifier-1.webp"), alt: "ボックス席で、レモンの飲み物を差し出したスティーブが身を乗り出して「ヘイ、どうだ？」。飲んでいるはじめが「おいしいです。」。" },
       { src: imgFileUrl("loading/steve-magnifier-2.webp"), alt: "スティーブが大きな虫眼鏡ではじめの顔をのぞき込み、メモを取っている。はじめはのけぞって「顔が近い。」。" },
@@ -568,7 +568,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-volk-kitten）",
-    caption: "冷たく見えるヴォルクにも、かなわない相手がいる。",
+    caption: "鉄のヴォルクも、子猫にはかなわない。",
     panels: [
       { src: imgFileUrl("loading/volk-kitten-1.webp"), alt: "公園のベンチの前で、はじめが白い子猫を差し出して「抱っこしてみます？」。腕を組んだヴォルクが「……不要だ。」。" },
       { src: imgFileUrl("loading/volk-kitten-2.webp"), alt: "子猫を抱いたヴォルクの顔がとろけ、周りにハートと花が舞う。はじめ「顔が溶けた。」。" },
@@ -581,7 +581,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-volk-hammock）",
-    caption: "ヴォルクは、くつろぐときも姿勢がくずれない。",
+    caption: "ヴォルクは、寝そべっても直立姿勢。",
     panels: [
       { src: imgFileUrl("loading/volk-hammock-1.webp"), alt: "木につるしたハンモックで寝そべるはじめが「楽にしてください。」。横に直立したヴォルクが「了解した。」。" },
       { src: imgFileUrl("loading/volk-hammock-2.webp"), alt: "ヴォルクはハンモックの上でも、一直線にぴんと伸びたまま横になっている。はじめ「板みたいだ。」。" },
@@ -594,7 +594,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-salaryman-fast-fingers）",
-    caption: "無口な鉄仮面さんにも、夢中になれる遊びがある。",
+    caption: "無口な鉄仮面さんも、ゲームには夢中。",
     panels: [
       { src: imgFileUrl("loading/salaryman-fast-fingers-1.webp"), alt: "店のソファ席で、紅茶を置くはじめが「スマホで何を？」。スマホを横に持つ鉄仮面さんが「……ゲームを。」。" },
       { src: imgFileUrl("loading/salaryman-fast-fingers-2.webp"), alt: "鉄仮面さんは無表情のまま、指が何本にも見える速さでスマホを操作し、星と音符が飛び散る。はじめ「手が増えてる。」。" },
@@ -607,7 +607,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-salaryman-make-laugh）",
-    caption: "表情を変えない鉄仮面さんは、tonari一の手強い客。",
+    caption: "鉄仮面さんは、tonari一の手強い客。",
     panels: [
       { src: imgFileUrl("loading/salaryman-make-laugh-1.webp"), alt: "店のソファ席で、はじめが拳を握って「笑わせてみせます！」。紅茶を持った鉄仮面さんが「……どうぞ。」。" },
       { src: imgFileUrl("loading/salaryman-make-laugh-2.webp"), alt: "はじめが付け鼻にとんがり帽子で、頭の上の皿回しとお手玉まで披露するが、鉄仮面さんは無表情で紅茶を飲む。はじめ「手強い……！」。" },
@@ -620,7 +620,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-kemuri-jar-machine）",
-    caption: "チャコール博士は、ものを作るのが大好きな研究者です。",
+    caption: "チャコール博士は、発明で何でも解決。",
     panels: [
       { src: imgFileUrl("loading/kemuri-jar-machine-1.webp"), alt: "研究室で、はじめがジャムの瓶を握って「ふたが開かない……」。白衣のチャコール博士が手を差し出して「私に任せなさい。」。" },
       { src: imgFileUrl("loading/kemuri-jar-machine-2.webp"), alt: "机の上に滑車・ばね・転がる玉・ドミノの大きな仕掛けが組まれ、瓶のふたが開く。博士は得意げ。はじめ「大がかりすぎる。」。" },
@@ -633,7 +633,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-kemuri-snow-sandals）",
-    caption: "博士はどんな日も、素足に黒いサンダルです。",
+    caption: "博士は、どんな日も素足にサンダル。",
     panels: [
       { src: imgFileUrl("loading/kemuri-snow-sandals-1.webp"), alt: "雪の降る外で、はじめが「外、雪ですよ。」。ニット帽・耳当て・マフラー・手袋で着込んだ博士が「防寒は完璧だよ。」。" },
       { src: imgFileUrl("loading/kemuri-snow-sandals-2.webp"), alt: "全身を見ると、博士の足元だけ素足にサンダル。しゃがんだはじめが指さして「足元が夏。」。" },
@@ -646,7 +646,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-pakki-gum-bubble）",
-    caption: "パッキーの好きな味は、ガムシナモンです。",
+    caption: "パッキーの好きな味は、ガムシナモン。",
     panels: [
       { src: imgFileUrl("loading/pakki-gum-bubble-1.webp"), alt: "公園のベンチで、はじめがガムを差し出して「ガム、いる？」。マイクを持った白い雲のようなパッキーが「大好物ですッ！」。" },
       { src: imgFileUrl("loading/pakki-gum-bubble-2.webp"), alt: "パッキーがふくらませた大きなガムの風船で、空に浮かんでいる。はじめ「浮いてる！」。" },
@@ -659,7 +659,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-pakki-kendama）",
-    caption: "パッキーの「名人ですッ！」は、自己申告です。",
+    caption: "パッキーの「名人」は、自己申告。",
     panels: [
       { src: imgFileUrl("loading/pakki-kendama-1.webp"), alt: "控え室で、けん玉を持ったはじめが「けん玉、できる？」。マイクを持ったパッキーが「名人ですッ！」。" },
       { src: imgFileUrl("loading/pakki-kendama-2.webp"), alt: "パッキーはけん玉の糸で全身ぐるぐる巻きになり、逆さまで玉の上に乗っている。はじめ「絡まってる。」。" },
@@ -672,7 +672,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-emil-mustache-smile）",
-    caption: "無口なエミルさんにも、隠しきれない気持ちがある。",
+    caption: "無口なエミルさんも、ひげは正直。",
     panels: [
       { src: imgFileUrl("loading/emil-mustache-smile-1.webp"), alt: "テーブルで、はじめがお菓子の皿を差し出して「味、どうです？」。腕を組んだエミルが「……悪くない。」。" },
       { src: imgFileUrl("loading/emil-mustache-smile-2.webp"), alt: "エミルの顔は硬いままなのに、口ひげだけが大きく笑った形に反り上がり、ハートが飛ぶ。はじめ「ひげが笑ってる。」。" },
@@ -685,7 +685,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-emil-evil-eye）",
-    caption: "トルコでは、青い目のお守りで災いをよける。",
+    caption: "トルコの青い目のお守りは、災いよけ。",
     panels: [
       { src: imgFileUrl("loading/emil-evil-eye-1.webp"), alt: "エミルが青い目玉のお守りを一つ差し出して「お守りだ。」。両手で受けるはじめが「うれしいです！」。" },
       { src: imgFileUrl("loading/emil-evil-eye-2.webp"), alt: "はじめの帽子・服・リュックに青い目玉のお守りが何十個もぶら下がり、エミルは満足げ。はじめ「目が多い。」。" },
@@ -698,7 +698,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-maezono-plain-water）",
-    caption: "上園さんは、何でも本当においしそうに味わう人。",
+    caption: "上園さんは、水でもおいしそうに飲む。",
     panels: [
       { src: imgFileUrl("loading/maezono-plain-water-1.webp"), alt: "水差しを持ったはじめが「ただの水です。」。コップの水を飲む上園が「おいしいねえ。」。" },
       { src: imgFileUrl("loading/maezono-plain-water-2.webp"), alt: "上園がコップを掲げると、背景が虹と花畑に変わるほどの大感激。はじめ「水ですよ？」。" },
@@ -711,7 +711,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-maezono-lemon）",
-    caption: "上園さんの好きな味はレモン。かじるのは別の話。",
+    caption: "上園さんはレモン好き。かじるのは別。",
     panels: [
       { src: imgFileUrl("loading/maezono-lemon-1.webp"), alt: "はじめがくし切りのレモンの皿を出して「レモン、好きですよね。」。目を輝かせた上園が「大好きだねえ。」。" },
       { src: imgFileUrl("loading/maezono-lemon-2.webp"), alt: "レモンをかじった上園が、眼鏡が飛ぶほど酸っぱい顔をしながら親指を立てる。はじめ「好きなのに！」。" },
@@ -724,7 +724,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-dasilva-blackout-smile）",
-    caption: "名前のとおり、太陽の笑顔はいつもまぶしい。",
+    caption: "名前のとおり、太陽の笑顔はまぶしい。",
     panels: [
       { src: imgFileUrl("loading/dasilva-blackout-smile-1.webp"), alt: "停電した暗い部屋で、はじめが「停電だ……。」。花柄シャツのダ・シルヴァが親指を立てて「任せろ！」。" },
       { src: imgFileUrl("loading/dasilva-blackout-smile-2.webp"), alt: "ダ・シルヴァの笑顔が光を放ち、部屋が昼のように明るい。はじめは目を覆って「まぶしすぎる。」。" },
@@ -737,7 +737,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-maki-relax-shoulders）",
-    caption: "マキさんは、力任せの一投に短く助言をくれる。",
+    caption: "力むはじめに、マキさんの短い助言。",
     panels: [
       { src: imgFileUrl("loading/maki-relax-shoulders-1.webp"), alt: "斧投げBarのレーンで、斧を構えて力むはじめに、マキが「肩の力、抜きな！」。はじめ「はい……！」。" },
       { src: imgFileUrl("loading/maki-relax-shoulders-2.webp"), alt: "はじめは力を抜きすぎて、床に溶けた水たまりのようになっている。マキが慌てて「抜きすぎだ！」。" },
@@ -750,7 +750,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-maki-ring-toss）",
-    caption: "マキさんの投げる腕は、斧以外でも冴えている。",
+    caption: "マキさんの腕は、斧以外でも冴える。",
     panels: [
       { src: imgFileUrl("loading/maki-ring-toss-1.webp"), alt: "夜店の輪投げで、輪を持ったはじめが「輪投げ、やります？」。腕を回すマキが「軽く投げるよ。」。" },
       { src: imgFileUrl("loading/maki-ring-toss-2.webp"), alt: "全部の棒に輪が入り、マキは景品のぬいぐるみやお菓子を両腕いっぱいに抱えて笑う。はじめ「全部入った。」。" },
@@ -763,7 +763,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-yoru-club-mode）",
-    caption: "ヨルさんは、音楽で場の空気をがらりと変える。",
+    caption: "ヨルさんの選曲で、店が一変する。",
     panels: [
       { src: imgFileUrl("loading/yoru-club-mode-1.webp"), alt: "落ち着いた店内で、カップを拭くはじめが「音楽、かけます？」。ヘッドホンを首にかけたヨルが「少しだけね。」。" },
       { src: imgFileUrl("loading/yoru-club-mode-2.webp"), alt: "店内がミラーボールと紫の光の飛び交うクラブに一変し、ヨルはヘッドホンに手を当てている。はじめ「少しじゃない。」。" },
@@ -776,7 +776,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-yoru-old-photo）",
-    caption: "ヨルさんは、若い頃に各地のクラブを回っていた。",
+    caption: "ヨルさんの若い頃は、クラブ回り。",
     panels: [
       { src: imgFileUrl("loading/yoru-old-photo-1.webp"), alt: "楽屋の机で、はじめが伏せた写真立てに目を留めて「昔の写真ですか？」。ヨルが慌てて手を伸ばし「……見ないで。」。" },
       { src: imgFileUrl("loading/yoru-old-photo-2.webp"), alt: "写真には、大きなアフロヘアできらきらのジャケットを着た若い頃のヨル。本人は顔を覆って赤くなる。はじめ「髪がすごい。」。" },
@@ -789,7 +789,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-sai-cleaning-game）",
-    caption: "サイさんは、ボドゲカフェの穏やかな店長。",
+    caption: "サイさんは、何でもゲームにする店長。",
     panels: [
       { src: imgFileUrl("loading/sai-cleaning-game-1.webp"), alt: "ボードゲームカフェで、ほうきを持ったはじめが「掃除、手伝います。」。カードを持ったサイが「では、ルールを。」。" },
       { src: imgFileUrl("loading/sai-cleaning-game-2.webp"), alt: "床に、ほうきとちりとりのマスが並ぶすごろくの盤が敷かれ、サイは大きなさいころを抱えている。はじめ「掃除がゲームに。」。" },
@@ -802,7 +802,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 5,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-nine-thousand-pancake）",
-    caption: "SHISHA-9000も、失敗から学んで上達する。",
+    caption: "SHISHA-9000も、失敗して上達する。",
     panels: [
       { src: imgFileUrl("loading/nine-thousand-pancake-1.webp"), alt: "研究所の台所で、きれいに焼けたホットケーキを見たはじめが手を合わせて「初めてで上手！」。フライ返しを持ったSHISHA-9000が「本日の成果です。」。" },
       { src: imgFileUrl("loading/nine-thousand-pancake-2.webp"), alt: "SHISHA-9000の後ろに、焦げたり崩れたりした練習のホットケーキが山のように積まれている。はじめ「練習してた。」。" },
@@ -815,7 +815,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 5,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-nine-thousand-smile-sign）",
-    caption: "顔が変わらないロボットにも、伝え方はある。",
+    caption: "顔が変わらなくても、伝え方はある。",
     panels: [
       { src: imgFileUrl("loading/nine-thousand-smile-sign-1.webp"), alt: "はじめがプレゼントの箱を渡して「今、うれしい？」。受け取ったSHISHA-9000が「表情は出せません。」。" },
       { src: imgFileUrl("loading/nine-thousand-smile-sign-2.webp"), alt: "SHISHA-9000が、大きな黄色い笑顔の看板を掲げる。はじめも笑って「看板で笑った。」。" },
@@ -828,7 +828,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-noor-sand-scarf）",
-    caption: "砂漠では、首のスカーフで舞う砂から顔を守る。",
+    caption: "砂漠では、スカーフで砂から顔を守る。",
     panels: [
       { src: imgFileUrl("loading/noor-sand-scarf-1.webp"), alt: "砂漠で、ヌールが白い布を広げて「砂よけ、巻こうか。」。帽子を押さえるはじめが「助かります。」。" },
       { src: imgFileUrl("loading/noor-sand-scarf-2.webp"), alt: "はじめは頭から足まで布でぐるぐる巻きになり、手探りで歩く。ヌールは腰に手を当てて満足げ。はじめ「前が見えない。」。" },
@@ -841,7 +841,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-noor-small-dune）",
-    caption: "砂漠では、遠くの砂丘の大きさが分かりにくい。",
+    caption: "砂漠では、遠くの砂丘が小さく見える。",
     panels: [
       { src: imgFileUrl("loading/noor-small-dune-1.webp"), alt: "砂漠で、サンドボードを担いだヌールが遠くを指さして「あの丘を滑ろう。」。しゃがんだはじめが「小さいですね。」。" },
       { src: imgFileUrl("loading/noor-small-dune-2.webp"), alt: "近づくと、目の前は底が見えないほど深い巨大な砂の斜面。ヌールは手を振り、ボードを抱えたはじめは震えて「でかすぎる！」。" },
@@ -854,7 +854,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-mukai-hot-coffee）",
-    caption: "ハードボイルドな見た目でも、苦手なものはある。",
+    caption: "渋いムカイさんにも、苦手はある。",
     panels: [
       { src: imgFileUrl("loading/mukai-hot-coffee-1.webp"), alt: "店のカウンターで、帽子のムカイさんがコーヒーを置いて「熱いうちに飲め。」。カップを持つはじめが「いただきます。」。" },
       { src: imgFileUrl("loading/mukai-hot-coffee-2.webp"), alt: "はじめがおいしそうに飲む横で、ムカイさんは自分のカップに氷を入れ、小さな扇風機二つで冷ましている。はじめ「猫舌なんだ。」。" },
@@ -867,7 +867,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-tsumugi-route-map）",
-    caption: "つむぎは、葉っぱの耳の猫を描く芸大生です。",
+    caption: "つむぎが描くと、道順も冒険の地図。",
     panels: [
       { src: imgFileUrl("loading/tsumugi-route-map-1.webp"), alt: "店のソファ席で、はじめがメモ帳を差し出して「道順、描いてくれる？」。タブレットを抱えたつむぎが「……はい。」。" },
       { src: imgFileUrl("loading/tsumugi-route-map-2.webp"), alt: "はじめが広げた道順は、山・川・森と葉っぱの耳の猫まで描き込まれた冒険の地図のような大作。はじめ「地図が壮大だ。」。" },
@@ -880,7 +880,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-hiyori-ramen-gulp）",
-    caption: "ひよりの好物はラーメン。儚さより食欲が勝つ。",
+    caption: "ひよりの好物はラーメン。食欲が勝つ。",
     panels: [
       { src: imgFileUrl("loading/hiyori-ramen-gulp-1.webp"), alt: "ラーメン店で、頬杖をついたひよりが「食欲がないの……」。隣のはじめが「一口だけでも。」。" },
       { src: imgFileUrl("loading/hiyori-ramen-gulp-2.webp"), alt: "ひよりが目を輝かせて器を持ち上げ、麺を一気にすすって器は空っぽ。はじめ「一口で完食。」。" },
@@ -893,7 +893,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 4,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2560:allcast-saif-welcome-carpet）",
-    caption: "ファーリスは、ドバイの店で出会う明るい友人。",
+    caption: "ファーリスの歓迎は、いつも全力。",
     panels: [
       { src: imgFileUrl("loading/faris-welcome-carpet-1.webp"), alt: "ドバイの店の前で、はじめが片手を上げて「少し寄りました。」。丸めた赤い敷物に手をかけたファーリスが「よく来た、ハジメ！」。" },
       { src: imgFileUrl("loading/faris-welcome-carpet-2.webp"), alt: "赤い敷物が路地の奥の店の入口までずっと伸び、はじめはその上を長々と歩いて向かう。端を持つファーリスは満面の笑み。はじめ「道まで歓迎だ。」。" },
@@ -906,7 +906,7 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 4,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2560:allcast-saif-listen-cushions）",
-    caption: "ファーリスは、相手の話を本気で聞く人。",
+    caption: "ファーリスは、話を本気で聞く人。",
     panels: [
       { src: imgFileUrl("loading/faris-listen-cushions-1.webp"), alt: "テラスの小さな机で、はじめが「長くなりますよ。」。頬杖をついたファーリスがにこにこと「全部、聞くよ。」。" },
       { src: imgFileUrl("loading/faris-listen-cushions-2.webp"), alt: "ファーリスは自分の席をクッションと毛布で巣のように囲み、大きな水筒まで用意して目を輝かせている。はじめ「泊まる準備だ。」。" },

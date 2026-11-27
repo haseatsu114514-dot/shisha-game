@@ -81,7 +81,7 @@ const image = await withLoading(async ({ report }) => {
 
 ```js
 { id, title, minChapter, contexts, note?,   // contexts は必須。ふつうは ["craft"]（ゲームのどのロード画面にも出る）
-  caption?: "初心者向けの一行解説（コマの下に表示）",
+  caption?: "一行解説（コマの下に表示。全角18字以内・英数字は半角0.5字。その話の中身に合う一文）",
   panels: [ {
     src, alt,
     region?:  { x, y, width, height, sourceWidth, sourceHeight }, // 原画シートの切り出し
