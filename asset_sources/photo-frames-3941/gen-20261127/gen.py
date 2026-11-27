@@ -89,11 +89,14 @@ def cheki_prompt(job):
         "Image 1 is the exact cheki card template: keep the card's size, position and rounded corners, the photo window position and the dark background outside the card exactly the same. Output the whole canvas with this same layout.",
         *([f"Change only the card's color and pattern: make it {frame}. The photo window stays exactly where it is."] if frame else ["Keep the card plain white."]),
         "Fill the grey photo window edge to edge with the photo. The photo:", job["pose"] + ".",
-        f"Image 2 is the approved finished cheki of this cafe: match its photo quality and copy its handwriting style for the message ({ink}, small hearts, sparkles and a mint leaf).",
-        "Image 3 is Minto's official sprite.", WHO["minto"],
+        f"Image 2 is the approved finished cheki of this cafe: match its photo quality" + ("; the handwriting here is quieter than in that cheki" if job.get("rare") else f" and copy its handwriting style for the message ({ink}, small hearts, sparkles and a mint leaf)") + ".",
+        *([f"Handwriting: {ink}."] if job.get("rare") else []),
+        *(["Image 3 is the official plain-clothes sprite of Shiori, who is Minto off duty.", WHO["shiori"],
+           "This is an ultra-rare cheki: Minto is NOT in her concept-cafe costume — no horns, no bat wings, no frilly dress — just Shiori in her plain clothes, quiet and shy."]
+          if job.get("who") == "shiori" else ["Image 3 is Minto's official sprite.", WHO["minto"]]),
         *(["Image 4 is Hajime's official sprite.", HAJIME] if two else []),
-        f"In the bottom margin of the card, Minto has hand-written exactly this Japanese message in two lines — " + " ".join(f"line {i + 1}: 「{t}」" for i, t in enumerate(job["text"].split("\n"))) + " — and her signature 「みんと」 smaller at the right. Write the Japanese characters correctly and legibly; write nothing else (no slashes or separators between the lines).",
-        "Add a few small hand-drawn hearts and sparkles in the margins. No text, logos or watermarks inside the photo. Upper-body framing unless the photo description says otherwise, both hands drawn with correct fingers.",
+        f"In the bottom margin of the card, she has hand-written exactly this Japanese message in two lines — " + " ".join(f"line {i + 1}: 「{t}」" for i, t in enumerate(job["text"].split("\n"))) + " — and her signature 「" + ("栞" if job.get("who") == "shiori" else "みんと") + "」 smaller at the right. Write the Japanese characters correctly and legibly; write nothing else (no slashes or separators between the lines).",
+        ("Keep the margins almost empty: at most two tiny hand-drawn hearts. " if job.get("rare") else "Add a few small hand-drawn hearts and sparkles in the margins. ") + "No text, logos or watermarks inside the photo. Upper-body framing unless the photo description says otherwise, both hands drawn with correct fingers.",
         STYLE,
     ])
 
@@ -146,24 +149,31 @@ FIXED_WINDOW = (101, 128, 891, 1260)  # 台紙を本編の位置へ合わせた�
 
 def fit_cheki(raw, mask, job=None):
     """出てきた台紙を見つけ、本編の台紙の位置へ合わせ、写真の窓も本編の位置へそろえて、台紙の外を透過にする"""
-    if job and job.get("frame"):
-        return fit_cheki_fixed(raw, mask)
     a = np.asarray(raw.convert("RGB")).astype(int)
-    # 台紙の白（およそ246〜248）だけを拾う。地は暗くても明るい灰色（〜220）でもよい。写真の行は左右の白い余白だけなので、行・列とも5%を目安にする
-    white = a.min(axis=2) > 238
+    if job and job.get("frame"):
+        if job.get("patterned"):  # 柄の台紙（ハート・ギンガム）と、写真も暗くて色で分けられない黒い台紙
+            return fit_cheki_fixed(raw, mask)
+        # 無地の色の台紙（黒・アイボリー）: 台紙の左の余白の色に近い所を台紙とみなす
+        color = np.median(a[600:900, 88:112].reshape(-1, 3), axis=0)
+        white = np.abs(a - color).sum(axis=2) < 40
+    else:
+        # 台紙の白（およそ246〜248）だけを拾う。地は暗くても明るい灰色（〜220）でもよい。写真の行は左右の白い余白だけなので、行・列とも5%を目安にする
+        white = a.min(axis=2) > 238
     rows = np.where(white.mean(axis=1) > 0.05)[0]; cols = np.where(white.mean(axis=0) > 0.05)[0]
     box = (cols.min(), rows.min(), cols.max() + 1, rows.max() + 1)
     card = raw.convert("RGB").crop(box).resize((CARD[2] - CARD[0], CARD[3] - CARD[1]), Image.LANCZOS)
-    out = Image.new("RGB", (CW, CH), CARD_WHITE)
+    fill = CARD_WHITE if not (job and job.get("frame")) else tuple(int(v) for v in color)
+    out = Image.new("RGB", (CW, CH), fill)
     out.paste(card, CARD[:2])
-    # 写真の窓: 台紙の中で白くない所が9割を超える行・列を窓とみなし、本編の窓へ縮め直す
-    b = np.asarray(out).astype(int); nw = b.min(axis=2) <= 225
+    # 写真の窓: 台紙の中で台紙の色でない所が9割を超える行・列を窓とみなし、本編の窓へ縮め直す
+    b = np.asarray(out).astype(int)
+    nw = (b.min(axis=2) <= 225) if fill == CARD_WHITE else (np.abs(b - np.array(fill)).sum(axis=2) >= 40)
     cy = np.where(nw[:, 300:700].mean(axis=1) > 0.9)[0]; cx = np.where(nw[200:1100, :].mean(axis=0) > 0.9)[0]
     cy = cy[(cy > 80) & (cy < 1300)]; cx = cx[(cx > 50) & (cx < 950)]
     win = (int(cx.min()), int(cy.min()), int(cx.max()) + 1, int(cy.max()) + 1)
     photo = out.crop(win).resize((WINDOW[2] - WINDOW[0], WINDOW[3] - WINDOW[1]), Image.LANCZOS)
     draw_box = (min(win[0], WINDOW[0]), min(win[1], WINDOW[1]), max(win[2], WINDOW[2]), max(win[3], WINDOW[3]))
-    out.paste(Image.new("RGB", (draw_box[2] - draw_box[0], draw_box[3] - draw_box[1]), CARD_WHITE), draw_box[:2])
+    out.paste(Image.new("RGB", (draw_box[2] - draw_box[0], draw_box[3] - draw_box[1]), fill), draw_box[:2])
     out.paste(photo, WINDOW[:2])
     rgba = out.convert("RGBA"); rgba.putalpha(mask)
     return rgba, box, win
@@ -194,7 +204,7 @@ def run(job, kind, template, mask):
     jid = job["id"]
     try:
         if kind == "cheki":
-            imgs = [template, png_bytes(Image.open(IMG / "cgs/cg_minto_first_cheki.webp").convert("RGBA")), sprite("minto")] + ([sprite("hajime")] if job.get("two") else [])
+            imgs = [template, png_bytes(Image.open(IMG / "cgs/cg_minto_first_cheki.webp").convert("RGBA")), sprite(job.get("who") or "minto")] + ([sprite("hajime")] if job.get("two") else [])
             prompt = cheki_prompt(job)
         else:
             imgs = [png_bytes(Image.open(IMG / "cgs/cg_ch2_ageha_purikura_strip.webp").convert("RGB")), sprite("hajime")] + [sprite(w) for w in partners(job)]

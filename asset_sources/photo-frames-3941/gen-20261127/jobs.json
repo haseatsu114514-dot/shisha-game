@@ -108,7 +108,8 @@
       "frame": "a glossy BLACK card (black instant-film frame) instead of white",
       "ink": "gold and silver metallic gel-pen handwriting",
       "pose": "facing the camera, one hand lightly at her heart choker, confident half-lidded smile with a tiny fang",
-      "text": "特別な日の\nみんと♡"
+      "text": "特別な日の\nみんと♡",
+      "patterned": true
     },
     {
       "id": "C48",
@@ -116,7 +117,8 @@
       "frame": "a pastel PINK card printed with small white and darker-pink hearts",
       "ink": "white and hot-pink paint-marker handwriting",
       "pose": "facing the camera, both hands cupped under her chin in a cute 'burikko' pose, sparkly eyes",
-      "text": "かわいく\n撮れた？"
+      "text": "かわいく\n撮れた？",
+      "patterned": true
     },
     {
       "id": "C49",
@@ -124,7 +126,8 @@
       "frame": "a MINT-GREEN gingham-check card",
       "ink": "deep green and pink paint-marker handwriting",
       "pose": "facing the camera, holding a small potted mint plant toward the lens with a proud smile",
-      "text": "ミント\n育ててます♪"
+      "text": "ミント\n育ててます♪",
+      "patterned": true
     },
     {
       "id": "C50",
@@ -182,6 +185,67 @@
       "title": "イベント衣装案・天使の日",
       "pose": "a one-day 'angel day' event costume: the same dress redrawn in WHITE with mint-green frills, small white feathered angel wings instead of bat wings and a thin golden halo, but she keeps her small black devil horns peeking out (a devil playing angel); playful prayer hands",
       "text": "天使の日\n限定♡"
+    },
+    {
+      "who": "shiori",
+      "rare": true,
+      "frame": "a soft IVORY (cream) card",
+      "ink": "small, neat, slightly shaky dark-green fineliner handwriting with only one or two tiny hearts or a small mint leaf",
+      "id": "C59",
+      "title": "激レア・ないしょの一枚",
+      "pose": "after closing time in the dim cafe (only one warm lamp on, chairs up on some tables), Shiori in her plain clothes holding a finger to her lips, a shy small smile",
+      "text": "……ないしょの\n一枚"
+    },
+    {
+      "who": "shiori",
+      "rare": true,
+      "frame": "a soft IVORY (cream) card",
+      "ink": "small, neat, slightly shaky dark-green fineliner handwriting with only one or two tiny hearts or a small mint leaf",
+      "id": "C60",
+      "title": "激レア・てれる",
+      "pose": "after closing time, Shiori half-hiding her blushing face behind her cardigan sleeve, eyes looking at the camera",
+      "text": "……てれる"
+    },
+    {
+      "who": "shiori",
+      "rare": true,
+      "frame": "a soft IVORY (cream) card",
+      "ink": "small, neat, slightly shaky dark-green fineliner handwriting with only one or two tiny hearts or a small mint leaf",
+      "id": "C61",
+      "title": "激レア・閉店後のコーヒー",
+      "pose": "after closing time, Shiori sitting at the counter holding a cup of coffee with both hands, a soft, tired but warm smile",
+      "text": "いつも……\nありがと"
+    },
+    {
+      "who": "shiori",
+      "rare": true,
+      "frame": "a soft IVORY (cream) card",
+      "ink": "small, neat, slightly shaky dark-green fineliner handwriting with only one or two tiny hearts or a small mint leaf",
+      "id": "C62",
+      "title": "激レア・チョコミントパフェ",
+      "pose": "after closing time, Shiori holding up a small chocolate-mint parfait in a tall glass (her family cafe's old signature dessert), a gentle nostalgic smile",
+      "text": "チョコミント\n……すき"
+    },
+    {
+      "who": "shiori",
+      "rare": true,
+      "frame": "a soft IVORY (cream) card",
+      "ink": "small, neat, slightly shaky dark-green fineliner handwriting with only one or two tiny hearts or a small mint leaf",
+      "id": "C63",
+      "title": "激レア・古いコースター",
+      "pose": "after closing time, Shiori holding up an old, worn wooden coaster with both hands near her face, as if showing a treasure, a small proud smile",
+      "text": "これは……\nひみつ"
+    },
+    {
+      "who": "shiori",
+      "rare": true,
+      "frame": "a soft IVORY (cream) card",
+      "ink": "small, neat, slightly shaky dark-green fineliner handwriting with only one or two tiny hearts or a small mint leaf",
+      "id": "C64",
+      "title": "激レア・2ショット",
+      "two": true,
+      "pose": "two-shot after closing time: Shiori in her plain clothes standing very close to Hajime (shoulders touching), a tiny peace sign held near her chest, shy smile; Hajime smiling gently",
+      "text": "……また、ね"
     }
   ],
   "purikura": [
@@ -512,6 +576,88 @@
         "盛らない ver.☆"
       ],
       "theme": "black, wine-red and pink frame with lace, roses and small heart stamps"
+    },
+    {
+      "id": "P57",
+      "title": "私服のみんととぼうし交換",
+      "with": "shiori",
+      "top": "Shiori wearing Hajime's black cap a little too big for her, embarrassed, Hajime without his cap laughing",
+      "bottom": "Shiori giving a tiny peace sign under the brim of the cap, Hajime fixing the cap on her head",
+      "text": [
+        "……かぶってみた"
+      ],
+      "theme": "soft cream and dusty-green frame with small leaves and a tiny cap stamp; quiet and modest",
+      "quiet": true
+    },
+    {
+      "id": "P58",
+      "title": "私服のみんととおそろいの角度",
+      "with": "shiori",
+      "top": "Shiori and Hajime both tilting their heads the same way, Shiori glancing at him to copy",
+      "bottom": "both smiling softly at the camera, heads leaning a little toward each other (not touching)",
+      "text": [
+        "おそろい……"
+      ],
+      "theme": "pale mint and ivory gingham frame with a teacup and a small heart; quiet",
+      "quiet": true
+    },
+    {
+      "id": "P59",
+      "title": "私服のみんとの笑い顔",
+      "with": "shiori",
+      "top": "Shiori trying to keep a calm small smile",
+      "bottom": "Shiori suddenly laughing openly with her eyes closed, a rare unguarded laugh, Hajime surprised then smiling",
+      "text": [
+        "わらっちゃった"
+      ],
+      "theme": "warm ivory frame with a few small mint leaves and sparkles; quiet",
+      "quiet": true
+    },
+    {
+      "id": "P60",
+      "title": "凛想と記録更新",
+      "with": "rio",
+      "top": "Rio checking the photo-booth screen with a serious, analytical look, Hajime waiting",
+      "bottom": "Rio caught off guard and laughing quietly behind her hand, Hajime grinning",
+      "text": [
+        "記録 更新"
+      ],
+      "theme": "slate blue and white frame with small graph lines, leaf and star stamps"
+    },
+    {
+      "id": "P61",
+      "title": "ひよりと会社帰り",
+      "with": "hiyori",
+      "top": "Hiyori just off work with a work tote bag on her shoulder and a company ID lanyard still around her neck, a weary, fragile sigh pose",
+      "bottom": "Hiyori suddenly full of energy, a big grin and a fist pump, Hajime laughing",
+      "text": [
+        "きょうも おつかれ .｡oO"
+      ],
+      "theme": "pale aqua frame with soap bubbles, a tiny clock and star stamps"
+    },
+    {
+      "id": "P62",
+      "title": "サメちゃんと2枚目",
+      "with": "samechan",
+      "petite": true,
+      "top": "Same-chan holding her shark plush behind her back for once, a little shy, Hajime curious",
+      "bottom": "Same-chan popping the shark plush up between them with a big fang grin",
+      "text": [
+        "お主と 2枚目じゃ"
+      ],
+      "theme": "turquoise frame with waves, bubbles and small fish stamps"
+    },
+    {
+      "id": "P63",
+      "title": "つむぎの落書き",
+      "with": "tsumugi",
+      "petite": true,
+      "top": "Tsumugi drawing on the purikura with the booth's stylus, very focused, Hajime watching",
+      "bottom": "Tsumugi proudly showing that she drew cat ears and whiskers on Hajime in the photo, Hajime laughing",
+      "text": [
+        "はじめさん ネコ化"
+      ],
+      "theme": "lavender and white frame with pencil, paw and small flower stamps"
     }
   ]
 }
