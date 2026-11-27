@@ -2,6 +2,1460 @@
   "comment": "第5章正史台本。自由行動の期限なし。章進行（対決・真エンディング含む全場面）は remake/js/chapters/ch5-progress.js ほかで接続済み。",
   "dialogues": [
     {
+      "dialogue_id": "ch5_tsumugi_interview",
+      "comment": "第5章の最初の場面（章題の前）。つむぎ目線（#4253・2026-11-27 オーナー）。地の文・心の声はつむぎ（私）。つむぎの台詞は portrait:false で本人の立ち絵を出さず、はじめは portrait 指定で立ち絵を出す。恋愛状態で分岐しない。第4章 ch4_sumi_return の募集掲示から一週間あまり後。面接へ向かう道中から入り、はじめの「つむぎちゃん？」までは名前・一人称・外見・店名を出さない（tonariの背景も判明の行から）。電話を受けたスミさんが名前を伏せていた。水を寄せる所作は第2章 ch2_tsumugi_color の水への返し（STK48）。面接の問い「何を見て決めてるのか」は ch5_tsumugi_third で回収する。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "横断歩道を渡って、スマホを見た。約束の時間まで、あと二分。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "胸元の封筒が、歩くたびに少しずれる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "角を押さえて、指で縁をたどった。同じところを、もう一度たどった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（早く入ったら、手を止めさせてしまうかな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入口の紙は、下の角が一つだけ浮いていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "この紙の前で足を止めるのは、これで五回目だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "指を伸ばしかけて、封筒を抱え直した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（言うことは、一つだけ決めてきた）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホの時刻が変わった。ポケットにしまい、ドアを押した。"
+        },
+        {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ベルが鳴った。後ろ手に、ドアをそっと閉めた。"
+        },
+        {
+          "speaker": "???",
+          "face": "normal",
+          "text": "……あの。面接、ここで合ってますか"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tonari_inside_day.png"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "つむぎちゃん？",
+          "portrait": "hajime",
+          "portrait_face": "surprise"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓の光が、tonariのカウンターの木目に落ちていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめさんが、グラスを拭く手を止めていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい、はじめさん",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……スミさん、来る人の名前、教えてくれなかったんだ",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "電話で、内緒にしてもらいました。……自分で、言いたくて",
+          "portrait": false
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "serious",
+          "text": "募集の紙、見ました。作るほうも、やってみたいんです",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……座って。今、お水出すね",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "足が奥の席へ向きかけた。はじめさんが示したのは、カウンターの前の椅子だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひびの入ったタブレットを膝に置き、履歴書の封筒をカウンターに出した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめさんは封筒の横に水を置き、コップをそっとこっちへ寄せた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（……私、ずっと息を止めてた）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "作るほうって、どこからやってみたい？",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "炭を替えるところです。奥の席から、よく見てたので",
+          "portrait": false
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "私がホースを置くまで待ってくれる日と、その前に声をかけてくれる日があって",
+          "portrait": false
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "serious",
+          "text": "何を見て決めてるのか、知りたいです",
+          "portrait": false
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめさんが、奥の席を見た。返事が来るまで、コップに指を添えて待った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……聞かれると、俺もうまく言えないな",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "明日、開店前に来られる？ 俺と一緒に、開ける準備からやろう",
+          "portrait": "hajime",
+          "portrait_face": "smile"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……はい。お願いします",
+          "portrait": false
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "コップを両手で持った。指先が冷えてから、ようやく一口飲んだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tsumugi_first_day",
+      "comment": "面接の翌日と、その一週間後の開店前。つむぎ目線（#4253・2026-11-27 オーナー）。地の文・心の声はつむぎ（私）。つむぎの台詞は portrait:false で本人の立ち絵を出さず、はじめは portrait 指定で立ち絵を出す。恋愛状態で分岐しない。旧 ch5_tsumugi_little_notes（あいさつの練習・猫のノート）をつむぎ目線で取り込み、初日の炭と『燃やす』『蒸らす』（旧 ch5_bridge_after_return の指導）を足した。終幕 ending_salaryman_name の『表さん』は、この場面のネクタイの猫を読む。「声は、裏返らなかった」は ch5_tsumugi_full_house の翌朝まで取っておく。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "翌朝。開店の一時間前に、tonariのドアを開けた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "おはよう。最初の仕事、頼んでいい？",
+          "portrait": "hajime",
+          "portrait_face": "smile"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめさんが指したのは、入口の紙だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "募集の紙。もう、剥がしていいから",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "浮いていた角から、そっと剥がした。テープの跡が、四つ残った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（きのうまで、外から読んでいた紙だ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店のビブエプロンを、パーカーの上から結んだ。紐が、思ったより長い。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの内側に立つと、いつもの奥の席が、ずいぶん遠く見えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭、起こしてみようか。替えるのは、その次",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "コンロの上で、炭の角が少しずつ赤くなっていく。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……もう、載せてもいいですか",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "まだ。真ん中まで、白くなってから",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "duck": true,
+          "text": "『燃やす』んじゃない。『蒸らす』んだ",
+          "portrait": "hajime",
+          "portrait_face": "serious"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "……スミさんと、同じ言い方です",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。俺も、最初の日に言われたんだ",
+          "portrait": "hajime",
+          "portrait_face": "smile"
+        },
+        {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開店して、最初のドアベルが鳴った。ネクタイの、いつもの常連さんだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「いらっしゃいませ」の、最初の音が裏返った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "常連さんは一度だけまばたきをして、いつもの席に座った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いつもので、いいですか",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "……はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "私は、水を運ぶだけで精一杯だった。コップの水面が、ずっと揺れていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "常連さんの吐いた煙は、薄い水色だった。ミントの日の色だ。"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tonari_inside_day.png"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一週間たった。開店前のtonariには、まだ誰もいない。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……いらっしゃいませ",
+          "portrait": false
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……いらっしゃいませ",
+          "portrait": false
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入口に向かって、頭を下げる。最初の一回だけ、まだ声が裏返る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "毎朝やってるの？",
+          "portrait": "hajime",
+          "portrait_face": "smile"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_surprise",
+          "text": "……っ。見てたんですか",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今来たとこ……ちょっとだけ",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめさんの目が、カウンターの上のノートに止まった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "常連さんの注文の横に、猫を描いている。ミント多めの猫は、ネクタイを締めていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ、鉄仮面さん？",
+          "portrait": "hajime",
+          "portrait_face": "surprise"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……はい。名前より、顔と注文で覚えたほうが早いので",
+          "portrait": false
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "この子は、炭を早めに替えてほしい人。この子は、話しかけないほうがいい日がある人",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……俺より詳しいかもしれない",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "……はじめさんの猫も、いますよ",
+          "portrait": false
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ページの端の、トングを握った猫。目の下に、うっすら影を描いておいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……俺、こんな顔してる？",
+          "portrait": "hajime",
+          "portrait_face": "surprise"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_evil",
+          "text": "閉店前は、だいたい",
+          "portrait": false
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "世界大会の動画を見た、というお客さんが、少しずつ増えていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートの後ろには、注文だけ書いて、まだ猫にできていないページが溜まっていった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tsumugi_cough",
+      "comment": "つむぎの失敗。つむぎ目線（#4253・2026-11-27 オーナー）。地の文・心の声はつむぎ（私）。つむぎの台詞は portrait:false で本人の立ち絵を出さず、はじめは portrait 指定で立ち絵を出す。恋愛状態で分岐しない。初めての一人の昼番（シーシャ屋は一人で回す時間が長い。2026-11-27 オーナー）。動画を見て来た客に、動画どおりの一台を出して二口目でむせさせる（人の手でやった9000の小型版。決戦の一台目で9000が咳にすぐ炭をずらす場面と対）。半分残す絵は第2章からの酸っぱい顔の客の線（_stk_title_customer_half）なので使わない。はじめには言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "初めての、一人の昼番だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめさんは取材で、夕方まで戻らない。シーシャ屋は、一人で回す時間のほうが長い。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートを開いて、常連さんの猫を一匹ずつ確かめた。最近は、知らない顔が多い。"
+        },
+        {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入ってきたのは、スマホを手にした、初めて見るお客さんだった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "世界大会の動画を見て、来ました"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "動画で見たのと同じのを、お願いできますか"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……はい。少し、お待ちください",
+          "portrait": false
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出された画面の中で、はじめさんが炭を置いていた。何度も見た手だ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（あの手のとおりにすれば、大丈夫）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "葉の量も、炭の場所も、置く順番も、画面と同じにした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "キッチンタイマーが鳴って、ホースを運んだ。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "お待たせしました",
+          "portrait": false
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口目は、静かだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙の色は、いつもと変わらなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二口目で、お客さんが咳きこんだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……大丈夫です。ちょっと、強く吸っちゃって"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お客さんは笑って、水を飲んだ。それからは、ホースを少し離して吸っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭が、真ん中に寄りすぎていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トングを持った手が、動かなかった。"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕方、はじめさんが戻ってきた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ただいま。一人で、どうだった？",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……大丈夫でした",
+          "portrait": false
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "さっきのお客さんと、同じ言い方になった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tsumugi_doctor",
+      "comment": "博士との出会い。つむぎ目線（#4253・2026-11-27 オーナー）。地の文・心の声はつむぎ（私）。つむぎの台詞は portrait:false で本人の立ち絵を出さず、はじめは portrait 指定で立ち絵を出す。恋愛状態で分岐しない。舞台は C.STATION のカウンターの端（cs_kemuri_sample で博士が咳を数える席）。つむぎは他の店の作り手の手を見に来る。夜に一人で台を回す同年代の店員（千須の新人。ch5_opening の「三ヶ月で一人の夜に立つ」）と、ボウルの上の博士の器具を先に見せる。博士は記録をもらわず聞くだけ。9000の名前と挑戦状は出さない（ch5_opening の驚きを残す）。最後の心の声が ch5_opening の「私みたいな新人は、要らなくなりますか」の種。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次の休みの夜、C.STATIONのカウンターの端に座った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "作る人の手を、見に来た。tonariの外の、知らない人の手を。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "私と同じくらいの店員さんが、一人で台を回していた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "注文を取って、炭を起こして、また注文を取る。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ボウルの上には、見たことのない金属の器具が載っていた。小さな画面が、青く光っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店員さんが運んだ台で、むせる人はいなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（あの人の隣には、誰もいない。でも、むせる人もいない）"
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "smile",
+          "text": "その器具が、気になりますか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの反対の端に、白衣の人がいた。手元にも、同じ青い光がある。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……むせないんですね。ここの台",
+          "portrait": false
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "normal",
+          "text": "熱を見ています。炭が寄りすぎたら、知らせが出る"
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "normal",
+          "text": "作る人が、気づく前に"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "気づいたら、話していた。このあいだの昼のこと。動画のとおりに作った台のこと。"
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "normal",
+          "text": "その方は、何口目でむせましたか"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……二口目、です",
+          "portrait": false
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "normal",
+          "text": "二口目。炭が近かったんでしょう"
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "smile",
+          "text": "君の手のせいではありません。熱の置き場所が、少しずれただけです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "白衣の人は、小さなノートに何かを書いた。"
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "normal",
+          "text": "記録しておきます。次の誰かが、むせずに済む"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "やさしい声だった。あの一口が、どこかで役に立つらしかった。"
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "smile",
+          "text": "誰でも、失敗を怖がらずに作れる。そういう道具を、作っています"
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "normal",
+          "text": "作る人の調子ひとつで、煙が変わらないように"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（それがあったら、あの人はむせなかった）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店員さんが、また一人で炭を起こしている。青い光が、その手元で静かに点いていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（……じゃあ、私じゃなくても、よかった？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "白衣の人は会計を済ませて、器具を鞄にしまった。"
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "normal",
+          "text": "どちらのお店で？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……tonari、です",
+          "portrait": false
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "白衣の人は、少しだけ目を細めた。"
+        },
+        {
+          "speaker": "dr_charcoal",
+          "face": "smile",
+          "text": "……いいお店です"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tsumugi_look_first",
+      "comment": "つむぎの転機。つむぎ目線（#4253・2026-11-27 オーナー）。地の文・心の声はつむぎ（私）。つむぎの台詞は portrait:false で本人の立ち絵を出さず、はじめは portrait 指定で立ち絵を出す。恋愛状態で分岐しない。きっかけは本人の絵の習慣（はじめが教えない。characters.json「はじめが彼女に心や個性を与える構成にはしない」）。むせた客を猫に描こうとして顔が思い出せず、動画の手しか見ていなかったと気づく（第4章のスミ「客の顔が一人も浮かばなくなった」と同じ所へ、自分の道具でたどり着く）。後半は旧 ch5_tsumugi_serving の二人連れをつむぎ目線で取り込んだ。決戦の二台目の受け売り（cue second_cup_newcomer_tsumugi）はこの場面を読む。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次の日の昼。お客さんのいない時間に、ノートを開いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あの日のお客さんを、猫にしようとした。ペンが、耳の手前で止まった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（……顔が、思い出せない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "注文も、何口目でむせたかも覚えている。どんな顔で座っていたかが、出てこない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（絵なら、描く前にずっと見てる。あの日は、動画の手しか見てなかった）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最初のページに戻る。ネクタイの猫も、トングの猫も、描く前に何日も見ていた。"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        },
+        {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕方。初めて見る、二人連れのお客さんが入ってきた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "いらっしゃいませ。お二人ですか",
+          "portrait": false
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "はい。あの、初めてで……何を頼めばいいか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事をする前に、二人を見た。並んだ肩が、少し上がっている。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "大丈夫です。甘いのと、すっきりしたの、どっちが好きですか",
+          "portrait": false
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "甘いの、かな。でも、むせたら恥ずかしくて"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "じゃあ、軽めに作ります。最初は、ゆっくり吸ってください",
+          "portrait": false
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "葉を詰めて、炭を置く前に、もう一度だけ二人を振り返った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を一つ、縁のほうへ離した。動画には無い置き方だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸い出しを確かめてから、二人の席へ運ぶ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙が出ると、二人は顔を見合わせて笑った。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……おいしい。甘いのに、喉が痛くない"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_bow",
+          "text": "よかったです。熱かったら、すぐ呼んでください",
+          "portrait": false
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターに戻ると、はじめさんが小声で聞いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭、一つ離して置いてたね",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……初めての人は、緊張して強く吸うので。最初だけ、少し弱く",
+          "portrait": false
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "客の顔を見て、必要な熱だけ入れる。……はじめさんの、受け売りです",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺のも、スミさんの受け売りだよ",
+          "portrait": "hajime",
+          "portrait_face": "smile"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "テーブル席で一服していたスミさんが、小さく鼻を鳴らした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの煙は、今日も落ち着く色だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートの新しいページに、猫を二匹描いた。今度は、顔から描けた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tsumugi_full_house",
+      "comment": "満席の夜と、店先の黒板。つむぎ目線（#4253・2026-11-27 オーナー）。地の文・心の声はつむぎ（私）。つむぎの台詞は portrait:false で本人の立ち絵を出さず、はじめは portrait 指定で立ち絵を出す。恋愛状態で分岐しない。旧 ch5_tsumugi_busy_night と ch5_tsumugi_menu_board を一晩〜翌朝に続けた。三番と五番はプレイヤーが選ぶ（はじめに聞かずに自分で決める）。五番は現行どおり。三番を選ぶと、はじめの炭が先に五番へ届いている（隣に人がいる店。千須の「隣に、師匠はいない」の裏返し）。どちらも失敗扱いにしない。「声は、裏返らなかった」はここの翌朝だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "金曜の夜。tonariの席が、久しぶりに全部埋まった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめさんは炭場から動けない。客席を回るのは、私だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水を置く。煙の細くなった台に炭を運ぶ。空いたグラスを下げる。"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "すみません。いつもの、ミント多めで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ネクタイの常連さんは、鞄を膝に載せたまま座っていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "はい。今日はお疲れの顔なので、長めに吸えるようにしますね",
+          "portrait": false
+        },
+        {
+          "speaker": "salaryman",
+          "face": "smile",
+          "text": "……ばれてますか"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "鞄を、膝に置いたままなので",
+          "portrait": false
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "三番と五番から、同時に手が上がった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "三番の席は、話が盛り上がっている。五番の台は、煙が細くなっていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（はじめさんに、聞きに行く時間はない）"
+        },
+        {
+          "type": "choice",
+          "id": "ch5_tsumugi_full_house_order",
+          "choices": [
+            {
+              "text": "五番へ、炭を運ぶ",
+              "next": "five_first"
+            },
+            {
+              "text": "三番へ、先に行く",
+              "next": "three_first"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後。椅子を上げ終えて、カウンターに突っ伏した。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_sad",
+          "text": "……足が、自分のじゃないみたいです",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "お疲れさま。今日、何組回したか知ってる？",
+          "portrait": "hajime",
+          "portrait_face": "smile"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_surprise",
+          "text": "……数えてなかったです",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "十一組。みんな、帰りに『また来る』って言ってた",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "突っ伏したまま、少しだけ顔を上げた。窓の外に、店先の黒板が見えた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……はじめさん。相談が、あります",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "改まって、どうしたの",
+          "portrait": "hajime",
+          "portrait_face": "surprise"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_serious",
+          "text": "店先の黒板……私が描いても、いいですか",
+          "portrait": false
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "黒板には、今日のおすすめが三つ、はじめさんの字で並んでいる。正直、少し読みにくい。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "初めての人が、あの前で、入るか迷ってるので",
+          "portrait": false
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "展示の会場で、絵の前を通る人を、ずっと見てたんです",
+          "portrait": false
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "止まる人は、その前に一回、迷います。黒板の前と、同じ顔で",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……俺の字のせいで？",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_sad",
+          "text": "……半分くらい",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……半分か",
+          "portrait": "hajime",
+          "portrait_face": "sad"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "残りの半分は、外から中が見えないせいです。だから、中の感じを描きたくて",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いいよ。お願いしたい。スミさんにも、言っておく",
+          "portrait": "hajime",
+          "portrait_face": "smile"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tonari_inside_day.png"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "翌朝。開店前に、黒板の前でチョークを握った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓辺で眠る、葉っぱの耳の猫。その尻尾の煙を、今日のおすすめの三行に巻きつけた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隅に、小さく書き足す。『はじめての方も、どうぞ』。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "描き終わる前から、黒板の前に、小さな人だかりができていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……かわいい。ここ、入っていいんですか"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "はい。いらっしゃいませ",
+          "portrait": false
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "声は、裏返らなかった。"
+        }
+      ],
+      "branches": {
+        "five_first": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "五番へ炭を運び、戻りがけに三番の水を足した。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "三番のお客さんは、水のお礼を言って、また話に戻った。"
+          }
+        ],
+        "three_first": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "三番のお客さんは、水のおかわりがほしいだけだった。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "振り返ると、五番の台には、炭場からはじめさんの炭が届いていた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "はじめさんは何も言わずに、もう次の炭を起こしていた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch5_tsumugi_third",
+      "comment": "視点交代（つむぎ→はじめ）。前半はつむぎ目線（#4253・2026-11-27 オーナー）。地の文・心の声はつむぎ（私）。つむぎの台詞は portrait:false で本人の立ち絵を出さず、はじめは portrait 指定で立ち絵を出す。恋愛状態で分岐しない。はじめの休みの日に客として来た一台を、つむぎが作る。面接の問い「何を見て決めてるのか」は、つむぎ目線の最後の心の声（ホースを置くまで待つ日）で本人が答え、はじめ目線へ戻ってから外から見せる。交代の合図は、つむぎの色（ラベンダー）の煙の fx scent。旧 ch5_tsumugi_makes_for_hajime を組み替えた。最後の心の声は第4章のスミ「休みの日は、誰が開ける」への答え。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめさんの、休みの日。昼のtonariは、私の番だった。"
+        },
+        {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ドアベルが鳴った。入ってきたのは、エプロンをしていないはじめさんだった。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "いらっしゃいませ……あ、はじめさん",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "今日は客で来た。一台、お願いできる？",
+          "portrait": "hajime",
+          "portrait_face": "smile"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_surprise",
+          "text": "……私が、ですか",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。つむぎちゃんのが吸いたい",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "エプロンの紐を握って、一度だけ深呼吸した。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_serious",
+          "text": "……ご注文は",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "おまかせで。今日の俺に、合うやつ",
+          "portrait": "hajime",
+          "portrait_face": "normal"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめさんの顔を、じっと見た。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……寝不足ですね。目の下、ちょっと暗いです",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……ばれた",
+          "portrait": "hajime",
+          "portrait_face": "surprise"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "じゃあ、ラベンダーにします。少しだけ、ミントを足して",
+          "portrait": false
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめさんは、奥の席に座った。私が、いつも絵を描いていた席だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭の向きを確かめる。スミさんの手を思い出して、それから、はじめさんの手を思い出した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "キッチンタイマーが鳴った。"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ch5_tsumugi_serves_hajime"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "お待たせしました。最初は、ゆっくりどうぞ",
+          "portrait": false
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（……今日は、ホースを置くまで待つ日だ）"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "hajime"
+        },
+        {
+          "type": "fx",
+          "id": "scent",
+          "color": "#b9a4e8",
+          "color2": "#e8e2f6"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口吸う。やわらかい煙が、喉の奥でほどけた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……うまい。熱が、ちょうどいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（つむぎちゃんが入ってから、休みの日ができた。こうして、客の席にも座れる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは、俺がホースを置くまで、何も言わなかった。"
+        },
+        {
+          "type": "hide_cg"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "『燃やす』んじゃなくて、『蒸らす』。……スミさんから、はじめさんへ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "それで、[pause]私で三人目です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "作る側と、吸う側。座る席が入れ替わっただけで、店の見え方が少し変わった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……休みの日は、つむぎちゃんが開ける）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_shop_hands",
+      "comment": "はじめ目線へ戻った後の橋渡し（つむぎ目線編の後・挑戦状の前）。旧 ch5_bridge_after_return を組み替え、つむぎへの『蒸らす』の指導は ch5_tsumugi_first_day へ移した。ここでは、つむぎがもう自分で三番を見ている。大会動画は ch5_opening への前振り。店長の任命は第4章で済んでいるので、店をどう回すかの確認にした。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "世界大会から帰って、しばらくたった。予約の帳面が、少しだけ厚くなった。"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "smile",
+          "text": "……動画、回ってきましたよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出されたスマホの中で、俺が炭を置いていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……こうして見ると、手、遅いですね"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "smile",
+          "text": "遅くていいんですよ。……いつもの置き方です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（画面の中の俺は、何度再生しても、同じところで炭を置く）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンター席から、スミさんの声が飛んだ。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店長が見とれてる場合か。三番、煙が細くなってるぞ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "三番さん、もう真ん中に寄せました。少し待って、また見に行きます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "……お前より早えな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……ですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "エプロンの紐を結び直して、つむぎは五番の水を足しに行った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "あいつの台、今日も誰もむせてねえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎを先に上がらせて、シャッターを下ろす。店の中の音が、急に少なくなった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "優勝した奴の店ってだけで、ずいぶん声が掛かるようになったな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "千須にも、作る約束がだいぶ溜まってる。俺も外の用事が増えてきた"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "昼は、もうあいつ一人で回せる。お前も、外の話を断るなよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさんも、外の用事があるのに"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "手が足りなきゃ、その日だけ俺が立つ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店を任せるのと、お前を閉じ込めるのは別だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……じゃあ、頼らせてもらいます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "帰ってきてから、ずっと落ち着かねえ顔してんな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そうですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "勝ったあとってのは、そういうもんだ。そのうち、次の注文が来る"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch5_opening",
       "lines": [
         {
@@ -13,6 +1467,12 @@
           "speaker": "",
           "face": "",
           "text": "その翌日、博士本人が来て、小さなケースをカウンターに置いた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch5_tsumugi_doctor",
+          "next_true": "tsumugi_met"
         },
         {
           "speaker": "dr_charcoal",
@@ -279,6 +1739,28 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "（あの箱の明かりは、ずっとこの日につながってたのか）"
+          }
+        ],
+        "tsumugi_met": [
+          {
+            "speaker": "dr_charcoal",
+            "face": "smile",
+            "text": "……先日は、どうも"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "博士の目が、カウンターの奥のつむぎに向いた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎは、エプロンの前で手を重ねて、小さく頭を下げた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……知り合い、なのか）"
           }
         ]
       }
@@ -749,7 +2231,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……つむぎの、受け売りだ）",
+          "text": "（……つむぎちゃんの、受け売りだ）",
           "cue": "second_cup_newcomer_tsumugi"
         }
       ]
@@ -1092,7 +2574,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が"
+          "text": "俺が作れない日は、つむぎちゃんが作ります。つむぎちゃんが作れない日は、俺が"
         },
         {
           "speaker": "",
@@ -3306,12 +4788,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "うん。つむぎのが吸いたい"
+          "text": "うん。つむぎちゃんのが吸いたい"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（つむぎが入ってから、休みの日ができた。こうして、客の席にも座れる）"
+          "text": "（つむぎちゃんが入ってから、休みの日ができた。こうして、客の席にも座れる）"
         },
         {
           "speaker": "",

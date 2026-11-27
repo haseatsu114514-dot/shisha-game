@@ -49,7 +49,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。つむぎのシフトに合わせて、買い足すものも"
+          "text": "はい。つむぎちゃんのシフトに合わせて、買い足すものも"
         },
         {
           "speaker": "",
@@ -1053,6 +1053,12 @@
           "speaker": "",
           "face": "",
           "text": "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch5_tsumugi_first_day",
+          "next_true": "omote_note"
         },
         {
           "type": "condition",

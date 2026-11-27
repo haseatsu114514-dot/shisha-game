@@ -4,7 +4,7 @@ import { layers, modal, toast } from "../core/ui.js";
 import { SCHEMA, SAVE_SLOTS, readSlot, autoSaveResult, saveToSlotResult, loadFromSlot, state } from "../core/state.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { cycleBadgeText, overwriteCycleNote } from "../core/cycle-display.js";
-import { CH5_PROLOGUE } from "../chapters/ch5-prologue.js";
+import { chapterFivePrologue } from "../chapters/ch5-prologue.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { SE } from "../core/audio.js";
 import { growthEnabled } from "../core/growth-mode.js";
@@ -25,7 +25,7 @@ function slotInfo(data) {
   const time = data.phase === "daily" ? (data.slot >= 1 ? "夜" : "昼") : "";
   const progress = data.flags?._ch5;
   const scene = chapter === 5 && data.phase === "opening" && progress?.part === "prologue"
-    && progress.titleSeen === true && Number.isInteger(progress.stage) ? CH5_PROLOGUE[progress.stage]?.label : "";
+    && progress.titleSeen === true && Number.isInteger(progress.stage) ? chapterFivePrologue(progress)[progress.stage]?.label : "";
   const phase = data.phase === "cleared" ? `第${chapter}章クリア`
     : chapter === 2 && chapterDay(data) === 1
       ? (data.flags?._ch2_day1?.stage === "complete" ? "初日終了" : "初日")
