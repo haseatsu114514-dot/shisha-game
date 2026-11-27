@@ -296,6 +296,26 @@ const CURVE_CUE_SECONDS = 10;
 const touchUi = () => typeof matchMedia === "function" && matchMedia("(hover: none) and (pointer: coarse)").matches;
 const tutorialText = key => (touchUi() && TUTORIAL_TOUCH[key]) || TUTORIAL[key];
 // 遊び方（メニューの「？」で開いた時だけ見せる。常時は出さない）
+// 遊び方の図解（2026-11-27 オーナー「文字で説明しすぎず、UIやボタンで視覚的に分かるように」「まだ文字が多い」）:
+// 開いた時は6枚の絵札だけ（小さな場面の絵・押すボタンの絵・短い見出しと一言）。文章の説明（HOWTO）は「くわしく」を押した時だけ出す。
+// scene は場面に並べる絵（クラス名と、絵のファイル。ファイルが無い行は CSS が描く飾り）
+const HOWTO_CARDS = Object.freeze([
+  { id: "dodge", title: "よける", note: "岩は左右でかわす", keys: ["left", "right"], pc: "← →",
+    scene: [["how-rock", "ui/desert_ride/rock_large.webp"], ["how-arc"], ["how-rider", DESERT_ART.riderLeft.file]] },
+  { id: "jump", title: "大ジャンプ", note: "起伏で押す → 輪で着地", keys: ["jump", "land"], pc: "Space",
+    scene: [["how-crest"], ["how-ring"], ["how-rider", DESERT_ART.riderJump.file]] },
+  { id: "spin", title: "スピン", note: "空中で押しっぱなし", keys: ["left", "right"], pc: "← →", tags: ["360°", "720°"],
+    scene: [["how-spin-arrow"], ["how-rider", DESERT_ART.hajimeSpin090.file]] },
+  { id: "boost", title: "ブースト", note: "目印をこえたら発動", keys: ["boost"], pc: "↓",
+    // 走っている間に出さないことにした炎の絵（boost-burst など）は、ここでも読まない。光は CSS で描く
+    scene: [["how-glow"], ["how-rider", DESERT_ART.rider.file], ["how-bolt", "ui/desert_ride_hud/bolt.webp"], ["how-gauge"]] },
+  { id: "carve", title: "カーブ", note: "矢印の向きへ切り込む", keys: ["left"], pc: "←",
+    scene: [["how-sign", "ui/desert_ride_controls/curve_left.webp"], ["how-trail"], ["how-rider", DESERT_ART.riderLeft.file]] },
+  { id: "flow", title: "砂流れ", note: "金の旗の帯で加速", keys: [], pc: "",
+    scene: [["how-stream"], ["how-flag", DESERT_ART.flag.file], ["how-flag.how-flag-r", DESERT_ART.flag.file], ["how-rider", DESERT_ART.rider.file], ["how-chevrons"]] },
+]);
+// 遊び方の一行ごとの見出しの札（HOWTO の並びと同じ順）
+const HOWTO_TOPICS = Object.freeze(["左右", "岩", "大ジャンプ", "回転", "回転", "着地", "ブースト", "立て直し", "カーブ", "砂流れ", "S評価"]);
 const HOWTO = {
   keys: [
     "← → で左右。砂の上なので、少し遅れてついてくる",
@@ -605,6 +625,34 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       root.dataset.phase = name;
       returnGuide(null); returnCue.hidden = true; actionCue.hidden = true;
     }
+    /** 入口・練習のおわりの左の絵: 砂丘を跳ぶはじめと、並んで滑るヌール（滑走で使う背面の絵）。飾りなので読み上げない。 */
+    function menuHero() {
+      const art = (cls, file) => el(`img.${cls}`, { src: imgFileUrl(file), alt: "", decoding: "async", onerror: event => { event.currentTarget.hidden = true; } });
+      return el("div.dr-menu-hero", { "aria-hidden": "true" }, [
+        el("i.dr-menu-sun"),
+        art("dr-menu-rival", DESERT_ART.noorRider.file),
+        el("i.dr-menu-dust"),
+        art("dr-menu-rider", DESERT_ART.riderJump.file),
+      ]);
+    }
+    /** 遊び方の図解の1枚: 小さな場面の絵・押すボタンの絵（PC はキーも）・見出し・一言。 */
+    function howCard(card) {
+      const art = (cls, file) => file ? el(`img.${cls}`, { src: imgFileUrl(file), alt: "", decoding: "async", onerror: event => { event.currentTarget.hidden = true; } }) : el(`i.${cls}`);
+      return el("li.dr-how-card", { dataset: { how: card.id, test: "desert-help-card" } }, [
+        el("div.dr-how-scene", { "aria-hidden": "true" }, [
+          ...card.scene.map(([cls, file]) => art(cls, file)),
+          ...(card.tags || []).map((text, index) => el("em.how-tag", { text, style: { "--i": String(index) } })),
+        ]),
+        el("div.dr-how-head", [
+          el("b.dr-how-title", { text: card.title }),
+          el("div.dr-how-keys", { "aria-hidden": "true" }, [
+            ...card.keys.map(name => art("dr-how-key", DESERT_CONTROL_ART[name])),
+            !touchUi() && card.pc ? el("kbd", { text: card.pc }) : null,
+          ]),
+        ]),
+        el("span.dr-how-note", { text: card.note }),
+      ]);
+    }
     function showMenu(message = "") {
       rideSe.stop();
       resetBgmTempo();
@@ -612,27 +660,52 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       controls.hidden = true; quit.hidden = true; tell(); delete caption.dataset.kind; hud.replaceChildren();
       startPop.classList.remove("show"); versus.classList.remove("show");
       setPhase("menu");
-      const start = el("button.btn.primary.dr-button", { type: "button", text: results.length ? "もう一度滑る" : "滑る", dataset: { test: "desert-start" }, onclick: () => prepareAndStart("run", "noor") });
-      const naruButton = rivals.includes("naru") ? el("button.btn.dr-button", { type: "button", text: "なると勝負する", dataset: { test: "desert-start-naru" }, onclick: () => prepareAndStart("run", "naru") }) : null;
-      const practice = el("button.btn.ghost.dr-button", { type: "button", text: practiced || results.length ? "練習をもう一度" : "練習から始める", dataset: { test: "desert-practice" }, onclick: () => prepareAndStart("practice") });
-      const leave = el("button.btn.ghost.dr-button", { type: "button", text: "砂丘を下りる", dataset: { test: "desert-leave" }, onclick: finish });
+      // ボタンは頭に印（▶・VS・旗・出口）を付け、名前は短く（「なると勝負」「練習」。読み上げは前の名前のまま）
+      const start = el("button.btn.primary.dr-button.dr-act-start", { type: "button", text: results.length ? "もう一度滑る" : "滑る", dataset: { test: "desert-start" }, onclick: () => prepareAndStart("run", "noor") });
+      const naruButton = rivals.includes("naru") ? el("button.btn.dr-button.dr-act-vs", { type: "button", text: "なると勝負", "aria-label": "なると勝負する", dataset: { test: "desert-start-naru" }, onclick: () => prepareAndStart("run", "naru") }) : null;
+      const practice = el("button.btn.ghost.dr-button.dr-act-practice", { type: "button", text: "練習", "aria-label": practiced || results.length ? "練習をもう一度" : "練習から始める", dataset: { test: "desert-practice" }, onclick: () => prepareAndStart("practice") });
+      const leave = el("button.btn.ghost.dr-button.dr-act-leave", { type: "button", text: "砂丘を下りる", dataset: { test: "desert-leave" }, onclick: finish });
       // 遊び方は「？」を開いた時だけ（#2838・ミニゲーム共通の方針）。練習は「練習から始める」が説明を兼ねる。
+      // 遊び方: 開いた時は図解の6枚だけ。文章の説明は「くわしく」で出し入れする（行ごとに何の話かの札。文面は前と同じ）
+      // 絵札の絵は、初めて開いた時に読む（入口を出した時や滑り出しに、使わない絵の読み込みを重ねない）
+      const howCards = el("ul.dr-how-cards", { dataset: { test: "desert-help-cards" } });
+      const howDetail = el("ul.dr-howto", { hidden: true, dataset: { test: "desert-help-detail" } },
+        HOWTO[touchUi() ? "touch" : "keys"].map((text, index) => el("li", { text, dataset: { topic: HOWTO_TOPICS[index] || "" } })));
+      const showDetail = open => {
+        howDetail.hidden = !open; howCards.hidden = open; howDetail.scrollTop = 0;
+        more.textContent = open ? "図解にもどる" : "くわしく"; more.setAttribute("aria-expanded", String(open));
+      };
+      const more = el("button.btn.ghost.dr-button.dr-help-more", { type: "button", text: "くわしく", "aria-expanded": "false", dataset: { test: "desert-help-more" }, onclick: () => showDetail(howDetail.hidden) });
       const help = el("div.dr-help", { hidden: true, role: "dialog", "aria-label": "遊び方", dataset: { test: "desert-help-panel" } }, [
         el("p.dr-help-title", { text: "遊び方" }),
-        el("ul.dr-howto", HOWTO[touchUi() ? "touch" : "keys"].map(text => el("li", { text }))),
-        el("button.btn.ghost.dr-button.dr-help-close", { type: "button", text: "閉じる", dataset: { test: "desert-help-close" }, onclick: () => { help.hidden = true; delete help.parentElement.dataset.help; helpButton.focus(); } }),
+        howCards, howDetail,
+        el("div.dr-help-actions", [
+          more,
+          el("button.btn.ghost.dr-button.dr-help-close", { type: "button", text: "閉じる", dataset: { test: "desert-help-close" }, onclick: () => { help.hidden = true; delete help.parentElement.dataset.help; helpButton.focus(); } }),
+        ]),
       ]);
       const helpButton = el("button.dr-help-btn", { type: "button", text: "？", title: "遊び方", "aria-label": "遊び方", dataset: { test: "desert-help" },
-        onclick: () => { help.hidden = false; help.parentElement.dataset.help = "open"; help.querySelector("button").focus(); } });
-      panel.replaceChildren(el("div.dr-card.dr-menu", { dataset: { test: "desert-menu" } }, [
-        el("p.dr-kicker", { text: "DUBAI · SAND DUNES" }),
-        el("h2.dr-title", { text: "DESERT RIDE" }),
-        el("p.dr-lead", { text: message || "砂丘を一気に滑り下りる。ヌールより先に、ゴールの旗へ。" }),
+        onclick: () => {
+          if (!howCards.childElementCount) howCards.replaceChildren(...HOWTO_CARDS.map(howCard));
+          showDetail(false); help.hidden = false; help.parentElement.dataset.help = "open"; help.querySelector(".dr-help-close").focus({ preventScroll: true });
+        } });
+      // 入口の画面（2026-11-27 オーナー「仮のCSSを、市販ゲームのような見た目に」）: 左に題字と滑る二人の絵、右の板に段・記録・ボタン。
+      // 絵は滑走と結果で使っているもの（砂丘の背景・背面の人物・結果のボタン）。文言と data-test は前と同じ
+      panel.replaceChildren(el("div.dr-card.dr-menu", { dataset: { test: "desert-menu", kind: "title" } }, [
+        menuHero(),
+        el("div.dr-menu-head", [
+          el("p.dr-kicker", { text: "DUBAI · SAND DUNES" }),
+          el("h2.dr-title", { text: "DESERT RIDE" }),
+        ]),
         help, helpButton,
-        oldBest ? el("p.dr-legacy-best", { text: `旧ルールの記録 ${oldBest.score.toLocaleString("ja-JP")}点 ／ ${oldBest.rank}（別記録）`, dataset: { test: "desert-legacy-best" } }) : null,
-        bestSlot,
-        tierRow,
-        el("div.dr-actions", [start, naruButton, practice, leave]),
+        el("div.dr-menu-board", [
+          // 前置きの一文は出さない（題字と絵で分かる）。やめた時などの知らせがある時だけ、板のいちばん上に一行
+          message ? el("p.dr-lead", { text: message }) : null,
+          tierRow,
+          bestSlot,
+          oldBest ? el("p.dr-legacy-best", { text: `旧ルールの記録 ${oldBest.score.toLocaleString("ja-JP")}点 ／ ${oldBest.rank}（別記録）`, dataset: { test: "desert-legacy-best" } }) : null,
+          el("div.dr-actions", [start, naruButton, practice, leave]),
+        ]),
       ]));
       syncTierRow();
       (tutorial && !practiced ? practice : start).focus();
@@ -652,17 +725,44 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       if (tierNotes && typeof tierNotes[t] === "string" && tierNotes[t]) return tierNotes[t];
       return freshTiers.has(t) ? "開いた！" : TIER_WORD[t];
     }
+    /** 札の下の一言を、区切り（・）ごとのまとまりに分ける。狭い札で折れる時に、語の途中で切れないようにする（文面は同じ）。 */
+    function phraseSpans(text) {
+      const parts = [];
+      let rest = String(text);
+      for (;;) {
+        const cut = rest.search(/[・·]/);
+        if (cut < 0 || cut === rest.length - 1) break;
+        const end = rest[cut + 1] === " " ? cut + 2 : cut + 1;
+        parts.push(rest.slice(0, end)); rest = rest.slice(end);
+      }
+      parts.push(rest);
+      return parts.map(part => el("span", { text: part }));
+    }
+    /** 札の下の一言の種類。word（段の手触り）・cleared・fresh は印（星・CLEAR・NEW）で見せるので字は出さず、locked・note・easy は字で見せる。 */
+    function tierSubKind(t) {
+      if (!openTiers.includes(t)) return "locked";
+      if (t === "easy") return "easy";
+      if (clearedTiers.has(t)) return "cleared";
+      if (tierNotes && typeof tierNotes[t] === "string" && tierNotes[t]) return "note";
+      return freshTiers.has(t) ? "fresh" : "word";
+    }
     function syncTierRow() {
       tierRow.replaceChildren(...TIERS.map(t => {
         const open = openTiers.includes(t), chosen = t === chosenTier;
         return el(`button.btn.dr-tier${chosen ? ".primary" : ""}`, { type: "button", role: "radio", "aria-checked": String(chosen), disabled: !open,
           dataset: { test: "desert-tier", tier: t, state: !open ? "locked" : chosen ? "chosen" : "open", ...(freshTiers.has(t) ? { fresh: "true" } : {}), ...(clearedTiers.has(t) ? { cleared: "true" } : {}) },
-          onclick: () => chooseTier(t) }, [el("b", { text: TIER_LABEL[t] }), el("small", { text: tierSub(t) })]);
+          onclick: () => chooseTier(t) }, [el("b", { text: TIER_LABEL[t] }), el("i.dr-tier-stars", { "aria-hidden": "true" }),
+            el("small", { dataset: { kind: tierSubKind(t) } }, phraseSpans(tierSub(t))),
+            t === "easy" && open ? el("em.dr-tier-flag", { "aria-hidden": "true", text: "報酬対象外" }) : null]);
       }));
+      // 自己ベスト: 評価のメダルと点だけを見せる（「◯級の自己ベスト」「点 ／」は読み上げ用に残す）
       bestSlot.replaceChildren(...[chosenTier, "naru"].filter(key => displayBests[key] && (key !== "naru" || rivals.includes("naru")))
-        .map(key => el("p.dr-best", {
-          text: `${bestLabel(key)}の自己ベスト ${formatBest(displayBests[key])}`, dataset: { test: "desert-best", bestKey: key },
-        })));
+        .map(key => el("p.dr-best", { dataset: { test: "desert-best", bestKey: key, rank: displayBests[key].rank } }, [
+          el("span.dr-quiet", { text: `${bestLabel(key)}の自己ベスト ` }),
+          el("b.dr-best-score", { text: displayBests[key].score.toLocaleString("ja-JP") }),
+          el("span.dr-quiet", { text: "点 ／ " }),
+          el("i.dr-best-rank", { text: displayBests[key].rank }),
+        ])));
     }
     function chooseTier(t) {
       if (!openTiers.includes(t)) return;
@@ -1430,14 +1530,19 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         mode = null;
         tell();
         setPhase("practiced");
-        panel.replaceChildren(el("div.dr-card.dr-menu", { dataset: { test: "desert-practiced" } }, [
-          el("p.dr-kicker", { text: "PRACTICE DONE" }),
-          el("h2.dr-title", { text: "練習おわり" }),
-          el("p.dr-lead", { text: guide ? `${guide}「もう一度練習してもいいし、本番へ進んでもいいよ」` : "もう一度練習するか、本番へ進もう。操作は「？」でも確認できる。" }),
-          el("div.dr-actions", [
-            el("button.btn.primary.dr-button", { type: "button", text: "本番を滑る", dataset: { test: "desert-start" }, onclick: () => prepareAndStart("run", "noor") }),
-            el("button.btn.ghost.dr-button", { type: "button", text: "もう一度練習", dataset: { test: "desert-practice" }, onclick: () => prepareAndStart("practice") }),
-            el("button.btn.ghost.dr-button", { type: "button", text: "砂丘を下りる", dataset: { test: "desert-leave" }, onclick: finish }),
+        panel.replaceChildren(el("div.dr-card.dr-menu", { dataset: { test: "desert-practiced", kind: "practiced" } }, [
+          menuHero(),
+          el("div.dr-menu-head", [
+            el("p.dr-kicker", { text: "PRACTICE DONE" }),
+            el("h2.dr-title", { text: "練習おわり" }),
+          ]),
+          el("div.dr-menu-board", [
+            el("p.dr-lead", { text: guide ? `${guide}「もう一度練習してもいいし、本番へ進んでもいいよ」` : "もう一度練習するか、本番へ進もう。操作は「？」でも確認できる。" }),
+            el("div.dr-actions", [
+              el("button.btn.primary.dr-button.dr-act-start", { type: "button", text: "本番を滑る", dataset: { test: "desert-start" }, onclick: () => prepareAndStart("run", "noor") }),
+              el("button.btn.ghost.dr-button.dr-act-practice", { type: "button", text: "もう一度練習", dataset: { test: "desert-practice" }, onclick: () => prepareAndStart("practice") }),
+              el("button.btn.ghost.dr-button.dr-act-leave", { type: "button", text: "砂丘を下りる", dataset: { test: "desert-leave" }, onclick: finish }),
+            ]),
           ]),
         ]));
         panel.querySelector("button")?.focus();

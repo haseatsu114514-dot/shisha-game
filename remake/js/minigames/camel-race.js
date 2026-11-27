@@ -88,12 +88,17 @@ const ICONS = Object.freeze({
   camel: '<svg viewBox="0 0 48 32" aria-hidden="true"><path d="M5 30l3-9c-2-1-3-3-3-6 0-4 3-7 7-7 2-4 6-6 10-3 3 2 5 2 7 0l4-6c2-1 5 0 6 2l2 4-4 1-4 7c-1 4-4 7-8 8l1 9h-3l-2-8h-6l-3 8H9l2-8-3-1-1 9z" fill="currentColor"/></svg>',
 });
 const TUTORIAL = [
-  // どのページも短く（#2836）。4ページ目は駆け引き（風よけと競り合い・2026-11-11）。キーは kbd で添え、タッチ端末では CSS で隠す。結果・大会選びの「？」から読み直せる。
-  { icon: "camel", art: "howto-camel", title: "ラクダは、自分で走る", body: "手前を走る金のゼッケン（★）がハビーバ。操縦はしない。背中のロボット騎手へ「声」と「ムチ」を送るだけ。" },
-  { icon: "voice", art: "howto-voice", title: "声をかける ── 左のボタン", key: "Space", body: "騎手のまわりの金の輪が縮む。内側の輪と重なった瞬間に押すと PERFECT で、ぐっと伸びる。輪の縮む速さは毎回ちがうので、よく見て押す。外したり連打したりすると、スタミナ（息）が減る。" },
-  { icon: "signal", art: "howto-whip", title: "ムチ ── 右のボタンを押し続ける", key: "X", body: "押している間は加速して息が減り、離すと調子に応じて回復。40以下で注意、30未満は減速。空になる前に離し、輪に合わせた声で整える。ゲージの白い印は終盤3秒ぶんの目安。最後の4分の1の LAST SPURT はムチがよく効く。" },
+  // どのページも絵と一言（2026-11-27 オーナー「文字で説明しすぎず、UIやボタンで視覚的に」「まだ文字が多い」）。細かい決まり（more）は「くわしく」を押した時だけ出す。
+  // 4ページ目は駆け引き（風よけと競り合い・2026-11-11）。キーは kbd で添え、タッチ端末では CSS で隠す。結果・大会選びの「？」から読み直せる。
+  { icon: "camel", art: "howto-camel", title: "ラクダは、自分で走る", body: "★がハビーバ。声とムチを送るだけ。",
+    more: "手前を走る金のゼッケン（★）がハビーバ。操縦はしない。背中のロボット騎手へ「声」と「ムチ」を送るだけ。" },
+  { icon: "voice", art: "howto-voice", title: "声 ── 左のボタン", key: "Space", body: "輪が重なった瞬間に押す。",
+    more: "騎手のまわりの金の輪が縮む。内側の輪と重なった瞬間に押すと PERFECT で、ぐっと伸びる。輪の縮む速さは毎回ちがうので、よく見て押す。外したり連打したりすると、スタミナ（息）が減る。" },
+  { icon: "signal", art: "howto-whip", title: "ムチ ── 右を長押し", key: "X", body: "押すと加速、息が減る。空になる前に離す。",
+    more: "押している間は加速して息が減り、離すと調子に応じて回復。40以下で注意、30未満は減速。空になる前に離し、輪に合わせた声で整える。ゲージの白い印は終盤3秒ぶんの目安。最後の4分の1の LAST SPURT はムチがよく効く。" },
   // 駆け引き（2026-11-11）。絵は CR-WD07（#3217）。
-  { icon: "camel", art: "howto-tactics", title: "前のラクダを使う", body: "前のラクダのすぐ後ろは風よけ。息が戻り、ムチも軽くなる。並びかけると相手が粘るので、声を当てるかムチで抜き切る。競り負けた相手は気落ちして遅くなる。" },
+  { icon: "camel", art: "howto-tactics", title: "前のラクダを使う", body: "真後ろは風よけ。並んだら声かムチで抜く。",
+    more: "前のラクダのすぐ後ろは風よけ。息が戻り、ムチも軽くなる。並びかけると相手が粘るので、声を当てるかムチで抜き切る。競り負けた相手は気落ちして遅くなる。" },
 ];
 /**
  * 手応え（演出）の数値（2026-11-13・CRF。docs/spec/camel_race.md §11・§11.1）。競走の規則（camel-race-model.js）と違い凍結しない。
@@ -1107,6 +1112,10 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       onclick: () => { sfx(lastPage && !back ? "select" : "click"); lastPage ? back ? back() : startRace() : openTutorial(page + 1, back); } });
     const skip = back ? el("button.btn.ghost", { type: "button", text: "閉じる", dataset: { test: "camel-tutorial-close" }, onclick: () => { sfx("cancel"); back(); } })
       : el("button.btn.ghost", { type: "button", text: "とばしてスタート", dataset: { test: "camel-tutorial-skip" }, onclick: () => { sfx("select"); startRace(); } });
+    // 本文は一言。「くわしく」で細かい決まりに替わり、もう一度押すと戻る
+    const bodyNode = el("p.camel-tutorial-text", { text: step.body, dataset: { test: "camel-tutorial-text" } });
+    const moreButton = el("button.camel-more", { type: "button", text: "くわしく", "aria-pressed": "false", dataset: { test: "camel-tutorial-more" },
+      onclick: () => { const open = moreButton.getAttribute("aria-pressed") !== "true"; sfx("click"); moreButton.setAttribute("aria-pressed", String(open)); bodyNode.textContent = open ? step.more : step.body; bodyNode.dataset.more = String(open); } });
     sheet.replaceChildren(el("div.camel-card.camel-tutorial", { dataset: { test: "camel-tutorial", page: String(page) } }, [
       // 遊び方の絵（CR-UI11・#3046）。読めなければアイコンに戻す。
       el("div.camel-tutorial-visual", [
@@ -1119,10 +1128,10 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       ]),
       el("div.camel-tutorial-body", [
         el("p.camel-eyebrow", { text: `HOW TO PLAY  ${page + 1} / ${TUTORIAL.length}` }),
-        el("h2", [step.title, step.key ? el("kbd.camel-key", { text: step.key }) : null]), el("p", { text: step.body }),
+        el("h2", [step.title, step.key ? el("kbd.camel-key", { text: step.key }) : null]), bodyNode,
         el("div.camel-steps", { "aria-hidden": "true" }, TUTORIAL.map((_, i) => el("i", { class: i === page ? "on" : null }))),
       ]),
-      el("div.camel-card-actions", lastPage ? [next] : [skip, next]),
+      el("div.camel-card-actions", lastPage ? [moreButton, next] : [moreButton, skip, next]),
     ]));
     sheet.hidden = false;
     next.focus();
@@ -2649,7 +2658,8 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
         el("div.camel-grade-letter", { dataset: { grade: score.grade } }, [el("small", { text: "評価" }), el("strong", { text: score.grade })]),
       ]),
       bar("順位", score.parts.rank, 40), bar("声かけ", score.parts.timing, 35), bar("スタミナ", score.parts.stamina, 25),
-      el("ul.camel-stats", [["PERFECT", score.stats.perfect], ["GOOD", score.stats.good], ["見送り", score.stats.lost],
+      // 細目（PERFECT の数など）は畳んでおき、「内訳」を押した時だけ出す（2026-11-27「まだ文字が多い」）
+      el("ul.camel-stats", { hidden: true, dataset: { test: "camel-stats" } }, [["PERFECT", score.stats.perfect], ["GOOD", score.stats.good], ["見送り", score.stats.lost],
         ["無駄な声", score.stats.spam ? `${score.stats.miss}（連打${score.stats.spam}）` : score.stats.miss], ["競り合い", `${score.stats.duelsWon}勝／${score.stats.duels}回`], ["ムチ", `${score.stats.whipTime}秒（スパート${score.stats.spurtWhip}秒）`]]
         .map(([label, value]) => el("li", [el("small", { text: label }), el("b", { text: String(value) })]))),
       nextNode,
@@ -2659,6 +2669,10 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
         : run.cup === "expert" && camelCupQualified(run) ? el("p.camel-best", { text: "上級クリア！ 次は1位・S・連打なしで称号。", dataset: { test: "camel-top-clear" } }) : null,
       el("div.camel-card-actions", allowRetry ? [again, choose, leave] : [leave]),
     ]);
+    const statsNode = card.querySelector(".camel-stats");
+    const statsButton = el("button.camel-more", { type: "button", text: "内訳", "aria-expanded": "false", dataset: { test: "camel-stats-toggle" },
+      onclick: () => { const open = statsNode.hidden; sfx("click"); statsNode.hidden = !open; statsButton.setAttribute("aria-expanded", String(open)); } });
+    card.querySelector(".camel-card-actions").prepend(statsButton);
     // 「？」で遊び方を読んだあとは、同じ結果のカードへ戻す（採点・記録はやり直さない）。
     const showResult = () => {
       setPhase("result");
