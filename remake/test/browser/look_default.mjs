@@ -34,7 +34,7 @@ await suite("look-default", async (check) => {
     const state = await look(page);
     assert.deepEqual([state.look, state.choice], ["classic", "classic"], "自動操作のブラウザの既定は旧版");
     await page.locator(t("title-config")).click();
-    assert.deepEqual(await page.locator(`${t("cfg-look")} button`).allTextContents(), ["旧版", "DS風"], "新版は設定に出ない（LK23）");
+    assert.deepEqual(await page.locator(`${t("cfg-look")} button`).allTextContents(), ["旧版", "DS風", "縦画面"], "新版は設定に出ない（LK23）。縦画面（VPN01）は選べる");
     assert.equal(await checkedLook(page), "classic");
   });
 
@@ -44,7 +44,7 @@ await suite("look-default", async (check) => {
     assert.deepEqual([state.look, state.choice], ["classic", "classic"], "プレイヤーの端末の既定は旧版（LK23）");
     await page.locator(t("title-config")).click();
     assert.equal(await checkedLook(page), "classic", "設定でも旧版が選ばれている");
-    assert.deepEqual(await page.locator(`${t("cfg-look")} button`).allTextContents(), ["旧版", "DS風"], "新版は設定に出ない（LK23）");
+    assert.deepEqual(await page.locator(`${t("cfg-look")} button`).allTextContents(), ["旧版", "DS風", "縦画面"], "新版は設定に出ない（LK23）。縦画面（VPN01）は選べる");
     // DS風へ切り替えられる。選んだDS風は、次に開いてもDS風のまま。
     await page.locator(`${t("cfg-look")} button[value="retro"]`).click();
     state = await look(page);
