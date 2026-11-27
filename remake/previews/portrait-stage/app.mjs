@@ -160,12 +160,6 @@ const clockTime = (sec) => `${String(Math.floor(sec / 60)).padStart(2, "0")}:${S
 // 蒸らし後の温度の目安（この試作の吸い出しの温度の物差し）。5分で吸い出しの初め（0.40）、長いほど高い。気温や炭の状態で ±0.03 前後する
 const steamPredict = (sec) => Math.max(0.06, Math.min(0.95, 0.4 + steamHeatFor(sec)));
 const STEAM_SPREAD = 0.03;
-// タイマーの場面の空きを埋める案（VPL124）: a＝はじめの待ち姿を後ろに／b＝タイマーを上に、下から蒸らしの湯気／c＝タイマーを上に寄せるだけ
-const TIMER_FILLS = {
-  a: { name: "はじめの待ち姿", lead: "本編のタイマー・雑念よけと同じ「蒸らしを待つはじめ」の絵を後ろに置き、上の空きをはじめで埋める。タイマーは手前の下寄り（はじめが目を閉じて待つ）" },
-  b: { name: "蒸らしの湯気", lead: "タイマーを上寄りに置き、下から蒸らしの湯気（本編の煙）がゆっくり立ちのぼる。絵は増やさず、空きを動きで埋める" },
-  c: { name: "タイマーを上に寄せるだけ", lead: "タイマーを上寄りに置き、空きは店の絵のまま" },
-};
 // 液晶の7つの区画（本編 remake/js/craft/digital-clock.js と同じ形。数字を絵に焼き込まない）
 const SEG_DIGITS = ["abcdef", "bc", "abdeg", "abcdg", "bcfg", "acdfg", "acdefg", "abc", "abcdefg", "abcdfg"];
 const SEG_PATHS = { a: "M6 2h28l4 4-4 4H6L2 6Z", b: "m38 8 4 4v20l-4 4-4-4V12Z", c: "m38 38 4 4v20l-4 4-4-4V42Z", d: "M6 64h28l4 4-4 4H6l-4-4Z", e: "m2 38 4 4v20l-4 4-4-4V42Z", f: "m2 8 4 4v20l-4 4-4-4V12Z", g: "M6 33h28l4 4-4 4H6l-4-4Z" };
@@ -609,7 +603,7 @@ function meterHtml() {
 /* ───────── 1台ぶん ───────── */
 
 class Phone {
-  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", steamSec = 0, tfill = "a", grade = 0, gradeP = 0, water = 0, mix = null, venue = "tonari", attack = false, temp = null, ...ext } = {}) {
+  constructor(el, scene, { fixed = false, step = 0, list = false, overview = false, choice = false, aux = 1, more = false, ci = "a", who = "minto", rank = "d", steamSec = 0, grade = 0, gradeP = 0, water = 0, mix = null, venue = "tonari", attack = false, temp = null, ...ext } = {}) {
     this.el = el;
     this.extOpts = ext; // 別ファイルの場面の見せ方（店番の営業の種類・一覧に並べる場面 shot など。1台表示では URL の値がそのまま入る）
     el.lang = "ja";
@@ -620,7 +614,6 @@ class Phone {
     this.uid = (Phone.seq = (Phone.seq || 0) + 1); // SVG の id を台ごとに分ける
     this.keys = new Set();
     this.rankAt = RANK_PLACES[rank] ? rank : "d"; // ランクの置き場所の案
-    el.dataset.tfill = TIMER_FILLS[tfill] ? tfill : "a"; // タイマーの場面の空きを埋める案（VPL124）
     this.steamSec = Math.max(0, Math.min(STEAM_MAX, Math.round((Number(steamSec) || 0) / 10) * 10)); // 蒸らし時間（秒。VPL105）。次の雑念よけの長さと、吸い出しの初めの温度に効く
     this.venue = VENUES[venue] ? venue : "tonari"; // 作る場面の会場（背景）
     this.attackLearned = !!attack; // 雑念よけのアタックを覚えたか（覚えると精密と入れ替える切り替えが出る・VPL62）
@@ -690,7 +683,7 @@ class Phone {
     if (st.scene === "water") this.syncWater();
     if (st.scene === "mix") this.syncMix();
     if (st.scene === "steam") requestAnimationFrame(() => this.startDodge());
-    if (st.scene === "timer") { this.syncTimer(); this.timerSteam(); }
+    if (st.scene === "timer") this.syncTimer();
     if (st.scene === "coal") this.startCoals();
     if (!this.talk && st.scene !== "map") this.fitCoach();
   }
@@ -2210,25 +2203,10 @@ class Phone {
   /** 蒸らしのタイマー（VPL105）: 上の画面に本編と同じキッチンタイマー（液晶と4つの物理ボタン）と、蒸らし後の温度の目安・雑念よけの長さ。 */
   timerPic() {
     const keys = [["min", "分"], ["sec", "秒"], ["start", "スタート<br>＆ストップ"], ["reset", "リセット"]]; // 絵の物理ボタンの位置は CSS（.kt-min など）
-    return `<img class="bg" src="${IMG[this.venue]}" alt=""><img class="t-wait" src="${IMG.hajimeWait}" alt=""><div class="t-steam"></div><div class="timer-a">
+    return `<img class="bg" src="${IMG[this.venue]}" alt=""><img class="t-wait" src="${IMG.hajimeWait}" alt=""><div class="timer-a">
       <div class="ktimer"><img src="${IMG.kitchenTimer}" alt=""><output class="lcd" aria-live="polite"></output>
         ${keys.map(([k, label]) => `<button class="kt-key kt-${k}" data-act="timer" data-key="${k}">${label}</button>`).join("")}</div>
       </div>`;
-  }
-
-  /** 案B（VPL124）: タイマーの下から、蒸らしの湯気（本編の煙）がゆっくり立ちのぼる。場面を離れたら止まる */
-  timerSteam() {
-    if (this.el.dataset.tfill !== "b" || !smokeAllowed()) return;
-    const host = this.el.querySelector(".t-steam");
-    if (!host) return;
-    const layer = smokeLayer(host, { zIndex: 0, className: "timer-steam", gridScale: 0.5 });
-    const puff = () => {
-      if (!host.isConnected || this.st.scene !== "timer" || this.el.dataset.tfill !== "b") return;
-      const x = 0.2 + Math.random() * 0.6;
-      layer.breathe([{ x, y: 1.02, angle: -Math.PI / 2 + (Math.random() - 0.5) * 0.3, spread: 0.6, speed: 0.12, width: 0.1, dur: 2, rate: 5, size: 0.06, life: 4.2, buoy: 0.04, drag: 0.7, turb: 0.14, hold: 0.4, alpha: 0.3, swell: 2.2, soft: true, flat: true, colors: [smokeTint("#d9d2e6", 0.1)] }]);
-      setTimeout(puff, 1800 + Math.random() * 900);
-    };
-    puff();
   }
 
   /** タイマーのボタン（下の画面と、絵の物理ボタンの両方から）。分＝＋1分、秒＝＋10秒、早見＝その分、リセット＝0、スタート＝雑念よけへ */
@@ -2487,9 +2465,6 @@ function showGallery() {
     <p class="g-note">本編の制作ランク（D〜SSS の絵）を縦画面のどこに置くか。どの案も、工程を終えてランクが上がった瞬間は舞台の真ん中に大きく出し（下の英語まで読める）、置き場所へ縮めて収める。1台表示の右上のつまみ →「ランク」で案を替え、「↑」で上がる動きを何度でも見られる。</p>
     ${Object.entries(RANK_PLACES).map(([v, place]) => `<section class="g-aux"><h3><small>案${v.toUpperCase()}${v === "d" ? "（オーナー案）" : ""}</small>${place.name}<a href="?view=play&scene=holes&rank=${v}">1台で動きを見る</a></h3><p>${place.lead}</p>
       <div class="g-grid">${[["pack", 1, 0.3, "詰め（ランクC）"], ["holes", 2, 0.6, "穴あけ（ランクB・進み6割）"], ["pull", 4, 0.4, "吸い出し（ランクS）"]].map(([scene, grade, gradeP, cap]) => `<figure class="g-cell"><article class="phone" data-rank="${v}" data-scene="${scene}" data-grade="${grade}" data-gp="${gradeP}"></article><figcaption>${cap}</figcaption></figure>`).join("")}</div></section>`).join("")}
-    <h2 class="g-sub">タイマーの場面の空きを埋める案（VPL124）</h2>
-    <p class="g-note">蒸らしのタイマーの上の画面の空きをどう埋めるか。1台表示の右上のつまみ →「タイマー」でも替えられる。</p>
-    <div class="g-grid">${Object.entries(TIMER_FILLS).map(([v, f]) => `<figure class="g-cell"><article class="phone" data-tfilldemo="${v}" data-scene="timer"></article><figcaption>案${v.toUpperCase()}${v === "a" ? "（おすすめ・いまの既定）" : ""}　${f.name}</figcaption></figure>`).join("")}</div>
     <h2 class="g-sub">「？」（説明）の置き場所</h2>
     <section class="g-aux"><h3><small>案Aで決定</small>${HELP_PLACE.name}<a href="?view=play&scene=pull">1台で触る</a></h3><p>${HELP_PLACE.lead}</p>
       <div class="g-grid">${[["mix", "配合"], ["holes", "穴あけ"], ["pull", "吸い出し"]].map(([scene, cap]) => `<figure class="g-cell"><article class="phone" data-helpdemo="a" data-scene="${scene}"></article><figcaption>${cap}</figcaption></figure>`).join("")}</div></section>
@@ -2510,7 +2485,6 @@ function showGallery() {
       BROADCAST_READY.then(show);
     }
   });
-  app.querySelectorAll(".phone[data-tfilldemo]").forEach((el) => phones.push(new Phone(el, "timer", { fixed: true, tfill: el.dataset.tfilldemo, steamSec: 300 })));
   app.querySelectorAll(".phone[data-helpdemo]").forEach((el) => phones.push(new Phone(el, el.dataset.scene, { fixed: true, grade: 2, gradeP: 0.4 })));
   app.querySelectorAll(".phone[data-ci]").forEach((el) => phones.push(new Phone(el, "cutin", { fixed: true, ci: el.dataset.ci, who: el.dataset.who })));
   app.querySelectorAll(".phone[data-ext]").forEach((el) => phones.push(new Phone(el, el.dataset.ext, { fixed: true, ...EXT[el.dataset.ext].META.gallery.shots[Number(el.dataset.shotI)] })));
@@ -2540,13 +2514,12 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
       <div><small>登場</small>${[["minto", "みんと"], ["sumi", "スミ"]].map(([id, name]) => `<button data-who="${id}" aria-pressed="${id === who}">${name}</button>`).join("")}<a href="?view=gallery" data-go="gallery">一覧</a></div>
       <div><small>雑念よけ</small><button data-attack aria-pressed="${params.has("attack")}">アタック習得</button></div>
       <div><small>会場</small>${Object.entries(VENUES).map(([v, name]) => `<button data-venue="${v}" aria-pressed="${v === (params.get("venue") || "tonari")}">${name}</button>`).join("")}</div>
-      <div><small>ランク</small>${Object.keys(RANK_PLACES).map((v) => `<button data-rank="${v}" aria-pressed="${v === (params.get("rank") || "d")}">案${v.toUpperCase()}</button>`).join("")}<button data-rankup aria-label="ランクを上げる">↑</button></div>
-      <div><small>タイマー</small>${Object.keys(TIMER_FILLS).map((v) => `<button data-tfill="${v}" aria-pressed="${v === (params.get("tfill") || "a")}">案${v.toUpperCase()}</button>`).join("")}</div></div></nav>`}</div>`;
+      <div><small>ランク</small>${Object.keys(RANK_PLACES).map((v) => `<button data-rank="${v}" aria-pressed="${v === (params.get("rank") || "d")}">案${v.toUpperCase()}</button>`).join("")}<button data-rankup aria-label="ランクを上げる">↑</button></div></div></nav>`}</div>`;
   const el = app.querySelector(".phone");
   // 先に大きさを決めてから描く（立ち絵と地図の位置は絵の大きさから決まる）
   const box = app.getBoundingClientRect(), rem = Math.min(box.width / 39, box.height / 66);
   root.style.fontSize = `${rem}px`; el.style.height = `${Math.min(box.height, rem * 92)}px`;
-  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { ...Object.fromEntries(params), step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", tfill: params.get("tfill") || "a", venue: params.get("venue") || "tonari", attack: params.has("attack"), grade: params.get("grade"), ...opts });
+  const make = (sceneId, opts = {}) => new Phone(el, sceneId, { ...Object.fromEntries(params), step: Number(params.get("step")) || 0, list: params.has("list"), overview: params.has("overview"), choice: params.has("choice"), more: params.has("more"), aux, ci, who, rank: params.get("rank") || "d", venue: params.get("venue") || "tonari", attack: params.has("attack"), grade: params.get("grade"), ...opts });
   current = make(scene);
   const nav = app.querySelector(".switch");
   if (!nav) return;
@@ -2586,12 +2559,6 @@ function showPlay(scene = "map", aux = Number(params.get("aux")) || 1, ci = para
         if (crafting) current.render(); else current.setScene("holes");
       } else if (crafting) current.rankUp({ loop: true });
       else { current.setScene("holes"); setTimeout(() => current.rankUp({ loop: true }), 400); }
-    }
-    else if (button.dataset.tfill) {
-      // タイマーの場面の空きを埋める案を替える（VPL124）
-      current.el.dataset.tfill = button.dataset.tfill;
-      nav.querySelectorAll("[data-tfill]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.tfill === button.dataset.tfill)));
-      if (current.st.scene === "timer") current.render(); else current.setScene("timer");
     }
     else if (button.dataset.ci || button.dataset.who) {
       // 登場カットインの案・人物を替えて、その場で流す
