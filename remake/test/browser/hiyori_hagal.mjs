@@ -25,6 +25,7 @@ async function setup(page, answer = 0) {
       '_hiyori_message_delivered', '_hiyori_cracks_done', '_hiyori_tonari_return_done',
       '_hiyori_tonari_followup_done', '_hiyori_tonari_afterwork_done', '_hiyori_real_self_known']) s.flags[f] = true;
     H.core.config.textSpeed = 4; H.vn.vnTest.turbo = true; H.vn.vnTest.choose = () => answer;
+    H.core.config.skipSeenOnly = false; // 受け取りの検査は未読の台詞も SKIP で送る（既定は既読のみ・#4194）
     H.snapshot = () => {
       const s = H.core.state;
       return structuredClone({ money: s.money, stamina: s.stamina, slot: s.slot, owned: s.owned,

@@ -40,6 +40,8 @@ await suite("growth-levelup", async (runCheck) => {
       window.entryFiveCore=await import("./js/core/state.js");const g=await import("./js/core/growth.js"),s=entryFiveCore.state;
       Object.assign(s,{chapter:4,phase:"cleared",day:60});s.flags._ch4_cleared=true;
       g.setGrowthPreview(true);Object.assign(g.ensureGrowth(),{xp:260,level:1,settledXp:0});
+      // 第5章はつむぎ目線の面接（場面カード無し）→章題→新人編の場面カードで始まる（#4253）。面接の会話は送って、最初の場面カードを待つ
+      (await import("./js/vn/engine.js")).vnTest.turbo=true;
       void (await import("./js/chapters/ch5.js")).beginChapterFive();
     });
     // 止めて見せるレベルアップは出さない（SBD108・SBD122）。古いセーブのレベルにしていない分は、章の入口の夜に上がって保存される
@@ -1365,7 +1367,7 @@ await suite("growth-levelup", async (runCheck) => {
     });
     await page.locator(t("pin-ch3_tokyo_mukai")).click(); await page.locator(t("map-go")).click();
     await page.locator("#modal.show button", { hasText: "シフトに入る" }).click();
-    await page.locator(t("mukai-order-0")).click({ timeout: 60000 });
+    // シフトは店番（Issue #4254・adf149fd）になり、注文を選ぶ手順は無くなった（検査では店番を即終了する・support.mjs）
     await page.locator(t("tokyo-tetsuko-yes")).click({ timeout: 60000 });
     for (let i = 0; i < 200 && !(await page.evaluate(() => __remake.state.growth.learned.includes("M-B5"))); i++) {
       if (await page.locator(".vn-box").isVisible().catch(() => false)) await page.locator(".vn-box").click().catch(() => {});
@@ -1581,7 +1583,8 @@ await suite("growth-levelup", async (runCheck) => {
     await page.locator(t(`board-node-${first}`)).click();
     const perk = await page.locator(t("board-perk")).innerText();
     const total = await page.locator(t("board-perk-total")).innerText();
-    assert.match(total, /の合計：.*＋0%（端数は次の睡眠へ） → .*＋4%（端数は次の睡眠へ）/, `いま→灯すと（近くの眠りは＋4%。SBD111）: ${total}`);
+    // 最初のマスは才能の B2（眠り）。#4255 で2マス分を集約し、一つ灯すと従来（＋4%・SBD111）の2倍の＋8%。
+    assert.match(total, /の合計：.*＋0%（端数は次の睡眠へ） → .*＋8%（端数は次の睡眠へ）/, `いま→灯すと（近くの眠り B2 は＋8%。#4255）: ${total}`);
     await page.locator(t("board-light")).click();
     await page.locator(t(`board-node-${first}`)).click(); // 仮置きで隣へ選択が進むので戻す
     assert.match(await page.locator(t("board-perk-total")).innerText(), /仮置き中/);

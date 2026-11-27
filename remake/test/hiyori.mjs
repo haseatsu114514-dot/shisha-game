@@ -54,6 +54,7 @@ try {
       state.flags._axe_bar_legacy_access = true; // #577: 既存ルート回帰は旧保存として保つ
       Object.assign(state, { phase: "daily", day: 5, slot: 1 });
       QA.core.config.textSpeed = 4;
+      QA.core.config.skipSeenOnly = false; // 未読の台詞も SKIP で送る（既定は既読のみ・#4194）
       QA.vn.vnTest.turbo = false;
       QA.vn.vnTest.choose = null;
       QA.vn.backlog().length = 0;

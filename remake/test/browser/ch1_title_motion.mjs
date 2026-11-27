@@ -12,6 +12,7 @@ async function setup(page) {
     const motion = await import('./js/chapters/ch1-title-motion.js'), audio = await import('./js/core/audio.js');
     const vn = await import('./js/vn/engine.js');
     core.newGame(); core.save();
+    core.config.skipSeenOnly = false; // 未読の台詞も SKIP で送る（既定は既読のみ・#4194）。保存はしない
     window.T = { core, ui, motion, vn, jingles: 0, done: false, result: null, error: null };
     T.titleSeFiles = audio.recordedSeFiles().ch1Title;
     const jingle = audio.SE.ch1Title;
