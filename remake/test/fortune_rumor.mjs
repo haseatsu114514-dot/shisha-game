@@ -26,6 +26,8 @@ const mocks = {
   questionVisitDue: () => false, finaleAtVisit: () => false, spotFollowupDue: () => null, maybeRecruitTrpgMember: async () => {},
   // 占い師は昼にも夜にも現れる（台帳 URA）。営業時間の門は無い
   openingStatus: () => ({ ok: true }),
+  // 心得の盤の店番のスキル（SBD157）は無しで検査する（勤務の札の「売上の○%」は素の10%）
+  growthFloorPerks: () => null,
   // 日常ループが占い師の時間帯を決めるとき、夜の固定の予定を見る（この試験では予定なし）
   nightOccupied: () => false,
   trpgSpot: () => null, samechanSpot: () => null, cityGuestAtShop: () => null, hiyoriFirstMeetingReady: () => false,

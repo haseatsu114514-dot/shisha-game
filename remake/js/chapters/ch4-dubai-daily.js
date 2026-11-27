@@ -26,6 +26,7 @@ import { showHud } from "../daily/hud.js";
 import { addMoney, addStamina, applyStats, earnStat, gainAffinity, affinityLevel, visitAffinity } from "../core/stats.js";
 import { FLOOR_VENUES, floorVenuePayText } from "../daily/floor-venues.js";
 import { runVenueFloorShift } from "../daily/floor-shift.js";
+import { growthFloorPerks } from "../core/growth-effects.js";
 import { openShop } from "../daily/shop.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
 import { consultLessons } from "../core/growth.js";
@@ -168,7 +169,7 @@ const spotNow = entry => {
   // 中心地のカフェ: 初回訪問後は昼のシフト（店番・2コマ）も選べる。所持金が一台分に足りない昼でもシフト目的で入れるよう地図の利用料を 0 にする。
   if (current?.place === "center_cafe" && dubaiShiftUnlocked(state)) {
     const shiftNote = dubaiShiftOpen(state)
-      ? `昼はシフト（店番・2コマ・${floorVenuePayText("dubai", state.chapter)}）にも入れる。`
+      ? `昼はシフト（店番・2コマ・${floorVenuePayText("dubai", state.chapter, growthFloorPerks(state)?.commission)}）にも入れる。`
       : "シフト（店番・2コマ）は昼から入れる。";
     const freeForShift = dubaiShiftOpen(state) && spendableMoney(state) < (current.cost || 0);
     return { ...current, ...(freeForShift ? { cost: 0 } : {}), desc: `${current.desc}${shiftNote}` };
@@ -482,7 +483,7 @@ async function performDubaiSpot(entry, io, { staminaGuard, holdSaveUntilActionEn
           label: doneToday
             ? "シフトに入る（店番・今日はもう終わった）"
             : canShift
-              ? `シフトに入る（店番・昼から夜まで2コマ・${floorVenuePayText("dubai", state.chapter)}）`
+              ? `シフトに入る（店番・昼から夜まで2コマ・${floorVenuePayText("dubai", state.chapter, growthFloorPerks(state)?.commission)}）`
               : "シフトに入る（店番・昼から2コマ・夜からは入れない）",
           value: "shift",
           test: "dubai-cafe-shift",

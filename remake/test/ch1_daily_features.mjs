@@ -32,7 +32,7 @@ const ports = {
   axeThrowExposed: () => true, canStudyAttack: () => false, canStudyCubeCoals: () => false,
   readyLessons: () => [],
   on: () => () => {},
-  callingSalesBonus: () => 0, growthSkill: () => false, SKILL_TUNING: { baitoPay: .1 }, // 盤のスキル（仕事が早い）は無しで検査する
+  callingSalesBonus: () => 0, growthFloorPerks: () => null, // 盤の店番のスキル（売り上手など）は無しで検査する
   // #2213 B04: シフト上がりのメニューにまかない練習（今日の葉の表示）が並ぶ
   staffFlavors: () => [], staffStock: () => 0,
 };

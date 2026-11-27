@@ -32,8 +32,11 @@ const FLOOR_SHIFT_BASE = Object.freeze([8000, 10000, 12000, 14000, 16000]);
 export const FLOOR_COMMISSION_PERCENT = 10;
 export const floorShiftBasePay = (chapter = 1) => FLOOR_SHIFT_BASE[Math.min(chapter, FLOOR_SHIFT_BASE.length) - 1] ?? FLOOR_SHIFT_BASE[0];
 
-export function floorShiftPay(chapter, sales, allowances = 0) {
+/** 歩合の率（%）。bonus＝心得の盤の「売り上手」（K28。SBD157）で足すポイント。 */
+export const floorCommissionPercent = (bonus = 0) => FLOOR_COMMISSION_PERCENT + Math.max(0, Number(bonus) || 0);
+
+export function floorShiftPay(chapter, sales, allowances = 0, bonus = 0) {
   const base = floorShiftBasePay(chapter);
-  const commission = Math.floor(sales * FLOOR_COMMISSION_PERCENT / 100);
+  const commission = Math.floor(sales * floorCommissionPercent(bonus) / 100);
   return { base, commission, allowances, total: base + commission + allowances };
 }

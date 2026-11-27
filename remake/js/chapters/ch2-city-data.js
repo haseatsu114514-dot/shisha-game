@@ -51,6 +51,8 @@ export const CH2_HOME_IDS = Object.freeze(["ch2_rest_notebook", "cafe_ch2_commut
   "ch2_minto_umbrella_day", "ch2_rio_label_words", "ch2_adam_peel_record", "ch2_samechan_menu_letters", "ch2_hiyori_commute_poem",
   // #3097 第5弾: tonariの窓際の席のつむぎ3本となるの続き1本（spots.js の CHAPTER_TALKS）
   "ch2_tsumugi_charcoal_bread", "ch2_tsumugi_train_cat", "ch2_tsumugi_customer_seat", "ch2_naru_montblanc",
+  // VOL16（#3097 計画 2-9）: 地元の顔なじみの続き。観音堂の老人・喫茶こはくのマスター、CHOI-ZAPのスタッフ（spot-encounters.js の ENCOUNTERS）
+  "kannon_ch2_coin", "kannon_ch2_temizu", "choizap_ch2_aircon", "choizap_ch2_balance", "choizap_ch2_shoelace",
   // tonariの大会準備で一台作る場面（ch2-craft-prep.js の CH2_CRAFT_PREP_IDS と同じ。読み込みを軽くするため名前を並べる）
   "ch2_prep_basics_intro", "ch2_prep_basics_end", "ch2_prep_basics_failed",
   "ch2_prep_midcheck_intro", "ch2_prep_midcheck_good", "ch2_prep_midcheck_rough", "ch2_prep_midcheck_failed", "ch2_prep_rehearsal_intro",
