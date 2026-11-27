@@ -161,3 +161,30 @@ A blank horizontal celebration plaque for a desert sandboarding game result scre
 ```text
 A blank small horizontal name plate for under a rank medal in a desert sandboarding game: a dark brown tooled-leather plate with a gold stitched border and small gold corner rivets, gently curved like a ribbon with short folded tails at both ends. The inside is completely EMPTY and flat (text will be added later). Hand-painted mobile game UI style matching the ribbon and leather board in the reference images. About 4 times wider than tall, centred, fills most of the width, isolated on a fully transparent background. No text, no letters, no numbers.
 ```
+
+## 縦の下り坂の谷（DSR109）
+
+モデル `gpt-image-2.6-sunburst`・`/v1/images/edits`（参照画像つき）・1536×1024・quality high・**背景は透過**（上の空を透明にして、ゲームの空の絵と沈む太陽を後ろに描く）。2026-11-27 生成。
+
+### `valley_day.png` — 1536x1024・背景 transparent
+
+参照画像:
+- `remake/img/ui/desert_ride/title_bg.webp`（入口の絵。オーナーが「こんな感じ」と送った、坂の下の谷を見下ろす構図）
+- 遠景の空と陸（`backdrop_day_sky.webp`・`backdrop_day_land.webp`）を1枚に重ねた PNG（画風・色の参照）
+
+```text
+Background painting for a mobile sandboarding race game, same hand-painted anime-style desert as the reference images (warm golden sand, soft lilac-blue shadows, gentle haze). View from HIGH UP on top of a tall dune, looking DOWN into a vast sand valley far below and ahead, exactly like the valley in the first reference image. Composition, top to bottom: the upper 35 percent of the image is EMPTY and fully TRANSPARENT (no sky, no clouds, no sun - the sky is drawn separately by the game). At 35 percent from the top: a long straight horizon of very distant, low, pale hazy dune ridges (small, bluish beige, low contrast). Below that, filling everything down to the bottom edge: the wide valley floor seen from above at a steep downward angle - soft rolling dunes laid out in long horizontal layers that recede toward the horizon, smooth crests with soft warm shadows on their lee sides, the layers getting larger and more detailed toward the bottom, light atmospheric haze in the distance. The bottom edge is plain smooth valley sand. Seen from above: we look onto the tops of the dunes, nothing towers above the horizon. Left and right edges similar so the image can be mirrored side by side. No people, no course, no flags, no ropes, no posts, no buildings, no plants, no rocks, no sun, no text.
+```
+
+不採用: 同じ文面で空を描かせた不透過の案（`valley_day_o`）。空がゲームの空の絵と二重になるため使わなかった（原画は残していない）。
+
+### `valley_dusk.png` — 1536x1024・背景 transparent
+
+参照画像:
+- 上の `valley_day.png`（構図をそのまま保つ）
+- 夕方の遠景（`backdrop_dusk_sky.webp`・`backdrop_dusk_land.webp`）を1枚に重ねた PNG（色の参照）
+
+```text
+Repaint the FIRST image as the same scene in late-afternoon sunset light, using the warm colour palette of the second image (sunset desert). Keep EXACTLY the same composition, the same dunes in the same places, the same horizon line height and the same framing - only the lighting and colours change: sand in warm orange and peach tones, longer soft violet-mauve shadows on the lee sides of the dunes, distant ridges in hazy rose-lavender. The upper part of the image stays EMPTY and fully TRANSPARENT exactly as in the first image (no sky, no sun, no clouds). No people, no objects, no text.
+```
+

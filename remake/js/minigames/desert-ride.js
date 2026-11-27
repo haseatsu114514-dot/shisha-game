@@ -58,12 +58,12 @@ const CAM = { depth: 1.5, height: 2.0, back: 4.5, meterPerLane: 1.6 }; // 疑似
  * 見た目だけの値で、判定・規則・採点・手応えの数値は変えない。横（既定）は使わない（startDesertRide の downhill で切り替える）。
  * 横の作りでは路面の消失線＝遠くの砂丘の足元（HORIZON）なので、路面が平らな台地のまま砂丘へ届いて見えた。
  * 下り坂では、目の高さ（eye: 空と遠くの稜線の境）より下に路面の消失線（ground）を置く。路面は目の高さより下へ続き、
- * その間に坂の下の谷（遠景の絵の谷の部分。縦に広げる）が見える＝見下ろしながら坂を下っている見え方。
+ * その間に坂の下の谷（生成した谷の絵 DESERT_VALLEY_ART）が見える＝見下ろしながら坂を下っている見え方。
  * height は斜面から測ったカメラの高さ（m。横の 2m より高いほど見下ろす）。valleyWidth は谷の絵（DESERT_VALLEY_ART）を描く幅（px。縦横同じ倍率）。
  * valleyHaze は谷にかける空気の濃さ [目の高さ, 斜面の端]（遠いほど白く霞み、低く遠い所にあると分かる）。
- * posts はコースの両端の杭とロープ（every m ごと、reach m 先まで）。坂の下へ細く集まる2本の線で、コースの向きと奥行きを見せる。
+ * posts はコースの両端の杭とロープ（路面の区間の点＝SEG m ごと、reach m 先まで。杭の高さ height m）。坂の下へ細く集まる2本の線で、コースの向きと奥行きを見せる。
  */
-const DOWNHILL = Object.freeze({ eye: 190, ground: 300, height: 2.6, valleyWidth: 520, valleyHaze: Object.freeze([0.5, 0.12]), posts: Object.freeze({ every: 6, reach: 170, height: 0.85 }) });
+const DOWNHILL = Object.freeze({ eye: 190, ground: 300, height: 2.6, valleyWidth: 520, valleyHaze: Object.freeze([0.5, 0.12]), posts: Object.freeze({ reach: 170, height: 0.85 }) });
 const COUNTDOWN = 2.4;           // 本番のスタートの合図（3・2・1・GO）の秒数（その相手との最初の一本）
 /**
  * 手応え（演出）の数値（2026-11-13 オーナー「手応えレビューの内容を実装して、より面白く」）。規則（desert-ride-model.js）と違い凍結しない:
@@ -2038,7 +2038,8 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       }
       const V = DESERT_VALLEY_ART.valley, [vw, vh] = V.size;
       // 谷の絵の下端が斜面の消失線より上で切れないよう、必要なら大きくする
-      const kv = Math.max(DOWNHILL.valleyWidth / vw, (GROUND_Y - EYE_Y + 6) / (vh - V.horizon));
+      // 横に当てた時（downhill: true）は見える幅が広いので、絵を画面の幅いっぱいに（並べた継ぎ目を見せない）
+      const kv = Math.max((portrait ? DOWNHILL.valleyWidth : W * 1.1) / vw, (GROUND_Y - EYE_Y + 6) / (vh - V.horizon));
       return { skySrc, skyW, skyY: -40, skyH: skySrc * skyK, landW: Math.round(vw * kv), landY: EYE_Y - V.horizon * kv, landH: vh * kv, above, below, valley: true };
     }
     function drawBackdrop(dusk, progress, present = true) {
@@ -2338,8 +2339,10 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       const post = mixColor([86, 56, 34], [80, 46, 36], dusk).slice(4, -1), lit = mixColor([255, 232, 188], [255, 206, 160], dusk).slice(4, -1);
       ctx.lineCap = "round"; ctx.lineJoin = "round";
       // 奥の帯から手前へ（手前の杭が奥のロープに重なる）。帯の境の点は奥の帯の端なので、各帯は (i0, i1] だけ描く
+      // いちばん手前の帯だけは手前の端の杭も立てる（そこからロープが始まる）
       const bands = [...groundBands(points, 36, P.reach, 4, 2), ...groundBands(points, 2, 36, 6, 2)];
-      for (const [i0, i1] of bands) {
+      for (const [b, [i0, i1]] of bands.entries()) {
+        const first = b === bands.length - 1 ? Math.max(1, i0) : i0 + 1; // points[0] は区間の境でない（画面の下端のすぐ外）
         const mid = points[(i0 + i1) >> 1], fade = Math.max(0, 1 - mid.dz / P.reach);
         if (fade <= 0.02) continue;
         const unit = mid.p.scale * (H / 2), width = Math.max(1, Math.min(9, unit * 0.07));
@@ -2360,7 +2363,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         ctx.strokeStyle = `rgba(${post},${(0.95 * fade).toFixed(3)})`; ctx.lineWidth = width;
         ctx.beginPath();
         for (const side of ROAD_SIDES) {
-          for (let i = i0 + 1; i <= i1; i++) {
+          for (let i = first; i <= i1; i++) {
             const pt = points[i], x = pt.p.x + side * pt.p.w * LANE;
             ctx.moveTo(x, pt.p.y); ctx.lineTo(x, pt.p.y - pt.p.scale * P.height * (H / 2));
           }
@@ -2370,7 +2373,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
         ctx.strokeStyle = `rgba(${lit},${(0.6 * fade).toFixed(3)})`; ctx.lineWidth = width * 0.3;
         ctx.beginPath();
         for (const side of ROAD_SIDES) {
-          for (let i = i0 + 1; i <= i1; i++) {
+          for (let i = first; i <= i1; i++) {
             const pt = points[i], x = pt.p.x + side * pt.p.w * LANE - width * 0.25;
             ctx.moveTo(x, pt.p.y - 1); ctx.lineTo(x, pt.p.y - pt.p.scale * P.height * (H / 2) + 1);
           }

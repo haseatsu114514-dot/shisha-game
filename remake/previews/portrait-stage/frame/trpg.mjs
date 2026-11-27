@@ -79,7 +79,7 @@ async function pose(name) {
   await wait(900);
 }
 
-// 段の進み（見出しの「1/7 話を聞く」）を、段の名前と7つの点で見せる（VPG15。「1/7」の字は点で分かる。読み上げは本編の見出しのまま）。
+// 段の進み（見出しの「1/7 話を聞く」）を、段の名前と7つの点で見せる（VPG17。「1/7」の字は点で分かる。読み上げは本編の見出しのまま）。
 // 見出しの字は本編が書き換えるので、隣に点の列を置き、字だけを CSS で隠す（本編の DOM の中身には触れない）。
 const STEP = /^(\d+)\/(\d+)\s+(.+)$/;
 function syncStep() {
@@ -103,7 +103,7 @@ function syncStep() {
   track.replaceChildren(name, pips);
   node.classList.add("p-step-source");
 }
-// 調べる場面で、横長の絵の外側に同じ絵をぼかして敷く（trpg.css の --scene-art。VPG16）。今の部屋の絵を写すだけで、本編の DOM には触れない。
+// 調べる場面で、横長の絵の外側に同じ絵をぼかして敷く（trpg.css の --scene-art。VPG20）。今の部屋の絵を写すだけで、本編の DOM には触れない。
 function syncSceneArt() {
   const img = host.querySelector(".trpg-room > img");
   const src = img?.currentSrc || img?.src || "";

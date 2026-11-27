@@ -132,3 +132,17 @@ OpenAI の画像 API（`gpt-image-2.6-sunburst`）で生成した原画と、送
 - **検品**: 綴りが正しい（DESERT RIDE・CAMEL RACE・てつこといっしょ）。ほかの字・擬似文字なし／人物は背面か小さく顔なし（砂丘）／ロボット騎手はラクダレースの絵と同じ作り／てつこは毛色がゲームの絵と同じ。
 - 原画の SHA-256（先頭16桁）: `logo_desert_ride` 3e65c260581a2bf7, `logo_camel_race` 0f1f023a5e361a03, `logo_tetsuko` cc89f937cf1e5cb2
 
+## 砂丘の縦の下り坂の遠景（DSR109）— `desert/originals/`
+
+オーナー「サンドボードは縦画面のやつでもこんな感じでレース中にも坂をくだってる立体感がわかりやすくしたい」「必要に応じて生成してもいい」（見本は入口の絵 `title_bg.webp`）。縦の滑走中に、坂の下に広がる谷を見下ろす遠景。プロンプトは `desert/prompts.md` の末尾。
+
+| 原画 | 使う所 | ゲームの絵 |
+|---|---|---|
+| `valley_day.png` | 縦の滑走中の遠景（目の高さの稜線〜坂の下の谷）。上の空は透明で、ゲームの空の絵と太陽を後ろに描く（`desert-ride.js` の `DOWNHILL`・`backdropFit`） | `remake/img/ui/desert_ride/valley_day.webp`（1536×652） |
+| `valley_dusk.png` | 同じ構図の夕方。ゴールへ近づくほど昼の上に重ねる | `remake/img/ui/desert_ride/valley_dusk.webp`（1536×652） |
+
+- **変換**: 原画の上の透明な空（行 0〜371）を切り落とし、1536×652 の WebP（quality 80・透過あり）。遠くの稜線の足元（目の高さ）は切り出した絵の 38 行目（`DESERT_VALLEY_ART.horizon`）
+- **検品**: 人物・コース・旗・杭・岩・太陽・字なし／空は透明で、稜線の上端（行 381〜411）だけ半透明のぼかし／夕方は昼と同じ砂丘の形・同じ地平線の高さ／左右に並べて反転しても稜線の高さがそろう
+- 横（既定）では読まない（`DESERT_ART` とは別の `DESERT_VALLEY_ART`。`loadDesertArt({ valley: true })` の時だけ）
+- 原画の SHA-256（先頭16桁）: `valley_day` 7cd8ff7e5a025890, `valley_dusk` c426aae4a9817c9a
+
