@@ -422,3 +422,47 @@ Background above the plate: dark, softly blurred, warm brown shadow.
 Do not draw: charcoal, coals, tongs, hands, smoke, flames, a pot, text, letters, logos, watermark.
 ```
 
+## 9回目: 口の開いたボトルと蛇口（VPL81・2枚）
+
+オーナー「水入れはボトルをもう少し下げていいのと水の量はもう少し多めが丁度いい　ボトルの6割ぐらい　あとボトルをやや斜めにして蛇口をつけて水を入れて充していく感じで　水のリアルなゆらしも入れながら」。
+蛇口の下で水を満たす場面にするため、ボトルは台から外したガラスのベース単体（ステムなし・口が開いている）にした。これまでの `img/ui-bottle-pro.webp`（本編の大会公式モデルの台 `remake/img/ui/scene_props/shisha_home_pro.webp` のベースの切り出し。ステムと襟つき）を入力にした編集で、同じ形・同じ金の渦と菱形・足の黒と金の帯のまま作った。`ui-bottle-pro.webp` は試作から外した。水・水流・しぶきは描かせず、コードで重ねる。
+
+| 原画（`v3/`） | 試作が読む絵（`remake/previews/portrait-stage/img/`） | 使い道 |
+|---|---|---|
+| `bottle-open-original.webp`（1024×1536） | `ui-bottle-open.webp`（540×711） | 水入れのボトル。切り出したあと、ガラスの面だけ半透明にした（彩度の低い明るい所を約26%に、白いハイライトは約88%まで残し、金・黒・輪郭はそのまま）。内側の形はこの絵の輪郭から取り、`app.mjs` の `BOTTLE.inner` に書いた |
+| `faucet-original.webp`（1024×1024） | `ui-faucet.webp`（360×310） | 水入れの蛇口（吐水口と首の下の方だけ。上は画面の外へ消える） |
+
+生成前の8行（§4.3・ボトル）:
+
+```
+人物      : なし
+場面      : 準備中（水入れ。ベース単体。ステムは外してある）
+台の型    : 本編の大会公式モデルの台のガラスのベース（鐘形・金の渦と菱形・足に黒と金の帯）。ステムとの接続部（黒と金の襟）は外した状態で、口に細い金の縁
+HMD       : なし
+炭        : なし
+ホース    : なし
+吸い口    : なし
+構図      : 正面・直立・ベース全体・背景なし。口は少し上から見た細い楕円で、開いていることが分かる
+```
+
+生成後の確認（§4.4・素材規約の必須チェック）: ボトルはステム・襟・水・ホース・台が無く、口が開いている。胴の形・金の渦・菱形3つ・足の黒と金の帯は入力の絵と同じ。蛇口は吐水口が真下を向き、水・流し台・レバー・手が無い。どちらも文字・ロゴ・透かしが無い。合格（生成は各1回）。蛇口はシーシャの機材ではないため §4 の8行は当てはまらない。
+画像の決まり（`docs/shisha_reference.md` §4.1）は「ベースの水は下の方だけ」だが、この場面のちょうどいい水位はオーナーの指示（ボトルの6割ぐらい）に合わせた。絵そのものには水を描いていない。
+
+```text
+Use the reference image as the exact design of a glass hookah base (vase): the same bell-shaped clear glass body, the same golden swirl ornament and small golden diamond marks painted on the glass, the same black and gold bands around the wide foot, and the same polished anime game illustration style with clean dark outlines and two or three tone cel shading.
+Redraw this same glass base ALONE, taken off the hookah, standing upright and seen straight from the front, as it looks when it is about to be filled with water at a sink:
+- Remove the metal stem (the vertical metal tube inside the glass) completely. The inside of the glass is empty: no tube, no rod, no water.
+- Remove the black and gold collar at the top. Instead, the glass narrows into a short, fairly wide open neck and ends in an open round mouth with a thin golden rim. The mouth is seen very slightly from above, so the opening reads as a narrow ellipse and it is clear that the vase is hollow and open at the top.
+- Keep the proportions of the bell-shaped body and the wide foot the same as the reference. The whole vase is visible, from the open mouth at the top to the foot at the bottom, centered, with a small margin on every side.
+- The glass is clear and transparent with a few clean white highlight streaks; it is completely empty and dry.
+Fully transparent background.
+Do not draw: a stem, a tube, a rod, a hose, a bowl, a tray, charcoal, water, drops, a table, a shadow on the ground, hands, text, letters, logos, watermark.
+```
+
+```text
+Match the illustration style of the reference image (polished anime game illustration with clean dark outlines and two or three tone cel shading, shiny metal drawn with a few crisp highlight streaks). Do NOT draw the glass vase from the reference; it is only a style reference.
+Draw one object only: the lower end of a polished chrome bar-sink faucet (water tap), on a fully transparent background.
+The faucet comes down from above: its pipe enters from the top right corner of the image (cut off by the top edge), sweeps in a smooth gooseneck curve to the left, then bends and points straight down, ending in a short cylindrical aerator nozzle. The round opening of the nozzle points straight down and is located at the horizontal center of the image, about one third of the way down from the top. The lower two thirds of the image are empty and transparent.
+Bright chrome with cool grey shading and a thin warm reflected light, a slim golden ring just above the nozzle.
+Do not draw: water, drops, a sink, a wall, a handle, a lever, a hose, a glass, a bottle, hands, text, letters, logos, watermark.
+```

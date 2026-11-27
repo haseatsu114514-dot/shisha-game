@@ -185,10 +185,12 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_preparation_started", "progression"],
   ["_ch2_preview_seen", "progression"],
   ["_ch2_read_ch2_coal_together", "progression"],
+  ["_ch2_read_ch2_ent_clinic", "progression"], // 耳鼻科（DAY6昼）。朝のメモ（ch2_morning_notes）と採点表（ch2_phone_score_sheet）の条件（VOL17）
   ["_ch2_read_ch2_kumicho_fifth", "person"],
   ["_ch2_read_ch2_kumicho_sixth", "person"],
   ["_ch2_read_ch2_kumicho_third", "person"],
   ["_ch2_read_ch2_lingering_smell", "progression"], // スミさんの飯の接客回（baito_ch2_staff_meal）の条件
+  ["_ch2_read_ch2_morning_notes", "progression"], // 朝のメモ（DAY7朝）。採点表（ch2_phone_score_sheet）の「吸って確かめない」の条件（VOL17）
   ["_ch2_read_ch2_naru_lunch", "person"], // 試煙会（remake_ch2_ageha_tasting）で、前日の昼に聞いた苺の依頼を受けるか（#3922）
   ["_ch2_read_ch2_naru_warm", "person"],
   ["_ch2_read_ch2_naru_window", "person"], // 前夜の振り返りで、休みの店の前に送ったLIMEの返事を待つか（#2720）
@@ -631,8 +633,11 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_ch2_rest_rain", "progression"],
   ["_spot_seen_choizap_ch2_rain", "progression"],
   ["_spot_seen_cs_ch2_rain", "progression"],
+  ["_spot_seen_choizap_ch2_aircon", "progression"], // VOL16（#3097 計画 2-9）
+  ["_spot_seen_choizap_ch2_balance", "progression"], // VOL16
   ["_spot_seen_choizap_ch2_neck", "progression"], // #3097 第2弾
   ["_spot_seen_choizap_ch2_numbers", "progression"],
+  ["_spot_seen_choizap_ch2_shoelace", "progression"], // VOL16
   ["_spot_seen_choizap_ch2_stairs", "progression"], // #3097 第1弾
   ["_spot_seen_choizap_minto", "person"],
   ["_spot_seen_choizap_naru", "person"],
@@ -646,8 +651,10 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_kannon_adam_lunch", "person"],
   ["_spot_seen_kannon_adam_pakki", "person"],
   ["_spot_seen_kannon_ch2_wish", "progression"],
+  ["_spot_seen_kannon_ch2_coin", "progression"], // VOL16（#3097 計画 2-9）
   ["_spot_seen_kannon_ch2_incense", "progression"], // #3097 第2弾
   ["_spot_seen_kannon_ch2_omikuji", "progression"], // #3097 第1弾
+  ["_spot_seen_kannon_ch2_temizu", "progression"], // VOL16
   ["_spot_seen_kannon_oldman", "progression"],
   ["_spot_seen_samechan_shop_minto_gift", "person"],
   ["_stk_ch3_names_blacked", "progression"], // 第3章2日目の夜、ノートの教わった人の名前を塗りつぶした（2026-11-24 添削 N1。第3章で書き戻し、第5章の開幕で返る）

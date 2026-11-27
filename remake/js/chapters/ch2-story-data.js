@@ -24,6 +24,9 @@ export const CH2_NIGHTS = [
     { id: "ch2_title_customer_half", file: "ch2_main", flag: "_stk_title_customer_half" },
   ] },
   { day: 4, pin: "tonari", label: "焦げたソファ", beat: "夜。預けていたノートを取りに、閉店前のtonariへ──", steps: [
+    // VOL17（#3097 計画 2-10）: ノートを取りに寄った満席の閉店前に、手伝いを頼まれてエプロンを結ぶ（県大会の控室の縮んだエプロンの前段）。
+    // 事故を読んだ保存（途中保存を含む）には足さない
+    { id: "ch2_full_house_help", file: "ch2_story_extra", when: ({ flags }) => !flags._ch2_read_ch2_sofa_burn },
     { id: "ch2_sofa_burn", file: "ch2_main" },
     { id: "ch2_abyss_baito", file: "ch2_main" },
   ] },
@@ -61,6 +64,8 @@ export const CH2_NIGHTS = [
     // #1733: ノートを受け取りに寄った閉店間際にあげはが来る→駅まで送って店へ戻り、半分灯りの落ちた店でスミさんの話を聞く
     { id: "remake_ch2_ageha_slump", file: "ch2_ageha_story" },
     { id: "ch2_sumi_silence", file: "ch2_main" },
+    // VOL17（#3097 計画 2-10）: ノートを取らずに帰る道で、スマホに練習の採点表を作る（DAY11の「開いたままの採点表」の前段）
+    { id: "ch2_phone_score_sheet", file: "ch2_story_extra" },
   ] },
   { day: 11, pin: "naru", label: "なるの言葉", beat: "夜。試作の話をしに、KEMURIKUSAへ──", steps: [
     { id: "ch2_naru_confrontation", file: "ch2_isolation" },
@@ -91,14 +96,23 @@ export const CH2_NIGHTS = [
 // （旧保存を後の日に読ませない）。読了の印は夜の本編と同じ _ch2_read_<ID>。報酬なし。
 // 2-2 耳鼻科の受診（DAY6）: DAY5の夜に味が遠くなった保存だけ。夜の ch2_lingering_smell でスミさんに伝える。
 // 2-4 なるの店で昼（DAY8）: 祝い（DAY3）と決裂（DAY11）の間のまかない。
+// keepsAction: 家の朝の短い場面で、昼の行動を使わない（VOL17・#3097 計画 2-10。第2章は自由に使える枠が少ないため）。
+// 同じ朝に行動を使う場面があれば、その前に読む。病気の朝（slot が進んだ朝）には出さないのは同じ。
+// VOL17 朝のメモ（DAY7）: 耳鼻科で言われたとおり、眠りと食事を書き留め、吸って確かめずに出かける。DAY10の夜の採点表と対になる。
 export const CH2_DAY_SCENES = Object.freeze([
   Object.freeze({ day: 6, id: "ch2_ent_clinic", file: "ch2_story_extra", bg: "bg_street_day", when: ({ flags }) => !!flags._ch2_taste_distant }),
+  Object.freeze({ day: 7, id: "ch2_morning_notes", file: "ch2_story_extra", bg: "bg_home", keepsAction: true,
+    when: ({ flags }) => !!flags._ch2_read_ch2_ent_clinic }),
   Object.freeze({ day: 8, id: "ch2_naru_lunch", file: "ch2_story_extra", bg: "kemurikusa" }),
 ]);
-/** 今朝読む昼の本筋（無ければ null）。day は章内日。dialogues は台詞の表（読めない台本は出さない）。 */
-export function chapterTwoDaySceneDue(save, day, dialogues) {
+/**
+ * 今朝読む昼の本筋（無ければ null）。day は章内日。dialogues は台詞の表（読めない台本は出さない）。
+ * 既定は昼の行動を使う場面だけ。keepsAction: true で、行動を使わない家の朝の場面を返す。
+ */
+export function chapterTwoDaySceneDue(save, day, dialogues, { keepsAction = false } = {}) {
   if (save?.chapter !== 2 || save.slot !== 0) return null;
-  return CH2_DAY_SCENES.find(scene => scene.day === day && !save.flags?.[`_ch2_read_${scene.id}`]
+  return CH2_DAY_SCENES.find(scene => scene.day === day && !!scene.keepsAction === keepsAction
+    && !save.flags?.[`_ch2_read_${scene.id}`]
     && (!scene.when || scene.when(save)) && !!dialogues?.[scene.id]?.lines?.length) || null;
 }
 

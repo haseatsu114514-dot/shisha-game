@@ -402,6 +402,7 @@ await suite("spot-encounters", async check => {
         E.before = { relationship: E.relationship(), money: E.core.state.money, stamina: E.core.state.stamina,
           stats: { ...E.core.state.stats }, xp: E.core.state.growth?.xp || 0 };
         E.vn.vnTest.turbo = false;
+        E.core.config.skipSeenOnly = false; // 未読の台詞も SKIP で選択肢まで送る（既定は既読のみ・#4194）
         E.calendar.runDaily({ nightEvents: {}, onQuit: () => {} }).catch(error => { E.error = error.stack; });
       }, ex.spot);
       await page.locator(`.map:not(.done) [data-spot="${ex.spot}"]`).click();

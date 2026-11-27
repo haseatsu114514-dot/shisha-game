@@ -22,8 +22,10 @@ const encounters = await import(new URL("remake/js/daily/spot-encounters.js", ro
 // #3097 第1弾: 各施設の第2章の回を1本ずつ足した（既存の回の後ろ）
 // #3097 第2弾: さらに各施設に1本（時計・香炉・首のストレッチ・帰りの飴）
 // #3097 PR-I: 喫茶こはくに上園さんの回（面識がある時だけ・味の回の後ろ）
-const CH2 = { cafe: ["cafe_ch2_commute", "cafe_ch2_taste", "cafe_ch2_uezono", "cafe_ch2_foam", "cafe_ch2_clock"], kannon: ["kannon_ch2_wish", "kannon_ch2_omikuji", "kannon_ch2_incense"],
-  choizap: ["choizap_ch2_numbers", "choizap_ch2_stairs", "choizap_ch2_neck"], c_station: ["cs_ch2_haze", "cs_ch2_new_staff", "cs_ch2_candy"] };
+// VOL16（#3097 計画 2-9）: 観音堂に老人の五円玉と、マスターの手水。CHOI-ZAPにスタッフの3本（喫茶こはくは昼だけで5本あり、増やさない）
+const VOL16 = { kannon: ["kannon_ch2_coin", "kannon_ch2_temizu"], choizap: ["choizap_ch2_aircon", "choizap_ch2_balance", "choizap_ch2_shoelace"] };
+const CH2 = { cafe: ["cafe_ch2_commute", "cafe_ch2_taste", "cafe_ch2_uezono", "cafe_ch2_foam", "cafe_ch2_clock"], kannon: ["kannon_ch2_wish", "kannon_ch2_omikuji", "kannon_ch2_incense", ...VOL16.kannon],
+  choizap: ["choizap_ch2_numbers", "choizap_ch2_stairs", "choizap_ch2_neck", ...VOL16.choizap], c_station: ["cs_ch2_haze", "cs_ch2_new_staff", "cs_ch2_candy"] };
 const save = (chapter, flags = {}, extra = {}) => ({ chapter, slot: 0, met: { naru: true, adam: true, minto: true, dr_charcoal: true },
   flags: { _gym_member: true, ...flags }, ...extra });
 for (const [spot, ids] of Object.entries(CH2)) {
@@ -63,6 +65,32 @@ assert.equal(encounters.spotEncounterDue("kannon", 5, save(2, {}, { slot: 1 }), 
 }
 // 台本が読み込まれていない（第2章の準備期間の外）なら出さない
 assert.equal(encounters.spotEncounterDue("cafe", 5, save(2), {}), null);
+// VOL16（#3097 計画 2-9）: 既存の第2章の回を読んだ後に、並びの順で一来店に一本。観音堂は昼だけ、CHOI-ZAPは昼夜どちらでも
+{
+  const { CH2_HOME_IDS } = await import(new URL("remake/js/chapters/ch2-city-data.js", root));
+  for (const [spot, ids] of Object.entries(VOL16)) {
+    const seen = Object.fromEntries(CH2[spot].filter(id => !ids.includes(id)).map(id => [`_spot_seen_${id}`, true]));
+    for (const id of ids) {
+      assert.equal(encounters.spotEncounterDue(spot, 5, save(2, { _ch2_taste_distant: true, ...seen }), all), id, `${spot}: ${id} in order`);
+      assert.equal(encounters.spotEncounterDue(spot, 5, save(2, { _ch2_taste_distant: true, ...seen }, { slot: 1 }), all) === id, spot === "choizap",
+        `${id}: ${spot === "choizap" ? "the gym at night too" : "the temple by day only"}`);
+      seen[`_spot_seen_${id}`] = true;
+    }
+  }
+  const speakers = { kannon_ch2_coin: ["old_man"], kannon_ch2_temizu: ["master_cafe", "old_man"], choizap_ch2_aircon: ["staff_choizap"],
+    choizap_ch2_balance: ["staff_choizap", "old_man"], choizap_ch2_shoelace: ["staff_choizap"] };
+  for (const id of Object.values(VOL16).flat()) {
+    const scene = all[id], text = scene.lines.map(line => line.text || "").join("\n");
+    assert(CH2_HOME_IDS.includes(id), `${id} is loaded with the chapter 2 preparation`);
+    assert.deepEqual(scene.lines.filter(line => line.type), [{ type: "set_flag", flag: `_spot_seen_${id}` }], `${id}: only the reading mark, at the end`);
+    assert.deepEqual([...new Set(scene.lines.map(line => line.speaker).filter(who => who && who !== "hajime"))].sort(), speakers[id].sort(), `${id}: the regulars speak`);
+    // DAY2〜13のどこで読んでも成り立つ: 大会・なる（DAY11の対峙の後は街にいない）・報酬の文に触れず、はじめは味の感想を言わない
+    assert(!/大会|本番|県大会|優勝|審査|採点|なるさん|ケムリクサ|KEMURIKUSA|が(少し|かなり|大きく)?上がった/.test(text), `${id}: any day of the chapter`);
+    assert(!scene.lines.some(line => line.speaker === "hajime" && /味|甘い|苦い|香り|おいし|うまい/.test(line.text)), `${id}: hajime does not judge the taste`);
+    // CHOI-ZAPの回は昼夜どちらでも出るので、時間帯を書かない
+    if (id.startsWith("choizap_")) assert(!/昼|夜|朝|夕方/.test(text), `${id}: no time of day`);
+  }
+}
 // #2090・RVE: なるとの決裂（第2章の対峙）以降は、店を閉めて修行に出ているので、喫茶こはく・ジムでもなるに会わない
 {
   const ch2Seen = Object.fromEntries(Object.values(CH2).flat().map(id => [`_spot_seen_${id}`, true]));
