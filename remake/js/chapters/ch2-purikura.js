@@ -59,7 +59,9 @@ export function pickPurikuraPhoto(partner, { rand = Math.random, save: s = state
   if (!pool.length) return null;
   const taken = new Set((s.flags?._ageha_purikura_history || []).map(h => h?.cg).filter(Boolean));
   const fresh = pool.filter(p => !taken.has(p.cg));
-  const from = fresh.length ? fresh : pool;
+  // その相手と初めて撮る一枚（ソロの「一人で初挑戦！」）は、最初に必ず出す
+  const first = fresh.filter(p => p.first);
+  const from = first.length ? first : fresh.length ? fresh : pool;
   return from[Math.min(from.length - 1, Math.floor(rand() * from.length))];
 }
 

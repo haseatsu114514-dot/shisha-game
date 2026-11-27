@@ -5,6 +5,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
+import { PURIKURA_PHOTOS } from '../js/core/purikura-data.js';
+const photosOf = (id, lover = false) => PURIKURA_PHOTOS.filter(p => p.with === id && !!p.lover === lover);
 const root = process.env.PURIKURA_SOURCE_ROOT || fileURLToPath(new URL('../js/', import.meta.url));
 const support = process.env.PURIKURA_SUPPORT_ROOT || root;
 const read = p => fs.readFileSync(path.join(fs.existsSync(path.join(root,p)) ? root : support,p),'utf8');
@@ -159,12 +161,13 @@ await check('Cloud greeting cancel keeps it unread',async f=>{
 // PFC18: 選定した写真の絵。相手ごとに、まだ撮っていない1枚 → そろった後はもう一度。記録に絵を残し、受け取りの小窓に絵を出す。
 const receipt=f=>f.log.filter(l=>l.options?.some(o=>o.test==='purikura-receive')).at(-1)?.node;
 await check('PFC18 pair photos: each untaken ageha picture once, then a repeat; the receipt shows the picture',async f=>{
- f.state.money=999999;f.setMode('pair');const seen=[];
- for(let n=0;n<4;n++){assert.equal(await f.offer(),true);const row=f.state.flags._ageha_purikura_history.at(-1);
+ f.state.money=999999;f.setMode('pair');const seen=[];const friends=photosOf('ageha').map(p=>p.cg);assert(friends.length>=8,'many Ageha two-shots (PFC20)');
+ for(let n=0;n<friends.length;n++){assert.equal(await f.offer(),true);const row=f.state.flags._ageha_purikura_history.at(-1);
   assert.match(row.cg,/^cg_purikura_ageha_/);assert(!seen.includes(row.cg),'no repeat while untaken pictures remain');seen.push(row.cg);
+  assert(friends.includes(row.cg),'a friend picture while not lovers');
   const node=receipt(f);assert.match(node.selector,/purikura-photo-real/);assert.equal(node.attrs.dataset.cg,row.cg);assert.equal(node.children[0].attrs.src,`img/cgs/${row.cg}.webp`);f.next();}
- assert.equal(await f.offer(),true);assert(seen.includes(f.state.flags._ageha_purikura_history.at(-1).cg),'after all four, a repeat');
- f.roundTrip();assert.equal(f.state.flags._ageha_purikura_history.length,5);assert(f.state.flags._ageha_purikura_history.every(r=>r.cg));
+ assert.equal(await f.offer(),true);assert(seen.includes(f.state.flags._ageha_purikura_history.at(-1).cg),'after all of them, a repeat');
+ f.roundTrip();assert.equal(f.state.flags._ageha_purikura_history.length,friends.length+1);assert(f.state.flags._ageha_purikura_history.every(r=>r.cg));
 });
 await check('PFC18 solo has its picture; a guest without pictures keeps the face photo and no cg',async f=>{
  f.state.money=999999;f.setMode('solo');assert.equal(await f.offer(),true);assert.equal(f.state.flags._ageha_purikura_history.at(-1).cg,'cg_purikura_solo_first');
@@ -226,12 +229,31 @@ await check('PFC19 solo receipt is the first challenge once, then a daily solo',
  for(let n=0;n<2;n++){assert.equal(await f.offer(),true);f.next();}
  assert.equal(f.log.filter(l=>l.options?.some(o=>o.test==='purikura-receive')).map(l=>l.title).join('|'),'一人で初挑戦！|今日のソロぷり');
 });
-await check('PFC19 lovers get lover photos where they exist, otherwise friend photos; friends never get lover photos',async f=>{
+await check('PFC19/20 lovers get lover photos where they exist, otherwise friend photos; friends never get lover photos',async f=>{
  const at=(lovers,history=[])=>({slot:0,lovers,flags:{_ageha_purikura_history:history}});
  for(const id of ['ageha','tsumugi','rio','hiyori']){
-  for(const lovers of [[],[id],['someone_else']]){const p=f.pick(id,{rand:()=>0,save:at(lovers)});assert(p,id);assert.match(p.cg,new RegExp(`^cg_purikura_${id}_`));}
+  const lover=photosOf(id,true).map(p=>p.cg),friend=photosOf(id).map(p=>p.cg);
+  assert(lover.length>=2&&friend.length>=2,`${id} has friend and lover pictures`);
+  for(let i=0;i<10;i++){
+   assert(friend.includes(f.pick(id,{rand:()=>i/10,save:at([])}).cg),`${id} friend`);
+   assert(friend.includes(f.pick(id,{rand:()=>i/10,save:at(['someone_else'])}).cg),`${id} friend while dating someone else`);
+   assert(lover.includes(f.pick(id,{rand:()=>i/10,save:at([id])}).cg),`${id} lover`);
+  }
+  // 恋人の写真も、まだ撮っていないものから（そろった後はもう一度）
+  const taken=lover.slice(0,-1).map(cg=>({cg}));
+  assert.equal(f.pick(id,{rand:()=>0,save:at([id],taken)}).cg,lover.at(-1));
  }
+ // 恋人の写真がまだ無い相手は友達の写真（神崎は恋人にならないが、仕組みの確認として）
+ assert.match(f.pick('kumicho',{rand:()=>0,save:at(['kumicho'])}).cg,/^cg_purikura_kumicho_/);
  assert.equal(f.pick('solo',{rand:()=>0,save:at(['ageha'])}).cg,'cg_purikura_solo_first','solo ignores lovers');
+});
+await check('PFC20 the first solo is always the first-challenge picture, then the other solos without repeats',async f=>{
+ const at=history=>({slot:0,lovers:[],flags:{_ageha_purikura_history:history}});
+ for(const r of [0,0.5,0.999])assert.equal(f.pick('solo',{rand:()=>r,save:at([])}).cg,'cg_purikura_solo_first');
+ const solos=photosOf('solo').map(p=>p.cg);assert(solos.length>=6,'many solo pictures (PFC20)');
+ const history=[{cg:'cg_purikura_solo_first'}],seen=['cg_purikura_solo_first'];
+ for(let n=1;n<solos.length;n++){const p=f.pick('solo',{rand:()=>0.999,save:at(history)});assert(!seen.includes(p.cg));seen.push(p.cg);history.push({cg:p.cg});}
+ assert.deepEqual([...seen].sort(),[...solos].sort());
 });
 console.log(JSON.stringify({groups,failures,scope:'actual offer/keepsakes/travel/photo and actual addMoney; controlled VM/state/VN/UI/Map-JSON, not browser/menu LOAD'}));
 if(failures)process.exitCode=1;
