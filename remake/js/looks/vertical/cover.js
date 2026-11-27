@@ -68,11 +68,17 @@ function readCutin(host) {
  */
 const TITLE_FOCUS = {
   2: 0.643, // 人物1人（オーナー合格の見え方のまま）
-  3: 0.67, // ましろ（三つ編み・絵の横 0.68）を真ん中に（VPN20）
+  3: 0.69, // ましろ（三つ編み・顔は絵の横 0.62〜0.76）を真ん中に（VPN20・VPN26）
   4: 0.7, // 手前の人物（顔 0.6）と後ろの人物（顔 0.82）の間
   5: 0.717, // 機械の頭
 };
 const DEFAULT_FOCUS = 0.65;
+/**
+ * 絵を枠より小さく置く章（枠の高さに対する割合。既定は 1＝枠いっぱい）。小さくした絵は枠の下に揃えるので、ぼかしの位置は変わらない。
+ * 上に空く所は、同じ絵をぼかした背景に、絵の上端を溶かしてなじませる。
+ * 第3章: 3人の顔が絵の横 0.45〜0.95 に広がるので、ましろを真ん中にしたまま3人とも顔が見えるよう引く（VPN26・オーナー「3章はましろをセンターにみんな顔みえるバランスで」）。
+ */
+const TITLE_ZOOM = { 3: 0.78 };
 
 /** 覆いの中の章タイトル（本編の .chapter-title-shield の .chapter-card、第1章は専用の演出 .ch1-title-motion）。無ければ null。 */
 function readChapterTitle(roots) {
@@ -158,7 +164,8 @@ export function createCoverScene(frame, own) {
   function renderCall(title) {
     call.dataset.chapter = String(title.chapter);
     call.dataset.shape = title.tall ? "tall" : "wide"; // 縦長の絵は幅いっぱい、横長の絵は高さいっぱい（どちらも同じ枠で溶かす）
-    call.style.cssText = `--ct-focus:${TITLE_FOCUS[title.chapter] ?? DEFAULT_FOCUS}`;
+    const zoom = title.tall ? 1 : TITLE_ZOOM[title.chapter] ?? 1;
+    call.style.cssText = `--ct-focus:${TITLE_FOCUS[title.chapter] ?? DEFAULT_FOCUS};--ct-zoom:${zoom};--ct-fade:${zoom < 1 ? 22 : 0}%`;
     call.setAttribute("aria-label", [title.no, title.name, title.english].filter(Boolean).join("　"));
     call.replaceChildren(
       title.art ? el("img.vt-ct-amb", { src: title.art, alt: "", draggable: "false" }) : null,
