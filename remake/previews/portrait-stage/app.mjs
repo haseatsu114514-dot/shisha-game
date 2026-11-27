@@ -99,6 +99,10 @@ const COACH = {
   pull: "手元を見ているぞ。落ち着いていけ",
 };
 const HOLE_COUNT = 10;
+// 穴あけ: 押している長さで穴の大きさが決まる。HOLD_FULL で最大、GOOD_PRESS の間がちょうどいい大きさ
+const HOLD_FULL = 900;
+const GOOD_PRESS = [0.3, 0.62];
+const pressZone = (fill) => fill <= 0 ? "" : fill < GOOD_PRESS[0] ? "under" : fill <= GOOD_PRESS[1] ? "good" : "over";
 // 熱ゲージ: 本編（remake/js/craft/thermometer.js・temperature-model.js）と同じ色の意味。
 // 管は一本のグラデーション（クリーム→黄→適温のミント緑→橙→赤→深紅）。緑が適温の目安、真ん中の虹が合わせやすい範囲、一番上が焦げる帯（炎）
 const TEMP_ZONE = [0.42, 0.66];
@@ -634,14 +638,21 @@ class Phone {
       return `${this.auxHtml("craft", CRAFT_CHIPS)}${dpadHtml("left right")}${aHtml("決める", { disabled: !!PACKS[st.pack].locked })}`;
     }
     if (st.scene === "holes") {
-      // 輪の10個の点＝開けた穴（金はぴったり）。真ん中の丸が押している間ふくらみ、薄い輪に重なる大きさで離す
+      // 左の輪: 10個の点＝開けた穴（金はちょうどいい大きさ）。真ん中は直前の穴の大きさと、ちょうどいい大きさの薄い輪
       const pips = Array.from({ length: HOLE_COUNT }, (_, i) => {
         const a = (i * 360 / HOLE_COUNT - 90) * Math.PI / 180, hole = st.holes[i];
         return `<circle class="pip${hole ? (hole.good ? " good" : " done") : ""}" cx="${(41 * Math.cos(a)).toFixed(1)}" cy="${(41 * Math.sin(a)).toFixed(1)}" r="3.4"/>`;
       }).join("");
+      const last = st.holes.at(-1);
+      const lastDot = last ? `<circle class="last ${pressZone(last.size)}" r="${(4 + last.size * 24).toFixed(1)}"/>` : "";
+      // 「刺す」ボタンの縁の輪: 押している間だけ伸びる。金の区間がちょうどいい長さ、越えると赤
+      const ring = `<svg class="press" viewBox="0 0 100 100" aria-hidden="true">
+          <circle class="pr-track" cx="50" cy="50" r="46" pathLength="100"/>
+          <circle class="pr-good" cx="50" cy="50" r="46" pathLength="100" stroke-dasharray="${((GOOD_PRESS[1] - GOOD_PRESS[0]) * 100).toFixed(1)} 100" stroke-dashoffset="${(-GOOD_PRESS[0] * 100).toFixed(1)}"/>
+          <circle class="pr-fill" cx="50" cy="50" r="46" pathLength="100" stroke-dasharray="0 100"/></svg>`;
       return `${this.auxHtml("craft", CRAFT_CHIPS)}
-        <div class="dial"><svg viewBox="-50 -50 100 100">${pips}<circle class="want" r="15.5"/><circle class="grow" r="4"/></svg></div>
-        ${aHtml("刺す", { cls: "hold" })}`;
+        <div class="dial"><svg viewBox="-50 -50 100 100">${pips}<circle class="want" r="15.5"/>${lastDot}</svg></div>
+        ${aHtml("刺す", { cls: "hold", extra: ring })}`;
     }
     // 葉（フレーバーの持ち）は上の段の真ん中、吸った回数は「吸う」の中の点。ボタンに重ねない
     return `${this.auxHtml("craft", CRAFT_CHIPS)}
@@ -664,7 +675,7 @@ class Phone {
         : `<circle class="todo" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.2"/>`;
     }).join("");
     const holes = this.st.holes.map((hole) => { const [x, y] = at(hole.deg); return `<circle class="hole${hole.good ? " good" : ""}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${hole.r.toFixed(1)}"/>`; }).join("");
-    svg.innerHTML = `${holes}${marks}<circle class="tip" r="7"/>`;
+    svg.innerHTML = `${holes}${marks}<circle class="grow-hole" r="0"/><circle class="tip" r="7"/>`;
   }
 
   /* ── 入力 ── */
@@ -707,7 +718,7 @@ class Phone {
 
   onDown(event) {
     const { st } = this;
-    if (st.scene === "holes" && event.target.closest('.btn-a[data-act="a"]')) { this.holdAt = performance.now(); event.target.closest(".btn-a").setPointerCapture?.(event.pointerId); return; }
+    if (st.scene === "holes" && event.target.closest('.btn-a[data-act="a"]')) { event.target.closest(".btn-a").setPointerCapture?.(event.pointerId); this.startHold(); return; }
     const map = event.target.closest("[data-map]");
     if (map && !st.overview && this.view) { this.drag = { id: event.pointerId, x: event.clientX, y: event.clientY, ox: this.view.x, oy: this.view.y, moved: false }; return; }
     const card = event.target.closest("[data-swipe]");
@@ -725,7 +736,7 @@ class Phone {
   }
 
   onUp(event) {
-    if (this.holdAt) { const held = performance.now() - this.holdAt; this.holdAt = 0; this.punch(held); return; }
+    if (this.holdAt) { this.endHold(); return; }
     if (this.drag) { this.dragged = this.drag.moved; this.drag = null; if (this.dragged) setTimeout(() => { this.dragged = false; }, 0); return; }
     if (this.swipe) {
       const dx = event.clientX - this.swipe.x; this.swipe = null;
@@ -814,14 +825,34 @@ class Phone {
     setTimeout(() => note.remove(), 2200);
   }
 
+  /** 穴あけ: 押し始め。ボタンが沈み始め、縁の輪が伸び始める */
+  startHold() {
+    if (this.st.scene !== "holes" || this.holdAt || this.st.holes.length >= HOLE_COUNT) return;
+    this.holdAt = performance.now();
+    this.el.querySelector(".btn-a.hold")?.classList.add("pressing");
+  }
+
+  /** 穴あけ: 離した。押していた長さで穴を開ける */
+  endHold() {
+    if (!this.holdAt) return;
+    const held = performance.now() - this.holdAt;
+    this.holdAt = 0;
+    this.punch(held);
+  }
+
   /** 穴あけ: 押していた長さで穴の大きさ、針先の位置で当たりを決める。 */
   punch(heldMs) {
     const { st } = this;
     if (st.scene !== "holes" || st.holes.length >= HOLE_COUNT) return;
     const target = st.holes.length * 360 / HOLE_COUNT;
-    const size = Math.min(1, heldMs / 900);
-    st.holes.push({ deg: this.tipDeg ?? target, r: 2.2 + size * 4.2, good: Math.abs((this.tipDeg ?? target) - target) < 5 && size > 0.3 && size < 0.62 });
+    const size = Math.min(1, heldMs / HOLD_FULL), zone = pressZone(size);
+    const good = Math.abs((this.tipDeg ?? target) - target) < 5 && zone === "good";
+    st.holes.push({ deg: this.tipDeg ?? target, r: 2.2 + size * 4.2, size, good });
     this.patch(); this.drawHoles();
+    // 結果を「刺す」に返す: ちょうどいい大きさなら金の光、小さすぎ・大きすぎは小さく揺れる
+    const btn = this.el.querySelector(".btn-a.hold");
+    btn?.classList.add(zone === "good" ? "res-good" : "res-off");
+    setTimeout(() => btn?.classList.remove("res-good", "res-off"), 520);
     if (st.holes.length >= HOLE_COUNT) setTimeout(() => { if (this.fixed) { st.holes = []; this.patch(); this.drawHoles(); } else this.setScene("pull"); }, 900);
   }
 
@@ -871,10 +902,21 @@ class Phone {
         tip.classList.toggle("ok", aligned);   // 針先が目印に重なると金色
         el.querySelector(".btn-a")?.classList.toggle("hot", aligned && !this.holdAt);
       }
-      // 押している間、真ん中の丸がふくらむ。薄い輪に重なる大きさで金色
-      const fill = this.holdAt ? Math.min(1, (now - this.holdAt) / 900) : 0, dial = el.querySelector(".dial");
-      dial?.querySelector(".grow")?.setAttribute("r", (4 + fill * 24).toFixed(1));
-      dial?.classList.toggle("ok", fill > 0.3 && fill < 0.62);
+      // 押している間: 「刺す」が沈み、縁の輪が伸びる（金の区間＝ちょうどいい、赤＝押しすぎ）。針先では穴が育っていく
+      const fill = this.holdAt ? Math.min(1, (now - this.holdAt) / HOLD_FULL) : 0, zone = pressZone(fill);
+      const btn = el.querySelector(".btn-a.hold");
+      if (btn) {
+        btn.style.setProperty("--fill", fill.toFixed(3));
+        if (btn.dataset.zone !== zone) btn.dataset.zone = zone;
+        if (!this.holdAt) btn.classList.remove("pressing");
+        btn.querySelector(".pr-fill")?.setAttribute("stroke-dasharray", `${(fill * 100).toFixed(1)} 100`);
+      }
+      const grow = el.querySelector(".foil-marks .grow-hole");
+      if (grow && tip) {
+        grow.setAttribute("cx", tip.getAttribute("cx")); grow.setAttribute("cy", tip.getAttribute("cy"));
+        grow.setAttribute("r", fill ? (2.2 + fill * 4.2).toFixed(2) : "0");
+        grow.setAttribute("class", `grow-hole ${zone}`);
+      }
     }
     if ((this.talk || st.scene === "cutin") && this.typedAt && now >= this.typedAt) { this.typedAt = 0; el.classList.remove("typing"); }
     requestAnimationFrame(this.tick);
@@ -977,7 +1019,10 @@ addEventListener("keydown", (event) => {
   if (!current) return;
   const dir = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" }[event.key];
   if (dir) { event.preventDefault(); current.move(dir); }
-  else if (event.key === "Enter" || event.key === " " || event.key === "z") { event.preventDefault(); if (current.st.scene === "holes") current.punch(400); else current.pressA(); }
+  else if (event.key === "Enter" || event.key === " " || event.key === "z") { event.preventDefault(); if (current.st.scene === "holes") { if (!event.repeat) current.startHold(); } else current.pressA(); }
+});
+addEventListener("keyup", (event) => {
+  if (current?.st.scene === "holes" && (event.key === "Enter" || event.key === " " || event.key === "z")) { event.preventDefault(); current.endHold(); }
 });
 addEventListener("resize", fit);
 addEventListener("load", fit);
