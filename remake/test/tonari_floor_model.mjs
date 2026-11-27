@@ -491,7 +491,7 @@ function chatRounds(s, n, tableId = 1) {
   return { s, shown };
 }
 
-test("雑談の台本: 味・趣味・何気ない話・愚痴をたっぷり。客とはじめの二回のキャッチボールで、どれも2行に収まり、大会に触れない（TFL68〜72）", () => {
+test("雑談の台本: 味・趣味・何気ない話・愚痴をたっぷり。客とはじめの二回のキャッチボールで、どれも短く、大会に触れない（TFL68〜74）", () => {
   const venues = Object.values(FLOOR_VENUES);
   const rows = [
     ...CHAT_COMMON, ...CHAT_TONARI, ...CHAT_MUKAI, ...CHAT_DUBAI, ...Object.values(CHAT_STAFF).flat(),
@@ -504,12 +504,12 @@ test("雑談の台本: 味・趣味・何気ない話・愚痴をたっぷり。
     for (const key of ["said", "reply"]) {
       const line = row[key];
       assert.ok(line && !line.endsWith("。"), `台詞は句点で終えない: ${line}`);
-      assert.ok([...line].length <= 34, `吹き出し2行まで（34字まで）: ${line}`);
+      assert.ok([...line].length <= 20, `できる限り短く（20字まで・TFL74）: ${line}`);
       assert.ok((line.match(/。/g) || []).length <= 2, line);
       assert.ok(!lines.has(line), `同じ台詞を使い回さない: ${line}`);
       lines.add(line);
     }
-    assert.ok(row.sight.endsWith("。") && !lines.has(row.sight), row.sight);
+    assert.ok(row.sight.endsWith("。") && [...row.sight].length <= 22 && !lines.has(row.sight), row.sight);
     lines.add(row.sight);
     assert.ok(!/大会|本番|優勝|予選|審査|決勝/.test(`${row.said}${row.reply}${row.sight}`), `大会の前後どちらでも通る: ${row.said}`);
     assert.ok(!row.by || CHAT_SPEAKERS[row.by], row.by);
