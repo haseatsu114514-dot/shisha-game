@@ -62,16 +62,17 @@ function readCutin(host) {
 }
 
 /**
- * 章タイトルの絵の切り出し（VPN19）: 横長の絵（1280×720）の横のどこからどこまでを、画面の幅いっぱいに見せるか（from〜to は絵の幅に対する割合）と、
- * 絵の上端の位置（top は画面の高さに対する %）。人物が切れずに収まるように章ごとに決める（第2章は 2026-11-27 オーナーの合格）。
+ * 章タイトルの絵の置き方（VPN19・VPN22）: 絵はどの章も同じ高さ（画面の上から 64% の枠いっぱい。画面の上まで写す）に置き、
+ * 枠の下の端で溶かす。ぼかしの位置は全章で第2章（2026-11-27 オーナーの合格）と同じ（オーナー「ぼかしの位置は2章のに合わせて」）。
+ * 章ごとに決めるのは、横長の絵（1280×720）のどこを画面の真ん中に置くか（絵の幅に対する割合）だけ。
  */
-const TITLE_CROP = {
-  2: { from: 0.44, to: 0.846, top: 0 }, // 人物1人（オーナー合格）
-  3: { from: 0.42, to: 0.94, top: 0 }, // ましろ（三つ編み・絵の横 0.68）を真ん中寄りに。絵は画面の上まで（VPN20）
-  4: { from: 0.4, to: 1, top: 0 }, // 手前の人物と後ろの人物・ドバイの塔。絵は画面の上まで（VPN20）
-  5: { from: 0.5, to: 0.933, top: 0 }, // 機械の頭
+const TITLE_FOCUS = {
+  2: 0.643, // 人物1人（オーナー合格の見え方のまま）
+  3: 0.67, // ましろ（三つ編み・絵の横 0.68）を真ん中に（VPN20）
+  4: 0.7, // 手前の人物（顔 0.6）と後ろの人物（顔 0.82）の間
+  5: 0.717, // 機械の頭
 };
-const DEFAULT_CROP = { from: 0.45, to: 1, top: 0 };
+const DEFAULT_FOCUS = 0.65;
 
 /** 覆いの中の章タイトル（本編の .chapter-title-shield の .chapter-card）。無ければ null。 */
 function readChapterTitle(roots) {
@@ -146,15 +147,12 @@ export function createCoverScene(frame, own) {
 
   /** 章タイトル（案A）を組む。絵は横長の一枚から人物を切り出し、章名は文字で組む（絵に描き込まれた題字は画面の外になる）。 */
   function renderCall(title) {
-    const crop = TITLE_CROP[title.chapter] || DEFAULT_CROP;
-    const width = 100 / (crop.to - crop.from); // 画面の幅に対する絵の幅（%）
     call.dataset.chapter = String(title.chapter);
-    // 絵の上端を画面の上より下げる章は、上端も溶かして、後ろのぼかした絵になじませる
-    call.style.cssText = `--ct-w:${width.toFixed(2)}%;--ct-x:${(-crop.from * width).toFixed(2)}%;--ct-top:${crop.top}%;--ct-fade:${crop.top ? 16 : 0}%`;
+    call.style.cssText = `--ct-focus:${TITLE_FOCUS[title.chapter] ?? DEFAULT_FOCUS}`;
     call.setAttribute("aria-label", [title.no, title.name, title.english, title.sub].filter(Boolean).join("　"));
     call.replaceChildren(
       title.art ? el("img.vt-ct-amb", { src: title.art, alt: "", draggable: "false" }) : null,
-      title.art ? el("img.vt-ct-art", { src: title.art, alt: "", draggable: "false" }) : null,
+      title.art ? el("div.vt-ct-pic", [el("img.vt-ct-art", { src: title.art, alt: "", draggable: "false" })]) : null,
       el("i.vt-ct-veil"),
       el("div.vt-ct-copy", { "aria-hidden": "true" }, [
         el("div.vt-ct-brand", { text: "水煙前線 -EN:CODE-" }),

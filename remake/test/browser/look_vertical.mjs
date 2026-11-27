@@ -395,7 +395,10 @@ await suite("look_vertical", async (check) => {
         en: root.querySelector(".vt-ct-en").textContent, name: root.querySelector(".vt-ct-name").textContent, read: root.querySelector(".vt-ct-read").textContent,
         sub: root.querySelector(".vt-ct-sub")?.textContent || "", art: root.querySelector("img.vt-ct-art").getAttribute("src"),
         full: Math.abs(box.top - shell.top) <= 1 && Math.abs(box.bottom - shell.bottom) <= 1, padCovered: !onA?.closest(".vt-a"),
-        lines: document.querySelector(".vt-cover-lines").hidden, nameFont: getComputedStyle(root.querySelector(".vt-ct-name")).fontFamily };
+        lines: document.querySelector(".vt-cover-lines").hidden, nameFont: getComputedStyle(root.querySelector(".vt-ct-name")).fontFamily,
+        // ぼかし（絵の枠の下の端の溶かし）の位置は全章で同じ（VPN22）: 枠は画面の上から 64%、絵はその高さいっぱい
+        pic: (() => { const pic = root.querySelector(".vt-ct-pic").getBoundingClientRect(), art = root.querySelector(".vt-ct-art").getBoundingClientRect();
+          return { top: Math.round(pic.top - shell.top), ratio: +(pic.height / shell.height).toFixed(3), artFills: Math.abs(art.height - pic.height) <= 1 && art.top <= pic.top + 1 }; })() };
     });
     assert.equal(call.scene, "cover");
     assert.equal(call.cover, "title");
@@ -405,6 +408,7 @@ await suite("look_vertical", async (check) => {
     assert(call.padCovered, "the pad is hidden under the title call");
     assert.equal(call.lines, true, "the chapter name is not repeated as plain text lines");
     assert.match(call.nameFont, /Suien Name/, "the chapter name uses the game's Mincho");
+    assert.deepEqual(call.pic, { top: 0, ratio: 0.64, artFills: true }, "the art fills the same 64% frame on every chapter, so the fade sits at the same height");
     await page.evaluate(() => window.titleRun);
     await page.waitForFunction(() => document.querySelector(".vt-ct")?.hidden !== false || !document.querySelector(".chapter-title-shield"));
   }, { ...TALL, pageEntry: entry });
