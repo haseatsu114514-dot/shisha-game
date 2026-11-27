@@ -577,7 +577,9 @@ html:root[data-density="phone"][data-layout="portrait"] #stage .trpg-root.trpg-c
 #stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room::before { content: none; }
 #stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room::after { background: none; }
 #stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room > img { position: absolute; inset: auto; left: calc(-1 * var(--pan-x, 0px)); top: 0; width: var(--ex-w); height: var(--ex-h, 1185px); max-width: none; object-fit: cover; object-position: 50% 50%;
-  transition: left .36s cubic-bezier(.3, .7, .3, 1); }
+  transition: left .36s cubic-bezier(.3, .7, .3, 1); pointer-events: none; -webkit-user-drag: none; user-select: none; }
+/* 横に払う指は絵の部屋が受ける（絵そのものを掴むと、ブラウザの絵のドラッグが始まって払いが取り消される） */
+#stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-room.interactive { touch-action: pan-y; }
 /* 場面の一言（手がかり 0/3・気になるものを調べよう）は、絵の下の端に重ねる（上は印が来るので空けておく） */
 #stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-stage-cue { top: calc(var(--ex-h, 1185px) - 62px); }
 #stage[data-pan] .trpg-root.trpg-cinematic.trpg-idle[data-phase="explore"] .trpg-stage-cue :is(p, span, small) { font-size: 23px; }

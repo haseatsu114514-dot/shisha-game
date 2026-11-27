@@ -195,27 +195,35 @@ await suite("portrait-games", async check => {
     assert.equal(await page.evaluate(() => [...document.styleSheets].some(sheet => /portrait\.css/.test(sheet.href || ""))), false, "portrait.css is not loaded");
   }, { pageEntry: `${baseURL}previews/dj/index.html?set=1&mute=1`, pageReadySelector: "#play-a" });
 
-  // ボドゲカフェの調べる場面（VPG23）: 部屋の絵を縦で大きく見せ、左半分・右半分を「左・右」の札と横に払うので切り替える。
-  // 今の側に無い印は隠れ、反対側の札にまだ調べていない数が出る。右へ移ると隠れていた印が画面の中に出て、押すと手がかりが増える
-  await check("trpg-portrait-explore-pans-left-and-right", async page => {
+  // ボドゲカフェの調べる場面（VPG23→VPG27）: 部屋の絵を、画面の上から下の段の上まで縦いっぱいに見せ（上下に空きを残さない）、
+  // 左・中・右の3つの範囲を「◀ ▶」・範囲の札・横に払うので切り替える。今の範囲に無い印は隠れ、そこでしか見えない数が範囲の札に出る。
+  // 隠れていた印は、その範囲へ移ると画面の中に出て、押すと手がかりが増える
+  await check("trpg-portrait-explore-pans-three-panes", async page => {
     await page.waitForFunction(() => document.getElementById("stage")?.dataset.exploring === "true", null, { timeout: 180000 });
     await page.waitForTimeout(600);
     const view = page.viewportSize();
+    const stagePan = () => page.evaluate(() => document.getElementById("stage").dataset.pan);
+    assert.equal(await stagePan(), "center", "the room opens on the middle pane");
     const pic = await page.locator(".trpg-room > img").boundingBox();
-    assert(pic.height >= view.height * .4 && pic.width > view.width * 1.6, `the room picture is tall and wider than the screen: ${JSON.stringify(pic)}`);
+    const steps = await page.locator('[data-test="trpg-pan-next"]').boundingBox();
+    assert(pic.y <= 1 && pic.width > view.width * 2.2, `the picture starts at the top of the screen and spans about three screens: ${JSON.stringify(pic)}`);
+    assert(Math.abs(pic.y + pic.height - (steps.y - 7)) < 12, `the picture reaches down to the pane switch (no empty band): ${JSON.stringify({ pic, steps })}`);
+    await boxesInside(page, ['[data-test="trpg-pan-prev"]', '[data-test="trpg-pan-next"]', '[data-test="trpg-pan-left"]', '[data-test="trpg-pan-center"]', '[data-test="trpg-pan-right"]'], { tap: 44 });
     const spots = () => page.evaluate(() => [...document.querySelectorAll(".trpg-room.interactive .trpg-spot")].map(n => ({ id: n.dataset.test, off: n.dataset.off === "true", checked: n.classList.contains("checked") })));
     let now = await spots();
-    const leftShown = now.filter(n => !n.off), leftHidden = now.filter(n => n.off);
-    assert(leftShown.length && leftHidden.length, `the left half shows some spots and hides the rest: ${JSON.stringify(now)}`);
-    await boxesInside(page, leftShown.map(n => `[data-test="${n.id}"] > i`), { tap: 44 });
-    await boxesInside(page, ['[data-test="trpg-pan-left"]', '[data-test="trpg-pan-right"]'], { tap: 44 });
-    assert.equal(await page.locator('[data-test="trpg-pan-right"] em').innerText(), String(leftHidden.filter(n => !n.checked).length), "the right tab counts the spots waiting there");
-    await page.locator('[data-test="trpg-pan-right"]').tap();
+    const shown = now.filter(n => !n.off), hidden = now.filter(n => n.off);
+    assert(shown.length && hidden.length, `the middle pane shows some spots and hides the rest: ${JSON.stringify(now)}`);
+    await boxesInside(page, shown.map(n => `[data-test="${n.id}"] > i`), { tap: 44 });
+    // 範囲の札の数は、そこでしか見えない、まだ調べていない印の数
+    const counts = await page.evaluate(() => ["left", "right"].map(p => Number(document.querySelector(`[data-test="trpg-pan-${p}"] em`).textContent || 0)));
+    assert.equal(counts[0] + counts[1], hidden.filter(n => !n.checked).length, `the left and right tabs count the spots waiting there: ${counts}`);
+    await page.locator('[data-test="trpg-pan-next"]').tap();
     await page.waitForFunction(() => document.getElementById("stage").dataset.pan === "right");
     await page.waitForTimeout(500);
+    assert(await page.locator('[data-test="trpg-pan-next"]').isDisabled(), "there is nothing beyond the right pane");
     now = await spots();
-    const target = now.find(n => !n.off && leftHidden.some(h => h.id === n.id));
-    assert(target, `a spot hidden on the left shows on the right: ${JSON.stringify(now)}`);
+    const target = now.find(n => !n.off && hidden.some(h => h.id === n.id));
+    assert(target, `a spot hidden in the middle shows on the right: ${JSON.stringify(now)}`);
     await boxesInside(page, [`[data-test="${target.id}"] > i`], { tap: 44 });
     const notes = page.locator('[data-test="trpg-compare-notes"]');
     const before = await notes.innerText();
@@ -228,13 +236,61 @@ await suite("portrait-games", async check => {
     }
     assert(await page.locator(`[data-test="${target.id}"]`).evaluate(n => n.classList.contains("checked")), "the spot is now investigated");
     assert.notEqual(await notes.innerText(), before, "the memo counts the new clue");
-    // 絵を右へ払うと左半分へ戻る
-    const box = await page.locator(".trpg-room > img").boundingBox();
+    // 絵を右へ払うと、ひとつ左の範囲（中）へ戻る。範囲の札の「左」で左端へ
+    assert.equal(await stagePan(), "right", "investigating keeps the pane");
     const y = pic.y + pic.height * .5;
     await page.mouse.move(view.width * .2, y); await page.mouse.down(); await page.mouse.move(view.width * .5, y, { steps: 6 }); await page.mouse.move(view.width * .8, y, { steps: 6 }); await page.mouse.up();
+    await page.waitForFunction(() => document.getElementById("stage").dataset.pan === "center");
+    await page.locator('[data-test="trpg-pan-left"]').tap();
     await page.waitForFunction(() => document.getElementById("stage").dataset.pan === "left");
-    assert(box, "the picture is laid out");
+    assert(await page.locator('[data-test="trpg-pan-prev"]').isDisabled(), "there is nothing beyond the left pane");
   }, { ...PHONE, pageEntry: frame("trpg.html?jump=explore"), pageReadySelector: '[data-test="trpg-book-spread"]' });
+
+  // ボドゲカフェの切り札は、ダイス劇場の中で選ぶ（VPG29）: 振る前の窓に助力の札は無く、振ると劇場の幕の上で「切り札を使う？」。
+  // 使うと助力の切り札のカットインから投げ込まれ、振り直せる出目なら劇場の中で「振り直す？」（1個目・2個目）が出る。
+  // 振り直すと、その1個だけを劇場で投げ直し、後の窓は評価の一言・合計・続けるだけ（VPG28）
+  await check("trpg-portrait-skills-are-chosen-in-the-dice-show", async page => {
+    const vis = selector => page.locator(selector).filter({ visible: true }).first();
+    await vis('[data-test="trpg-choice-aid"]').waitFor({ timeout: 180000 });
+    await page.evaluate(() => [...document.querySelectorAll('[data-test="trpg-choice-aid"]')].find(n => n.offsetParent).closest(".trpg-approach").click());
+    for (let i = 0; i < 200; i++) {
+      const ready = await page.evaluate(() => {
+        const v = sel => [...document.querySelectorAll(sel)].find(n => n.offsetParent && !n.disabled);
+        if (v('[data-test="trpg-roll"]')) return true;
+        (v('[data-test="trpg-incarnate-skip"]') || v('[data-test="trpg-next"]'))?.click();
+        return false;
+      });
+      if (ready) break;
+      await page.waitForTimeout(250);
+    }
+    // 振る前の窓: 見込みは大きく1つ。助力の札・サイコロの絵は窓に出さない
+    assert.equal(await page.locator(".trpg-roll-stage .trpg-aid").count(), 0, "the aid card is not in the window");
+    assert.equal(await page.locator(".trpg-roll-stage .trpg-roll-scene").isVisible(), false, "the dice picture waits for the show");
+    await boxesInside(page, ['[data-test="trpg-roll-chance"] > strong', '[data-test="trpg-roll"]']);
+    await vis('[data-test="trpg-roll"]').tap();
+    const support = vis('[data-test="trpg-show-support"]');
+    await support.waitFor({ timeout: 10000 });
+    assert.match(await support.innerText(), /成功 約\d+%.*→.*\d+%/s, "the card shows the odds without and with the aid");
+    await boxesInside(page, ['[data-test="trpg-show-support"]', '[data-test="trpg-show-nosupport"]'], { tap: 44 });
+    await support.tap();
+    // 劇場（助力のカットイン → 投げ込み）。振り直せる出目なら、劇場の中で選ぶ札が出る
+    const reached = await Promise.race([
+      vis('[data-test="trpg-show-reroll-0"]').waitFor({ timeout: 20000 }).then(() => "reroll"),
+      vis('[data-test="trpg-settle"]').waitFor({ timeout: 20000 }).then(() => "settle"),
+    ]);
+    assert.equal(reached, "reroll", "the seeded throw misses, so the reroll is offered in the show");
+    assert.equal(await page.evaluate(() => window.__trpg.state && document.querySelectorAll(".trpg-rerolls").length), 0, "the window does not offer the reroll");
+    await boxesInside(page, ['[data-test="trpg-show-reroll-0"]', '[data-test="trpg-show-reroll-1"]', '[data-test="trpg-show-keep"]'], { tap: 44 });
+    await vis('[data-test="trpg-show-reroll-1"]').tap();
+    await page.waitForFunction(() => document.querySelector('.trpg-roll-show[data-thrown="1"]'), null, { timeout: 5000 });
+    await vis('[data-test="trpg-settle"]').waitFor({ timeout: 20000 });
+    // 後の窓: 出目・式・ゲージ・内訳は繰り返さない
+    for (const hidden of [".trpg-roll-stage .trpg-roll-scene", ".trpg-roll-stage .trpg-roll-gauge", ".trpg-roll-stage .trpg-roll-receipts"]) {
+      assert.equal(await page.locator(hidden).first().isVisible(), false, `${hidden} is not repeated after the show`);
+    }
+    await boxesInside(page, ['[data-test="trpg-roll-total"]', '[data-test="trpg-settle"]']);
+    assert.equal(await page.locator(".trpg-rerolls").count(), 0, "no reroll is left in the window");
+  }, { ...PHONE, pageEntry: frame("trpg.html?jump=aid"), pageReadySelector: '[data-test="trpg-book-spread"]' });
 
   // てつこといっしょ: 付き合ってくれる回数を使い切ると、帰りの札（ハート → なかよし）が縦の画面に収まって出る。
   // なかよし 58 から帰ると、肉球3つの節目（60）を越えて色つきの火種のしるしが並ぶ（TKT35・TKT39）。ご機嫌ななめの日でも一日は終わる（TKT36）
