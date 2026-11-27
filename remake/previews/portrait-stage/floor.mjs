@@ -52,16 +52,17 @@ const SALES_STEP = 10000;
 //   seats＝絵の中の5つの席（x・y＝席のカードの「下の辺のまん中」を置く所。絵の幅・高さに対する %。カードは席のソファに重ね、下の辺は座面の手前。
 //     奥の壁に沿って3つ＝row 0、手前の左右に内向きで2つ＝row 1）、
 //   chapter＝その店に来る章（並ぶミックスとレア客が変わる）、night＝夜だけの店（はじめから夜の絵）、visitors＝遊びに来る本編の人物（顔のアイコンがある人だけ）、boss＝精算で一言いう人の顔。
+//   奥の3つは、カードの間をあけるため（VPM32）、ソファのまん中（絵の幅の約25%・75%）より少し外の 20%・80%（カードはソファより幅が広いので、ソファの上に乗ったまま）。
 //   絵を替える時は、席の表も合わせる
 const VENUE_VIEW = {
   tonari: { art: "tonari", chapter: 1, night: false, boss: "sumi",
-    seats: [{ x: 25, y: 41.5, row: 0 }, { x: 50, y: 41.5, row: 0 }, { x: 75, y: 41.5, row: 0 }, { x: 18, y: 74, row: 1 }, { x: 82, y: 74, row: 1 }],
+    seats: [{ x: 20, y: 41.5, row: 0 }, { x: 50, y: 41.5, row: 0 }, { x: 80, y: 41.5, row: 0 }, { x: 20, y: 74, row: 1 }, { x: 80, y: 74, row: 1 }],
     visitors: ["tsumugi", "naru", "adam"] },
   mukai: { art: "mukai", chapter: 3, night: true, boss: "mukai_master",
-    seats: [{ x: 25, y: 42.5, row: 0 }, { x: 50, y: 42.5, row: 0 }, { x: 75, y: 42.5, row: 0 }, { x: 18, y: 74, row: 1 }, { x: 82, y: 74, row: 1 }],
+    seats: [{ x: 20, y: 42.5, row: 0 }, { x: 50, y: 42.5, row: 0 }, { x: 80, y: 42.5, row: 0 }, { x: 20, y: 74, row: 1 }, { x: 80, y: 74, row: 1 }],
     visitors: ["steve", "volk", "yoru"] },
   dubai: { art: "dubai", chapter: 4, night: false, boss: null,
-    seats: [{ x: 25, y: 41.5, row: 0 }, { x: 50, y: 41.5, row: 0 }, { x: 75, y: 41.5, row: 0 }, { x: 18, y: 74, row: 1 }, { x: 82, y: 74, row: 1 }],
+    seats: [{ x: 20, y: 41.5, row: 0 }, { x: 50, y: 41.5, row: 0 }, { x: 80, y: 41.5, row: 0 }, { x: 20, y: 74, row: 1 }, { x: 80, y: 74, row: 1 }],
     visitors: ["naru", "da_silva", "master_hookah"] },
 };
 // 試作だけの客の呼び名（VPM31）: オーナー「シーシャ屋のモブでおばあちゃんいるのは変　20〜30代メインに　いてもたまに40.50」。

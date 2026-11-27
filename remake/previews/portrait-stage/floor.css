@@ -60,23 +60,24 @@
 
 /* ───────── 席のカード（VPM26）: 絵の中の5つの席に、横長のカードを置く。--x・--y＝カードの下の辺のまん中（絵に対する %。floor.mjs の SEATS） ─────────
    カード: 左＝客の顔（縁は気分の色）と席の番号、右＝残り秒か満足の顔（言葉は出さない。VPM30）。上に少し離して、気分か用件の札。
+   大きさ（VPM32）: 横 10.4rem・縦 5.8rem（背の低い画面は 9.9×5.4・9.2×5）。奥の3枚は、間を約2rem あける（席は絵の幅の 20%・50%・80%）。
    用件がある席は、縁が脈を打ち、下の辺に「押す」の札（指の印と、聞く・整える・会計）がぶら下がる＝上の画面を押せば進む、と分かるように */
-.fl-tables { --cw: 9.6rem; --ch: 5.3rem; z-index: 4; pointer-events: none; transition: opacity 0.2s; }
+.fl-tables { --cw: 10.4rem; --ch: 5.8rem; z-index: 4; pointer-events: none; transition: opacity 0.2s; }
 .fl-table { --c: transparent; position: absolute; z-index: 1; left: calc(var(--x) - var(--cw) / 2); top: calc(var(--y) - var(--ch) - 0.6rem); width: var(--cw); height: var(--ch); display: block; pointer-events: auto; transition: transform 0.2s var(--ease-out), filter 0.2s; }
 .fl-table[data-row="1"] { z-index: 2; }
 .fl-box { position: absolute; inset: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 0.6rem; padding: 0 0.5rem 0 0.5rem; border: 0.14rem solid #ffffff59; border-radius: 1.5rem; background: linear-gradient(180deg, #2a2040f2, #150f22f5); -webkit-backdrop-filter: blur(1rem); backdrop-filter: blur(1rem); box-shadow: 0 0.6rem 1.4rem #000b, inset 0 0.1rem 0 #ffffff24; transition: border-color 0.2s, box-shadow 0.2s; }
 /* 席を指す、小さな三角 */
 .fl-table::before { content: ""; position: absolute; left: 50%; top: calc(100% - 0.05rem); margin-left: -0.6rem; border: 0.6rem solid transparent; border-bottom: 0; border-top-color: #150f22; filter: drop-shadow(0 0.14rem 0 #ffffff59); pointer-events: none; }
-.fl-who { width: 4.3rem; height: 4.3rem; border-radius: 50%; overflow: hidden; background: #f3e9d6; box-shadow: 0 0 0 0.2rem var(--c), 0 0 0 0.32rem #0b0812; }
+.fl-who { width: 4.7rem; height: 4.7rem; border-radius: 50%; overflow: hidden; background: #f3e9d6; box-shadow: 0 0 0 0.2rem var(--c), 0 0 0 0.32rem #0b0812; }
 .fl-who img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 16%; }
 .fl-table[data-rare="true"] .fl-who { box-shadow: 0 0 0 0.2rem #ffd84d, 0 0 0.8rem #ffcf6b; }
 .fl-side { min-width: 0; display: grid; place-items: center; }
 /* 右: 残り秒・仕込みの残り（小さな時計・器の印を、数字の左上に添える）・満足の顔（大きく） */
-.fl-cell { position: relative; display: grid; place-items: center; min-width: 0; height: 3.4rem; color: #fff; font-variant-numeric: tabular-nums; }
+.fl-cell { position: relative; display: grid; place-items: center; min-width: 0; height: 3.7rem; color: #fff; font-variant-numeric: tabular-nums; }
 .fl-cell:empty { display: none; }
-.fl-cell .ic { font-size: 2.2rem; color: #ffffffb3; } .fl-cell b { font-size: 2.6rem; line-height: 1; } .fl-cell img { width: 3.4rem; height: 3.4rem; object-fit: contain; }
+.fl-cell .ic { font-size: 2.2rem; color: #ffffffb3; } .fl-cell b { font-size: 2.8rem; line-height: 1; } .fl-cell img { width: 3.7rem; height: 3.7rem; object-fit: contain; }
 .fl-cell:has(b) { padding-left: 0.6rem; } .fl-cell:has(b) .ic { position: absolute; left: -0.3rem; top: 0.15rem; font-size: 1.2rem; }
-.fl-cell:only-child img { width: 3.4rem; height: 3.4rem; } .fl-side:has(.fl-cue:empty) .fl-cell { height: 3.4rem; } .fl-side:has(.fl-cue:empty) .fl-cell img { width: 3.4rem; height: 3.4rem; } /* 押す印が無い時は、満足の顔をもう少し大きく */
+.fl-cell:only-child img { width: 3.7rem; height: 3.7rem; } .fl-side:has(.fl-cue:empty) .fl-cell { height: 3.7rem; } .fl-side:has(.fl-cue:empty) .fl-cell img { width: 3.7rem; height: 3.7rem; } /* 押す印が無い時は、満足の顔をもう少し大きく */
 /* 頼み・会計を待たせている残り秒: カードの右上の角の赤い札 */
 .fl-count { position: absolute; z-index: 2; right: -0.7rem; top: -0.9rem; display: flex; align-items: center; gap: 0.15rem; height: 2rem; padding: 0 0.6rem 0 0.45rem; border-radius: 1rem; font-size: 1.3rem; font-weight: 700; color: #fff; background: #c8413a; box-shadow: 0 0 0 0.14rem #0b0812, 0 0.2rem 0.5rem #000a; }
 .fl-count:empty { display: none; } .fl-count .ic { font-size: 1.2rem; }
@@ -421,7 +422,8 @@
 /* ───────── 背の低い画面 ───────── */
 @container phone (max-height: 80rem) {
   .fl-room, .fl-tables, .fl-layer, .fl-band, .fl-notice, .fl-body, .fl-door, .phone[data-kind="floor"] .veil { --pic: 37.6rem; --stage: 37.6rem; --floor-s: 39rem; --floor-left: 0rem; --floor-top: -0.7rem; --acts: 5.4rem; --who-h: 7.8rem; --row-gap: 0.55rem; }
-  .fl-tables { --cw: 9.2rem; --ch: 5rem; } .fl-who { width: 4rem; height: 4rem; } .fl-box { gap: 0.5rem; padding: 0 0.45rem; } .fl-cell b { font-size: 2.4rem; } .fl-cell img { width: 3.1rem; height: 3.1rem; }
+  .fl-tables { --cw: 9.9rem; --ch: 5.4rem; } .fl-who { width: 4.3rem; height: 4.3rem; } .fl-box { gap: 0.5rem; padding: 0 0.45rem; } .fl-cell b { font-size: 2.6rem; }
+  .fl-cell, .fl-side:has(.fl-cue:empty) .fl-cell { height: 3.4rem; } .fl-cell img, .fl-cell:only-child img, .fl-side:has(.fl-cue:empty) .fl-cell img { width: 3.4rem; height: 3.4rem; }
   .fl-guest { --face: 5.6rem; gap: 1.1rem; } .fl-guest-top { height: 2.5rem; } .fl-guest-name { font-size: 1.64rem; } .fl-guest-top .fl-wish, .fl-guest-top .fl-need { height: 2.5rem; font-size: 1.36rem; } .fl-guest-top em { font-size: 1.46rem; }
   .fl-quote { font-size: 1.46rem; padding: 0.4rem 1.1rem 0.45rem; } .fl-go { font-size: 1.5rem; } .fl-go .ic { font-size: 2.3rem; }
   .fl-attr, .fl-opt-icon, .fl-opt-locked img { width: 3.5rem; height: 3.5rem; } .fl-opt { gap: 1.1rem; }
@@ -430,7 +432,8 @@
 }
 @container phone (max-height: 71rem) {
   .fl-room, .fl-tables, .fl-layer, .fl-band, .fl-notice, .fl-body, .fl-door, .phone[data-kind="floor"] .veil { --pic: 33.6rem; --stage: 33.6rem; --floor-s: 39rem; --floor-left: 0rem; --floor-top: -2.4rem; --acts: 4.8rem; --who-h: 6.6rem; --row-gap: 0.45rem; --pad-b: max(0.9rem, env(safe-area-inset-bottom, 0px)); }
-  .fl-tables { --cw: 8.6rem; --ch: 4.6rem; } .fl-who { width: 3.6rem; height: 3.6rem; } .fl-box { gap: 0.4rem; padding: 0 0.4rem; } .fl-cue { height: 1.9rem; bottom: -1.2rem; font-size: 1.14rem; } .fl-cell { height: 2.9rem; } .fl-cell b { font-size: 2.2rem; } .fl-cell img { width: 2.9rem; height: 2.9rem; } .fl-head { bottom: calc(100% + 0.3rem); }
+  .fl-tables { --cw: 9.2rem; --ch: 5rem; } .fl-who { width: 3.9rem; height: 3.9rem; } .fl-box { gap: 0.4rem; padding: 0 0.4rem; } .fl-cue { height: 1.9rem; bottom: -1.2rem; font-size: 1.14rem; } .fl-cell b { font-size: 2.4rem; } .fl-head { bottom: calc(100% + 0.3rem); }
+  .fl-cell, .fl-side:has(.fl-cue:empty) .fl-cell { height: 3.1rem; } .fl-cell img, .fl-cell:only-child img, .fl-side:has(.fl-cue:empty) .fl-cell img { width: 3.1rem; height: 3.1rem; }
   /* チュートリアルの間は、スミさんの言葉の分だけ下が低くなるので、開いていない枠の段は出さない */
   .phone[data-coach="true"] .fl-rows { grid-template-rows: repeat(2, minmax(0, 1fr)); } .phone[data-coach="true"] .fl-opt-locked { display: none; }
   .fl-body { gap: 0.6rem; padding-top: 0.6rem; } .fl-telop:has(.fl-coach[hidden]) { margin-bottom: -0.6rem; } .fl-guest { --face: 4.8rem; gap: 1rem; margin-bottom: 0.6rem; } .fl-guest-side { gap: 0.3rem; } .fl-guest-top { height: 2.2rem; } .fl-acts { margin-top: 0.7rem; }
