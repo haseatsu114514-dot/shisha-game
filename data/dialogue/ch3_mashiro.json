@@ -3156,6 +3156,147 @@
           "text": "小さな質問から始まって、俺たちは紅茶が冷めるまで話した。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch3_mashiro_curry",
+      "comment": "RLS10⑥（第3章はましろを厚く描く・2026-11-27 VOL21 第3弾）。mukaiの二日目の後、味が戻る前だけ（ch3-story-wiring.js の before）。ましろの番のまかないは真っ黒な激辛カレー。辛さは味ではなく痛みなので、味が遠いはじめにも届く。一皿で回復させない（正本: 作れない日の席と、答えを急がない日々を一緒に過ごす）。受診・原因には触れない。好感度は動かさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のmukai。奥の台所から、強い匂いが流れてきた。今の俺の鼻にも、ちゃんと届く。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "まかない、できたよぉ。今日は僕の番"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鍋の中は、黒に近い色のカレーだった。赤い唐辛子が、いくつも浮いている。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "surprise",
+          "text": "……ましろ。それは、何辛だ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "わかんない。いっぱい入れた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "三人で、カウンターに並んで座った。スプーンを持つ手が、少しだけ止まる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口食べる。味の輪郭は、相変わらず遠い。なのに、舌の上がじんと熱くなった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……辛い。これは、分かる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "でしょ。辛いのってねぇ、味じゃなくて、痛いのなんだって"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "だから、舌がお休みしてても、届くかなって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（わざと、こんなに入れたのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣で、ムカイさんが黙って水を三杯飲んでいた。額に、汗が光っている。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ムカイさん、辛いのだめなら、残していいよぉ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……だめとは、言ってない"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……うまい"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "ほんと？"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "serious",
+          "text": "……辛い。だが、うまい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "食べ終わる頃には、三人そろって鼻をすすっていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろだけは平気な顔で、自分の皿におかわりをよそっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんは、辛くないの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "辛いよぉ。でも、重い葉といっしょ。ちょっと痛いくらいが好き"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん。明日は、もう少し辛くなくても届くかなぁ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どうだろう。……でも、明日もここで食べたい"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "じゃあ、明日はムカイさんの番ねぇ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……甘口にする"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "洗い物をしながら、舌の先がまだ少し熱かった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（味じゃなくても、届くものはあるんだ）"
+        }
+      ]
     }
   ]
 }

@@ -126,6 +126,13 @@
         "ch3_mukai_no_hat",
         "ch3_mukai_scale_coffee",
         "ch3_mukai_tetsuko",
+        "ch3_mukai_sign_bulb",
+        "ch3_mukai_breaker",
+        "ch3_mukai_wrong_beans",
+        "ch3_mukai_birthday",
+        "ch3_mukai_ayatori_beans",
+        "ch3_mukai_chalkboard",
+        "ch3_mashiro_curry",
         "ch3_cigarman_trace",
         "ch3_emil_workshop",
         "ch3_mashiro_play_1",
@@ -135,6 +142,8 @@
         "ch3_mashiro_black_tea",
         "ch3_ayatori_bakery",
         "ch3_ayatori_parcel",
+        "ch3_ayatori_owner_visit",
+        "ch3_ayatori_hoarse",
         "ch3_ayatori_mashiro_tea_tin",
         "ch3_ayatori_mashiro_soon_back",
         "ch3_mashiro_mukai_syrup_shelf",
@@ -632,6 +641,54 @@
       ],
       "comment": "RLS10⑥（VOL21 第2弾）。mukaiの二日目の後、大会前に一度。ムカイさんとてつこの皿。出発前のスミさんの「懐かれてない」を受ける。"
     },
+    "ch3_mukai_sign_bulb": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "RLS10⑥（VOL21 第3弾）。看板の電球を付け替える。片づけの間は灯りを点けておくムカイさんと、tonariの入口の灯りを知っている同業者の一言。大会前に一度。"
+    },
+    "ch3_mukai_breaker": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "RLS10⑥（VOL21 第3弾）。混んだ夜にブレーカーが落ち、暗い店でボトルの音を聴く。ましろが音で奥の台の炭に気づく。大会前に一度。"
+    },
+    "ch3_mukai_wrong_beans": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "RLS10⑥（VOL21 第3弾）。カフェインを抜いた豆が間違って届き、「夜でも眠れるコーヒー」と貼り出す。大会前に一度。"
+    },
+    "ch3_mukai_birthday": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "RLS10⑥（VOL21 第3弾）。窓際の常連の誕生日に、ラテにろうそく一本。大会前に一度。"
+    },
+    "ch3_mukai_ayatori_beans": {
+      "seen": [
+        "ch3_ayatori_mukai_visit"
+      ],
+      "comment": "RLS10⑥（VOL21 第3弾）。綾取が煙幕の吸わない連れのために豆を買いに来て、ムカイさんに名前を伏せて選ばされる。大会前に一度。"
+    },
+    "ch3_mashiro_curry": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "RLS10⑥（VOL21 第3弾）。ましろの番のまかないは激辛カレー。辛さは痛みなので、味が遠いはじめにも届く。味が戻る前だけ。大会前に一度（味が戻った後は ch3-story-wiring.js の before で閉じる）。"
+    },
+    "ch3_ayatori_owner_visit": {
+      "seen": [
+        "ch3_ayatori_first"
+      ],
+      "comment": "RLS10⑥（VOL21 第3弾）。間借りの店を貸した人の父（昔の乾物屋）が見回りに来る。白紙の札に「昼の乾物屋」。大会前に一度。"
+    },
+    "ch3_ayatori_hoarse": {
+      "seen": [
+        "ch3_ayatori_first"
+      ],
+      "comment": "RLS10⑥（VOL21 第3弾）。声のかすれた綾取の代わりに、はじめが注文を聞く。大げさな噂は自信がない日に書く。大会前に一度。"
+    },
     "ch3_ayatori_mashiro_tea_tin": {
       "seen": [
         "ch3_ayatori_first"
@@ -900,6 +957,12 @@
         "ch3_rival_volk_steve_greeting"
       ],
       "comment": "#3468 F案の後日の一言: 挨拶で「続きはうちで」と約束した後の Smoke & Glory。"
+    },
+    "ch3_mukai_chalkboard": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "RLS10⑥（VOL21 第4便）。入口の黒板のシーシャの欄。味が戻る前だけ、大会前に一度（味が戻った後は ch3-story-wiring.js の before で閉じる）。"
     }
   },
   "near_conflict": {

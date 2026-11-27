@@ -21,7 +21,7 @@ const AGEHA_LATER_SCENES = [
   { id: "ch1_ageha_gummy_share", flag: "_ageha_gummy_share_done" },
   { id: "ch1_ageha_bear_seat", flag: "_ageha_bear_seat_done" },
 ];
-const isRepeat = (id, scene) => /^remake_ch2_(ageha|kumicho|kuraudo)_repeat(_[bcdef])?$/.test(scene) && scene.includes(id);
+const isRepeat = (id, scene) => /^remake_ch2_(ageha|kumicho|kuraudo)_repeat(_[b-i])?$/.test(scene) && scene.includes(id);
 const ids = ["ageha", "kumicho", "kuraudo"];
 const DB = { dialogues: { ...all } };
 const states = new vm.SyntheticModule(["state", "save", "markMet", "timeOfDay"], function () {
@@ -342,7 +342,9 @@ fixture = preparation; await loader.namespace.loadPreparationDialogues();
 // + 第2章で初めて家で休んだ時のノートの場面（ch2_home.json・#3957）
 // + tonariの窓際の席のつむぎ3本と、なるのモンブランの続き1本（ch2_home.json・#3097 第5弾）
 // + 地元の顔なじみの続き5本（観音堂の老人・喫茶こはくのマスター2本、CHOI-ZAPのスタッフ3本。ch2_home.json・VOL16）
-assert.equal(Object.keys(loaderDB.dialogues).length, 147 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+// + 神崎・クラウドの通いの小会話 f〜i の8本（ch2_preparation.json）と、行き帰りの電車の小品4本（ch2_city.json）（VOL21 第3便）
+// + 行き帰りの電車の小品2本（答案を見せ合う高校生・負けた試合を笑う会社員。ch2_city.json・VOL21 第4便）
+assert.equal(Object.keys(loaderDB.dialogues).length, 161 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
 assert(loaderDB.dialogues.ch2_rest_notebook?.lines?.length, "first chapter 2 rest scene is loaded");
 for (const id of ["ch2_minto_nickname_notes", "ch2_rio_plain_lunch", "ch2_adam_apple_errand", "ch2_samechan_poster", "ch2_hiyori_mirror_pose",
   "ch2_minto_umbrella_day", "ch2_rio_label_words", "ch2_adam_peel_record", "ch2_samechan_menu_letters", "ch2_hiyori_commute_poem"])
@@ -518,7 +520,8 @@ for (const id of ids) {
     assert.deepEqual(state.relationshipMemories, before.relationshipMemories);
     await visit(id);
     // あげはは e の後に g〜i が続く（#3097）。神崎・クラウドは先頭へ戻る
-    assert.equal(played.at(-1), id === "ageha" ? "remake_ch2_ageha_repeat_g" : `remake_ch2_${id}_repeat`, "the next ordinary talk continues the pool");
+    // e の次は巡回表の並びどおり（あげは g・神崎とクラウドは VOL21 第3便の f）
+    assert.equal(played.at(-1), id === "ageha" ? "remake_ch2_ageha_repeat_g" : `remake_ch2_${id}_repeat_f`, "the next ordinary talk continues the pool");
   }
 }
 console.log("PASS: three everyday talks are loaded, rotate, retain normal fees/rewards, and leave no settlement on interruption");
