@@ -721,6 +721,8 @@ test('check result cut-in marks cutin state to lower/hide standing portrait and 
     while (timers.length) timers.shift()();
     roll();
     while (timers.length) timers.shift()();
+    // 劇場を出せる時は、振り直せる出目なら劇場の中で「振り直す？」を選ぶ（横の本編も既定）。ここでは振り直さずに結果の窓へ
+    root.querySelector('[data-test="trpg-show-keep"]')?.click();
     q('trpg-settle').click();
 
     assert.equal(root.dataset.cutin, 'true', 'cutin dataset flag is active while trpg-cutin is shown');

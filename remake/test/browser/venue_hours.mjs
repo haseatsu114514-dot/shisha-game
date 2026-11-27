@@ -88,7 +88,8 @@ await suite("venue-hours", async runCheck => {
       assert.equal(await snapshot(page), before);
       await hit(page, "trpg-trial-back"); await hit(page, "trpg-trial-open");
       await hit(page, "trpg-trial-roll"); await hit(page, "trpg-trial-roll");
-      assert.match(await page.locator(t("venue-host-line")).innerText(), /越えましたね/);
+      // あふれた時のサイの一言（trpg_club.json の host_bust。2026-11-22 に「おっと、7を超えました。今回はここまでです」へ改稿）
+      assert.match(await page.locator(t("venue-host-line")).innerText(), /7を超えました/);
       await assertFits(page, ".venue-host, .trpg-trial-actions button");
       assert.equal(await snapshot(page), before);
       await hit(page, "trpg-trial-back");

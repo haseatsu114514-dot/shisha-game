@@ -191,7 +191,7 @@ html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice:hover:n
    文字を詰めない。決まりや操作の説明は「？」を開いた時だけ。基本の画面は遊ぶのに要る札だけにする。 */
 /* 進行は上のレールの小札（今の段）だけ。判定の回数・連携札の内訳は判定の舞台とログで読む。 */
 html:root .trpg-root.trpg-cinematic .trpg-table-status { display: none; }
-/* 座席の帯は「誰が話しているか」だけ。能力値と切り札の残りはキャラクターシートで見る。 */
+/* 座席の帯は「誰が話しているか」だけ。能力値とスキルの残りはキャラクターシートで見る。 */
 html:root .trpg-root.trpg-cinematic .trpg-table :is(.trpg-seat-stats, .trpg-seat-ability) { display: none; }
 /* シートの前置き（判定の決まり）は遊び方に書いてある。 */
 html:root .trpg-root.trpg-cinematic .trpg-sheet-stage .trpg-modal-intro { display: none; }
@@ -712,7 +712,7 @@ html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta > small {
 /* 聞き込み: 前置きの一文は出さない（題と「あと N つ」で足りる。スマホは以前から出していない）。増えた夜は数を金色に。 */
 html:root .trpg-root.trpg-cinematic .trpg-interview-prompt { display: none; }
 html:root .trpg-root.trpg-cinematic .trpg-interview .trpg-topic { justify-content: center; }
-/* 判定の卓: 使えない切り札の一言、補正の内訳に入れた 見立て・危機 の札。 */
+/* 判定の卓: 使えないスキルの一言、補正の内訳に入れた 見立て・危機 の札。 */
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid-spent { margin: 4px 0; text-align: center; color: #b9c4b6; font-size: max(13px, calc(11 * var(--roll-unit))); }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-receipts > :is(.trpg-roll-insight, .trpg-roll-consequence) { margin: 0 !important; text-align: left; }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-receipts > .trpg-roll-insight { color: #ffe39a; }
@@ -1184,13 +1184,13 @@ html:root[data-density="phone"] .trpg-campaign[data-view="shelf"] .trpg-campaign
   html:root[data-density="phone"] .trpg-campaign[data-view="shelf"] .trpg-campaign-person .trpg-campaign-face { zoom: .6; }
 }
 
-/* ---- PCの判定の卓: 切り札の札がある判定でも、振る前の卓が1画面に収まるよう、ダイストレイの余白を詰める（#3199・TRF24）。
+/* ---- PCの判定の卓: スキルの札がある判定でも、振る前の卓が1画面に収まるよう、ダイストレイの余白を詰める（#3199・TRF24）。
    小さい画面（max-width: 1000px / max-height: 600px）とスマホ横持ちは、それぞれの決まり（trpg-stage.css・trpg-phone.css）のまま。 ---- */
 @media (min-width: 1001px) and (min-height: 601px) {
   html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene { min-height: 132px; }
   html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene .trpg-dice-row { margin: 8px 0; }
-  /* 「判定の詳細」を開いた時（#3199・TRF24 の残件）: 見通しの表がトレイ・切り札の札の下に積まれ、卓の中を下へ送らないと見えなかった
-     （切り札の札がある判定で 145px はみ出し）。開いている間だけ、トレイと切り札の札を左、詳細（判定の説明・見通しの表）を右に並べる。
+  /* 「判定の詳細」を開いた時（#3199・TRF24 の残件）: 見通しの表がトレイ・スキルの札の下に積まれ、卓の中を下へ送らないと見えなかった
+     （スキルの札がある判定で 145px はみ出し）。開いている間だけ、トレイとスキルの札を左、詳細（判定の説明・見通しの表）を右に並べる。
      決まりの一文・成功のごほうび・誰が何で は上に通しで残す。表の数字は今までと同じ（見せ方だけ）。 */
   html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) {
     display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-auto-flow: row dense; column-gap: 28px; align-items: start;

@@ -288,6 +288,16 @@ input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 .beat.snap .beat-zone{animation:beat-snap .4s ease-out}
 @keyframes beat-snap{0%{transform:scale(1.9);filter:brightness(2)}100%{transform:none}}
 #led-autoeq.on{color:var(--a)}#led-autoeq.on:before{background:var(--a);box-shadow:0 0 8px var(--a)}
+/* ズレ直しのボタン（VPG15・2026-11-27 横にも出す）: ビートメーターのすぐ左右（横フェーダーの真上）に ◀（戻す）・▶（進める）。ランプ（QUANTIZE・AUTO EQ）はその外側に残す。
+   皿を回すのと同じ働き（app.mjs の NUDGE）。つなぎの間だけ押せて、ズレた時は直す向きのボタンが金に光る。縦（?layout=portrait）の見た目は portrait.css が持つので、ここは横だけに掛ける */
+html:not([data-layout=portrait]) .channels{grid-template-columns:10px minmax(0,1fr) 48px 168px 48px minmax(0,1fr) 10px;gap:6px}
+html:not([data-layout=portrait]) .nudge{width:48px;height:48px;min-height:0;padding:0;display:flex;align-items:center;justify-content:center;border-width:8px;border-image:var(--glass) 28 fill / 8px / 0 stretch}
+html:not([data-layout=portrait]) .nudge i{flex:none;width:16px;height:23px;margin:0 -2px;background:url('../../img/ui/dj/chevron.webp') center/contain no-repeat;filter:drop-shadow(0 2px 2px #000a)}
+html:not([data-layout=portrait]) .nudge.back i{transform:scaleX(-1)}
+html:not([data-layout=portrait]) .nudge:disabled{opacity:.35;filter:saturate(.3)}
+html:not([data-layout=portrait]) .nudge.go{border-image:var(--goldbtn) 36 fill / 8px / 0 stretch;filter:drop-shadow(0 0 8px #ffc857);animation:nudge-glow .5s ease-in-out infinite alternate}
+html:not([data-layout=portrait]) .nudge.go i{filter:brightness(.35) drop-shadow(0 0 1px #fff8)}
+@keyframes nudge-glow{to{filter:drop-shadow(0 0 16px #ffc857) brightness(1.12)}}
 .xfade{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:flex-end;--deck:#ece6dc}
 .mix-label{display:flex;justify-content:space-between;align-items:center;height:30px;padding:0 6px}
 .mix-label>b{display:grid;place-items:center;width:30px;height:30px;font-size:16px;font-weight:900;background:url('../../img/ui/craft-night/step-next.webp') center/contain no-repeat}
@@ -384,7 +394,7 @@ input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
  .pick-card.listening .pick-ear,.judge.pop,.count.beat,.heat-text strong.pop,.drop.big,.drop.small,.drop.miss,.drop.finish,.floor-art:is(.shake-drop,.shake-sway,.shake-big,.shake-stumble),.burst.go,.platter.kick,.medal.stamp,.combo.pop,.combo.broken,.deck-play.nope,.platter.off,.jog-arrows i,.beat[data-state=off] small,.beat.snap .beat-zone,.result-card.settled,.guide.hit,.guide.miss,.deck-play.cue-open,.steps li.now i,.point,.fader-arrows i{animation:none}
  .jog-arrows i{opacity:1}.beat-dot{transition:none}
  .floor-art.hold{filter:none}.drop.finish{opacity:1}.combo.broken{opacity:.5}.result-card.settled .result-goal{transition:none}
- .fader-arrows i{opacity:1}.guide{transition:none}.voice{animation:voice-still 2.7s both}}
+ .fader-arrows i{opacity:1}.guide{transition:none}.voice{animation:voice-still 2.7s both}html:not([data-layout=portrait]) .nudge.go{animation:none}}
 @keyframes voice-still{0%,90%{opacity:1}100%{opacity:0}}
 /* ── phone density (#2841・#2729): ?phone=1 → html[data-density=phone]. 表示だけ。文字は 20px 以上（iPhone 横で実寸 約11px）、押す所は大きく。判定は変えない ── */
 html[data-density=phone] small{font-size:20px;letter-spacing:.02em}
@@ -433,6 +443,12 @@ html[data-density=phone] .lcd{gap:4px;padding:0 10px}
 html[data-density=phone] .bpm:after{display:none}
 html[data-density=phone] .led{font-size:0;gap:0}
 html[data-density=phone] .led:before{width:14px;height:14px}
+/* ズレ直しのボタン（横のスマホ）: 押す所は実寸 44px 以上（844×390 で板の 82px、667×375 で 85px）にして 88px。その段（メーターの段）を 88px に上げ、
+   その分だけ上の案内の板を 28px 低くする（案内の1行・下の一言・2曲の流れは収まる）。横フェーダーの台座と字の段は元の大きさのまま */
+html[data-density=phone]:not([data-layout=portrait]) .console{grid-template-rows:172px minmax(0,1fr)}
+html[data-density=phone]:not([data-layout=portrait]) .channels{height:88px;grid-template-columns:10px minmax(0,1fr) 92px 168px 92px minmax(0,1fr) 10px}
+html[data-density=phone]:not([data-layout=portrait]) .nudge{width:92px;height:88px;border-width:10px;border-image-width:10px}
+html[data-density=phone]:not([data-layout=portrait]) .nudge i{width:24px;height:34px}
 html[data-density=phone] .mix-label>b{font-size:20px;width:34px;height:34px}
 html[data-density=phone] .fader-hint{font-size:22px}
 html[data-density=phone] .combo{font-size:20px}

@@ -648,6 +648,9 @@ html:root[data-density="phone"][data-layout="portrait"] #stage .trpg-root.trpg-c
 /* ── スキルは劇場の中で選ぶ（VPG29。roll-show.js の showRollChoice）: 劇場と同じ幕・見出し・目標・サイコロの上に、選ぶ札を置く。
       投げる前＝「スキルを使う？」（仲間の助力）、出目が出た後＝「振り直す？」（1個目・2個目）。どちらも「使わずに振る／このまま続ける」で先へ ── */
 #stage .trpg-root .trpg-roll-show.trpg-rs-choosing { cursor: default; }
+/* 横の本編の並べ方（css/trpg-roll-show.css: 選ぶ間はサイコロを小さく上へ寄せる）は縦では使わない。縦の大きさは下の data-rolled の規則 */
+#stage .trpg-root .trpg-roll-show.trpg-rs-choosing .trpg-rs-die { scale: none; translate: none; }
+#stage .trpg-root .trpg-roll-show.trpg-rs-choosing .trpg-rs-fit { z-index: auto; }
 #stage .trpg-root .trpg-roll-show.trpg-rs-choosing :is(.trpg-rs-head, .trpg-rs-goal, .trpg-rs-die) { opacity: 1; }
 #stage .trpg-root .trpg-roll-show.trpg-rs-choosing .trpg-rs-lines { opacity: .14; }
 #stage .trpg-root .trpg-roll-show.trpg-rs-choosing .trpg-rs-vignette { opacity: .5; }
