@@ -21,8 +21,9 @@ const SHOTS = {
   spin: { clip: "high", when: "g.air > 0 && g.airKind === 'big' && g.spinDir !== 0 && Math.abs(g.rot) > 0.42 && Math.abs(g.rot) < 0.6 && fx.grains > 6" },
   boost: { clip: "low", when: "g.boostT > 0 && g.air <= 0 && boostAge > 0.14 && boostAge < 0.34 && !g.carving" },
   carve: { clip: "low", when: "g.carving && fx.carveHeat > 0.9 && g.air <= 0 && g.boostT <= 0" },
-  // 砂流れ: 帯は人物の真下に来ると体に隠れるので、この1枚だけ、帯の入口の手前で人物を帯の横へ置いて撮る（stage）。描いているのは実際の画面のまま
-  flow: { clip: "low", stage: true, when: "g.air <= 0 && g.boostT <= 0 && !g.carving && fx.carveShow < 0.05 && (g.landedAt == null || g.t - g.landedAt > 1) && (g.course.flows || []).some(f => f.z - g.z > 5 && f.z - g.z < 9)" },
+  // 砂流れ: 帯に乗って走っている所（帯に入って 6〜16m。帯が板の下から手前へ続いて見える）。2026-11-27 オーナー「砂流れも乗ってるとこ撮って」（DSR104）。
+  // それまでは帯が体に隠れるので、帯の横に人物を置いて撮っていた
+  flow: { clip: "low", when: "g.inFlow && g.air <= 0 && g.boostT <= 0 && !g.carving && fx.carveShow < 0.05 && (g.landedAt == null || g.t - g.landedAt > 1) && (g.course.flows || []).some(f => g.z - f.z > 6 && g.z - f.z < 16)" },
 };
 const browser = await chromium.launch();
 const page = await (await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2 })).newPage();

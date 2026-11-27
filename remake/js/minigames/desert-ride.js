@@ -306,7 +306,7 @@ const tutorialText = key => TUTORIAL[key];
 const HOWTO_CARDS = Object.freeze([
   { id: "dodge", title: "よける", note: "岩は左右でかわす", keys: ["left", "right"] },
   { id: "jump", title: "大ジャンプ", note: "起伏で押す → 輪で着地", keys: ["jump", "land"] },
-  { id: "spin", title: "スピン", note: "空中で押しっぱなし", keys: ["left", "right"], tags: ["360°", "720°"] },
+  { id: "spin", title: "スピン", note: "空中で左右ボタンを長押し", keys: ["left", "right"], tags: ["360°", "720°"] }, // 押している間だけ回る（連打ではない）。2026-11-27 オーナー「押しっぱなしって何を？」で、押すものを書いた
   { id: "boost", title: "ブースト", note: "目印をこえたら発動", keys: ["boost"] },
   { id: "carve", title: "カーブ", note: "矢印の向きへ切り込む", keys: ["left"] },
   { id: "flow", title: "砂流れ", note: "明るい帯に乗ると加速", keys: [] }, // 入口の金の旗は 2026-11-26 に外してある（それまでの一言「金の旗の帯で加速」は古かった）
