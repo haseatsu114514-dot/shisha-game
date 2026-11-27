@@ -4,8 +4,10 @@
 //   axe-model.js（採点の正本）／axe-pull-model.js（弾きの読み取り）／axe-equipment.js（店の斧）／axe-feel.js（間と演出の数値）／
 //   axe-flight.js・axe-geometry.js（斧の形と刺さった姿）／axe-presentation.js（結果の言葉）／axe-challenges.js（目標とランク）／axe-companions.js（ひより）。
 // 本編の画面（remake/js/minigames/axe.js）は core/ui・core/audio・core/state を連れてくるので読まず、そこにだけある値と言葉は、出どころを書いて写した。
-// 縦の並べ方（十字キーと丸ボタンは置かない）: 上＝投げ数と累計／的（レーンいっぱい）／ひよりの一言／下の広い場所＝投げる専用の場所。
-//   構える前は「構える」と宣言、針を止める間は場所ぜんぶが「止める」ボタン、投げる時は斧の握りを上へ弾く。
+// 縦の並べ方（十字キーと丸ボタンは置かない）: レーンの中に立って、奥の壁に掛かった的を見ている構図（VPM16）。
+//   上＝投げ数と累計／レーン（梁・左右の金網・奥の板壁と的・手前まで続く床）／床の上に、横に立つひより（胸から上）と一言、投げる線、投げる専用の場所。
+//   構える前は「構える」と宣言、針を止める間は場所ぜんぶが「止める」ボタン、投げる時は斧の握りを上へ弾く（斧は手元から奥の的へ、小さくなりながら飛ぶ）。
+//   レーンの絵は本編と同じ bg_axe_lane.webp。床は、絵の床を同じ消失点のまま手前へ写し直して続ける（laneFloor。新しい絵は作らない）。
 // 本編の進行・所持金・記録・保存には触れない。音は鳴らさない（この試作には音の仕組みが無い）。
 import {
   MODES, RINGS, LINE, BLADE, CLUSTERS, KILLS, BOARD, POWER, SWAY, liftFor, gaugeAt, axisAt, releaseAimAt, closuresOf, killState, canCall,
@@ -43,6 +45,52 @@ const CHIPS = { cell: 128, cols: 4, rows: 2, size: 26 }; // 木片の絵（wood-
 const VIEW = { x: 105, y: 12, w: 450, h: 466 };
 const BLADE_PX = BLADE.halfLength * R;
 const NEAR = CAMERA.focal / (CAMERA.focal + AXE_FEEL.path.startZ); // 手元（放す所）での見かけの大きさ
+// レーンの絵（bg_axe_lane.webp・1672×941）の中の場所（絵の画素。絵から測った）:
+//   奥の板壁＝x 500〜1168・y 100〜788、床板の継ぎ目が集まる点（消失点）＝(830, 560)、床として写し直す行＝800〜941（壁ぎわの影は避ける）
+const LANE = { w: 1672, h: 941, cx: 834, wallBottom: 788, vx: 830, vy: 560, floorTop: 800 };
+// 的の板を、奥の壁に掛ける位置と大きさ（絵の画素）。k＝的の座標1あたりの絵の画素（板の幅が、壁の幅の8割強）
+const HANG = { cx: 834, cy: 450, k: 1.22 };
+const HANG_BOX = { left: HANG.cx - (CX - VIEW.x) * HANG.k, top: HANG.cy - (CY - VIEW.y) * HANG.k, width: VIEW.w * HANG.k, height: VIEW.h * HANG.k };
+// 画面の幅に入れる絵の幅（左右の金網が見える幅）と、的の下に必ず見せる床の高さ（絵の画素）。背の低い画面では、壁と床が収まるまで引く
+const SHOW = { width: 880, floor: 64 };
+// 手前へ続ける床（絵の下につなぐ）: 範囲（絵の画素）と、作る時の細かさ
+const FLOOR = { x: 300, width: 1072, height: 1280, scale: 0.5 };
+// 板の揺れの換算: 本編の px を、幅いっぱいの板（縦の元の形。的の座標1＝0.867px）での大きさとして、壁に掛けた板の大きさへ直す
+const SHAKE_K = HANG.k / 0.867;
+
+/** 床を手前まで続けた絵を作る（一度だけ作って、どの画面でも使い回す）。
+ *  絵の床を、同じ消失点のまま手前へ写し直す: 奥行きは 1/(y−消失点) なので、絵の床の奥行きの幅を鏡写しでくり返して手前へ並べる。
+ *  板の継ぎ目は消失点へ向かう同じ線の上に乗るので、絵の床とつながって見える。 */
+let floorMaster = null;
+function laneFloor(src) {
+  floorMaster ||= (async () => {
+    const img = new Image();
+    img.src = src;
+    await img.decode();
+    const rows = LANE.h - LANE.floorTop;
+    const from = Object.assign(document.createElement("canvas"), { width: LANE.w, height: rows });
+    const ctx = from.getContext("2d", { willReadFrequently: true });
+    ctx.drawImage(img, 0, -LANE.floorTop, LANE.w, LANE.h);
+    const px = ctx.getImageData(0, 0, LANE.w, rows).data;
+    const w = Math.round(FLOOR.width * FLOOR.scale), h = Math.round(FLOOR.height * FLOOR.scale), out = new ImageData(w, h), o = out.data;
+    const z0 = 1 / (LANE.h - LANE.vy), span = 1 / (LANE.floorTop - LANE.vy) - z0;
+    for (let j = 0; j < h; j++) {
+      const y = LANE.h + (j + 0.5) / FLOOR.scale, t = (z0 - 1 / (y - LANE.vy)) / span, mirror = Math.abs(((t + 1) % 2) - 1);
+      const depth = 1 / (z0 + mirror * span), sy = clamp(LANE.vy + depth - LANE.floorTop, 0, rows - 1.001), y0 = Math.floor(sy), fy = sy - y0;
+      const ratio = depth / (y - LANE.vy);
+      for (let i = 0; i < w; i++) {
+        const sx = clamp(LANE.vx + (FLOOR.x + (i + 0.5) / FLOOR.scale - LANE.vx) * ratio, 0, LANE.w - 1.001), x0 = Math.floor(sx), fx = sx - x0;
+        const a = (y0 * LANE.w + x0) * 4, b = a + LANE.w * 4, at = (j * w + i) * 4;
+        for (let c = 0; c < 3; c++) o[at + c] = (px[a + c] * (1 - fx) + px[a + 4 + c] * fx) * (1 - fy) + (px[b + c] * (1 - fx) + px[b + 4 + c] * fx) * fy;
+        o[at + 3] = 255;
+      }
+    }
+    const canvas = Object.assign(document.createElement("canvas"), { width: w, height: h });
+    canvas.getContext("2d").putImageData(out, 0, 0);
+    return canvas;
+  })().catch(() => null);
+  return floorMaster;
+}
 
 const SHOTS = ["choice", "horizontal", "power", "result", "summary"];
 
@@ -61,7 +109,7 @@ export class AxeScene {
     id: "axe", label: "斧投げ", acc: "#ff8c3a",
     gallery: {
       title: "斧投げ",
-      note: "本編の斧投げ（第1章・ひよりと3投）を縦へ。採点・回転・横流れ・手応えの数値・ひよりの一言は本編のものをそのまま使い、画面だけ縦に組んだ。十字キーと丸ボタンは置かず、下の広い場所が投げる専用の場所になる（構える→横と縦の針を止める→斧の握りを上へ弾く）。",
+      note: "本編の斧投げ（第1章・ひよりと3投）を縦へ。採点・回転・横流れ・手応えの数値・ひよりの一言は本編のものをそのまま使い、画面だけ縦に組んだ。レーンの中に立って奥の的を見る構図（梁・金網・奥の壁の的・手前まで続く床）で、斧は手元から奥へ小さくなりながら飛ぶ。十字キーと丸ボタンは置かず、床の手前が投げる専用の場所になる（構える→横と縦の針を止める→斧の握りを上へ弾く）。",
       shots: [
         { caption: "構える前（青をタップでキルショット宣言）", shot: "choice" },
         { caption: "針を止める（場所ぜんぶが「止める」）", shot: "horizontal" },
@@ -118,6 +166,7 @@ export class AxeScene {
 
   destroy() {
     this.dead = true;
+    this.sizeWatch?.disconnect();
     this.life.abort();
     for (const id of this.timers) clearTimeout(id);
     this.timers.clear();
@@ -156,8 +205,6 @@ export class AxeScene {
       <path class="ax-shift" fill="none" opacity="0"/><circle class="ax-release" r="4" opacity="0"/>
       <ellipse class="ax-shadow" rx="0" ry="0" fill="url(#${id}s)" opacity="0"/>
       <g class="ax-impacts"></g>
-      <path class="ax-trail" fill="none" stroke="#fff1cf" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
-      <g class="ax-flying"></g>
       <g class="ax-fixed" opacity="0"><path d="M-9 0H9M0 -9V9" stroke="#140d08" stroke-width="4.5" stroke-linecap="round"/><path d="M-9 0H9M0 -9V9" stroke="#fff" stroke-width="2" stroke-linecap="round"/></g>
       <g class="ax-cross" opacity="0"><path d="M0 ${n(-BLADE_PX)}V${n(BLADE_PX)}" stroke="#140d08" stroke-width="6.5" stroke-linecap="round"/><path d="M0 ${n(-BLADE_PX)}V${n(BLADE_PX)}" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
         <circle r="8" fill="none" stroke="#140d08" stroke-width="5"/><circle r="8" fill="none" stroke="#fff" stroke-width="2.2"/></g>
@@ -165,7 +212,7 @@ export class AxeScene {
       <g class="ax-guide" data-guide="y" opacity="0" aria-hidden="true">${tri(PLANK.left + 2, 0, -90)}${tri(PLANK.right - 2, 0, 90)}</g>
       <path class="ax-needle" data-needle="x" d="M0 ${n(PLANK.top)}V${n(PLANK.bottom)}" stroke="#91cfe6" stroke-width="2.5" opacity="0"/>
       <path class="ax-needle" data-needle="y" d="M${n(PLANK.left)} 0H${n(PLANK.right)}" stroke="#e5bd70" stroke-width="2.5" opacity="0"/>
-      <g class="ax-kill-hits">${KILLS.map((k) => `<circle data-kill-hit="${k.id}" cx="${n(CX + k.x * R)}" cy="${n(CY + k.y * R)}" r="27" fill="transparent"/>`).join("")}</g>
+      <g class="ax-kill-hits">${KILLS.map((k) => `<circle data-kill-hit="${k.id}" cx="${n(CX + k.x * R)}" cy="${n(CY + k.y * R)}" r="36" fill="transparent"/>`).join("")}</g>
       <g class="ax-fx" opacity="0" aria-hidden="true" pointer-events="none">
         <circle class="ax-flash" r="30" fill="#fff5da"/><circle class="ax-ring-dark" r="18" fill="none" stroke="#2a1a10" stroke-width="5"/>
         <circle class="ax-ring" r="18" fill="none" stroke-width="3"/><circle class="ax-echo" r="18" fill="none" stroke-width="1.5"/>
@@ -175,25 +222,42 @@ export class AxeScene {
     </svg>`;
   }
 
+  /** 飛んでいる斧と軌跡の層。的の板と同じ座標で、同じ場所に重ねる（手元の UI より上を飛ぶように、板とは別の層にする）。 */
+  airSvg() {
+    return `<svg class="ax-air-svg" viewBox="${VIEW.x} ${VIEW.y} ${VIEW.w} ${VIEW.h}" aria-hidden="true">
+      <path class="ax-trail" fill="none" stroke="#fff1cf" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+      <g class="ax-flying"></g>
+    </svg>`;
+  }
+
   html() {
     const { icon } = this.kit, green = axeGreenBand(HOUSE_AXE.id), pc = (v) => `${(v * 100).toFixed(1)}%`;
+    // レーンの世界（絵の画素で並べ、layout で画面へ合わせる）。カメラ（.ax-cam）は、構えている間だけ的へ少し寄る
+    const world = (inner) => `<div class="ax-cam"><div class="ax-world" style="width:${LANE.w}px;height:${LANE.h + FLOOR.height}px">${inner}</div></div>`;
+    const hang = `left:${HANG_BOX.left.toFixed(1)}px;top:${HANG_BOX.top.toFixed(1)}px;width:${HANG_BOX.width.toFixed(1)}px;height:${HANG_BOX.height.toFixed(1)}px`;
     return `
-      <img class="amb" src="${this.art.lane}" alt="">
-      <div class="pic ax-lane"><img class="bg" src="${this.art.lane}" alt=""></div>
-      <i class="veil ax-veil"></i>
+      <div class="ax-scene" data-act="ax-board">${world(`
+        <img class="ax-lane-img" src="${this.art.lane}" alt="" draggable="false" style="width:${LANE.w}px;height:${LANE.h}px">
+        <canvas class="ax-floor" width="${Math.round(FLOOR.width * FLOOR.scale)}" height="${Math.round(FLOOR.height * FLOOR.scale)}" style="left:${FLOOR.x}px;top:${LANE.h - 1}px;width:${FLOOR.width}px;height:${FLOOR.height}px"></canvas>
+        <i class="ax-lamp" style="left:${HANG.cx}px;top:${HANG.cy}px"></i><i class="ax-pool" style="left:${LANE.cx}px;top:${LANE.wallBottom}px"></i>
+        <div class="ax-stage" style="${hang}">${this.boardSvg()}<i class="ax-glow"></i></div>`)}
+        <i class="ax-vignette"></i>
+        <span class="ax-motes" aria-hidden="true">${Array.from({ length: 9 }, (_, i) => `<i style="--i:${i}"></i>`).join("")}</span>
+      </div>
+      <i class="ax-near"></i>
       <header class="ax-hud">
         <button class="ax-round" data-act="ax-quit" aria-label="やめる">${icon("axClose")}</button>
         <button class="ax-round" data-act="ax-legend" aria-label="遊び方・ルール" aria-expanded="false"><b>？</b></button>
         <ol class="ax-tiles" aria-label="各投の点">${Array.from({ length: RULES.throws }, (_, i) => `<li data-i="${i}"><i>${i + 1}</i><strong>—</strong><em></em></li>`).join("")}</ol>
         <div class="ax-total"><small>累計</small><b>0</b><span>/ ${RULES.max}</span><em></em></div>
       </header>
-      <div class="ax-stage" data-act="ax-board">${this.boardSvg()}
+      <div class="ax-over">
         <div class="ax-legend" hidden><b>得点</b>
           <span><i style="--c:#c23b2a"></i>赤6</span><span><i class="ring"></i>5の円</span><span><i class="ring big"></i>リング4〜1</span><span><i style="--c:#2f7fc1"></i>宣言した青7／8</span></div>
         <div class="ax-cue" data-on="false" aria-hidden="true"></div>
       </div>
       <div class="body ax-body">
-        <div class="ax-mate"><span class="ax-face" role="img" aria-label="${COMPANIONS[MATE].name}"></span>
+        <div class="ax-mate"><span class="ax-bust" role="img" aria-label="${COMPANIONS[MATE].name}"></span>
           <p class="ax-line"><small>${COMPANIONS[MATE].name}</small><span class="ax-line-text"></span></p></div>
         <div class="ax-pad" data-phase="choice">
           <ul class="ax-goals" aria-label="目標"></ul>
@@ -222,6 +286,7 @@ export class AxeScene {
           <button class="ax-primary" data-act="ax-act"><span class="ax-primary-icon">${icon("axAxe")}</span><b></b></button>
         </div>
       </div>
+      <div class="ax-air" aria-hidden="true">${world(`<div class="ax-stage" style="${hang}">${this.airSvg()}</div>`)}</div>
       <section class="ax-summary" hidden role="dialog" aria-label="3投の結果">
         <p class="ax-sum-label"></p>
         <div class="ax-sum-main"><span class="ax-rank"><b></b></span><p class="ax-sum-score"><strong></strong><small>/ ${RULES.max}</small><em></em></p></div>
@@ -239,12 +304,13 @@ export class AxeScene {
     const flying = createAxe(HOUSE_AXE), ghosts = [createAxe(HOUSE_AXE), createAxe(HOUSE_AXE)];
     for (const node of [...ghosts, flying]) { node.setAttribute("opacity", 0); q(".ax-flying").append(node); }
     this.r = {
-      stage: q(".ax-stage"), board: q(".ax-board"), cuts: q(".ax-cuts"), halo: q(".ax-halo"), calledRing: q(".ax-called"), shift: q(".ax-shift"), release: q(".ax-release"),
+      scene: q(".ax-scene"), cams: all(".ax-cam"), worlds: all(".ax-world"), stages: all(".ax-stage"), floor: q(".ax-floor"), glow: q(".ax-glow"), over: q(".ax-over"), body: q(".ax-body"), mate: q(".ax-body .ax-mate"),
+      board: q(".ax-board"), cuts: q(".ax-cuts"), halo: q(".ax-halo"), calledRing: q(".ax-called"), shift: q(".ax-shift"), release: q(".ax-release"),
       shadow: q(".ax-shadow"), impacts: q(".ax-impacts"), trail: q(".ax-trail"), flying, ghosts, fixed: q(".ax-fixed"), cross: q(".ax-cross"),
       guideX: q('[data-guide="x"]'), guideY: q('[data-guide="y"]'), needleX: q('[data-needle="x"]'), needleY: q('[data-needle="y"]'),
       fx: q(".ax-fx"), flash: q(".ax-flash"), ringDark: q(".ax-ring-dark"), ring: q(".ax-ring"), echo: q(".ax-echo"), dust: all(".ax-dust"), chips: all(".ax-chip"), burst: q(".ax-burst"),
       tiles: all(".ax-tiles li"), total: q(".ax-total b"), next: q(".ax-total em"), legend: q(".ax-legend"), cue: q(".ax-cue"),
-      face: q(".ax-body .ax-face"), line: q(".ax-body .ax-line-text"), sumFace: q(".ax-sum-mate .ax-face"), sumLine: q(".ax-sum-mate .ax-line-text"), pad: q(".ax-pad"), goals: q(".ax-pad > .ax-goals"), tools: q(".ax-tools"), reaim: q('[data-act="ax-reaim"]'), focus: q('[data-act="ax-focus"]'),
+      bust: q(".ax-bust"), line: q(".ax-body .ax-line-text"), sumFace: q(".ax-sum-mate .ax-face"), sumLine: q(".ax-sum-mate .ax-line-text"), pad: q(".ax-pad"), goals: q(".ax-pad > .ax-goals"), tools: q(".ax-tools"), reaim: q('[data-act="ax-reaim"]'), focus: q('[data-act="ax-focus"]'),
       live: q(".ax-live"), call: q(".ax-call"), mat: q(".ax-mat"), grip: q(".ax-grip"), arrow: q(".ax-arrow-path"), gauge: q(".ax-gauge"), fill: q(".ax-fill"), pin: q(".ax-pin"),
       result: q(".ax-result"), review: q(".ax-review"), primary: q(".ax-pad > .ax-primary"), summary: q(".ax-summary"), flashbox: q(".ax-flashbox"),
     };
@@ -259,6 +325,10 @@ export class AxeScene {
     addEventListener("keydown", (e) => this.keyDown(e), { ...opt, capture: true });
     addEventListener("keyup", (e) => this.keyUp(e), { ...opt, capture: true });
     addEventListener("blur", () => this.flickCancel(), opt);
+    // 画面の大きさや、下の場所の高さが変わったら、レーンを置き直す
+    if (typeof ResizeObserver === "function") { this.sizeWatch = new ResizeObserver(() => { if (!this.dead && this.r) this.layout(); }); this.sizeWatch.observe(this.el); this.sizeWatch.observe(this.r.body); }
+    // 手前まで続く床（一度作った絵を写す）
+    laneFloor(this.art.lane).then((floor) => { if (floor && !this.dead && this.r) this.r.floor.getContext("2d").drawImage(floor, 0, 0); });
     // 書体が届く前に測った折り目は、届いてから測り直す
     document.fonts?.ready.then(() => { if (!this.dead && this.r) this.relayout(); });
     if (this.shot) this.pose(this.shot);
@@ -487,16 +557,27 @@ export class AxeScene {
 
   /* ── 飛ぶ斧: 形と回り方・着地点は本編（axe-flight.js）。放す位置だけ、縦持ちの手元（下の握り）にする ── */
 
-  /** 握りの位置を、的の座標の世界（放す時の奥行き）へ直す。 */
+  /** 握りの位置を、的の座標の世界（放す時の奥行き）へ直す。的の板は奥の壁に小さく掛かっているので、手元はずっと下になる。 */
   gripWorld() {
-    const { board, grip } = this.r, ctm = board.getScreenCTM?.();
-    const fallback = { x: 0, y: (VIEW.y + VIEW.h + 150 - CY) / NEAR, z: AXE_FEEL.path.startZ };
-    if (!ctm) return fallback;
-    const box = grip.getBoundingClientRect();
-    try {
-      const p = new DOMPoint(box.left + box.width / 2, box.top + box.height / 2).matrixTransform(ctm.inverse());
-      return Number.isFinite(p.x) && Number.isFinite(p.y) ? { x: (p.x - CX) / NEAR, y: (p.y - CY) / NEAR, z: AXE_FEEL.path.startZ } : fallback;
-    } catch { return fallback; }
+    const { board, grip } = this.r, fallback = { x: 0, y: (VIEW.y + VIEW.h + 760 - CY) / NEAR, z: AXE_FEEL.path.startZ };
+    const b = board.getBoundingClientRect(), g = grip.getBoundingClientRect();
+    if (!b.width || !b.height || !g.width) return fallback;
+    const x = VIEW.x + (g.left + g.width / 2 - b.left) / b.width * VIEW.w, y = VIEW.y + (g.top + g.height / 2 - b.top) / b.height * VIEW.h;
+    return Number.isFinite(x) && Number.isFinite(y) ? { x: (x - CX) / NEAR, y: (y - CY) / NEAR, z: AXE_FEEL.path.startZ } : fallback;
+  }
+
+  /** 的の板を揺らす（板と、その上を飛ぶ斧の層を、同じに動かす）。dx・dy は本編の px（SHAKE_K で、壁に掛けた板の大きさへ直す）。 */
+  shake(dx = 0, dy = 0, scale = 1) {
+    const t = dx || dy || scale !== 1 ? `translate(${(dx * SHAKE_K).toFixed(2)}px, ${(dy * SHAKE_K).toFixed(2)}px) scale(${scale.toFixed(4)})` : "";
+    for (const stage of this.r.stages) stage.style.transform = t;
+  }
+
+  /** 得点が入った時、的が灯りを受けたように光る（色は手応えの色: ふつう＝金、キルショット＝水色）。 */
+  glowNow(shot) {
+    const effect = impactFeedback(shot), { glow } = this.r;
+    if (!effect.hit || this.reduce) return;
+    glow.style.setProperty("--c", effect.color);
+    glow.dataset.on = ""; void glow.offsetWidth; glow.dataset.on = effect.special ? "big" : "hit";
   }
 
   flightPose(shot, ms) {
@@ -564,8 +645,8 @@ export class AxeScene {
     const touching = !this.reduce && this.elapsed >= arrive && this.elapsed < arrive + hold;
     const display = this.reduce ? FLIGHT.travel + FLIGHT.fall : touching ? FLIGHT.travel : flightTime(this.elapsed >= arrive ? this.elapsed - hold : this.elapsed, slow);
     const pose = this.flightPose(shot, display);
-    if (touching) { this.holdFrame++; r.stage.style.transform = `translate(${(this.holdFrame % 2 ? 1 : -1) * AXE_FEEL.hitstop.shake}px, 0)`; }
-    else if (this.holdFrame) { this.holdFrame = 0; r.stage.style.transform = ""; }
+    if (touching) { this.holdFrame++; this.shake((this.holdFrame % 2 ? 1 : -1) * AXE_FEEL.hitstop.shake); }
+    else if (this.holdFrame) { this.holdFrame = 0; this.shake(); }
     const TR = AXE_FEEL.trail;
     if (!this.reduce && display < FLIGHT.travel) {
       const points = TR.offsets.map((offset) => this.flightPose(shot, Math.max(0, display - offset)));
@@ -584,11 +665,12 @@ export class AxeScene {
     // 着いた: この投を記録して、結果へ
     this.shots.push(shot);
     this.pending = null; this.shown = shot;
-    if (this.holdFrame) { this.holdFrame = 0; r.stage.style.transform = ""; }
+    if (this.holdFrame) { this.holdFrame = 0; this.shake(); }
     r.flying.setAttribute("opacity", 0);
     const mix = Math.imul((this.seed ^ Math.imul(this.shots.length + 1, 0x9e3779b1)) >>> 0, 0x85ebca6b) >>> 0;
     this.shakePhase = [(mix % 6283) / 1000, ((mix >>> 13) % 6283) / 1000]; // 揺れの位相を投ごとに変える
     this.embed(shot);
+    this.glowNow(shot);
     if (!shot.stuck && shot.dropReason !== "off-board") this.flashNow("drop");
     this.setPhase("result");
   }
@@ -603,7 +685,7 @@ export class AxeScene {
     const { r } = this, effect = impactFeedback(shot), F = AXE_FEEL.impact, elapsed = this.elapsed;
     const show = this.phase === "result" && effect.physical && !this.reduce && elapsed < effect.duration;
     r.fx.setAttribute("opacity", show ? Math.min(1, (1 - elapsed / effect.duration) * 2) : 0);
-    r.stage.style.transform = "";
+    this.shake();
     if (!show) return;
     const party = effect.celebration, progress = Math.min(1, elapsed / effect.duration), x = CX + shot.landing.x * R, y = CY + shot.landing.y * R;
     const S = AXE_FEEL.shake, pattern = S[effect.tier === "large" ? "large" : effect.tier === "medium" ? "medium" : "small"];
@@ -611,7 +693,7 @@ export class AxeScene {
     const decay = Math.max(0, 1 - elapsed / F.recoilMs) ** 2;
     const punch = Math.max(0, 1 - elapsed / F.punchMs) * (effect.special ? F.specialPunch : F.punch) * (party ? 1 : 0.5);
     const dx = Math.sin(elapsed * S.speedX + this.shakePhase[0]) * pattern.x * decay * k, dy = Math.cos(elapsed * S.speedY + this.shakePhase[1]) * pattern.y * decay * k;
-    r.stage.style.transform = `translate(${dx.toFixed(2)}px, ${dy.toFixed(2)}px) scale(${(1 + punch + pattern.scale * decay).toFixed(4)})`;
+    this.shake(dx, dy, 1 + punch + pattern.scale * decay);
     r.fx.setAttribute("transform", `translate(${x} ${y})`);
     const dark = party && elapsed < F.darkFlashMs && Math.floor(elapsed / 17) % 2 === 0;
     r.flash.setAttribute("r", 8 + Math.min(1, elapsed / F.flashGrow) * (effect.special ? F.specialFlashRadius : F.flashRadius) * (party ? 1 : 0.6));
@@ -755,7 +837,7 @@ export class AxeScene {
     const line = reaction(MATE, phase, this.shots, this.called, { heat: heatOf(this.shots), last: this.shots.length === RULES.throws - 1, grade: phase === "summary" ? gradeOf(total, RULES.max) : null, bonus });
     const lineBox = phase === "summary" ? r.sumLine : r.line;
     if (this.lineText !== line.text || this.lineBox !== lineBox) { this.lineText = line.text; this.lineBox = lineBox; this.lineFit = false; }
-    this.showFace(phase === "summary" ? r.sumFace : r.face, line.face);
+    if (phase === "summary") this.showFace(r.sumFace, line.face); else this.showBust(line.face);
     // 下の場所: 場面ごとに中身を替える
     const status = this.callStatus();
     r.goals.innerHTML = this.goalsHtml(false);
@@ -825,6 +907,16 @@ export class AxeScene {
       backgroundPosition: `${((x * zoom - 0.5) / (zoom - 1) * 100).toFixed(1)}% ${((y * zy - 0.5) / (zy - 1) * 100).toFixed(1)}%` });
   }
 
+  /** 横に立つひより（胸から上）。表情ごとに体の傾きが違うので、顔の位置（--fx・--fy）を合わせて、表情が替わっても顔が動かないようにする。 */
+  showBust(face) {
+    const { bust } = this.r;
+    if (bust.dataset.face === face) return;
+    bust.dataset.face = face;
+    const { x, y } = portraitFocus(MATE, face);
+    bust.style.backgroundImage = `url("${this.art.face(face)}")`;
+    bust.style.setProperty("--fx", x.toFixed(4)); bust.style.setProperty("--fy", y.toFixed(4));
+  }
+
   /** 一言は本編の組版で折る（2行まで）。収まらない時は字を一段小さくする。 */
   fitText(node, text) {
     const { paginateForBox, plain } = this.kit;
@@ -847,8 +939,21 @@ export class AxeScene {
 
   relayout() {
     if (!this.r) return;
+    this.layout();
     this.lineFit = false;
     this.render();
+  }
+
+  /** レーンの置き方: 画面の幅に「見せる幅」（左右の金網まで）を入れる。背の低い画面では、奥の壁と少しの床が、ひよりの一言の上に収まるまで引く。
+   *  絵の上の端は画面の上の端（梁の上に、投げ数と累計の札が載る）。床は、その下へ画面の下まで続く。 */
+  layout() {
+    const { el, r } = this, width = el.clientWidth, lane = r.body.offsetTop + r.mate.offsetTop;
+    if (!width || !lane) return;
+    const u = Math.min(width / SHOW.width, lane / (LANE.wallBottom + SHOW.floor));
+    const place = `translate(${(width / 2 - LANE.cx * u).toFixed(2)}px, 0) scale(${u.toFixed(5)})`;
+    for (const world of r.worlds) world.style.transform = place;
+    for (const cam of r.cams) cam.style.transformOrigin = `${(width / 2).toFixed(1)}px ${(HANG.cy * u).toFixed(1)}px`;
+    r.over.style.height = `${lane}px`;
   }
 
   /* ── 押した時 ── */
