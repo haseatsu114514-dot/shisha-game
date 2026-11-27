@@ -157,7 +157,7 @@
    十字キーと丸ボタンの代わりに、ここを専用UIにする（VPM07）。卓を押すと、ここがその卓のものに替わる（VPM17） */
 .fl-deck { --c: transparent; position: relative; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; margin: 0 1.2rem; }
 /* 客と一言: 左に客の顔（縁は客の気分の色）と卓番号、右に呼び名・気分か用件の札・ご利用の金額、その下に客の一言（無い時は卓の様子） */
-.fl-guest { --face: 7rem; position: relative; flex: none; display: flex; align-items: center; gap: 1.4rem; height: var(--who-h); margin-bottom: 0.8rem; padding: 0 1.2rem; border: 0.12rem solid color-mix(in srgb, var(--c) 60%, #ffffff40); border-radius: 1.9rem; background: linear-gradient(180deg, #2a2040e6, #150f22f2); -webkit-backdrop-filter: blur(1rem); backdrop-filter: blur(1rem); box-shadow: 0 0.4rem 1rem #0007, inset 0 0.1rem 0 #ffffff24; transition: border-color 0.2s; }
+.fl-guest { --face: 6.6rem; position: relative; flex: none; display: flex; align-items: center; gap: 1.3rem; height: var(--who-h); margin-bottom: 0.8rem; padding: 0 1.2rem; border: 0.12rem solid color-mix(in srgb, var(--c) 60%, #ffffff40); border-radius: 1.9rem; background: linear-gradient(180deg, #2a2040e6, #150f22f2); -webkit-backdrop-filter: blur(1rem); backdrop-filter: blur(1rem); box-shadow: 0 0.4rem 1rem #0007, inset 0 0.1rem 0 #ffffff24; transition: border-color 0.2s; }
 /* 上の卓のボックスの真下に、つなぐ印（どの卓の画面かが分かる） */
 .fl-guest::before { content: ""; position: absolute; left: calc(var(--sx, 50%) - 0.9rem); top: -0.9rem; border: 0.9rem solid transparent; border-top: 0; border-bottom-color: #fff; filter: drop-shadow(0 -0.1rem 0.2rem #0008); pointer-events: none; }
 .fl-guest-face { position: relative; flex: none; width: var(--face); height: var(--face); border-radius: 50%; background: #f3e9d6; box-shadow: 0 0 0 0.24rem var(--c), 0 0 0 0.4rem #0b0812; }
@@ -179,7 +179,8 @@
 .fl-guest-top em { margin-left: auto; flex: none; display: flex; align-items: center; gap: 0.3rem; font-style: normal; font-size: 1.6rem; font-weight: 700; color: var(--gold); } .fl-guest-top em .ic { font-size: 1.7rem; }
 .fl-quote { position: relative; margin: 0; padding: 0.5rem 1.2rem 0.55rem; border-radius: 1.3rem; font-size: 1.6rem; font-weight: 700; line-height: 1.36; word-break: auto-phrase; line-break: strict; color: #2a1d14; background: #fffaf0; }
 .fl-quote::after { content: ""; position: absolute; left: -0.4rem; top: 1.1rem; width: 0.9rem; height: 0.9rem; margin-top: -0.45rem; background: inherit; transform: rotate(45deg); border-radius: 0.15rem; }
-.fl-quote.small { font-size: 1.42rem; }
+/* 一言は、余白の内側の入れ物（.fl-q）の幅で測って2行に折る。収まらない時は一段、それでも収まらない長い一言は二段、字を小さくする */
+.fl-q { display: block; } .fl-q.small { font-size: 0.9em; } .fl-q.small.tiny { font-size: 0.8em; line-height: 1.3; }
 .fl-quote[data-sight="true"] { font-weight: 500; color: #efe8fa; background: #ffffff14; box-shadow: inset 0 0 0 0.1rem #ffffff26; }
 /* 用件で替わる所（残りの高さをぜんぶ使う）: 注文を聞いている間＝ミックス5つ／頼みを聞いている間＝5つの手（下の段まで使う）／それ以外＝卓の様子と棚 */
 .fl-main { position: relative; flex: 1 1 auto; min-height: 0; }
@@ -240,7 +241,7 @@
 .fl-deck[data-kind="care"] .fl-acts { display: none; }
 .fl-deck[data-kind="care"] .fl-opt { height: auto; grid-template-columns: 1fr; grid-template-rows: auto auto; align-content: center; justify-items: center; gap: 0.7rem; padding: 0.6rem; text-align: center; border-color: #ffe2a680; }
 .fl-deck[data-kind="care"] .fl-opt-icon { width: 5.4rem; height: 5.4rem; border-radius: 50%; font-size: 3.2rem; }
-.fl-deck[data-kind="care"] .fl-opt-text b { font-size: 2.1rem; }
+.fl-deck[data-kind="care"] .fl-opt-text b { font-size: 1.9rem; overflow: visible; } /* いちばん長い「吸い方を案内する」が、半分の幅に収まる大きさ */
 .fl-opt-later { color: #ffffffcc; background: #ffffff14; border-color: #ffffff2b !important; } .fl-opt-later > .ic { font-size: 2.6rem; } .fl-opt-later .fl-opt-text b { font-size: 1.6rem !important; font-weight: 500; }
 .fl-busy { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1.2rem; font-size: 1.9rem; border-radius: 1.8rem; background: #0b0812b3; }
 .fl-busy .ic { font-size: 3.6rem; color: var(--gold); animation: fl-spin 1s linear infinite; }
@@ -255,7 +256,7 @@
 .fl-act .ic { font-size: 2.2rem; }
 .fl-act.fl-gold, .fl-act.primary { color: #2a1a06; border-color: #fff3cf; background: linear-gradient(180deg, #ffe9b0, #e9b85a); box-shadow: 0 0.4rem 1rem #0008, inset 0 0.1rem 0 #fff9; }
 .fl-act.primary { flex: 2.2 1 0; font-family: var(--mincho); font-size: 2.3rem; letter-spacing: 0.16em; }
-.fl-act.small { flex: 0 0 6.6rem; flex-direction: column; gap: 0.2rem; font-size: 1.15rem; } .fl-act.small .ic { font-size: 2rem; }
+.fl-act.small { flex: 0 0 6rem; flex-direction: column; gap: 0.2rem; font-size: 1.15rem; } .fl-act.small .ic { font-size: 2rem; }
 .fl-act.fl-gold[data-call="true"] { animation: fl-gold 0.9s ease-in-out infinite; }
 @keyframes fl-gold { 50% { box-shadow: 0 0 0 0.4rem #ffe2a659, 0 0 2.2rem #ffcf6b; } }
 .fl-act.fl-gold[data-wait="true"], .fl-act.fl-gold[disabled] { color: #ffffffb3; border-color: #ffffff2b; background: #ffffff1f; box-shadow: none; }
@@ -263,7 +264,7 @@
 .fl-act.fl-chip-shuffle { flex: 1.2 1 0; gap: 0.5rem; padding: 0 0.6rem; font-size: 1.5rem; letter-spacing: 0.02em; }
 .fl-lamp { flex: none; height: 84%; width: auto; filter: grayscale(0.9) brightness(0.7); transition: filter 0.3s; }
 .fl-fever-main { flex: 1; min-width: 0; display: grid; gap: 0.6rem; }
-.fl-fever-name { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; font-size: 1.4rem; letter-spacing: 0.04em; line-height: 1; }
+.fl-fever-name { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; font-size: 1.36rem; letter-spacing: 0.01em; line-height: 1; }
 .fl-fever-name small { font-size: 1.15rem; color: #ffffffb3; font-variant-numeric: tabular-nums; }
 .fl-fever-gauge { position: relative; display: block; height: 0.8rem; border-radius: 1rem; background: #0b0812cc; box-shadow: inset 0 0 0 0.1rem #ffffff33; overflow: hidden; }
 .fl-fever-fill { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: linear-gradient(90deg, #b06bff, #ff7ad9, #ffd84d); transition: width 0.4s linear; }
@@ -356,7 +357,7 @@
 @container phone (max-height: 80rem) {
   .fl-room, .fl-tables, .fl-layer, .fl-band, .fl-notice, .fl-body { --acts: 5.6rem; --who-h: 8.4rem; --row-gap: 0.5rem; }
   .fl-guest { --face: 5.8rem; gap: 1.2rem; padding: 0 1rem; } .fl-guest-top { height: 2.5rem; } .fl-guest-name { font-size: 1.7rem; } .fl-guest-top .fl-wish, .fl-guest-top .fl-need { height: 2.5rem; font-size: 1.36rem; } .fl-guest-top em { font-size: 1.46rem; }
-  .fl-quote { font-size: 1.46rem; padding: 0.4rem 1.1rem 0.45rem; } .fl-quote.small { font-size: 1.3rem; }
+  .fl-quote { font-size: 1.46rem; padding: 0.4rem 1.1rem 0.45rem; }
   .fl-info { gap: 0.7rem; } .fl-go { height: 5.4rem; font-size: 2.1rem; } .fl-meter { height: 2.8rem; font-size: 1.36rem; } .fl-meter small { font-size: 1.3rem; } .fl-meters { padding: 0.8rem 1rem; gap: 0.5rem 0.6rem; } .fl-shelf ul { gap: 0.45rem; } .fl-shelf li b { font-size: 1.4rem; } .fl-shelf li small { font-size: 1.12rem; } .fl-shelf li .fl-attr { width: 2.5rem; height: 2.5rem; }
   .fl-opt { gap: 1.4rem; padding: 0 1.1rem 0 1rem; } .fl-attr, .fl-opt-icon { width: 3.9rem; height: 3.9rem; } .fl-opt-text b { font-size: 1.82rem; } .fl-opt-text small { font-size: 1.2rem; } .fl-opt-rate { width: 3.3rem; height: 3.3rem; font-size: 2.6rem; }
   .fl-deck[data-kind="care"] .fl-opt-icon { width: 4.6rem; height: 4.6rem; font-size: 2.8rem; } .fl-deck[data-kind="care"] .fl-opt-text b { font-size: 1.9rem; }
@@ -369,7 +370,7 @@
   .fl-deck[data-kind="care"] .fl-opt-icon { width: 3.8rem; height: 3.8rem; font-size: 2.3rem; } .fl-deck[data-kind="care"] .fl-opt-text b { font-size: 1.7rem; } .fl-deck[data-kind="care"] .fl-opt { gap: 0.4rem; }
   .fl-opt { gap: 1.2rem; } .fl-attr, .fl-opt-icon { width: 3.4rem; height: 3.4rem; } .fl-opt-text b { font-size: 1.68rem; line-height: 1.2; } .fl-opt-text small { font-size: 1.12rem; line-height: 1.2; } .fl-opt-rate { width: 2.9rem; height: 2.9rem; font-size: 2.3rem; }
   .fl-act { font-size: 1.46rem; } .fl-act.primary { font-size: 2rem; } .fl-fever-name { font-size: 1.26rem; }
-  .fl-quote { font-size: 1.34rem; line-height: 1.32; padding: 0.3rem 1rem 0.35rem; } .fl-quote.small { font-size: 1.2rem; } .fl-guest-name { font-size: 1.54rem; } .fl-guest-top .fl-wish, .fl-guest-top .fl-need { height: 2.2rem; font-size: 1.24rem; } .fl-guest-top em { font-size: 1.36rem; }
+  .fl-quote { font-size: 1.34rem; line-height: 1.32; padding: 0.3rem 1rem 0.35rem; } .fl-guest-name { font-size: 1.54rem; } .fl-guest-top .fl-wish, .fl-guest-top .fl-need { height: 2.2rem; font-size: 1.24rem; } .fl-guest-top em { font-size: 1.36rem; }
   .fl-info { gap: 0.5rem; } .fl-go { height: 4.6rem; font-size: 1.9rem; } .fl-meter { height: 2.4rem; font-size: 1.28rem; } .fl-meter-mood img { width: 2.3rem; height: 2.3rem; } .fl-meters { padding: 0.5rem 0.9rem; gap: 0.3rem 0.6rem; } .fl-shelf { gap: 0.4rem; } .fl-shelf ul { gap: 0.35rem; } .fl-shelf li b { font-size: 1.3rem; } .fl-shelf li small { font-size: 1.06rem; } .fl-shelf li .fl-attr { width: 2.2rem; height: 2.2rem; } .fl-shelf h4 { font-size: 1.14rem; }
   .fl-intro { gap: 0.8rem; padding-bottom: 1.8rem; } .fl-orn { width: 19rem; margin-top: -2.8rem; } .fl-title { font-size: 2.3rem; width: 28rem; } .fl-forecast { font-size: 1.46rem; }
   .fl-result { top: 3.6rem; padding: 2rem 1.3rem 1.8rem; gap: 0.2rem; } .fl-total b { font-size: 3.1rem; } .fl-items { padding: 0.7rem 1rem; gap: 0.3rem 1.4rem; } .fl-items div { font-size: 1.24rem; }

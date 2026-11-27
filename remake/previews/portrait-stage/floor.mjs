@@ -665,9 +665,9 @@ export class FloorScene {
     who.innerHTML = `<span class="fl-guest-face">${guest ? this.guestImg(guest, happy) : ""}<b class="fl-guest-no" aria-label="${table.id}卓">${table.id}</b><i class="fl-guest-mark" aria-hidden="true"></i></span>
       <div class="fl-guest-side">
         <div class="fl-guest-top"><b class="fl-guest-name">${guest ? esc(guest.name) : table.phase === "cool" ? "片付け中" : "空席"}</b>${chip}${showTotal ? `<em>${icon("coins")}${yen(total)}</em>` : ""}</div>
-        <p class="fl-quote" data-sight="${sight}"></p>
+        <p class="fl-quote" data-sight="${sight}"><span class="fl-q"></span></p>
       </div>`;
-    this.fitText(who.querySelector(".fl-quote"), lead);
+    this.fitText(who.querySelector(".fl-q"), lead); // 吹き出しの余白の内側（.fl-q）の幅で測って折る
   }
 
   /** 用件を聞いていない時の下の画面: その卓でいま出来ること（大きな札ひとつ）・その卓の様子（待たせている時間／仕込みの進み／満足・炭・滞在）・いまのミックスの棚。 */
@@ -1012,7 +1012,7 @@ export class FloorScene {
     this.refs.rows.children[panel.cursor]?.setAttribute("data-picked", "true");
     who.querySelector(".fl-guest-mark").innerHTML = `<img src="${this.art(care.ok ? "verdict-best" : "verdict-bad")}" alt="">`;
     const quote = who.querySelector(".fl-quote");
-    if (care.line) { quote.dataset.sight = "false"; this.fitText(quote, quoted(care.line)); }
+    if (care.line) { quote.dataset.sight = "false"; this.fitText(quote.querySelector(".fl-q"), quoted(care.line)); }
     this.verdictTimer = this.later(() => { if (this.panel?.locked && this.mode === "panel") this.closePanel(); }, 1000);
   }
 
@@ -1144,14 +1144,15 @@ export class FloorScene {
     if (say) this.fitText(say, say.textContent);
   }
 
-  /** 文を、箱の幅と書体で測って折る（本編の組版）。2行に収まらない時は、字を一段小さくして収める。 */
+  /** 文を、箱の幅と書体で測って折る（本編の組版）。2行に収まらない時は、字を一段（客の一言は二段まで）小さくして収める。 */
   fitText(node, text) {
     const { paginateForBox, plain } = this.kit;
-    node.classList.remove("small");
+    node.classList.remove("small", "tiny");
     node.textContent = text;
     if (!node.clientWidth) return;
     let pages = paginateForBox(text, node);
     if (pages.length > 1) { node.classList.add("small"); pages = paginateForBox(text, node); }
+    if (pages.length > 1) { node.classList.add("tiny"); pages = paginateForBox(text, node); } // 客の長い一言は、もう一段小さく
     if (pages.length === 1) node.innerHTML = plain(pages[0]);
     else { node.textContent = text; console.warn("2行に収まらない:", text); }
   }
