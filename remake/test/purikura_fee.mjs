@@ -273,6 +273,8 @@ await check('PFC23 solo is Hajime’s idea: Ageha never suggests it; first solo 
  for(const id of ['remake_ch2_purikura_invite','remake_ch2_purikura_match','remake_ch2_purikura_choose'])assert.doesNotMatch(text(id),/ソロ|一人/,id);
  assert.match(text('remake_ch2_purikura_solo'),/^hajime:.*一人で撮って/m);assert.match(text('remake_ch2_purikura_solo'),/ageha:.*ソロプリ！？/);
  assert.match(text('remake_ch2_purikura_solo_again'),/ハマっちゃったんだね/);
+ // 落書きは写真によって、あげはが書いたものと相手が書いたものがあるので、どの写真でも読む場面では触れない（PFC24）
+ for(const id of ['remake_ch2_purikura_invite','remake_ch2_purikura_match','remake_ch2_purikura_choose','remake_ch2_purikura_solo','remake_ch2_purikura_solo_again','remake_ch2_purikura_pair','remake_ch2_purikura_guest','remake_ch2_purikura_trio'])assert.doesNotMatch(text(id),/落書き/,id);
  f.state.money=999999;f.setMode('solo');
  for(let n=0;n<3;n++){assert.equal(await f.offer(),true);f.next();}
  const scenes=f.log.filter(l=>/^remake_ch2_purikura_solo/.test(l.id||'')).map(l=>l.id);
