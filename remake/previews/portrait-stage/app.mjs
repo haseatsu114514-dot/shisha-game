@@ -16,6 +16,11 @@ import { LimeScene } from "./lime.mjs";
 import { GrowthScene } from "./growth.mjs";
 import { AxeScene } from "./axe.mjs";
 import { DesertScene, CamelScene, DjScene, TetsukoScene, TrpgScene } from "./games.mjs";
+// Dr.fookah の 1F ショップとシーシャくじ（福引き）・チェキ・プリクラ（VPS01〜）
+import { ShopScene } from "./shop.mjs";
+import { KujiScene } from "./kuji.mjs";
+import { ChekiScene } from "./cheki.mjs";
+import { PurikuraScene } from "./purikura.mjs";
 
 const REMAKE_IMG = new URL("../../img/", import.meta.url).href;
 // この試作のために画像生成（gpt-image-2.6-sunburst）で作った絵。原画とプロンプトは asset_sources/ui/portrait-stage-20261127/
@@ -395,7 +400,7 @@ const SCENES = ["map", "minto", "tonari", "water", "mix", "pack", "holes", "coal
 const SCENE_LABEL = { map: "地図", minto: "1人", tonari: "2人", water: "水", mix: "配合", pack: "詰め", holes: "穴あけ", coal: "炭焼き", timer: "タイマー", steam: "弾幕", pull: "吸う", cutin: "登場" }; // 1台表示の切り替え
 // 別ファイルの場面（タイトル・店番・LIME・心得の盤・斧投げ。VPM01〜）。1台表示の切り替えでは、別の段に並べる。
 // 場面の名前・光の色・一覧（PC）に並べる場面・つまみの選び方は、各ファイルの META に書く（場面を足す時、ここは EXT_CLASSES に1つ足すだけ）
-const EXT_CLASSES = [TitleScene, FloorScene, LimeScene, GrowthScene, AxeScene, DesertScene, CamelScene, DjScene, TetsukoScene, TrpgScene];
+const EXT_CLASSES = [TitleScene, FloorScene, LimeScene, GrowthScene, AxeScene, ShopScene, KujiScene, ChekiScene, PurikuraScene, DesertScene, CamelScene, DjScene, TetsukoScene, TrpgScene];
 const EXT = Object.fromEntries(EXT_CLASSES.map((cls) => [cls.META.id, cls]));
 /** 場面のつまみ（META.options）。一つでも、並び（盤＝どの盤・どの章 など）でもよい。label は切り替えの行の見出し（無ければ場面の名前） */
 const extOptions = (cls) => [].concat(cls.META.options || []);
@@ -2119,7 +2124,7 @@ class Phone {
     if (st.scene === "map") {
       if (st.list) { st.list = false; this.patch(); return; }
       if (SPOTS[st.sel].closed || this.fixed) return;
-      const scene = { tonari: "door", minto: "minto", kannon: "growth" }[SPOTS[st.sel].id]; // 観音堂は心得の盤へ（VPM04）
+      const scene = { tonari: "door", minto: "minto", kannon: "growth", shop: "shop" }[SPOTS[st.sel].id]; // 観音堂は心得の盤へ（VPM04）。Dr.fookah は 1F の仕入れへ（VPS01）
       if (scene) this.enterShop(scene); else this.toast("この試作では入れません");
       return;
     }
@@ -2137,7 +2142,7 @@ class Phone {
       if (st.scene === "door" && !this.fixed) { this.setScene(["floor", "tonari", "axe"][st.pick] || "tonari"); return; } // シフトに入ると店番、一服は2人の会話、斧投げはその場面へ
       if (st.step + 1 < this.talk.steps.length) { st.step += 1; this.applyLine(); }
       else if (this.fixed) { st.step = 0; this.render(); }
-      else this.setScene(st.scene === "minto" ? "tonari" : "water");
+      else this.setScene(st.scene === "minto" ? "cheki" : "water"); // みんとの店はチェキの誘いへ続き、撮った後に tonari の2人の会話へ（VPS03）
       return;
     }
     if (st.scene === "pack") { if (!PACKS[st.pack].locked && !this.fixed) this.setScene("holes"); return; }
