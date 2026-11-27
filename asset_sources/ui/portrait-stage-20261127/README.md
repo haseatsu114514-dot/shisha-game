@@ -409,3 +409,16 @@ Polished anime game illustration style with clean dark outlines and two or three
 Do not draw: any background, the stove, charcoal pieces, flames, sparks, smoke, a hookah, a bowl, a hose, a necklace, text, letters, logos other than the cap emblem, watermark, frame.
 ```
 
+## 8回目: 寄りのコンロ（VPL65・1枚）
+
+オーナー「炭焼きはコンロをもっとズームにするか新たにズームしたコンロを作りもう少し炭を大きく　今コンロの上に乗ってる感薄いのとコンロに対して大きすぎに見えるので」。
+本編のコンロ（`remake/img/ui/making/heat_stove.webp`）を拡大すると粗くなるため、同じ絵を入力にした編集で、斜め上55度から寄りで写したコンロを作った（コイルと丸い受け皿が画面の幅の約85%、四隅・コード・つまみは画面の外）。炭は描かせず、コードで重ねる。原画は `v3/stove-zoom-original.webp`（1536×1024）、試作が読むのは `img/ui-stove-zoom.webp`（1152×768）。
+生成後の確認: 本編のコンロと同じ渦巻きのコイル・銅色のさびた板・4つの爪・赤い光。炭・トング・手・煙・文字が無い。合格（生成は1回）。シーシャ台の機材ではないため §4 の8行は当てはまらない。
+
+```text
+Use the reference image as the exact design: the same small single-burner electric hot plate with a spiral heating coil, the same rusty copper-brown metal plate, the same four small support prongs around the coil, the same orange-red glow and the same polished anime game illustration style with clean dark outlines and two or three tone cel shading.
+Create a close-up of this hot plate seen from the front and above at about 55 degrees: zoom in so that the round spiral coil and its circular metal tray fill most of the image width (about 85 percent), centered slightly below the middle. The square edges of the plate are cut off by the left, right and bottom edges of the frame; the cord and the knob are not visible. The coil glows a warm orange-red with a soft heat glow; the dark metal around it catches a little of that glow.
+Background above the plate: dark, softly blurred, warm brown shadow.
+Do not draw: charcoal, coals, tongs, hands, smoke, flames, a pot, text, letters, logos, watermark.
+```
+

@@ -42,7 +42,8 @@ const IMG = {
   bowl_firm: `${OWN_IMG}ui-bowl-firm.webp`,
   pullHajime: `${OWN_IMG}craft-pull-hajime.webp`, // 人物だけ（背景なし）。場所の背景に重ねる（VPL41）
   // 炭焼き（VPL54・VPL55・VPL57）: 本編の電熱コンロ・炭（黒い面・赤）
-  stove: `${REMAKE_IMG}ui/making/heat_stove.webp`,
+  // 寄りで写したコンロ（本編の heat_stove.webp を入力にした生成・VPL65）。コイルが画面いっぱい
+  stove: `${OWN_IMG}ui-stove-zoom.webp`,
   coalCold: `${REMAKE_IMG}ui/making/heat_flat_cold.webp`,
   coalLit: `${REMAKE_IMG}ui/making/heat_flat_lit.webp`,
   // 炭壺とトングを持ち、コンロの熱の明かりに下から照らされたはじめ（生成・背景なし。会場の背景に重ねる・VPL57）
@@ -241,8 +242,8 @@ const DODGE = { time: 9000, ready: 1200, every: 460, speed: [105, 145], wave: 28
 // ジャストの幅は0.5秒（試作はレッスンと同じ×1.5）。p＝経過÷取り頃で判定し、1.75倍で灰になって落ちる。窓が開く0.3秒前に一度だけ瞬く
 const HEAT = { count: 3, ready: [4200, 7400], gap: 750, just: 750, drop: 1.75, blink: 300, lead: 900 };
 const heatJudge = (p, jw) => p < 0.35 ? ["raw", 15, "MISS"] : p < 0.7 ? ["early", 45, "MISS"] : p < 1 ? ["pre", 78, "GOOD"] : p < 1 + jw ? ["just", 100, "EXCELLENT"] : p < 1.3 + jw ? ["hot", 80, "GOOD"] : ["over", 68, "MISS"];
-// コンロの上の炭の中心（コンロの絵 1280×853 に対する割合）。押しやすいよう炭を大きくし、間を広げた（VPL57）
-const COAL_AT = [[0.445, 0.27], [0.3, 0.575], [0.59, 0.575]];
+// コンロの上の炭の中心（寄りのコンロの絵 1536×1024 に対する割合）。コイルの上に三角に置く（VPL65）
+const COAL_AT = [[0.5, 0.32], [0.33, 0.62], [0.67, 0.62]];
 // 取った炭の置き場所（はじめの絵 1024×1536 に対する割合）: 左手に持った炭壺の口の中
 const POT_SLOTS = [[0.735, 0.8], [0.835, 0.8], [0.785, 0.84]];
 // 会場（作る場面の背景）
@@ -454,7 +455,7 @@ class Phone {
     this.venue = VENUES[venue] ? venue : "tonari"; // 作る場面の会場（背景）
     this.attackLearned = !!attack; // 雑念よけのアタックを覚えたか（覚えると精密と入れ替える切り替えが出る・VPL62）
     this.st = { scene, sel: DEFAULT_SPOT, step, page: 0, grade: Math.max(0, Math.min(6, Number(grade) || 0)), gradeP: Number(gradeP) || 0, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0, temp: 0.4,
-      water: Number(water) || 0, mix: MIX.map((f, i) => (Array.isArray(mix) ? mix[i] : 0) || 0), mixSel: 0, slow: false, sub: attack ? "attack" : "slow",
+      water: Number(water) || 0, mix: MIX.map((f, i) => (Array.isArray(mix) ? mix[i] : 0) || 0), mixSel: 0, mixSort: null, slow: false, sub: attack ? "attack" : "slow",
       ci: ["a", "b", "c"].includes(ci) ? ci : "a", who: CUTINS[who] ? who : "minto", ciPhase: "off" };
     this.cam = null;      // 地図をドラッグした時の位置（選び直すと選んだ店へ戻る）
     this.t0 = performance.now();
@@ -989,9 +990,31 @@ class Phone {
   mixCardsHtml() {
     const { st } = this, total = this.mixTotal();
     const btn = (i, by, f) => `<button class="mr-btn" data-act="mixadd" data-i="${i}" data-by="${by}" aria-label="${f.name}を1g${by > 0 ? "増やす" : "減らす"}">${by > 0 ? "＋" : "−"}</button>`;
-    return `<div class="picker rows" role="listbox" aria-label="フレーバー">${MIX.map((f, i) => `<div class="mixrow${i === st.mixSel ? " on" : ""}" data-act="mixsel" data-i="${i}" role="option" aria-selected="${i === st.mixSel}">
-      ${pkgHtml(f, 5.8)}<span class="mr-name"><b>${f.name}${f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : ""}</b><span class="mr-tags">${genreHtml(f.genre, true)}${f.sub ? genreHtml(f.sub, false) : ""}</span></span>
-      ${btn(i, -1, f)}<span class="mr-g"><em>${st.mix[i]}</em>g</span>${btn(i, 1, f)}</div>`).join("")}</div>`;
+    // 上に店番と同じ4つのジャンルのボタン。押すとそのジャンルの葉が上に並ぶ（もう一度押すと元の順）（VPL66）
+    const chips = `<div class="genre-bar" role="group" aria-label="ジャンルで並べ替え">${Object.entries(GENRES).map(([id, g]) => `<button class="gchip${st.mixSort === id ? " on" : ""}" data-act="mixsort" data-g="${id}" style="--g:${g.color}" aria-pressed="${st.mixSort === id}"><svg viewBox="0 0 24 24" aria-hidden="true">${g.icon}</svg><b>${g.name}</b></button>`).join("")}</div>`;
+    const rows = this.mixOrder().map((i) => {
+      const f = MIX[i], match = !st.mixSort || f.genre === st.mixSort || f.sub === st.mixSort;
+      return `<div class="mixrow${i === st.mixSel ? " on" : ""}${match ? "" : " dim"}" data-act="mixsel" data-i="${i}" role="option" aria-selected="${i === st.mixSel}">
+      ${pkgHtml(f, 7)}<span class="mr-name"><b>${f.name}${f.need ? `<small class="need${st.mix[i] >= f.need ? " met" : ""}">${f.need}g〜</small>` : ""}</b><span class="mr-tags">${genreHtml(f.genre, true)}${f.sub ? genreHtml(f.sub, false) : ""}</span></span>
+      ${btn(i, -1, f)}<span class="mr-g"><em>${st.mix[i]}</em>g</span>${btn(i, 1, f)}</div>`;
+    }).join("");
+    return `${chips}<div class="picker rows" role="listbox" aria-label="フレーバー">${rows}</div>`;
+  }
+
+  /** 一覧の並び。ジャンルを選んでいる時は、そのジャンルが主の葉 → 副の葉 → ほか の順（それぞれ元の順のまま）。 */
+  mixOrder() {
+    const g = this.st.mixSort, rank = (f) => !g ? 0 : f.genre === g ? 0 : f.sub === g ? 1 : 2;
+    return MIX.map((f, i) => i).sort((a, b) => rank(MIX[a]) - rank(MIX[b]) || a - b);
+  }
+
+  /** ジャンルのボタン: 一覧を並べ替え、先頭へ戻す。 */
+  sortMix(g) {
+    const { st } = this;
+    st.mixSort = st.mixSort === g ? null : g;
+    const ctrl = this.el.querySelector('[data-slot="ctrl"]');
+    if (ctrl) { ctrl.innerHTML = this.craftCtrlHtml(); this.syncMix(); }
+    const list = this.el.querySelector(".picker.rows");
+    if (list) { list.scrollTop = 0; list.classList.remove("resort"); void list.offsetWidth; list.classList.add("resort"); }
   }
 
   mixTotal() { return this.st.mix.reduce((a, b) => a + b, 0); }
@@ -1502,7 +1525,7 @@ class Phone {
     }
     if (st.scene === "coal") {
       // 下の画面はコンロ。炭を直接タッチして取り出す（VPL55）
-      return `<div class="stove"><img src="${IMG.stove}" alt="">${COAL_AT.map(([x, y], i) => `<button class="coal" data-act="coal" data-i="${i}" style="left:${x * 100}%;top:${y * 100}%" aria-label="炭 ${i + 1}"><img class="c-cold" src="${IMG.coalCold}" alt=""><img class="c-lit" src="${IMG.coalLit}" alt=""><i class="c-ash"></i></button>`).join("")}</div>`;
+      return `<div class="stove"><img src="${IMG.stove}" alt="">${COAL_AT.map(([x, y], i) => `<button class="coal" data-act="coal" data-i="${i}" style="left:${x * 100}%;top:${y * 100}%" aria-label="炭 ${i + 1}"><i class="c-seat"></i><img class="c-cold" src="${IMG.coalCold}" alt=""><img class="c-lit" src="${IMG.coalLit}" alt=""><i class="c-ash"></i></button>`).join("")}</div>`;
     }
     if (st.scene === "steam") {
       // 十字キーはスティック（押した向きと強さで動く）。右下の大きな丸がリフレッシュ、その左上が精密（アタックを覚えたら切り替えで入れ替わる）（VPL62）
@@ -1569,6 +1592,7 @@ class Phone {
     else if (act === "sub") { if (hit.classList.contains("attack")) this.attack(); else this.toggleSlow(); }
     else if (act === "swap") { st.sub = st.sub === "attack" ? "slow" : "attack"; if (st.sub === "attack") st.slow = false; this.patch(); }
     else if (act === "mixsel") { st.mixSel = Number(hit.dataset.i); this.syncMix(); }
+    else if (act === "mixsort") this.sortMix(hit.dataset.g);
     else if (act === "mixadd") { st.mixSel = Number(hit.dataset.i); this.addMix(Number(hit.dataset.by)); }
     else if (act === "more") {
       this.moreOpen = !this.moreOpen;
@@ -1648,7 +1672,7 @@ class Phone {
       st.pack = (st.pack + (dir === "right" ? 1 : PACKS.length - 1)) % PACKS.length; this.patch();
     } else if (st.scene === "mix") {
       // キーボード: 上下で葉を選び、左右で1gずつ（画面では各行の −／＋）
-      if (dir === "up" || dir === "down") { st.mixSel = (st.mixSel + (dir === "down" ? 1 : MIX.length - 1)) % MIX.length; this.syncMix(); this.el.querySelector(`.picker [data-i="${st.mixSel}"]`)?.scrollIntoView({ block: "nearest" }); }
+      if (dir === "up" || dir === "down") { const order = this.mixOrder(), k = order.indexOf(st.mixSel); st.mixSel = order[(k + (dir === "down" ? 1 : order.length - 1)) % order.length]; this.syncMix(); this.el.querySelector(`.picker [data-i="${st.mixSel}"]`)?.scrollIntoView({ block: "nearest" }); }
       else this.addMix(dir === "right" ? 1 : -1);
     }
   }
@@ -1779,7 +1803,7 @@ class Phone {
     const crafting = (id) => CRAFT_SCENES.includes(id);
     if (!crafting(this.st.scene) && crafting(scene)) Object.assign(this.st, { grade: 0, gradeP: 0 });
     else if (crafting(scene)) this.st.gradeP = 0;
-    Object.assign(this.st, { water: 0, mix: MIX.map(() => 0), mixSel: 0 });
+    Object.assign(this.st, { water: 0, mix: MIX.map(() => 0), mixSel: 0, mixSort: null });
     // 前の場面で温度ゲージが出ていたか（出ていた→消える場面ならふっと消し、出ていなかった→出る場面ならふっと出す）
     this.thermoWas = crafting(this.st.scene) ? THERMO_ON.has(this.st.scene) : undefined;
     Object.assign(this, { dodge: null, heat: null, pouring: false, draining: false, deciding: false, coachSay: null, stick: null, dragTo: null });
