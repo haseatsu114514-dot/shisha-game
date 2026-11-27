@@ -5,6 +5,9 @@
 // 一覧（PC）: index.html?view=gallery　／　1台（スマホ）: index.html?view=play&scene=map|minto|tonari|pack|holes|pull
 // 絵は本編が表示に使う WebP 版（remake/img/）を読む（元PNGを直接書くと公開物の軽量化から外れる）。
 
+// テロップの文は本編と同じ組版で、表示する箱の実際の幅と書体で測って2行ずつに分ける（VPL29）
+import { paginateForBox } from "../../js/vn/layout.js";
+
 const REMAKE_IMG = new URL("../../img/", import.meta.url).href;
 // この試作のために画像生成（gpt-image-2.6-sunburst）で作った絵。原画とプロンプトは asset_sources/ui/portrait-stage-20261127/
 const OWN_IMG = new URL("img/", import.meta.url).href;
@@ -97,7 +100,7 @@ const PACKS = [
 const STEPS = [["pack", "詰め"], ["holes", "穴あけ"], ["coal", "炭"], ["water", "水"], ["steam", "蒸らし"], ["pull", "吸い出し"], ["care", "調整"]];
 const COACH = {
   pack: "詰め方を見比べて決めよう。迷ったらノーマル",
-  holes: "目印に重なったらトンと押して、色が満ちたら離せ",
+  holes: "目印に重なったら押せ。色が満ちたら離せ",
   pull: "手元を見ているぞ。落ち着いていけ",
 };
 const HOLE_COUNT = 10;
@@ -164,7 +167,12 @@ const ciNameLen = (parts) => parts.reduce((n, part) => n + (part === null ? 0.35
 
 const esc = (value) => String(value).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const tri = () => `<svg viewBox="0 0 24 24" aria-hidden="true" class="tri"><path d="M12 5l8 13H4z" fill="currentColor"/></svg>`;
-const typed = (text, delay = 0) => `<span class="type" style="--d:${delay}ms">${[...text].map((ch, i) => `<span style="--i:${i}">${esc(ch)}</span>`).join("")}</span>`;
+// 組版で入った改行は <br> にする（ブラウザに折り直させない）
+const typed = (text, delay = 0) => {
+  let i = 0;
+  return `<span class="type" style="--d:${delay}ms">${String(text).split("\n").map((row) => [...row].map((ch) => `<span style="--i:${i++}">${esc(ch)}</span>`).join("")).join("<br>")}</span>`;
+};
+const plain = (text) => String(text).split("\n").map(esc).join("<br>");
 const TYPE_MS = 26;
 
 // 文字の代わりに使う絵記号（24×24・線画）
@@ -262,7 +270,7 @@ class Phone {
     this.aux = [1, 2, 3].includes(aux) ? aux : 1; // 補助ボタンの配置案
     this.moreOpen = !!more;
     el.dataset.aux = String(this.aux);
-    this.st = { scene, sel: DEFAULT_SPOT, step, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0, temp: 0.4,
+    this.st = { scene, sel: DEFAULT_SPOT, step, page: 0, choosing: choice, pick: 0, list, overview, auto: false, skip: false, pack: 1, holes: [], pulls: 0, temp: 0.4,
       ci: ["a", "b", "c"].includes(ci) ? ci : "a", who: CUTINS[who] ? who : "minto", ciPhase: "off" };
     this.cam = null;      // 地図をドラッグした時の位置（選び直すと選んだ店へ戻る）
     this.t0 = performance.now();
@@ -311,6 +319,18 @@ class Phone {
     if (st.scene === "map") { this.cam = null; this.camera(false); this.syncMap(); }
     if (this.talk) { this.cast = {}; this.applyLine({ instant, delay }); }
     if (st.scene === "holes") this.drawHoles();
+    if (!this.talk && st.scene !== "map") this.fitCoach();
+  }
+
+  /** スミさんの一言も本編の組版で折る（文末・読点を優先し、語の途中で折らない）。2行に収まらない一言は書き直す（VPL29）。 */
+  fitCoach() {
+    const say = this.el.querySelector(".coach .say-text");
+    if (!say) return;
+    const text = COACH[this.st.scene];
+    say.textContent = text;
+    const pages = paginateForBox(text, say);
+    if (pages.length === 1) say.innerHTML = plain(pages[0]);
+    else console.warn("スミさんの一言が2行に収まらない:", text);
   }
 
   /* ── 地図 ── */
@@ -439,6 +459,7 @@ class Phone {
       el.querySelector('[data-slot="ctrl"]').innerHTML = this.craftCtrlHtml();
       const bowl = el.querySelector(".bowl"); if (bowl) bowl.src = IMG[`bowl_${PACKS[st.pack].id}`];
       if (this.quiet) el.querySelector(".coach")?.classList.add("quiet");
+      this.fitCoach();
     }
   }
 
@@ -474,12 +495,31 @@ class Phone {
       : line.kind === "inner" ? `<div class="name inner">${icon("think")}<b>はじめ</b></div>` : `<div class="name narr"></div>`;
     const choosing = st.choosing && line.choice;
     el.querySelector('[data-slot="telop"]').innerHTML = `${name}
-      <div class="glass${line.kind === "narr" ? " narr" : ""}${choosing ? " ask" : ""}"><p class="text ${line.kind}">${instant || choosing ? esc(line.text) : typed(line.text, delay)}</p>${choosing ? "" : `<i class="next"></i>`}</div>
+      <div class="glass${line.kind === "narr" ? " narr" : ""}${choosing ? " ask" : ""}"><p class="text ${line.kind}"></p>${choosing ? "" : `<i class="next"></i>`}</div>
       ${choosing ? `<div class="choices">${line.choice.map((text, i) => `<button class="choice" data-act="pick" data-pick="${i}" aria-current="${i === st.pick}" style="--i:${i}"><i></i>${esc(text)}</button>`).join("")}</div>` : ""}`;
     el.querySelector('[data-slot="ctrl"]').innerHTML = `${this.auxHtml("talk", TALK_CHIPS(st))}
       ${dpadHtml(choosing ? "up down" : "")}${aHtml(choosing ? "決定" : "次へ")}`;
-    this.typedAt = instant || choosing ? 0 : performance.now() + delay + [...line.text].length * TYPE_MS + 120;
-    el.classList.toggle("typing", !!this.typedAt);
+    // 返事を選ぶ時は、問いの最後のページを出す
+    this.showText(el.querySelector('[data-slot="telop"] .text'), line.text, { page: choosing ? Infinity : 0, instant: instant || choosing, delay });
+  }
+
+  /** テロップの文を出す。2行に収まらない文は、本編と同じ組版（remake/js/vn/layout.js）で文末を優先して
+   * 2行ずつのページに分け、「次へ」で同じ行のまま次のページを出す（VPL29・説明は2行まで）。 */
+  showText(target, text, { page = 0, instant = false, delay = 0 } = {}) {
+    const pages = paginateForBox(text, target);
+    const at = Math.min(page, pages.length - 1), value = pages[at];
+    Object.assign(this, { textEl: target, textValue: text, pageCount: pages.length });
+    this.st.page = at;
+    target.innerHTML = instant ? plain(value) : typed(value, delay);
+    this.typedAt = instant ? 0 : performance.now() + delay + [...value].length * TYPE_MS + 120;
+    this.el.classList.toggle("typing", !!this.typedAt);
+  }
+
+  /** 同じ文の続きのページがあれば出す。 */
+  nextPage() {
+    if (!this.textEl?.isConnected || this.st.page + 1 >= this.pageCount) return false;
+    this.showText(this.textEl, this.textValue, { page: this.st.page + 1 });
+    return true;
   }
 
   /** 立ち絵の位置と大きさ。1人は中央で少し寄り（身長差は半分だけ）、2人は左右で実際の身長差。話している側を手前に明るく。 */
@@ -568,7 +608,8 @@ class Phone {
       telop.innerHTML = `<div class="name narr"></div>
         <div class="glass"><p class="text say cv-telop">「${ci.line.join("<br>")}」</p><p class="cv-telop-flavor"><small>好きなフレーバー</small><b>${ci.flavor}</b></p><i class="next"></i></div>`;
     } else {
-      telop.innerHTML = `<div class="name inner">${icon("think")}<b>はじめ</b></div><div class="glass"><p class="text inner">${esc(ci.before)}</p><i class="next"></i></div>`;
+      telop.innerHTML = `<div class="name inner">${icon("think")}<b>はじめ</b></div><div class="glass"><p class="text inner"></p><i class="next"></i></div>`;
+      this.showText(telop.querySelector(".text"), ci.before, { instant: true });
     }
     const wrap = document.createElement("div");
     wrap.innerHTML = this.cutinHtml();
@@ -593,9 +634,8 @@ class Phone {
     this.cast = { [ci.after.id]: ci.after.face };
     this.layoutActors({ speaking: ci.after.id, entering: true });
     el.querySelector('[data-slot="telop"]').innerHTML = `<div class="name"><b>${CAST[ci.after.id].name}</b></div>
-      <div class="glass"><p class="text say">${typed(ci.after.text, 260)}</p><i class="next"></i></div>`;
-    this.typedAt = performance.now() + 260 + [...ci.after.text].length * TYPE_MS + 120;
-    el.classList.add("typing");
+      <div class="glass"><p class="text say"></p><i class="next"></i></div>`;
+    this.showText(el.querySelector('[data-slot="telop"] .text'), ci.after.text, { delay: 260 });
   }
 
   /* ── シーシャ作り ── */
@@ -637,7 +677,7 @@ class Phone {
     const { st } = this;
     const cards = st.scene === "pack" ? `<div class="cards">${PACKS.map((p, i) => `<button class="card${p.locked ? " locked" : ""}" data-act="pack" data-pack="${i}" aria-current="${i === st.pack}">
       <img src="${IMG[`bowl_${p.id}`]}" alt=""><b>${p.name}</b><span class="dens">${[1, 2, 3].map((n) => `<i class="${n <= p.dens ? "on" : ""}"></i>`).join("")}</span>${p.locked ? icon("lock") : ""}</button>`).join("")}</div>` : "";
-    return `<button class="coach" data-act="coach" aria-label="スミさんの一言"><img src="${IMG.faceSumi}" alt=""><span class="say">${esc(COACH[st.scene])}</span></button>${cards}`;
+    return `<button class="coach" data-act="coach" aria-label="スミさんの一言"><img src="${IMG.faceSumi}" alt=""><span class="say"><span class="say-text">${esc(COACH[st.scene])}</span></span></button>${cards}`;
   }
 
   craftCtrlHtml() {
@@ -765,14 +805,14 @@ class Phone {
     if (st.scene === "cutin") {
       if (st.ciPhase === "on") this.endCutin();
       else if (this.typedAt && performance.now() < this.typedAt) { this.typedAt = 0; el.classList.remove("typing"); el.querySelector(".type")?.classList.add("all"); }
-      else this.playCutin();
+      else if (!this.nextPage()) this.playCutin();
       return;
     }
     if (st.scene === "map") {
       if (st.list) { st.list = false; this.patch(); return; }
       if (SPOTS[st.sel].closed || this.fixed) return;
       const scene = { tonari: "tonari", minto: "minto" }[SPOTS[st.sel].id];
-      if (scene) this.enterShop(scene); else this.toast("この試作で入れるのは PEPPERMINT と tonari です");
+      if (scene) this.enterShop(scene); else this.toast("この試作では入れません");
       return;
     }
     if (this.talk) {
@@ -780,6 +820,7 @@ class Phone {
       if (this.typedAt && performance.now() < this.typedAt) { // 文字送りの途中なら全文を出す
         this.typedAt = 0; el.classList.remove("typing"); el.querySelector(".type")?.classList.add("all"); return;
       }
+      if (!st.choosing && this.nextPage()) return;
       if (line.choice && !st.choosing) { st.choosing = true; st.pick = 0; this.applyLine({ instant: true }); return; }
       st.choosing = false;
       if (st.step + 1 < this.talk.steps.length) { st.step += 1; this.applyLine(); }
@@ -873,7 +914,7 @@ class Phone {
   setScene(scene, { arrive = false } = {}) {
     clearTimeout(this.ciTimer);
     this.el.classList.remove("cutin-on");
-    Object.assign(this.st, { scene, step: 0, choosing: false, pick: 0, list: false, overview: false, holes: [], pulls: 0, pack: 1, temp: 0.4 });
+    Object.assign(this.st, { scene, step: 0, page: 0, choosing: false, pick: 0, list: false, overview: false, holes: [], pulls: 0, pack: 1, temp: 0.4 });
     this.quiet = false;
     this.render({ delay: arrive ? 1200 : 0 }); // 店に着いた時は、店名の札が出てから文字を送る
     this.hushCoach();
@@ -937,6 +978,7 @@ class Phone {
     if (this.st.scene === "map") this.camera(false);
     else if (this.st.scene === "cutin" && this.cast && Object.keys(this.cast).length) this.layoutActors({ speaking: this.st.who, instant: true });
     else if (this.talk) this.layoutActors({ speaking: this.line.kind === "say" ? this.line.id : null, instant: true });
+    else this.fitCoach();
   }
 }
 
