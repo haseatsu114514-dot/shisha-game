@@ -16,17 +16,17 @@ if (params.get('layout') === 'portrait') {
   document.head.append(link);
 
   const W = 640, MIN_H = W * 66 / 39, MAX_H = W * 92 / 39;
-  const FLOOR = 300, COACH = 84, BOOTH_H = 432; // フロアの高さ・案内の1行の高さ・ブースの元の高さ（style.css の値）
+  const FLOOR = 300, COACH = 84, BOOTH_H = 432; // フロアの最低の高さ・案内の1行の高さ・ブースの元の高さ（style.css の値）
   function fit() {
     const k = Math.min(innerWidth / W, innerHeight / MIN_H), height = Math.round(Math.min(innerHeight / k, MAX_H));
     stage.style.setProperty('--ps', String(k));
     stage.style.setProperty('--ph', `${height}px`);
-    // ブースを映す場所（フロアと案内の下）と、寄る倍率: 皿の列（幅 384）・真ん中の列（幅 500）が、幅と高さの両方に収まる所まで
-    const area = height - FLOOR - COACH;
-    stage.style.setProperty('--ctop', `${FLOOR + COACH}px`);
-    stage.style.setProperty('--area-h', `${area}px`);
-    stage.style.setProperty('--zd', Math.min(W / 384, area / BOOTH_H).toFixed(3));
-    stage.style.setProperty('--zc', Math.min(W / 500, area / BOOTH_H).toFixed(3));
+    // 寄る倍率: 皿の列（幅 384）・真ん中の列（幅 500）が、幅と、フロアを最低 FLOOR 残した高さの両方に収まる所まで
+    const area = height - FLOOR - COACH, zd = Math.min(W / 384, area / BOOTH_H), zc = Math.min(W / 500, area / BOOTH_H);
+    stage.style.setProperty('--zd', zd.toFixed(3));
+    stage.style.setProperty('--zc', zc.toFixed(3));
+    // フロアは、ブースの残りの高さいっぱい（寄る先で変わる。portrait.css の --floor-h）。お客さんの絵（横 3:1）は、いちばん高いフロア（真ん中へ寄った時）の高さに合わせて拡大する
+    stage.style.setProperty('--art-w', `${Math.round(3 * (height - COACH - BOOTH_H * zc))}px`);
   }
   link.addEventListener('load', () => { fit(); dispatchEvent(new Event('resize')); }); // 並べ替えた後の寸法で、本編にも測り直させる
   addEventListener('resize', fit);

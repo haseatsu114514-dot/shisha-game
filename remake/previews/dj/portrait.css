@@ -34,14 +34,14 @@ html[data-layout=portrait] .howto li b { font-size: 24px; } html[data-layout=por
    ブース（.console）は横の画面と同じ大きさ・同じ並び（幅 1256×高さ 432。左の皿｜案内とミキサー｜右の皿。機材の絵もそのまま）で置き、
    縦の枠はその上を覗く窓にする。窓の寄り先と倍率は --cx（ブースの中の、窓の左端の位置）と --cz（倍率）で決め、切り替わる時はなめらかに動かす。
    --zd＝皿へ寄る倍率（皿の列がちょうど幅に収まる）、--zc＝真ん中へ寄る倍率（案内とミキサーの列が収まる）、--area-h＝ブースを映す場所の高さ（portrait.mjs が入れる）。 */
-html[data-layout=portrait] .console { position: absolute; left: 0; top: var(--ctop, 384px); width: 1256px; height: 432px; margin: 0; flex: none;
-  transform-origin: 0 0; transform: translate(calc(var(--cx, 0px) * var(--cz, 1) * -1), calc(var(--area-h, 1000px) - 432px * var(--cz, 1))) scale(var(--cz, 1));
-  transition: transform .6s cubic-bezier(.3, .7, .2, 1); will-change: transform; }
+html[data-layout=portrait] .console { position: absolute; left: 0; top: calc(var(--floor-h) + 84px); width: 1256px; height: 432px; margin: 0; flex: none;
+  transform-origin: 0 0; transform: translateX(calc(var(--cx, 0px) * var(--cz, 1) * -1)) scale(var(--cz, 1));
+  transition: transform .6s cubic-bezier(.3, .7, .2, 1), top .6s cubic-bezier(.3, .7, .2, 1); will-change: transform; }
 html[data-layout=portrait] #dj-stage[data-focus="a"] .console { --cz: var(--zd, 1.66); --cx: max(0px, calc(195px - 320px / var(--zd, 1.66))); }
 html[data-layout=portrait] #dj-stage[data-focus="b"] .console { --cz: var(--zd, 1.66); --cx: min(calc(1256px - 640px / var(--zd, 1.66)), calc(1061px - 320px / var(--zd, 1.66))); }
 html[data-layout=portrait] #dj-stage[data-focus="wide"] .console { --cz: var(--zc, 1.28); --cx: calc(628px - 320px / var(--zc, 1.28)); }
 /* いまやること（案内の1行）は、皿へ寄っている間は窓の外になるので、フロアのすぐ下に同じ文を写して出す（portrait.mjs が本編の案内を写すだけ） */
-html[data-layout=portrait] .p-coach { position: absolute; z-index: 6; left: 0; right: 0; top: 300px; height: 84px; margin: 0; padding: 0 14px; display: grid; place-items: center; text-align: center;
+html[data-layout=portrait] .p-coach { position: absolute; z-index: 6; left: 0; right: 0; top: var(--floor-h); height: 84px; transition: top .6s cubic-bezier(.3, .7, .2, 1); margin: 0; padding: 0 14px; display: grid; place-items: center; text-align: center;
   font-size: 27px; font-weight: 900; line-height: 1.25; letter-spacing: .02em; color: #fff; background: linear-gradient(180deg, #0b0812, #171022); border-bottom: 2px solid #e3bd6e55; text-wrap: balance; }
 html[data-layout=portrait] .p-coach.warn { color: var(--warn); }
 html[data-layout=portrait] .p-coach:empty { display: none; }
@@ -81,12 +81,29 @@ html[data-layout=portrait] .nudge.go i { filter: brightness(.35) drop-shadow(0 0
 @keyframes nudge-go { to { filter: drop-shadow(0 0 16px #ffc857) brightness(1.12); } }
 @media (prefers-reduced-motion: reduce) { html[data-layout=portrait] .nudge.go { animation: none; } }
 
-/* ── 案内とブースの間の帯: ブースは下（親指の届く所）に寄せ、空いた帯にカウント・判定・お客さんの声を大きく出す ──
-   （それまでは帯が暗いまま空いていた。フロアの部品をフロアの下まではみ出させて置く） */
-html[data-layout=portrait] .floor { overflow: visible; }
-html[data-layout=portrait] .count { top: 410px; font-size: 150px; }
-html[data-layout=portrait] .judge-box { top: 572px; bottom: auto; }
-html[data-layout=portrait] .judge { font-size: 52px; }
-html[data-layout=portrait] .voice[data-slot="0"] { left: 2%; top: 392px; } html[data-layout=portrait] .voice[data-slot="2"] { right: 2%; top: 400px; }
-html[data-layout=portrait] .voice[data-slot="1"] { left: calc(50% - 135px); top: 470px; }
-html[data-layout=portrait] .voice[data-slot="3"] { left: 6%; top: 486px; } html[data-layout=portrait] .voice[data-slot="4"] { right: 6%; top: 478px; }
+/* ── フロア（2026-11-27 オーナー「DJは画面の上半分は盛り上がってるお客さんとか目立つようにしたい　フロアのゲージとか」・VPG18）──
+   フロアは、案内の1行とブースを除いた上の部分いっぱい（--floor-h。寄る先で変わり、なめらかに伸び縮みする。皿へ寄ると約 580、真ん中へ寄ると約 750）。
+   お客さんの絵（横 3:1 の店内とシルエットの帯）は --art-w（portrait.mjs）に拡大して真ん中を見せ、下の縁をフロアの下にそろえる（お客さんがいつも案内のすぐ上にいる）。
+   熱のゲージはフロアの下の縁に幅いっぱいで大きく、気分の字も大きく。カウント・判定・お客さんの声は、フロアの中に大きく出す */
+html[data-layout=portrait] #dj-stage[data-focus="a"], html[data-layout=portrait] #dj-stage[data-focus="b"] { --floor-h: max(300px, calc(var(--ph) - 84px - 432px * var(--zd))); }
+html[data-layout=portrait] #dj-stage[data-focus="wide"] { --floor-h: max(300px, calc(var(--ph) - 84px - 432px * var(--zc))); }
+html[data-layout=portrait] .floor { height: var(--floor-h, 420px); transition: height .6s cubic-bezier(.3, .7, .2, 1); }
+html[data-layout=portrait] .floor-art { inset: auto; left: calc(50% - var(--art-w, 1920px) / 2); bottom: 0; width: var(--art-w, 1920px); height: calc(var(--art-w, 1920px) / 3); container-type: inline-size; }
+html[data-layout=portrait] .floor-art .room { top: 0; height: 100%; }
+html[data-layout=portrait] .band { top: calc(100cqw / 3 * (180 / 724)); }
+html[data-layout=portrait] .floor::before { height: 160px; }
+/* 熱のゲージ: 下の縁に幅いっぱい */
+html[data-layout=portrait] .heat { left: 10px; right: 10px; top: auto; bottom: 12px; width: auto; height: 104px; }
+html[data-layout=portrait] .heat-bar { width: 400px; height: 104px; }
+html[data-layout=portrait] #floor-fill { background: linear-gradient(90deg, #3fd0e8, #b45cf0 59%, #ff5fa8 75%, #ffc857 85%); background-size: 100% 100%; }
+html[data-layout=portrait] .heat-text { left: 410px; top: 14px; column-gap: 12px; }
+html[data-layout=portrait] .heat-text strong { font-size: 36px; }
+html[data-layout=portrait] .heat-text output { font-size: 28px; }
+html[data-layout=portrait] .heat-delta { left: 30px; top: -34px; font-size: 26px; }
+/* カウント・判定・お客さんの声: フロアの中に大きく（ゲージの上） */
+html[data-layout=portrait] .count { top: calc(var(--floor-h, 420px) * .3); font-size: 160px; }
+html[data-layout=portrait] .judge-box { top: auto; bottom: 136px; }
+html[data-layout=portrait] .judge { font-size: 56px; }
+html[data-layout=portrait] .voice[data-slot="0"] { left: 2%; top: calc(var(--floor-h, 420px) * .28); } html[data-layout=portrait] .voice[data-slot="2"] { right: 2%; top: calc(var(--floor-h, 420px) * .3); }
+html[data-layout=portrait] .voice[data-slot="1"] { left: calc(50% - 135px); top: calc(var(--floor-h, 420px) * .44); }
+html[data-layout=portrait] .voice[data-slot="3"] { left: 6%; top: calc(var(--floor-h, 420px) * .48); } html[data-layout=portrait] .voice[data-slot="4"] { right: 6%; top: calc(var(--floor-h, 420px) * .46); }

@@ -78,13 +78,15 @@ OpenAI の画像 API（`gpt-image-2.6-sunburst`）で生成した原画と、送
 | `book_locked.png` | 本棚の未解放の本の札（鎖と錠の掛かった本） | `remake/img/ui/trpg/book-locked.webp` |
 | `dice_icon.png` | マイダイスを買う札の絵（透過） | `remake/img/ui/trpg/icon-dice.webp` |
 | `book_open.png` | 物語を選ぶ画面の、開いた本（透過。紙面は無地で、絵と字は画面が重ねる）（TRP11） | `remake/img/ui/trpg/book-open.webp` |
+| `book_open_portrait.png` | 縦画面の試作の、物語を選ぶ画面の本。上下に開く（背が横に真ん中を通る）。紙面は無地（VPG15） | `remake/img/ui/trpg/book-open-portrait.webp` |
 
 - **変換**: 本は 768×512 の WebP（quality 86）。ダイスは透過の余白を切り落として 256×256 の WebP（quality 92）。開いた本は透過の余白を切り落として 1526×995 の WebP（quality 88・約87KB）。紙面の位置（横 6.0〜49.2%／51.3〜94.6%、縦 3.4〜89.0%）を測って、CSS の置き場に使っている。
 - **参照画像**: 本棚の実画面と TRPG の場面絵を渡して、深い青緑と真鍮の配色・背景の描き方をそろえた（`trpg/prompts.md`）。
 - **開いた本の検品**（2案から1案目を採用。2案目は紙面が少し広いが、本が画像の上端と左右の端に接していて、表紙の縁が切れていた。1案目も左の端には接しているが、角の金具と小口は欠けていない）: 真上から見た歪みのない見開き／左右の頁が同じ大きさ／紙面に字・絵・線・しみなし／透過の縁に色のにじみなし／実画面で絵・題・ボタンを重ねて、紙面からはみ出さないことを確認。
 - **検品**: 文字・数字なし（本の表紙に題字なし。ダイスの面は星と点だけで、数字は入れていない）／鎖と錠のつながりに崩れなし／透過の縁に色のにじみなし／実画面で他の本の札と並べて確認。
 - **組み込み**: `remake/css/trpg-theme.css` の「本棚の文字を減らし、印と顔で見せる」（TRP10）と「本をめくって物語を選ぶ」（TRP11）。
-- 原画の SHA-256（先頭16桁）: `book_locked` f2dd53fffecad4d0, `dice_icon` c4ae0219c3887db9, `book_open` 581c2719a0642b5d
+- 原画の SHA-256（先頭16桁）: `book_locked` f2dd53fffecad4d0, `dice_icon` c4ae0219c3887db9, `book_open` 581c2719a0642b5d, `book_open_portrait` 2da296ecddedce5f
+- **上下に開く本（VPG15）**: オーナー「TRpGは本を捲る風な選択画面とか最近作ったはずなのでそれを」。縦では横開きの見開きが小さくなるので、同じ画風の「上下に開く本」を `book-open.webp` を参照に渡して1枚生成した。768×1152 の WebP（quality 88・約62KB）。紙面の位置は絵の画素から測った値（上の紙 縦 5.0〜46.7%・下の紙 49.1〜91.4%・横 5.9〜93.9%・背 48.2%）を `remake/previews/portrait-stage/frame/trpg.css` が使う。**検品**: 本は真っすぐで傾きなし／紙面は無地（字・数字・線なし）／表紙の青緑・角の金具・赤いしおりの紐は横開きの本と同じ／四隅が画像の端に接するが、角の金具は欠けていない
 
 ## 縦画面の試作 — `portrait/`（VPG09）
 
@@ -99,3 +101,19 @@ OpenAI の画像 API（`gpt-image-2.6-sunburst`）で生成した原画と、送
 - **変換**: 印は升ごとに絵の入っている範囲を切り出し、正方形にそろえて 192×192 の WebP（quality 92）。板の地は 1280×853 の WebP（quality 88・不透明）。手帳は透過の余白を切り落とした 986×1517 の WebP（quality 90）。紙の位置（上の紙 7〜45%・下の紙 51〜89%・左右 5〜95%）は絵の画素から測り、CSS の置き場所に使っている
 - **検品**: 文字・擬似文字なし／印は砂丘のボタン・メダルと同じ革と金の作りで、6つとも升からはみ出していない／手帳は真っすぐで、紙は無地／板の地は物や字が無く、うすい足あとだけ
 - 原画の SHA-256（先頭16桁）: `desert_stats` 59b1a3d333235607, `tk_deck` 5f168678e1813678, `tk_book_portrait` 08bd0a1ae27f2fbb
+
+## 砂丘の結果のメダルと札（DSR106・VPG19）— `desert/originals/`
+
+オーナー「メダルのデザインがなんか合成感すごい　ちゃんとランクごとのメダルを生成で作ってあげて　CSS感がある部分は綺麗にしたい」「コンボはアイコンがわかりずらかっただけなのでコンボって英語で書いたアイコンにしよう　チェーンと」。プロンプトは `desert/prompts.md` の末尾。
+
+| 原画 | 使う所 | ゲームの絵 |
+|---|---|---|
+| `medal_S.png`・`medal_A.png`・`medal_B.png`・`medal_C.png` | 結果の評価のメダル（字は金属の浮き彫りとして絵に入っている。S 金・A 赤銅・B 銀・C 青銅） | `remake/img/ui/desert_ride_result/rank_s.webp`・`rank_a.webp`・`rank_b.webp`・`rank_c.webp`（512×512） |
+| `plate_rank.png` | ランクの名前（「最高の一本」など）と段の札（「中級」など）の革の名札。字はコード | `…/plate_rank.webp`（720×150。影を除いた範囲で切り出し） |
+| `stamp_best.png` | 自己ベスト更新の赤い漆の札。字はコード | `…/stamp_best.webp`（900×234。絵の傾き 約4.3° を水平に直して切り出し、CSS で −4° に傾ける） |
+| `stat_combo.png` | 縦の結果の「最高コンボ」の印（英字 COMBO と鎖） | `…/stat_combo.webp`（192×192。前の鎖と炎だけの印を置き換え） |
+
+- **参照画像**: 採用済みのメダル（`medal_s`・`medal_a`）・勝ちのリボン・記録の板と、縦の結果の印（`portrait/originals/desert_stats.png`）を渡して、革と金の作りをそろえた
+- **検品**: メダルの字はそれぞれ S・A・B・C の1字だけで、正立・中央。ほかの字・数字なし／COMBO の綴りが正しい（C・O・M・B・O）／名札と漆の札は中が空いていて、字・擬似文字なし
+- 前のメダル（`medal_s|a|b|c.webp`。#3686）は使わなくなったが、絵は残してある（記録は `asset_sources/desert-ride-result-3686/`）
+- 原画の SHA-256（先頭16桁）: `medal_S` 700feed14fc7f58c, `medal_A` b6e00a350b0b21ed, `medal_B` 15ceaf4ef4a07b66, `medal_C` ce833681a67c2e2d, `plate_rank` 15c3cc44395ed591, `stamp_best` b9d25adfa4adbfc9, `stat_combo` f3c4f8c02ab4ce6e

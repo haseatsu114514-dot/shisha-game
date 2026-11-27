@@ -116,3 +116,48 @@ A tall curling wave of desert sand thrown to the RIGHT from the lower LEFT corne
 ```text
 A ring of crackling golden-yellow lightning and energy sparks, like the electric boost aura around the rider's board in the reference illustration: jagged bright bolts with white-hot cores and warm orange-gold glow, arcing outward in all directions from an EMPTY centre (the centre third of the canvas is left completely transparent so a character can stand there), with small spark flecks between the bolts. Painted anime game VFX sprite, same style and colours as the lightning in the reference. Isolated on a fully transparent background; only the lightning: no character, no board, no sand, no ground, no sky. No text, no letters, no numbers, no logos, no watermark, no frame.
 ```
+
+## 結果のメダルと札（DSR106・VPG19。2026-11-27 生成）
+モデル `gpt-image-2.6-sunburst`・`/v1/images/edits`（参照画像つき）・quality high。参照画像は README の表のとおり。
+
+### `medal_S.png` — 1024x1024・背景 transparent
+
+```text
+A single premium game result rank medal for a desert sandboarding game, rank S, the highest rank. A thick round GOLD medal with a raised rim of small embossed sun rays and a ring of tiny dunes, a deep inner field, and a big bold capital letter S sculpted IN RELIEF as part of the metal itself (polished gold letter with a dark engraved outline and bevel, perfectly centred, upright, the only letter in the whole image). Behind the medal, a burst of warm golden light rays and a few sparkles. Two short crossed ribbon tails in deep red and gold hang from the bottom. Rich hand-painted mobile game UI style with strong highlights and soft shadow, matching the leather-and-gold desert UI in the reference images. Centred, fills about 80 percent of the canvas, isolated on a fully transparent background. No other text, no numbers, no words.
+```
+
+### `medal_A.png` — 1024x1024・背景 transparent
+
+```text
+A single game result rank medal for a desert sandboarding game, rank A. A thick round medal of warm ROSE-COPPER and orange-gold metal with a raised rim of small embossed sun rays, a deep inner field, and a big bold capital letter A sculpted IN RELIEF as part of the metal itself (polished letter with dark engraved outline and bevel, perfectly centred, upright, the only letter in the whole image). A soft orange glow behind it. Two short crossed ribbon tails in burnt orange hang from the bottom. Rich hand-painted mobile game UI style with strong highlights and soft shadow, matching the leather-and-gold desert UI in the reference images. Centred, fills about 75 percent of the canvas, isolated on a fully transparent background. No other text, no numbers, no words.
+```
+
+### `medal_B.png` — 1024x1024・背景 transparent
+
+```text
+A single game result rank medal for a desert sandboarding game, rank B. A thick round medal of cool polished SILVER with a hint of blue steel, a raised rim of small embossed sun rays, a deep inner field, and a big bold capital letter B sculpted IN RELIEF as part of the metal itself (polished letter with dark engraved outline and bevel, perfectly centred, upright, the only letter in the whole image). Two short crossed ribbon tails in deep navy blue hang from the bottom. Hand-painted mobile game UI style with crisp highlights and soft shadow, matching the leather-and-metal desert UI in the reference images. Centred, fills about 72 percent of the canvas, isolated on a fully transparent background. No glow rays, no other text, no numbers, no words.
+```
+
+### `medal_C.png` — 1024x1024・背景 transparent
+
+```text
+A single game result rank medal for a desert sandboarding game, rank C. A thick round medal of weathered BRONZE / brown copper with a raised rim of small embossed sun rays, a deep inner field, and a big bold capital letter C sculpted IN RELIEF as part of the metal itself (letter with dark engraved outline and bevel, perfectly centred, upright, the only letter in the whole image). Two short crossed ribbon tails in dusty brown leather hang from the bottom. Hand-painted mobile game UI style with soft highlights and shadow, matching the leather-and-metal desert UI in the reference images. Centred, fills about 70 percent of the canvas, isolated on a fully transparent background. No glow, no other text, no numbers, no words.
+```
+
+### `stat_combo.png` — 1024x1024・背景 transparent
+
+```text
+A single square game UI icon badge, in exactly the same chunky hand-painted desert-game badge style as the reference sprite sheet (rounded square, thick gold rim with small diamond studs, warm red-orange inner field, dark brown outline, soft highlight). Inside: a short gold chain of three linked rings running across the middle, and above it the English word COMBO in bold chunky cream-white capital letters with a dark brown outline (exactly five letters: C, O, M, B, O, spelled correctly, centred, perfectly readable). No other text, no numbers. Centred, the badge fills about 85 percent of the canvas, isolated on a fully transparent background.
+```
+
+### `stamp_best.png` — 1536x1024・背景 transparent
+
+```text
+A blank horizontal celebration plaque for a desert sandboarding game result screen, to show a new personal best: a wide rounded banner plate of glossy red lacquer with a thin bright gold border, small gold star studs at both ends, a few sparkles flying off the corners, slightly tilted upward to the right. The inside of the plate is completely EMPTY and flat (text will be added later by the game). Hand-painted mobile game UI style matching the ribbon and leather board in the reference images. Wider than tall (about 4 to 1), centred, fills most of the width, isolated on a fully transparent background. No text, no letters, no numbers.
+```
+
+### `plate_rank.png` — 1536x1024・背景 transparent
+
+```text
+A blank small horizontal name plate for under a rank medal in a desert sandboarding game: a dark brown tooled-leather plate with a gold stitched border and small gold corner rivets, gently curved like a ribbon with short folded tails at both ends. The inside is completely EMPTY and flat (text will be added later). Hand-painted mobile game UI style matching the ribbon and leather board in the reference images. About 4 times wider than tall, centred, fills most of the width, isolated on a fully transparent background. No text, no letters, no numbers.
+```

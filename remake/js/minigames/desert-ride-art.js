@@ -77,7 +77,8 @@ export const DESERT_CONTROL_ART = Object.freeze({
 });
 // desert-ride.css が滑走中の立て直しと結果カードに使う絵。
 const RECOVER_UI_ART = "ui/desert_ride_hud/recover-badge.webp";
-const RESULT_UI_ART = ["board", "ribbon_win", "ribbon_lose", "medal_s", "medal_a", "medal_b", "medal_c", "button_primary", "button_secondary"]
+// メダルはランクごとの絵（DSR106。字は絵に入っている）。ランクの名前は革の名札、自己ベスト更新は漆の札の絵
+const RESULT_UI_ART = ["board", "ribbon_win", "ribbon_lose", "rank_s", "rank_a", "rank_b", "rank_c", "plate_rank", "stamp_best", "button_primary", "button_secondary"]
   .map(name => `ui/desert_ride_result/${name}.webp`);
 const warmedUiImages = new Map();
 function warmUiImage(file) {
