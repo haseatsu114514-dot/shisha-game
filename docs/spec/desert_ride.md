@@ -268,3 +268,15 @@ Game sprite, back view of a 22-year-old Japanese man riding a bright orange sand
 
 オーナー「デバックからなると対戦できるようにしたい」。`?debug=1` のデバッグパネルのミニゲーム（`remake/js/dev/minigame-launcher.js`）で、「DESERT RIDE（砂丘）」はヌールにもなるにも挑めるメニューで開く（`rivals: ["noor", "naru"]`。本編ではヌールに勝つとなるが来る）。「DESERT RIDE（なると勝負）」はメニューを通さず、なるとの本番からすぐ始まる（`runDesertRide` の `startRival: "naru"`）。どちらも本編の保存は読み書きしない。検証は `remake/test/browser/debug_tools.mjs` の `minigames-start-directly-without-writing-normal-save`。
 
+## 入口の画面と遊び方の見た目（2026-11-27・DSR95〜DSR96）
+
+オーナー「仮でCSSとか入ってるのを、ソシャゲや市販ゲームみたいな見た目に」「文字が見づらい」。入口（`showMenu`）と練習のおわりの札を、白いカードから一枚の絵の画面にした。
+
+- **構成**（`remake/js/minigames/desert-ride.js` の `showMenu`・`menuHero`、`remake/css/desert-ride.css` の「入口の画面・練習のおわり」）: 滑走と同じ遠景（`backdrop_day_sky`・`backdrop_day_land`）を敷く。左に題字（`.dr-menu-head`。金の斜体の2行組み）と二人の絵（`.dr-menu-hero`。はじめの跳ぶ姿 `riderJump` と、ヌールの滑る姿 `noorRider`。足元に砂けむり）。右に革の板（`.dr-menu-board`。結果の記録の板 `desert_ride_result/board.webp` の 9-slice）。板の中は上から、前置きの一文（やめた時などの知らせも同じ所。スマホでは出さない）・段の札・自己ベスト・ボタン。
+- **ボタン**: 結果と同じ札の絵（主＝`button_primary`、ほか＝`button_secondary`）。主の「滑る／もう一度滑る／本番を滑る」は一段ぶん横いっぱい。選んでいるボタンは金の光で示す（四角い枠は出さない）。
+- **段の札**: 革の札。選んでいる段は橙に灯って「✓」、閉じた段は点線の縁。下の一言は「・」の切れ目でだけ折れる（`phraseSpans`。文面は同じ）。
+- **遊び方**: 「？」は画面の右上。開くと板いっぱいに広がり、見出し・一覧・閉じるの3段で、動くのは一覧だけ（開いた時は一覧の先頭から）。行ごとに何の話かの札（`HOWTO_TOPICS`。飾りの `::before` なので読み上げ・文面は前と同じ）。PC は2列、スマホは1列。
+- **文字の大きさ**（舞台 1280×720 上）: 段の名前 30px（スマホ 32px）・下の一言 16px（スマホ 24px）・主のボタン 34px（スマホ 42px）・ほかのボタン 24px（スマホ 30px）・遊び方 20px（スマホ 28px）。
+- **絵は使い回し**: 専用の絵はまだ作っていない（画像生成 API のクレジットが無かった）。題字・板・札を専用の絵に替える時は、CSS の画像指定を差し替える。
+- 動き軽減では、はじめの絵の揺れを止める。単体ページ（`desert-ride.html`）の開く前の画面は変えていない。
+

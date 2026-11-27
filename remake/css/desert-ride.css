@@ -578,3 +578,122 @@ html:root[data-density="phone"] .desert-ride :is(.dr-tier small, .dr-result-tier
 /* 結果のボタンが4つ（もう一度・なると勝負・段を選ぶ・下りる）の時は2つずつ2段に（スマホは1段に詰めると文字が2行に折れる） */
 .desert-ride .dr-result .dr-actions:has(> .dr-button:nth-child(4)) > .dr-button,
 html:root[data-density="phone"] .desert-ride .dr-card.dr-result .dr-actions:has(> .dr-button:nth-child(4)) > .dr-button.dr-button { flex: 1 1 calc(50% - 8px); }
+
+/* ---- 入口の画面・練習のおわり（2026-11-27 オーナー「仮のCSSを、ソシャゲや市販ゲームのような見た目に。文字も見やすく」）:
+   白いカードと白いボタンをやめる。滑走と同じ砂丘の遠景を敷き、左に題字と滑る二人（背面の絵）、右に革の板（結果と同じ 9-slice）を置いて、
+   段の札・自己ベスト・ボタン（結果と同じ札の絵。主は橙）を並べる。遊び方は板いっぱいに開き、行ごとに何の話かの札を付けて、一覧だけが動く。
+   文言・data-test・押す順は前と同じ。スマホは文字を一段大きくし、板を広げる。動き軽減では動かさない ---- */
+.desert-ride:is([data-phase="menu"], [data-phase="practiced"]) .dr-panel {
+  background:
+    linear-gradient(96deg, rgba(40, 14, 6, 0) 34%, rgba(40, 14, 6, .34) 58%, rgba(30, 10, 4, .62) 100%),
+    linear-gradient(180deg, rgba(20, 44, 96, .28) 0%, rgba(20, 44, 96, 0) 30%, rgba(120, 44, 10, 0) 62%, rgba(96, 34, 8, .42) 100%),
+    url("../img/ui/desert_ride/backdrop_day_land.webp") center 220px / 1800px 500px no-repeat,
+    url("../img/ui/desert_ride/backdrop_day_sky.webp") center 0 / 1800px 416px no-repeat,
+    #e8ab5a; }
+.desert-ride .dr-card.dr-menu { --board-w: 600px; position: relative; width: 100%; height: 100%; max-width: none; max-height: none; padding: 0; overflow: hidden;
+  border: 0; border-radius: 0; background: none; box-shadow: none; text-align: left; color: #fff4e2; }
+
+/* 左の絵: 奥にヌール、手前に跳ぶはじめ。足元に影と砂けむり */
+.dr-menu-hero { position: absolute; left: 0; bottom: 0; width: 660px; height: 560px; pointer-events: none; }
+.dr-menu-hero img { position: absolute; display: block; height: auto; filter: drop-shadow(0 18px 14px rgba(90, 40, 8, .38)); }
+.dr-menu-rival { left: 70px; bottom: 96px; width: 196px; opacity: .96; }
+.dr-menu-rider { left: 300px; bottom: 26px; width: 330px; animation: dr-menu-hover 3.2s ease-in-out infinite alternate; }
+.dr-menu-dust { position: absolute; left: 318px; bottom: 6px; width: 330px; height: 150px; background: url("../img/ui/desert_ride/sand_puff.webp") center / contain no-repeat; opacity: .78; }
+.dr-menu-sun { position: absolute; left: -120px; top: -150px; width: 760px; height: 420px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 244, 200, .55), rgba(255, 220, 150, .2) 55%, rgba(255, 220, 150, 0)); }
+@keyframes dr-menu-hover { from { transform: translateY(0) rotate(-1.2deg); } to { transform: translateY(-12px) rotate(1deg); } }
+
+/* 題字: 斜体の金文字（白→金→橙）に、濃い茶の縁と影 */
+.dr-menu-head { position: absolute; left: 54px; top: 40px; width: 610px; }
+.desert-ride .dr-menu .dr-kicker { display: inline-block; margin: 0 0 8px; padding: 5px 20px 5px 16px; font-size: 18px; font-weight: 900; letter-spacing: .34em; color: #fff3d6;
+  background: linear-gradient(90deg, rgba(150, 52, 12, .92), rgba(196, 84, 20, .86) 70%, rgba(196, 84, 20, 0)); border-left: 5px solid #ffd27a; text-shadow: 0 1px 0 rgba(60, 20, 4, .6); }
+.desert-ride .dr-menu .dr-title { margin: 0; max-width: 560px; font-size: 118px; line-height: .98; font-weight: 900; font-style: italic; letter-spacing: .02em; white-space: normal;
+  color: #ffd35c; background: linear-gradient(180deg, #fffdf2 12%, #ffe07a 42%, #ff9a2e 74%, #e8641a 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  transform: skewX(-6deg) rotate(-3deg); transform-origin: left bottom; padding: 0 14px 6px 0;
+  filter: drop-shadow(0 2px 0 #5a2206) drop-shadow(2px 0 0 #5a2206) drop-shadow(-2px 0 0 #5a2206) drop-shadow(0 -2px 0 #5a2206) drop-shadow(0 7px 0 #3c1604) drop-shadow(0 14px 16px rgba(60, 20, 0, .5)); }
+.desert-ride .dr-menu[data-kind="practiced"] .dr-title { max-width: none; font-size: 86px; font-style: normal; transform: none; letter-spacing: .08em; white-space: nowrap; }
+/* 前置きの一文（やめた時などの知らせも同じ所）: 板のいちばん上 */
+.desert-ride .dr-menu .dr-lead { margin: 0; padding: 0 4px 2px; font-size: 21px; font-weight: 700; line-height: 1.45; text-align: center; color: #ffe9c8; text-shadow: 0 2px 0 rgba(30, 10, 4, .55); }
+
+/* 右の板: 結果の記録の板と同じ革の板（9-slice） */
+.dr-menu-board { position: absolute; right: 40px; top: 50%; width: var(--board-w); box-sizing: border-box; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 16px; padding: 14px 4px 16px;
+  border-style: solid; border-color: transparent; border-width: 22px 40px;
+  border-image-source: url("../img/ui/desert_ride_result/board.webp"); border-image-slice: 44 80 44 80 fill; border-image-width: 22px 40px; border-image-repeat: stretch;
+  filter: drop-shadow(0 16px 22px rgba(40, 14, 4, .5)); }
+.desert-ride .dr-menu[data-kind="practiced"] .dr-menu-board .dr-lead { padding: 4px 6px 2px; font-size: 24px; }
+
+/* 段の札: 革の札。選んでいる段は橙に灯る。閉じた段は鍵の色 */
+html:root .desert-ride .dr-card.dr-menu .dr-tiers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; }
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier { position: relative; min-width: 0; min-height: 86px; padding: 8px 8px 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  color: #f4dcb8; border: 2px solid #8a6238; border-radius: 10px; background: linear-gradient(180deg, #4b3024, #2c1a13); box-shadow: inset 0 1px 0 rgba(255, 220, 170, .22), 0 3px 0 rgba(20, 8, 4, .55);
+  text-shadow: 0 2px 0 rgba(20, 8, 4, .6); line-height: 1.2; transition: transform .12s, filter .12s; }
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier b { font-size: 30px; font-weight: 900; letter-spacing: .14em; }
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier small { display: block; max-width: 100%; font-size: 16px; font-weight: 700; letter-spacing: 0; opacity: .92; white-space: normal; text-align: center; overflow-wrap: anywhere; }
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier small span { display: inline-block; white-space: pre; }
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier[data-state="chosen"] { color: #fffaf0; border-color: #ffe2a0; background: linear-gradient(180deg, #ff9a34, #e2551a 62%, #b93a0e);
+  box-shadow: inset 0 2px 0 rgba(255, 240, 200, .55), 0 3px 0 rgba(70, 20, 4, .7), 0 0 0 3px rgba(255, 190, 90, .35), 0 0 22px rgba(255, 150, 50, .55); }
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier[data-state="chosen"] b::before { content: "✓ "; font-size: .72em; }
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier:disabled { opacity: 1; color: #b9a58e; border: 2px dashed #6c5440; background: linear-gradient(180deg, #2e211b, #1f1612); box-shadow: none; }
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier[data-fresh="true"] small, html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier.primary[data-fresh="true"] small { opacity: 1; color: #ffe27a; }
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier:not(:disabled):is(:hover, :focus-visible) { transform: translateY(-2px); filter: brightness(1.1); outline: 2px solid rgba(255, 240, 190, .95); outline-offset: 2px; }
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier:not(:disabled):active { transform: translateY(2px); filter: brightness(.94); }
+
+/* 自己ベスト: 板の中の金の一行 */
+.desert-ride .dr-menu .dr-best-slot { display: flex; flex-direction: column; gap: 4px; }
+.desert-ride .dr-menu .dr-best { margin: 0; padding: 7px 14px; font-size: 21px; font-weight: 900; letter-spacing: .04em; text-align: center; color: #ffe2a6;
+  background: linear-gradient(90deg, rgba(255, 190, 90, 0), rgba(255, 190, 90, .16) 18%, rgba(255, 190, 90, .16) 82%, rgba(255, 190, 90, 0)); border-top: 1px solid rgba(255, 210, 150, .35); border-bottom: 1px solid rgba(255, 210, 150, .35); }
+.desert-ride .dr-menu .dr-legacy-best { margin: 0; font-size: 18px; text-align: center; color: #d9c2a4; }
+
+/* ボタン: 結果と同じ札の絵。主（滑る）は一段ぶん横いっぱい、ほかは2つずつ */
+.desert-ride .dr-menu .dr-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+html:root .desert-ride .dr-card.dr-menu .dr-button.dr-button { flex: 1 1 calc(50% - 6px); min-width: 0; min-height: 76px; padding: 8px 20px; align-items: center; justify-content: center; text-align: center;
+  font-size: 24px; font-weight: 900; letter-spacing: .08em; color: #fff7ea; border: 0; border-radius: 0;
+  background: transparent url("../img/ui/desert_ride_result/button_secondary.webp") center / 100% 100% no-repeat; box-shadow: none;
+  filter: drop-shadow(0 5px 6px rgba(0, 0, 0, .35)); text-shadow: 0 2px 0 rgba(30, 10, 4, .55); transition: transform .12s, filter .12s; }
+html:root .desert-ride .dr-card.dr-menu .dr-button.dr-button.primary { flex: 1 1 100%; min-height: 96px; font-size: 34px; letter-spacing: .3em; text-indent: .3em;
+  background-image: url("../img/ui/desert_ride_result/button_primary.webp"); text-shadow: 0 3px 0 rgba(110, 30, 4, .7), 0 0 14px rgba(255, 220, 150, .35); }
+html:root .desert-ride .dr-card.dr-menu .dr-button.dr-button:is(:hover, :focus-visible) { transform: translateY(-2px); outline: none; filter: drop-shadow(0 0 2px #fff2c0) drop-shadow(0 0 10px rgba(255, 206, 96, .95)) drop-shadow(0 8px 8px rgba(0, 0, 0, .4)) brightness(1.08); }
+html:root .desert-ride .dr-card.dr-menu .dr-button.dr-button:active { transform: translateY(3px); filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .35)) brightness(.92); }
+
+/* 「？」: 画面の右上。暗い丸に金の縁 */
+.desert-ride .dr-menu .dr-help-btn.dr-help-btn { right: 14px; top: 12px; z-index: 3; color: #ffe9c4; }
+.desert-ride .dr-menu .dr-help-btn.dr-help-btn::before { border: 2px solid #e9b76a; background: rgba(46, 20, 10, .82); box-shadow: 0 3px 8px rgba(30, 10, 4, .45); }
+.desert-ride .dr-menu .dr-help-btn.dr-help-btn:is(:hover, :focus-visible)::before { background: #7a3410; border-color: #ffe2a0; }
+
+/* 遊び方: 画面いっぱいの革の板。見出し・一覧（ここだけ動く）・閉じる */
+.desert-ride .dr-menu .dr-help { position: absolute; inset: 22px 44px; z-index: 4; box-sizing: border-box; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 12px; align-items: stretch; padding: 8px 6px 10px;
+  border-style: solid; border-color: transparent; border-width: 22px 40px;
+  border-image-source: url("../img/ui/desert_ride_result/board.webp"); border-image-slice: 44 80 44 80 fill; border-image-width: 22px 40px; border-image-repeat: stretch;
+  filter: drop-shadow(0 16px 24px rgba(40, 14, 4, .55)); }
+.desert-ride .dr-menu .dr-help[hidden] { display: none; }
+.desert-ride .dr-menu[data-help="open"] > :not(.dr-help) { display: none; }
+.desert-ride .dr-menu .dr-help-title { margin: 0; font-size: 32px; font-weight: 900; letter-spacing: .3em; text-indent: .3em; text-align: center; color: #ffe2a6; text-shadow: 0 2px 0 rgba(30, 10, 4, .6); }
+.desert-ride .dr-menu .dr-howto { margin: 0; padding: 0 10px 0 0; max-width: none; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 22px; align-content: start;
+  font-size: 20px; line-height: 1.5; color: #f6e6cf; text-align: left; scrollbar-color: #b9864a rgba(0, 0, 0, .25); }
+.desert-ride .dr-menu .dr-howto li { position: relative; padding: 9px 12px 10px 112px; border-radius: 6px; background: rgba(255, 226, 180, .07); border-bottom: 1px dashed rgba(255, 210, 160, .24); }
+.desert-ride .dr-menu .dr-howto li::before { content: attr(data-topic); position: absolute; left: 8px; top: 10px; width: 94px; box-sizing: border-box; padding: 3px 0 4px; font-size: 17px; font-weight: 900; letter-spacing: .04em; line-height: 1.25; text-align: center;
+  color: #3a1a08; background: linear-gradient(180deg, #ffe08a, #f0a53a); border-radius: 4px; box-shadow: 0 2px 0 rgba(40, 12, 4, .5); }
+html:root .desert-ride .dr-card.dr-menu .dr-button.dr-button.dr-help-close { flex: none; justify-self: center; width: 300px; min-height: 68px; }
+
+@media (prefers-reduced-motion: reduce) { .dr-menu-rider { animation: none; } }
+.desert-ride[data-reduced-motion="true"] .dr-menu-rider { animation: none; }
+
+/* スマホ（横持ち）: 板を広げ、文字を舞台上 24px 以上に。題字は板に掛からない大きさへ */
+html:root[data-density="phone"] .desert-ride .dr-card.dr-menu { --board-w: 750px; }
+html:root[data-density="phone"] .desert-ride .dr-menu .dr-menu-head { left: 40px; top: 34px; width: 470px; }
+html:root[data-density="phone"] .desert-ride .dr-menu .dr-title { max-width: 450px; font-size: 104px; }
+html:root[data-density="phone"] .desert-ride .dr-menu[data-kind="practiced"] .dr-title { max-width: none; font-size: 72px; }
+html:root[data-density="phone"] .desert-ride .dr-menu .dr-menu-hero { transform: translateX(-70px) scale(.94); transform-origin: left bottom; }
+html:root[data-density="phone"] .desert-ride .dr-menu .dr-menu-board { right: 30px; gap: 12px; padding: 8px 0 10px; }
+html:root[data-density="phone"] .desert-ride .dr-card.dr-menu .dr-tier.dr-tier { min-width: 0; min-height: var(--phone-tap, 84px); padding: 8px 4px 9px; }
+html:root[data-density="phone"] .desert-ride .dr-card.dr-menu .dr-tier.dr-tier b { font-size: 32px; }
+html:root[data-density="phone"] .desert-ride .dr-card.dr-menu .dr-tier.dr-tier small { font-size: 24px; }
+html:root[data-density="phone"] .desert-ride .dr-menu :is(.dr-best, .dr-legacy-best) { font-size: 26px; }
+html:root[data-density="phone"] .desert-ride .dr-card.dr-menu .dr-button.dr-button { min-height: var(--phone-tap, 84px); font-size: 30px; padding: 6px 14px; }
+html:root[data-density="phone"] .desert-ride .dr-card.dr-menu .dr-button.dr-button.primary { min-height: 108px; font-size: 42px; }
+html:root[data-density="phone"] .desert-ride .dr-menu .dr-help { inset: 14px 30px; gap: 8px; padding: 2px 0 4px; }
+html:root[data-density="phone"] .desert-ride .dr-menu .dr-help-title { font-size: 34px; }
+html:root[data-density="phone"] .desert-ride .dr-menu .dr-howto { grid-template-columns: 1fr; font-size: 28px; line-height: 1.45; gap: 8px; }
+html:root[data-density="phone"] .desert-ride .dr-menu .dr-howto li { padding: 10px 14px 12px 150px; }
+html:root[data-density="phone"] .desert-ride .dr-menu .dr-howto li::before { width: 128px; top: 12px; font-size: 24px; }
+html:root[data-density="phone"] .desert-ride .dr-card.dr-menu .dr-button.dr-button.dr-help-close { width: 380px; min-height: var(--phone-tap, 84px); }
