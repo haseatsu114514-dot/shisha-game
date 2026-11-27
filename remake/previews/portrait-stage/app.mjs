@@ -141,34 +141,40 @@ const STEPS = [["water", "水入れ"], ["mix", "配合"], ["pack", "詰め方"],
 // この試作で遊べる作る場面（本編と同じ順。炭と調整は省く）
 const CRAFT_SCENES = ["water", "mix", "pack", "holes", "coal", "steam", "pull"];
 // 温度ゲージを出す場面（VPL61）。穴あけ・炭焼き・雑念よけの間は消し、吸い出しで戻す
-// 吸い出しのはじめの口元（img/craft-pull-hajime.webp の中の位置。横・縦の割合）。絵に描かれた煙と同じく、右上へ吐く
+// 吸い出しのはじめの口元（img/craft-pull-hajime.webp の中の位置。横・縦の割合）。絵には煙を描かず、吐いた時だけ動く煙を出す（VPL96）
 const PULL_MOUTH = [0.575, 0.292];
-// 吸い出しで吐く煙を、温度から連続して決める（VPL93）。本編 workerBreath の「適温」の吐き方を元に、項目ごとに温度で動かす。
-//   低い……ほんの少し。薄く小さく短い。帯の下端へ近づくほど増える
-//   帯の中……中心（最適温）に近いほど、たっぷりまとまったなめらかな煙が長く残る
-//   高すぎ……量は爆煙になるが、荒れてちぎれて横に散り、灰色に濁って早く崩れる（いい煙ではない）。熱いほどむせた短い煙も混ざる
-const SMOKE_GRAY = [0.6, 0.56, 0.52];
+// 吸い出しで吐く煙を、温度から連続して決める（VPL93・VPL94・VPL95）。本編 workerBreath の「適温」の吐き方を元に、項目ごとに温度で動かす。
+// 煙の「量」と「濃さ・白さ」を分けて決める:
+//   量……温度そのもので増える（熱いほど葉から多く出る）。低い＝少し、最適温＝たっぷり、高すぎ＝爆煙
+//   濃さ・白さ……最適温に近いほど白く濃い。外れるとどちらへも薄くなる（低い＝薄くて少ない／高すぎ＝薄くて大きすぎる）
+// 熱に強い葉（ミントなど）の配合は帯が上にずれ、最適温が高いぶん、白く濃いまま量も多くなる（VPL95）
+const SMOKE_GRAY = [0.74, 0.72, 0.7];
 const lerp = (a, b, k) => a + (b - a) * Math.max(0, Math.min(1, k));
 function smokeByTemp(t, b, { x, y, color }) {
   const [lo, hi] = b.zone, mid = (b.best[0] + b.best[1]) / 2, base = workerBreath("good", { x, y })[0];
-  const tint = smokeTint(color, 0.3);
-  if (t < lo) { // 低い
+  // 帯の位置で決まる量の倍率（基準の配合＝1.04。ミント多め≒1.25。スイカ・ストロベリー多めでも 0.9 まで）
+  const heat = lerp(0.9, 1.3, (mid - 0.47) / 0.2);
+  if (t < lo) { // 低い: 薄くて少ない。帯の下端へ近づくほど増える
     const k = (t - 0.12) / (lo - 0.12);
-    return { quality: "thin", nice: 0, breaths: [{ ...base, colors: [tint], rate: lerp(5, 12, k), size: lerp(0.018, 0.029, k), dur: lerp(0.55, 1.05, k), life: lerp(1.05, 1.9, k), alpha: lerp(0.5, 0.76, k), hold: lerp(0.2, 0.36, k), speed: lerp(0.22, 0.38, k), spread: lerp(0.3, 0.42, k) }] };
+    return { quality: "thin", nice: 0, heat, breaths: [{ ...base, colors: [smokeTint(color, 0.3)], rate: lerp(6, 12, k), size: lerp(0.022, 0.03, k), dur: lerp(0.65, 1.05, k), life: lerp(1.3, 1.9, k),
+      alpha: lerp(0.42, 0.6, k), hold: lerp(0.26, 0.36, k), speed: lerp(0.24, 0.36, k), spread: lerp(0.32, 0.42, k) }] };
   }
-  if (t <= hi) { // 帯の中: 中心に近いほどいい煙
-    const q = 1 - Math.abs(t - mid) / Math.max(mid - lo, hi - mid);
-    const best = t >= b.best[0] && t <= b.best[1];
-    return { quality: best ? "best" : "good", nice: q, breaths: [{ ...base, colors: [tint], rate: lerp(12, 19, q), size: lerp(0.029, 0.043, q), dur: lerp(1.05, 1.75, q), life: lerp(1.9, 3, q), alpha: lerp(0.76, 0.9, q), hold: lerp(0.36, 0.5, q), speed: lerp(0.38, 0.44, q), turb: lerp(0.1, 0.06, q), spread: lerp(0.42, 0.36, q) }] };
+  if (t <= hi) { // 帯の中: 最適温に近いほど白く濃く、量も増える。帯の上の方ほど量は多め
+    const q = 1 - Math.abs(t - mid) / Math.max(mid - lo, hi - mid), up = (t - lo) / (hi - lo);
+    const best = t >= b.best[0] && t <= b.best[1], more = heat * lerp(0.88, 1.15, up);
+    return { quality: best ? "best" : "good", nice: q, heat, breaths: [{ ...base, colors: [smokeTint(color, lerp(0.28, 0.07, q))], rate: lerp(12, 27, q) * more, size: lerp(0.03, 0.05, q) * Math.sqrt(more),
+      dur: lerp(1.1, 1.95, q), life: lerp(2, 3.4, q), alpha: lerp(0.6, 1, q), hold: lerp(0.36, 0.54, q), speed: lerp(0.38, 0.46, q), turb: lerp(0.1, 0.05, q), spread: lerp(0.42, 0.34, q) }] };
   }
-  // 高すぎ: 爆煙だが荒れる
-  const h = (t - hi) / (TEMP_DANGER - hi), dirty = tint.map((v, i) => lerp(v, SMOKE_GRAY[i], 0.25 + 0.45 * h));
-  const plume = { ...base, colors: [dirty], rate: lerp(22, 36, h), size: lerp(0.042, 0.058, h), dur: lerp(1.3, 1.9, h), life: lerp(1.7, 1.15, h), alpha: lerp(0.84, 0.76, h), hold: lerp(0.3, 0.2, h),
-    speed: lerp(0.5, 0.64, h), spread: lerp(0.6, 1, h), turb: lerp(0.24, 0.46, h), drag: lerp(1.9, 2.7, h), sway: 0, flat: true };
+  // 高すぎ: 量は爆煙だが、薄くて大きすぎる（濃さは5段で塗るので、0.64〜0.8 で最適温の 1 より2段ほど薄い）。荒れてちぎれて横に散り、白さも抜けて早く崩れる（いい煙ではない）。熱いほどむせた短い煙も混ざる
+  const h = (t - hi) / (TEMP_DANGER - hi), pale = smokeTint(color, 0.2).map((v, i) => lerp(v, SMOKE_GRAY[i], 0.15 + 0.3 * h));
+  const plume = { ...base, colors: [pale], rate: lerp(26, 64, h) * heat, size: lerp(0.055, 0.115, h), dur: lerp(1.7, 2.4, h), life: lerp(2.3, 1.8, h), alpha: lerp(0.8, 0.64, h), hold: lerp(0.34, 0.24, h),
+    speed: lerp(0.6, 0.86, h), spread: lerp(0.55, 0.85, h), turb: lerp(0.12, 0.2, h), drag: lerp(1.5, 1.8, h), sway: 0, flat: true, lean: true };
   const breaths = [plume];
-  if (h > 0.35) breaths.push({ ...plume, dur: 0.22, rate: 30, size: 0.026, life: 0.9, speed: 0.66, spread: 1.1, delay: 0.15 }, { ...plume, dur: 0.22, rate: 30, size: 0.026, life: 0.9, speed: 0.55, spread: 1.1, angle: plume.angle - 0.25, delay: 0.65 });
-  return { quality: "harsh", nice: 0, breaths };
+  if (h > 0.35) breaths.push({ ...plume, dur: 0.22, rate: 30, size: 0.03, life: 0.9, speed: 0.7, spread: 1.2, delay: 0.15 }, { ...plume, dur: 0.22, rate: 30, size: 0.03, life: 0.9, speed: 0.58, spread: 1.2, angle: plume.angle - 0.25, delay: 0.65 });
+  return { quality: "harsh", nice: 0, heat, breaths };
 }
+// 煙のおおよその量（房の数×大きさ²×寿命の和）。確かめ用に煙の層へ書き残す
+const smokeAmount = (breaths) => breaths.reduce((n, s) => n + (s.rate || 0) * (s.dur || 0) * (s.size || 0) ** 2 * (s.life || 0) * 1e4, 0);
 // 煙の輪（本編 craft/fx.js の RING と同じ: 口元から右へ吹いた縦長の輪）
 const SMOKE_RING = { radius: .03, size: .012, squash: [.55, 1], grow: .03, drift: .085, rise: .05, life: 1.7 };
 const THERMO_ON = new Set(["mix", "pack", "pull"]); // 配合は帯だけ（VPL78）
@@ -393,11 +399,12 @@ const GALLERY = [
   { scene: "steam", caption: "作る・蒸らし（アタックを覚えた後）", attack: true },
   { scene: "pull", caption: "作る・吸い出し（tonari）" },
   // 吸い出しで吐く煙は温度で変わる（VPL93）。数秒おきに、その温度のまま吐く
-  { scene: "pull", caption: "吐く煙: 低い（0.25）。ほんの少し", temp: 0.25, smokeDemo: true },
-  { scene: "pull", caption: "吐く煙: 適温の下の端（0.44）", temp: 0.44, smokeDemo: true },
-  { scene: "pull", caption: "吐く煙: 最適温（0.54）。いちばんいい煙", temp: 0.54, smokeDemo: true },
-  { scene: "pull", caption: "吐く煙: 少し熱い（0.72）。量は多いが荒れる", temp: 0.72, smokeDemo: true },
-  { scene: "pull", caption: "吐く煙: 高すぎ（0.86）。爆煙だが濁ってちぎれる", temp: 0.86, smokeDemo: true },
+  { scene: "pull", caption: "吐く煙: 低い（0.25）。薄くて少ない", temp: 0.25, smokeDemo: true },
+  { scene: "pull", caption: "吐く煙: 適温の下の端（0.44）。まだ薄め", temp: 0.44, smokeDemo: true },
+  { scene: "pull", caption: "吐く煙: 最適温（0.54）。白く濃く、たっぷり", temp: 0.54, smokeDemo: true },
+  { scene: "pull", caption: "吐く煙: 少し熱い（0.72）。量は多いが薄く荒れる", temp: 0.72, smokeDemo: true },
+  { scene: "pull", caption: "吐く煙: 高すぎ（0.86）。爆煙だが薄くて大きすぎる", temp: 0.86, smokeDemo: true },
+  { scene: "pull", caption: "吐く煙: ミント多め（熱に強い）の最適温（0.64）。白く濃く、量も多い", temp: 0.64, mix: [0, 10, 2], smokeDemo: true },
   { scene: "pull", caption: "作る・吸い出し（PEPPERMINT に替えた例）", venue: "shop" },
 ];
 
@@ -2106,8 +2113,8 @@ class Phone {
   }
 
   /**
-   * 吸い出しで吐く煙（VPL88）。本編の「煙が成績表」（KMR15）と同じく、吐いた時の温度で煙の姿が変わる:
-   *   最適温＝たっぷり長く残る（5口目なら吐き終わりに煙の輪）／適温＝まとまった煙／ぬるい＝薄く小さい／熱すぎ＝むせてちぎれる。
+   * 吸い出しで吐く煙（VPL88）。本編の「煙が成績表」（KMR15）と同じく、吐いた時の温度で煙の姿が変わる（smokeByTemp）:
+   *   最適温＝白く濃く、たっぷり長く残る（5口目なら吐き終わりに煙の輪）／ぬるい＝薄くて少ない／熱すぎ＝爆煙だが薄くて大きすぎ、ちぎれる。
    * 色は配合の葉の色をうっすら。煙の升目は 16:9 なので、口元の周りに 16:9 の箱を置いて載せる（縦の画面にそのまま広げると房がつぶれる）。
    */
   exhale({ last = false } = {}) {
@@ -2121,13 +2128,13 @@ class Phone {
     const bw = pr.width * 1.5, bh = bw * 9 / 16, bx = mx - bw * 0.34, by = my - bh * 0.62;
     Object.assign(box.style, { left: `${bx}px`, top: `${by}px`, width: `${bw}px`, height: `${bh}px` });
     const b = bandsOf(st.mix), t = st.temp, x = (mx - bx) / bw, y = (my - by) / bh;
-    const { quality, nice, breaths: raw } = smokeByTemp(t, b, { x, y, color: this.mixColor() });
+    const { quality, nice, heat, breaths: raw } = smokeByTemp(t, b, { x, y, color: this.mixColor() });
     // 本編のはじめは横向き（煙は顔の前へ出る）。縦の絵は正面向きなので、口元から少し右下へ吐き、顔の外へ出てから昇らせる（目元にかけない）。
     // 横への広がりは、いい煙ほど細くまとめ、熱すぎる煙は荒れたまま散らす
     const breaths = raw.map((s) => ({ ...s, angle: s.angle + 0.34, buoy: s.buoy * 0.35, speed: s.speed * 1.3, spread: quality === "harsh" ? s.spread : Math.min(s.spread, 0.34) }));
     if (last && quality === "best") breaths.push(...ringBreath({ ...SMOKE_RING, x: x + .035, y: y - .012, colors: [smokeTint(this.mixColor(), .08)], delay: 1.9 }));
     const layer = smokeLayer(box, { zIndex: 1, className: "pull-smoke", gridScale: .5 });
-    Object.assign(layer.canvas.dataset, { quality, nice: nice.toFixed(2), temp: t.toFixed(2) });
+    Object.assign(layer.canvas.dataset, { quality, nice: nice.toFixed(2), temp: t.toFixed(2), heat: heat.toFixed(2), amount: smokeAmount(breaths).toFixed(1), alpha: breaths[0].alpha.toFixed(2) });
     layer.breathe(breaths);
   }
 

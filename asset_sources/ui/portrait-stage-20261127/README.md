@@ -528,3 +528,16 @@ Draw one object only, on a fully transparent background: the work sink behind th
 - Warm reflections of the bar lights on the steel, a few soft highlights, very clean.
 Do not draw: a faucet, a tap, water, dishes, cups, bottles, hookahs, sponges, towels, people, hands, a wall, tiles, a window, text, letters, logos, watermark.
 ```
+
+## 12回目: 吸い出しのはじめの絵から煙を消す（VPL96・生成なし）
+
+オーナー「あと最初から少し煙吐いてる絵になってるからそこはなくしたい　アニメーションで煙出せばいいから」。
+4回目の `craft-pull-hajime.webp`（背景なし）には、口元から右上へ細い煙が描かれていた。吸い出しでは「吸う」を押すと本編の動く煙を吐く（VPL88）ので、絵の煙は消した。画像生成は使っていない。
+
+- 消し方: 口元の右の範囲（横 440〜780・縦 190〜430）で、白っぽく色の薄い画素と縁の半透明の画素のうち、透明な背景からつながっているものだけを透明にした（目の白・吸い口の照りなど、人物の内側の白は残る）。
+- 口の横で煙の下になっていた頬は、隣の肌の色で埋め、あごの線を吸い口までつないだ。
+- 人物・吸い口・ホース・顔は変えていない。原画 `v3/hajime-pull-original.webp` はそのまま残す（煙が描かれた元の絵）。
+
+| 原画 | 試作で使う絵（img/） | 使う所 |
+|---|---|---|
+| `v3/hajime-pull-original.webp`（変えていない） | `craft-pull-hajime.webp`（798×1200・煙を消した） | 吸い出しのはじめ |
