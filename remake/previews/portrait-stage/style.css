@@ -755,13 +755,9 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .help-q { display: grid; place-items: center; width: 3.2rem; height: 3.2rem; padding: 0; border: 0.1rem solid #ffffff4d; border-radius: 50%; background: #120c1dcc; color: #ffffffd9; font-size: 1.7rem; font-weight: 700; line-height: 1; box-shadow: 0 0.3rem 0.8rem #000a; -webkit-backdrop-filter: blur(1rem); backdrop-filter: blur(1rem); }
 .help-q:active { background: var(--acc); color: var(--deep); }
 .phone:not([data-kind="craft"]) .help-q { display: none; }
-/* 案A: スミさんの一言と同じ段の右端。一言の吹き出しはその手前で折り返す */
-.phone[data-help="a"] .coach { padding-right: 4.2rem; }
+/* スミさんの一言と同じ段の右端（下の画面の右上。VPL99・VPL109 で決定）。一言の吹き出しはその手前で折り返す */
+.phone[data-kind="craft"] .coach { padding-right: 4.2rem; }
 .help-a { position: absolute; right: 0; bottom: 0.6rem; z-index: 2; }
-/* 案B: スミさんの顔の右上の札 */
-.help-b { position: absolute; left: 3rem; bottom: 3.3rem; z-index: 2; width: 2.4rem; height: 2.4rem; font-size: 1.35rem; border-color: var(--acc); background: #1e1632; color: var(--acc); }
-/* 案C: 工程の並びの帯の右端（帯の中。細い仕切りの右） */
-.steps .help-c { width: 2.6rem; height: 2.6rem; margin-left: 0.4rem; border: 0; border-left: 0.1rem solid #ffffff2e; border-radius: 0 50% 50% 0; background: none; box-shadow: none; font-size: 1.5rem; color: #ffffffb3; }
 
 /* 炭焼き（VPL54・VPL57）: 下の画面は本編の電熱コンロを幅いっぱいに。炭は大きくし、押せる範囲も絵より広い。
    炭は黒い面（cold）と赤（lit）の絵を重ね、--red で焼け、--ash で灰をまとう */
@@ -931,13 +927,13 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
   .judges { top: 6.6rem; } .jtag { font-size: 1.5rem; } }
 
 /* ───────── シーシャ作りの手の置き場をそろえる（VPL83・VPL84・VPL86・VPL87） ─────────
-   下の操作パネルの高さは同じ（--cp。844 で 30rem）。例外は2つだけ: 配合は葉の棚の分だけ高く（--cp-mix）、水入れはボタン1段だけなので低い（--cp-water）。
+   下の操作パネルの高さは、どの場面も同じ（--cp。844 で 30rem）。VPL111（上下の比率をそろえる案A）で、配合・水入れ・雑念よけの例外もなくした。
    雑念よけは場（弾幕）を広く取るため、パネルが低いまま。
    右下＝決定（どの場面も同じ位置・同じ大きさ --ok。雑念よけのリフレッシュ・吸い出しの提供も同じ角・同じ大きさ）、
    真ん中＝押し続ける大きな丸（刺す・吸う。中心はパネルの下から --hold-y）、左下＝補助。
    同じ画面に並ぶ丸いボタンは同じ大きさ（水入れの こぼす・注ぐ・決定、雑念よけの 精密・リフレッシュ。VPL86）。
    スミさんの一言は一回り小さく、一言のために空ける帯も詰めて、上の画面を広くする（VPL87）。 */
-.phone[data-kind="craft"] > * { --cp: var(--cp-std); --cp-std: 30rem; --cp-mix: 31.6rem; --ok-mix: 8.8rem; --cp-water: 14.4rem; --hold: 18rem; --hold-y: 14rem; --ok: 11.2rem; --edge: 1.4rem; --low: 1.6rem; --band: 3rem; }
+.phone[data-kind="craft"] > * { --cp: var(--cp-std); --cp-std: 30rem; --cp-mix: var(--cp-std); --ok-mix: 8.8rem; --cp-water: var(--cp-std); --hold: 18rem; --hold-y: 14rem; --ok: 11.2rem; --edge: 1.4rem; --low: 1.6rem; --band: 3rem; }
 .phone[data-scene="mix"] > * { --cp: var(--cp-mix); }
 .phone[data-scene="water"] > * { --cp: var(--cp-water); }
 .phone[data-kind="craft"]:not([data-scene="steam"]) :is(.body, .pic, .ctrl, .thermo, .smoke, .veil, .nico-lane) { --ctrl-h: var(--cp); --aux-h: 0rem; --aux-pad: 0rem; --aux-g: 0rem; }
@@ -950,8 +946,14 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 /* 水入れ: こぼす・注ぐ・決定を同じ大きさで1段に並べる（左下・真ん中・右下） */
 .phone[data-kind="craft"] .btn-a.sub.l { right: auto; top: auto; left: var(--edge); bottom: var(--low); width: var(--ok); height: var(--ok); margin: 0; }
 .phone[data-scene="water"] .btn-a.center.pour { top: auto; bottom: var(--low); width: var(--ok); height: var(--ok); margin-left: calc(var(--ok) / -2); }
-.phone[data-scene="water"] .water-a .bottle { left: calc(50% - 3.4rem); bottom: 3rem; width: min(19rem, calc((100cqh - var(--cp) - 13.3rem) * 0.5)); } /* 流し台の幅（ボトルの約2倍）が画面に収まる大きさ。流し台の真ん中が画面の真ん中に来る（VPL101） */
-.phone[data-scene="water"] .veil { top: calc(100% - var(--cp) - var(--band) - 3rem); } /* 紫の幕は一言のすぐ上から下だけ（流し台を暗くしない） */
+.phone[data-kind="craft"][data-scene="water"] .pic { height: calc(100% - var(--low) - var(--ok) - 1.2rem); } /* 上の絵は、いちばん下の段のすぐ上まで続ける（VPL111。下の画面の空きを詰める） */
+.phone[data-scene="water"] .water-a { --bw: min(19rem, calc((100cqh - var(--cp) - 8.4rem) / 1.63)); }
+/* カウンターの手前の縁（ボトルの縦 87.5%）が、スミさんの一言の段の真ん中に来る高さ。ボトルの水の線は一言より上に見える */
+.phone[data-scene="water"] .water-a .bottle { left: calc(50% - 3.4rem); bottom: calc(var(--cp) + 2.4rem - var(--low) - var(--ok) - 1.2rem - var(--bw) * 0.185); width: var(--bw); }
+/* 前板の下は、流し台の下の戸棚（ステンレスの扉）で、いちばん下の段の上まで埋める */
+.bottle .cabinet { position: absolute; z-index: 1; left: -41.33%; width: 222.6%; top: calc(106.9% - 0.2rem); height: 60rem; pointer-events: none;
+  background: linear-gradient(180deg, #00000066 0, transparent 0.8rem), repeating-linear-gradient(90deg, transparent 0 calc(25% - 0.1rem), #0000004d calc(25% - 0.1rem) 25%), linear-gradient(180deg, #8a6e5c, #5a463d 40%, #2c2027); } /* 流し台の幅（ボトルの約2倍）が画面に収まる大きさ。流し台の真ん中が画面の真ん中に来る（VPL101） */
+.phone[data-scene="water"] .veil { top: calc(100% - var(--low) - var(--ok) - 4rem); } /* 紫の幕は、いちばん下の段のすぐ上から下だけ（流し台と戸棚を暗くしない） */
 /* 雑念よけ: 精密（アタック）も同じ大きさ */
 .phone[data-scene="steam"] .act-sub { width: var(--ok); height: var(--ok); }
 .phone[data-scene="steam"] .act-sub small { font-size: calc(var(--ok) * 0.12); }
@@ -971,7 +973,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .serve-pill .pips { position: static; transform: none; gap: 0.35rem; } .serve-pill .pips i { width: 0.85rem; height: 0.85rem; }
 .serve-pill:active { scale: 0.95; }
 /* 配合: 上にジャンルのボタン、真ん中に葉の棚、下の段に選んだ葉の −／＋ と決定 */
-.phone[data-scene="mix"] > * { --mix-h: var(--cp); --tile: 7.3rem; --pkz: 0.72; }
+.phone[data-scene="mix"] > * { --mix-h: var(--cp); --tile: 6.5rem; --pkz: 0.64; } /* 下の画面がほかの場面と同じ高さなので、棚の札を少し低く（VPL111） */
 .phone[data-scene="mix"] .mix-a { --sw: min(29rem, calc((100cqh - var(--cp) - var(--band) - 10.6rem) / 1.03)); } .phone[data-scene="mix"] .mix-a .scale { top: auto; bottom: 3rem; } /* はかりは一言のすぐ上に置く（VPL91） */
 .phone[data-scene="mix"] .genre-bar { top: 0.6rem; bottom: auto; left: 1rem; right: 1rem; }
 .phone[data-scene="mix"] .picker.shelf { top: 5.6rem; }
@@ -994,17 +996,20 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .btn-lab { position: absolute; z-index: 4; left: 0; right: 0; bottom: 15%; text-align: center; font-size: 12cqw; line-height: 1.1; font-weight: 800; letter-spacing: 0.06em; color: #fff; text-shadow: 0 0.1rem 0.4rem #0b0812, 0 0 0.2rem #0b0812; pointer-events: none; }
 .btn-a:has(.pips) .tool-svg { inset: 5% 23% 41% 23%; width: 54%; height: 54%; } .btn-a:has(.pips) .btn-lab { bottom: 27%; }
 @container phone (max-height: 80rem) {
-  .phone[data-kind="craft"] > * { --cp-std: 26.6rem; --cp-mix: 28.4rem; --ok-mix: 8rem; --cp-water: 12.6rem; --hold: 15.6rem; --hold-y: 12.4rem; --ok: 10rem; --edge: 1.2rem; --low: 1.2rem; --band: 2.6rem; }
-  .phone[data-scene="mix"] > * { --tile: 6.5rem; --pkz: 0.64; } .phone[data-scene="mix"] .picker.shelf { top: 5.2rem; }
+  .phone[data-kind="craft"] > * { --cp-std: 26.6rem; --ok-mix: 8rem; --hold: 15.6rem; --hold-y: 12.4rem; --ok: 10rem; --edge: 1.2rem; --low: 1.2rem; --band: 2.6rem; }
+  .phone[data-scene="mix"] > * { --tile: 5.6rem; --pkz: 0.55; } .phone[data-scene="mix"] .picker.shelf { top: 5.2rem; }
   .phone[data-scene="pull"] > * { --pill: 4.8rem; --puff: 12.4rem; --g-side: 6.3rem; --g-up: 12.63rem; } .pic.craft-holes .foil { width: 27.6rem; }
   .phone[data-kind="craft"] .coach .say { font-size: 1.5rem; }
 }
 @container phone (max-height: 71rem) {
-  .phone[data-kind="craft"] > * { --cp-std: 24rem; --cp-mix: 25.8rem; --ok-mix: 7.2rem; --cp-water: 11.2rem; --hold: 13.4rem; --hold-y: 11rem; --ok: 8.8rem; --edge: 1rem; --low: 1rem; --band: 2.4rem; }
-  .phone[data-scene="mix"] > * { --tile: 5.9rem; --pkz: 0.56; } .phone[data-scene="mix"] .picker.shelf { top: 4.8rem; } .phone[data-scene="mix"] .mixtile .mt-name { display: none; }
+  .phone[data-kind="craft"] > * { --cp-std: 24rem; --ok-mix: 7.2rem; --hold: 13.4rem; --hold-y: 11rem; --ok: 8.8rem; --edge: 1rem; --low: 1rem; --band: 2.4rem; }
+  .phone[data-scene="mix"] > * { --tile: 5rem; --pkz: 0.49; } .phone[data-scene="mix"] .picker.shelf { top: 4.8rem; } .phone[data-scene="mix"] .mixtile .mt-name { display: none; }
   .phone[data-scene="pull"] > * { --pill: 4.4rem; --puff: 11rem; --g-side: 7.4rem; --g-up: 11.58rem; } .pic.craft-holes .foil { width: 23rem; }
   .phone[data-kind="craft"] .coach .say { font-size: 1.4rem; }
 }
+
+/* 雑念よけも、下の画面の高さをほかの場面と同じにする（VPL111。弾幕の場は上の画面） */
+.phone[data-scene="steam"] :is(.body, .pic, .ctrl, .thermo, .smoke, .veil, .nico-lane) { --ctrl-h: var(--cp); --aux-h: 0rem; --aux-pad: 0rem; --aux-g: 0rem; }
 
 /* 場面ごとのパネルの高さ（画面の高さ別の値を読んだ後で決める） */
 .phone[data-kind="craft"] > * { --cp: var(--cp-std); }

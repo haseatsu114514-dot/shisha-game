@@ -18,6 +18,7 @@ async function prepare(page, legacy = false) {
     await ui.setBg(data.bgUrl("bg_tonari_inside"), { instant: true });
     await engine.play("remake_tutorial_result");
     engine.vnTest.turbo = false; core.config.textSpeed = 4;
+    core.config.skipSeenOnly = false; // 未読の台詞も SKIP で送る（既定は既読のみ・#4194。付けないと SKIP が効かず場面が終わらない）
     engine.backlog().length = 0;
     window.V = { core, engine, ui, data };
   }, legacy);

@@ -24,6 +24,7 @@ import {
   MIXES, WISHES, VERBS, CALLS, MOODS, VISITORS, TUTORIAL,
 } from "./tonari-floor-data.js";
 import { floorVenue, floorVenueCommissionPercent } from "./floor-venues.js";
+import { CHAT_SPEAKERS } from "./floor-chats.js";
 import { glyph, guestArt } from "./tonari-floor-art.js";
 import { FLOOR_ART, artUrl, currentStage, floorArtPath, spotCenter } from "./tonari-floor-stage.js";
 
@@ -138,6 +139,8 @@ export function runTonariFloor({
   // tutorial＝チュートリアル（スミさんが横について一通りやらせる。TFL64）。結果は { tutorial: true, skipped }。
   // offerTutorial＝開店前の札に「遊び方（チュートリアル）」を出す（選ぶと { again: "tutorial" } を返す。呼び出し側がチュートリアルを開いてから、もう一度呼ぶ）
   tutorial = false, offerTutorial = false,
+  // staff＝一緒に店に立つ人（"tsumugi"＝第5章の tonari。雑談の一部がつむぎの話になる・TFL69）
+  staff = null,
   isCurrent = () => true, signal = null,
 } = {}) {
   if (signal?.aborted || !isCurrent()) return Promise.resolve(null);
@@ -150,7 +153,7 @@ export function runTonariFloor({
   const tableCount = r.tableCount;
   const speaker = visitor === "minto" ? "oneesan" : visitor;
   const visitorName = gameState && (speaker === "oneesan" || speaker === "samechan") ? displayName(speaker, gameState) : null;
-  const openNight = () => createFloorNight({ venue, seed, level, chapter, rainy, daytime: !night, visitor, visitorName, night: kind, dusk, floorPerks });
+  const openNight = () => createFloorNight({ venue, seed, level, chapter, rainy, daytime: !night, visitor, visitorName, night: kind, dusk, floorPerks, staff });
   if (!mount && instantFloor()) {
     if (tutorial) return Promise.resolve({ tutorial: true, skipped: true });
     const opened = openNight();
@@ -559,7 +562,9 @@ export function runTonariFloor({
           case "call": SE.tick(); log(e.coal ? `${e.tableId}卓　炭を見てほしそうです` : `${e.tableId}卓で、お客さんの様子が変わりました`, e.coal ? "bad" : ""); break;
           case "care":
             if (e.ok) { SE.perfect(); hit(e.tableId, "good"); pop(e.tableId, "いいケア", "best", "best"); } else { SE.miss(); hit(e.tableId, "off"); pop(e.tableId, "ちがった…", "off", "bad"); }
-            say(e.tableId, e.line, e.ok ? "good" : "bad");
+            // 雑談の返しは店の側の言葉なので、話した人の名前を添える（TFL72）
+            if (e.reply) log(`${e.tableId}卓　${CHAT_SPEAKERS[e.by] || CHAT_SPEAKERS.hajime}${quoted(e.reply)}`, "good");
+            else say(e.tableId, e.line, e.ok ? "good" : "bad");
             break;
           case "callLate": SE.miss(); pop(e.tableId, "見逃した", "off"); log(`${e.tableId}卓の頼みを見逃しました`, "bad"); break;
           case "drink":
@@ -932,13 +937,23 @@ export function runTonariFloor({
       if (cancel) SE.cancel();
       if (id && mode === "live") select(id, true);
     }
-    // 選んだ結果の印（◎ ○ △ ×）
+    // 選んだ結果の印（◎ ○ △ ×）。雑談に応えた時は、会話（客の話しかけと、はじめかつむぎの返し）も持つ（TFL68〜72）
     function verdictOf(events) {
       for (const e of events) {
-        if (e.type === "care") return e.ok ? { mark: "best", text: "いいケア！", line: e.line } : { mark: "bad", text: "ちがったみたい", line: e.line };
+        if (e.type !== "care") continue;
+        if (!e.ok) return { mark: "bad", text: "ちがったみたい", line: e.line };
+        const talk = e.reply ? [["guest", e.said], [e.by || "hajime", e.reply]] : null;
+        return { mark: "best", text: "いいケア！", line: e.line, talk };
       }
       return null;
     }
+    // 雑談の会話の吹き出し。客は明るい吹き出し（右寄せ）、店の側（はじめ・つむぎ）は名札つきの暗い吹き出し（左寄せ）
+    const talkLines = (talk) => el("div.tf-talk", { dataset: test("talk") }, talk.map(([who, text]) => el("p.tf-talk-line", { dataset: { who } }, [
+      who === "guest" ? null : el("b.tf-talk-name", { text: CHAT_SPEAKERS[who] || CHAT_SPEAKERS.hajime }),
+      el("span", { text: quoted(text) }),
+    ])));
+    // 会話を読む長さ（時間は止まっている。押せば先へ進む）: 字数に合わせて、2〜4秒
+    const talkMs = (talk) => Math.min(4000, Math.max(2000, 1000 + 50 * talk.reduce((n, [, text]) => n + [...text].length, 0)));
     function choose(action, button) {
       if (!panel || mode !== "panel") return;
       if (panel.locked) { closePanel({ cancel: false }); return; } // 印が出ている間にもう一度押したら、先へ進む
@@ -946,14 +961,17 @@ export function runTonariFloor({
       if (mode !== "panel" || !panel) return; // 営業が締まった
       const verdict = verdictOf(state.log);
       if (verdict) host.dataset.verdict = verdict.mark;
-      const hold = verdict ? floorTest.verdictMs ?? (floorTest.manual ? 0 : 1000) : 0;
+      const hold = verdict ? floorTest.verdictMs ?? (floorTest.manual ? 0 : verdict.talk ? talkMs(verdict.talk) : 1000) : 0;
       if (!hold) { closePanel({ cancel: false }); return; }
       panel.locked = true;
       const sheet = layer.querySelector(".tf-sheet");
       sheet.dataset.verdict = verdict.mark;
       if (button) button.dataset.picked = "true";
       sheet.querySelector(".tf-verdict").replaceChildren(glyph(MARK[verdict.mark]), el("b", { text: verdict.text }));
-      if (verdict.line) sheet.querySelector(".tf-sheet-quote").textContent = quoted(verdict.line);
+      if (verdict.talk) {
+        sheet.dataset.talk = "true";
+        sheet.querySelector(".tf-visit-view").append(talkLines(verdict.talk));
+      } else if (verdict.line) sheet.querySelector(".tf-sheet-quote").textContent = quoted(verdict.line);
       verdictTimer = setTimeout(() => { if (active && panel?.locked && mode === "panel") closePanel({ cancel: false }); }, hold);
     }
     // ミックスの札: 左に属性の印（メインが大きく、サブが小さい）、右に、この客との合い方（◎ ○ ×）
