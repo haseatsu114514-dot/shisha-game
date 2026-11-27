@@ -423,7 +423,8 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
       const lessonTag = lessons.length ? ["mi-lesson", `授業の相談「${lessons.map((l) => l.name).join("」「")}」`, "map-lesson"] : null;
       const visitTag = visitHint ? ["mi-visit-hint", visitHint, "map-visit-hint"] : null;
       const timing = timeTag(s);
-      const useCost = s.playCost ? ["mi-cost", `プレイ ${yen(s.playCost)}・記録閲覧無料`, "map-cost"]
+      // 斧投げBarの料金の札は長いので、狭い時は「・」の後でだけ折る（スマホで右下の案内の幅を超えていた）。文の区切りごとに分けて渡す
+      const useCost = s.playCost ? ["mi-cost", [`プレイ ${yen(s.playCost)}・`, "記録閲覧無料"], "map-cost"]
         : s.cost && !freeGuide(s) ? ["mi-cost", `料金 ${yen(s.cost)}`, "map-cost"] : null;
       const tags = av.why === "locked" ? [] : [
         av.ok ? visitTag : ["mi-why", av.why, "map-why"],
@@ -432,7 +433,9 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
         av.ok && !freeGuide(s) ? freshnessTag(s) : null,
         lessonTag,
       ].filter(Boolean);
-      const tagRow = tags.length ? el("div.mi-tags", tags.map(([cls, text, test]) => el(`span.mi-tag.${cls}`, { text, dataset: { test } }))) : null;
+      const tagRow = tags.length ? el("div.mi-tags", tags.map(([cls, text, test]) => Array.isArray(text)
+        ? el(`span.mi-tag.${cls}.mi-tag-split`, { dataset: { test } }, text.map((part) => el("span.mi-tag-part", { text: part })))
+        : el(`span.mi-tag.${cls}`, { text, dataset: { test } }))) : null;
       info.replaceChildren(...[
         el("div.mi-banner", { text: label }),
         tagRow,

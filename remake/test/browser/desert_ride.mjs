@@ -293,6 +293,10 @@ await suite("desert-ride", async check => {
     assert.equal(await page.locator(t("desert-kmh")).innerText(), "0", "standing still during the countdown");
     assert.equal(await page.locator(t("desert-race-gap")).innerText(), "VS ヌール");
     assert(await page.evaluate(() => window.__desertRide.rival.finishTime > 45), "Noor races the same course");
+    // 下り坂の見え方は横にも当てる（2026-11-27）。人物の足元は、平らな作りと同じ画面の高さ（502px）のまま（下げるとボタンに近づく）
+    const stance = await page.evaluate(() => { const r = window.__desertRide; r.redraw(); return r.fx; });
+    assert.equal(stance.downhill, true, "the downhill view is on in landscape");
+    assert(Math.abs(stance.riderGround - 502) < 0.5, `the rider stands where the flat view put him (${stance.riderGround})`);
     // PC: → を押し続けると慣性で右へ、Space はホップ（起伏が無い所）
     await page.keyboard.down("ArrowRight");
     await page.waitForFunction(() => window.__desertRide.game.x > 0.3);
@@ -311,7 +315,8 @@ await suite("desert-ride", async check => {
       "rider_brace.webp", "rider_fall.webp", "rider_jump.webp", "rider_lean_left.webp", "rider_lean_right.webp",
       "rider_noor_brace.webp", "rider_noor_fall.webp", "rider_noor_jump.webp", "rider_noor_lean_left.webp", "rider_noor_lean_right.webp", "rider_noor_ride.webp",
       "rider_ride.webp", "rock_large.webp", "rock_small.webp", "sand_puff.webp", "spin_hajime_045.webp", "spin_hajime_090.webp", "spin_hajime_135.webp", "spin_hajime_180.webp",
-      "spin_noor_045.webp", "spin_noor_090.webp", "spin_noor_135.webp", "spin_noor_180.webp", "title_bg.webp"]);
+      "spin_noor_045.webp", "spin_noor_090.webp", "spin_noor_135.webp", "spin_noor_180.webp", "title_bg.webp",
+      "valley_day.webp", "valley_dusk.webp"]); // valley_*: 坂の下の谷の遠景（下り坂の見え方。2026-11-27 に横にも当てた）
     // 空中トリックとブーストを使う理想の滑り: S、ヌールに勝つ。360 以上を決めるとカットインが走る
     await page.evaluate(() => {
       window.__cutins = [];
@@ -424,12 +429,14 @@ await suite("desert-ride", async check => {
     assert.deepEqual(await page.evaluate(() => window.__desertRide.tiers), ["easy", "normal", "hard"], "the preview opens all three tiers");
     assert.equal(await tierChip(page, "easy").getAttribute("aria-checked"), "true", "?tier=easy picks easy");
     assert.match(await tierChip(page, "hard").innerText(), /上級\s*手ごわい/);
-    // 2026-11-27: 段の手触りは星の数で見せ、言葉（やさしい・ふつう・手ごわい）は読み上げ用に畳む。初級だけ「報酬対象外」の小さな札
+    // 2026-11-27: 段の手触りは星の数で見せ、言葉（やさしい・ふつう・手ごわい）は読み上げ用に畳む。
+    // 初級の「報酬対象外」の注記は出さない（同日オーナー「報酬対象外とかシステム的な説明は載せないようにしたり、読むので疲れさせないで」）
     const stars = await page.locator(`${t("desert-tier")} .dr-tier-stars`).evaluateAll(nodes => nodes.map(node => getComputedStyle(node, "::before").content.replace(/"/g, "").length));
     assert.deepEqual(stars, [1, 2, 3], "one, two and three stars");
-    assert(await tierChip(page, "hard").locator("small").evaluate(node => node.getBoundingClientRect().width <= 1.5 && node.dataset.kind === "word"), "the word under the stars is kept for screen readers only");
-    assert.equal(await tierChip(page, "easy").locator(".dr-tier-flag").innerText(), "報酬対象外");
-    assert.equal(await page.locator(".dr-tier-flag").count(), 1, "only the easy tier carries the note");
+    for (const tier of ["easy", "hard"]) {
+      assert(await tierChip(page, tier).locator("small").evaluate(node => node.getBoundingClientRect().width <= 1.5 && node.dataset.kind === "word"), `${tier}: the word under the stars is kept for screen readers only`);
+    }
+    assert.doesNotMatch(await page.locator(t("desert-tiers")).evaluate(node => node.textContent), /報酬|対象外/, "no reward note on the tier chips, not even for screen readers");
     // なるの札（DSR107）: 開くまでは「？？？」と錠。名前も顔も、開き方の文も出さない
     const naruCard = page.locator(t("desert-tier-naru"));
     assert.equal(await naruCard.isDisabled(), true, "Naru's card is locked until she opens");

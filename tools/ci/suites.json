@@ -890,7 +890,7 @@
     },
     {
       "id": "portrait-games",
-      "title": "Portrait prototype frames for DESERT RIDE, the camel race, the DJ, Tetsuko and the TRPG: layout fits, touch works, landscape default untouched",
+      "title": "Portrait prototype frames for DESERT RIDE, the camel race, the DJ, Tetsuko and the TRPG: layout fits, touch works, landscape default untouched (DJ: the nudge buttons also in landscape)",
       "kind": "browser",
       "weight": 2,
       "timeout": 10,
@@ -902,6 +902,7 @@
         "remake/previews/dj/portrait.mjs",
         "remake/previews/dj/portrait.css",
         "remake/previews/dj/app.mjs",
+        "remake/previews/dj/style.css",
         "remake/js/minigames/desert-ride.js",
         "remake/js/minigames/camel-race.js",
         "remake/js/minigames/tetsuko-time.js",
