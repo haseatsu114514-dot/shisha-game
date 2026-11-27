@@ -673,7 +673,52 @@ html:root .desert-ride .dr-card.dr-menu .dr-button.dr-button:active { transform:
 .desert-ride .dr-menu .dr-howto li { position: relative; padding: 9px 12px 10px 112px; border-radius: 6px; background: rgba(255, 226, 180, .07); border-bottom: 1px dashed rgba(255, 210, 160, .24); }
 .desert-ride .dr-menu .dr-howto li::before { content: attr(data-topic); position: absolute; left: 8px; top: 10px; width: 94px; box-sizing: border-box; padding: 3px 0 4px; font-size: 17px; font-weight: 900; letter-spacing: .04em; line-height: 1.25; text-align: center;
   color: #3a1a08; background: linear-gradient(180deg, #ffe08a, #f0a53a); border-radius: 4px; box-shadow: 0 2px 0 rgba(40, 12, 4, .5); }
-html:root .desert-ride .dr-card.dr-menu .dr-button.dr-button.dr-help-close { flex: none; justify-self: center; width: 300px; min-height: 68px; }
+.desert-ride .dr-menu .dr-howto[hidden], .desert-ride .dr-menu .dr-how-cards[hidden] { display: none; }
+.desert-ride .dr-menu .dr-help-actions { display: flex; justify-content: center; gap: 18px; }
+html:root .desert-ride .dr-card.dr-menu .dr-help-actions .dr-button.dr-button { flex: none; width: 280px; min-height: 68px; }
+html:root .desert-ride .dr-card.dr-menu .dr-help-actions .dr-button.dr-button.dr-help-more { width: 240px; filter: drop-shadow(0 5px 6px rgba(0, 0, 0, .35)) brightness(.86); font-size: 21px; }
+
+/* 遊び方の図解（2026-11-27 オーナー「文字で説明しすぎず、UIやボタンで視覚的に」）: 6枚の絵札。上に小さな場面の絵（滑走の絵を並べる）、
+   左下に押すボタンの絵、下に見出しと一言。文章の説明は「くわしく」の中 */
+.desert-ride .dr-menu .dr-how-cards { margin: 0; padding: 0; list-style: none; min-height: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
+.dr-how-card { position: relative; min-width: 0; min-height: 0; display: grid; grid-template-rows: minmax(0, 1fr) auto auto; padding: 8px 10px 9px; border-radius: 10px; color: #fff4e2;
+  background: linear-gradient(180deg, rgba(255, 226, 180, .12), rgba(255, 226, 180, .05)); border: 1px solid rgba(255, 210, 150, .3); box-shadow: inset 0 1px 0 rgba(255, 240, 210, .14); }
+.dr-how-scene { position: relative; min-height: 0; overflow: hidden; border-radius: 7px; background: linear-gradient(180deg, #7fbdea 0, #b9dcf2 30%, #f6d08a 30.5%, #eeb45c 62%, #e39a42 100%); box-shadow: inset 0 0 0 2px rgba(60, 24, 8, .55), inset 0 -18px 22px rgba(120, 50, 10, .22); }
+.dr-how-scene > * { position: absolute; display: block; }
+.dr-how-scene img { height: auto; filter: drop-shadow(0 6px 5px rgba(90, 40, 8, .35)); }
+.dr-how-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 46px; margin-top: 5px; }
+.dr-how-keys { display: flex; align-items: center; gap: 5px; flex: none; }
+.dr-how-key { width: 44px; height: 44px; object-fit: contain; filter: drop-shadow(0 3px 3px rgba(40, 14, 4, .55)); }
+.dr-how-keys kbd { margin-left: 3px; padding: 2px 9px 3px; font: 900 18px/1.2 var(--font); color: #3a1a08; background: linear-gradient(180deg, #fff6e0, #e9cf9c); border-radius: 6px; border-bottom: 3px solid #a57a3e; white-space: nowrap; }
+.dr-how-title { font-size: 26px; font-weight: 900; letter-spacing: .08em; line-height: 1.15; color: #ffe2a6; text-shadow: 0 2px 0 rgba(30, 10, 4, .6); }
+.dr-how-note { font-size: 19px; font-weight: 700; line-height: 1.3; color: #f6e6cf; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* 場面の絵（各カード）。人物は場面の下の端から少しはみ出す大きさ */
+.dr-how-scene .how-rider { left: 50%; bottom: -14px; width: 86px; transform: translateX(-50%); }
+.dr-how-card[data-how="dodge"] .how-rock { left: 50%; top: 26%; width: 128px; transform: translateX(-38%); }
+.dr-how-card[data-how="dodge"] .how-rider { left: 33%; width: 84px; }
+.dr-how-card[data-how="dodge"] .how-arc { left: 30%; top: 12%; width: 74px; height: 56px; box-sizing: border-box; border: 6px solid #fff; border-right-color: transparent; border-bottom-color: transparent; border-radius: 70% 0 0 0; filter: drop-shadow(0 2px 0 rgba(90, 40, 8, .5)); }
+.dr-how-card[data-how="dodge"] .how-arc::after { content: ""; position: absolute; right: -15px; top: -15px; border: 12px solid transparent; border-left-color: #fff; }
+.dr-how-card[data-how="jump"] .how-crest { left: 8%; right: 8%; bottom: -34px; height: 74px; border-radius: 50%; background: radial-gradient(ellipse at 50% 0, #ffe2a4, #eeb45c 60%, #d98a36); box-shadow: 0 -3px 0 rgba(255, 244, 210, .7); }
+.dr-how-card[data-how="jump"] .how-rider { bottom: 26px; width: 78px; transform: translateX(-50%) rotate(-6deg); }
+.dr-how-card[data-how="jump"] .how-ring { left: 50%; bottom: 4px; width: 92px; height: 30px; margin-left: -46px; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 0 0 5px rgba(255, 200, 80, .75), 0 0 16px rgba(255, 220, 120, .9); }
+.dr-how-card[data-how="spin"] .how-rider { bottom: 2px; width: 96px; }
+.dr-how-card[data-how="spin"] .how-spin-arrow { left: 50%; top: 50%; width: 132px; height: 96px; margin: -44px 0 0 -66px; box-sizing: border-box; border: 6px solid #fff; border-bottom-color: transparent; border-radius: 50%; transform: rotate(-12deg); filter: drop-shadow(0 2px 0 rgba(90, 40, 8, .5)); }
+.dr-how-card[data-how="spin"] .how-spin-arrow::after { content: ""; position: absolute; right: -4px; bottom: 2px; border: 12px solid transparent; border-top-color: #fff; transform: rotate(-24deg); }
+.dr-how-scene .how-tag { right: calc(10px + var(--i, 0) * 0px); top: calc(10px + var(--i, 0) * 34px); padding: 2px 9px 3px; font: 900 18px/1.2 var(--font); font-style: normal; color: #5a2206; background: linear-gradient(180deg, #ffe08a, #f0a53a); border-radius: 999px; box-shadow: 0 2px 0 rgba(60, 20, 4, .5); }
+.dr-how-card[data-how="boost"] .how-glow { left: 50%; bottom: -46px; width: 210px; height: 190px; margin-left: -105px; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 255, 240, .95), rgba(255, 226, 120, .85) 38%, rgba(255, 150, 40, .5) 66%, rgba(255, 120, 20, 0)),
+    repeating-conic-gradient(from 8deg, rgba(255, 244, 200, .55) 0 6deg, rgba(255, 244, 200, 0) 6deg 18deg); }
+.dr-how-card[data-how="boost"] .how-bolt { left: 16px; top: 10px; width: 44px; filter: drop-shadow(0 0 8px rgba(255, 220, 110, .95)); }
+.dr-how-card[data-how="boost"] .how-gauge { right: 12px; top: 14px; width: 132px; height: 20px; border-radius: 8px; background: linear-gradient(90deg, #ffd65a 0, #ff7a2a 58%, rgba(60, 30, 12, .75) 58%); box-shadow: 0 0 0 3px #fff3d6, 0 0 0 5px #7a3e12, 0 0 14px rgba(255, 190, 80, .8); }
+.dr-how-card[data-how="boost"] .how-gauge::after { content: ""; position: absolute; left: 25%; top: -6px; bottom: -6px; width: 4px; background: #fff; box-shadow: 0 0 0 1px #3a1a08; }
+.dr-how-card[data-how="carve"] .how-sign { right: 18px; top: 8px; width: 78px; }
+.dr-how-card[data-how="carve"] .how-rider { left: 44%; width: 88px; }
+.dr-how-card[data-how="carve"] .how-trail { left: 44%; bottom: -44px; width: 190px; height: 130px; box-sizing: border-box; border: 7px solid #ffe07a; border-left-color: transparent; border-bottom-color: transparent; border-radius: 0 90% 0 0; filter: drop-shadow(0 0 6px rgba(255, 200, 90, .95)); }
+.dr-how-card[data-how="flow"] .how-stream { left: 36%; right: 36%; top: 30%; bottom: 0; background: linear-gradient(180deg, rgba(255, 246, 214, .2), #fff1c8 30%, #ffe6a8); clip-path: polygon(34% 0, 66% 0, 100% 100%, 0 100%); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .5); }
+.dr-how-card[data-how="flow"] .how-flag { left: 27%; bottom: 8px; width: 15px; filter: sepia(1) saturate(5) hue-rotate(-12deg) brightness(1.25) drop-shadow(0 3px 2px rgba(90, 40, 8, .4)); }
+.dr-how-card[data-how="flow"] .how-flag-r { left: auto; right: 23%; }
+.dr-how-card[data-how="flow"] .how-chevrons { left: 50%; top: 2%; width: 0; height: 0; margin-left: -16px; border: 16px solid transparent; border-bottom: 20px solid #fff; filter: drop-shadow(0 22px 0 rgba(255, 255, 255, .7)) drop-shadow(0 2px 0 rgba(90, 40, 8, .45)); }
+.dr-how-card[data-how="flow"] .how-rider { width: 66px; bottom: -22px; }
 
 @media (prefers-reduced-motion: reduce) { .dr-menu-rider { animation: none; } }
 .desert-ride[data-reduced-motion="true"] .dr-menu-rider { animation: none; }
@@ -696,4 +741,60 @@ html:root[data-density="phone"] .desert-ride .dr-menu .dr-help-title { font-size
 html:root[data-density="phone"] .desert-ride .dr-menu .dr-howto { grid-template-columns: 1fr; font-size: 28px; line-height: 1.45; gap: 8px; }
 html:root[data-density="phone"] .desert-ride .dr-menu .dr-howto li { padding: 10px 14px 12px 150px; }
 html:root[data-density="phone"] .desert-ride .dr-menu .dr-howto li::before { width: 128px; top: 12px; font-size: 24px; }
-html:root[data-density="phone"] .desert-ride .dr-card.dr-menu .dr-button.dr-button.dr-help-close { width: 380px; min-height: var(--phone-tap, 84px); }
+html:root[data-density="phone"] .desert-ride .dr-card.dr-menu .dr-help-actions .dr-button.dr-button { width: 340px; min-height: var(--phone-tap, 84px); }
+html:root[data-density="phone"] .desert-ride .dr-card.dr-menu .dr-help-actions .dr-button.dr-button.dr-help-more { width: 300px; font-size: 26px; }
+html:root[data-density="phone"] .desert-ride .dr-menu .dr-how-cards { gap: 8px 12px; }
+html:root[data-density="phone"] .desert-ride .dr-how-card { padding: 6px 8px 7px; }
+html:root[data-density="phone"] .desert-ride .dr-how-title { font-size: 30px; }
+html:root[data-density="phone"] .desert-ride .dr-how-head { min-height: 52px; margin-top: 3px; }
+html:root[data-density="phone"] .desert-ride .dr-how-note { font-size: 24px; }
+html:root[data-density="phone"] .desert-ride .dr-how-key { width: 52px; height: 52px; }
+html:root[data-density="phone"] .desert-ride .dr-how-scene .how-tag { font-size: 24px; top: calc(8px + var(--i, 0) * 40px); }
+
+/* ---- 入口の文字を減らす（2026-11-27 オーナー「文字で説明しすぎず、UIやボタンで視覚的に」「まだ文字が多い」・DSR97）:
+   段の手触りは星の数、クリア済みは CLEAR の判、開いたばかりは NEW、閉じた段は錠の印。自己ベストは評価のメダルと点だけ。ボタンは頭に印。
+   印に置き換えた言葉は、読み上げ用に残す（.dr-quiet と、札の下の一言） ---- */
+.dr-quiet { display: inline-block; width: 0; height: 1px; overflow: hidden; white-space: pre; vertical-align: top; }
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier { min-height: 96px; gap: 2px; }
+.dr-tier-stars { display: block; height: 22px; font-style: normal; font-size: 20px; line-height: 22px; letter-spacing: .12em; color: #ffd76a; text-shadow: 0 2px 0 rgba(30, 10, 4, .65); }
+.dr-tier-stars::before { content: "★"; }
+.dr-tier[data-tier="normal"] .dr-tier-stars::before { content: "★★"; }
+.dr-tier[data-tier="hard"] .dr-tier-stars::before { content: "★★★"; }
+.dr-tier[data-state="chosen"] .dr-tier-stars { color: #fff6c8; }
+.dr-tier:disabled .dr-tier-stars { color: #7d6a58; text-shadow: none; }
+/* 印で見せる一言（段の手触り・クリア済み・開いた！）と、初級の長い注記は字を出さない */
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier small:is([data-kind="word"], [data-kind="cleared"], [data-kind="fresh"], [data-kind="easy"]) { position: absolute; left: 4px; top: 4px; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier small[data-kind="note"] { color: #ffe27a; opacity: 1; }
+.dr-tier-flag { display: block; padding: 1px 8px 2px; font-size: 14px; font-style: normal; font-weight: 800; line-height: 1.25; letter-spacing: .02em; color: #e6d2b4; background: rgba(0, 0, 0, .32); border-radius: 999px; text-shadow: none; }
+.dr-tier[data-state="chosen"] .dr-tier-flag { color: #fff2d8; background: rgba(90, 28, 4, .45); }
+/* 閉じた段: 錠の印（名前の左） */
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier:disabled b::before { content: ""; display: inline-block; width: .62em; height: .72em; margin-right: .22em; vertical-align: -.04em; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24'%3E%3Cpath d='M10 1a6 6 0 0 0-6 6v3H3a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V7a6 6 0 0 0-6-6zm-3 9V7a3 3 0 0 1 6 0v3H7z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24'%3E%3Cpath d='M10 1a6 6 0 0 0-6 6v3H3a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V7a6 6 0 0 0-6-6zm-3 9V7a3 3 0 0 1 6 0v3H7z'/%3E%3C/svg%3E") center / contain no-repeat; }
+/* クリア済みは右上に CLEAR の判、開いたばかりは NEW */
+.dr-tier[data-cleared="true"]::after, .dr-tier[data-fresh="true"]:not([data-cleared="true"])::after { position: absolute; right: 6px; top: 6px; padding: 1px 6px 2px; font-size: 14px; font-weight: 900; letter-spacing: .02em; line-height: 1.25; border-radius: 4px; transform: rotate(4deg); text-shadow: none; box-shadow: 0 2px 0 rgba(30, 10, 4, .55); }
+.dr-tier[data-cleared="true"]::after { content: "CLEAR"; color: #3a1a08; background: linear-gradient(180deg, #fff0b0, #f2b63c); border: 1px solid #fff6d0; }
+.dr-tier[data-fresh="true"]:not([data-cleared="true"])::after { content: "NEW"; color: #fff; background: linear-gradient(180deg, #ff6a4a, #d92a1a); border: 1px solid #ffd0c0; }
+/* 自己ベスト: メダルと点 */
+html:root .desert-ride .dr-menu .dr-best { display: block; padding: 5px 14px; text-align: center; white-space: nowrap; }
+.dr-menu .dr-best > :is(b, i) { vertical-align: middle; }
+.dr-menu .dr-best::before { content: "BEST"; margin-right: 12px; vertical-align: middle; font-size: .74em; letter-spacing: .22em; color: #f0c98a; }
+.dr-menu .dr-best[data-best-key="naru"]::before { content: "VS なる"; letter-spacing: .08em; }
+.dr-best-score { font-size: 1.36em; line-height: 1; letter-spacing: .02em; color: #fffaf0; font-variant-numeric: tabular-nums; text-shadow: 0 2px 0 rgba(90, 30, 6, .7); }
+.dr-best-rank { display: inline-block; width: 1.9em; height: 1.9em; margin-left: 10px; font-style: normal; font-weight: 900; font-size: 1.05em; line-height: 1.9em; text-align: center; color: #3a1a08; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff6cf, #ffd25a 52%, #c98a24); box-shadow: 0 0 0 2px #7a4a12, 0 2px 0 3px rgba(30, 10, 4, .45); }
+.dr-best[data-rank="A"] .dr-best-rank { background: radial-gradient(circle at 35% 30%, #ffe9d2, #ff8a3a 55%, #b9480e); color: #fff; text-shadow: 0 1px 0 #5e1a04; }
+.dr-best[data-rank="B"] .dr-best-rank { background: radial-gradient(circle at 35% 30%, #ffffff, #8cc4ff 55%, #3a64a8); }
+.dr-best[data-rank="C"] .dr-best-rank { background: radial-gradient(circle at 35% 30%, #f4efe6, #c0ab96 55%, #7a6656); }
+/* ボタンの頭の印（印と名前は横に並べる） */
+html:root .desert-ride .dr-card.dr-menu .dr-actions .dr-button.dr-button { flex-direction: row; white-space: nowrap; }
+.dr-menu .dr-actions .dr-button::before { content: ""; flex: none; width: 1em; height: 1em; margin-right: .42em; background: currentColor; filter: drop-shadow(0 2px 0 rgba(30, 10, 4, .5));
+  -webkit-mask: var(--act-icon) center / contain no-repeat; mask: var(--act-icon) center / contain no-repeat; }
+.dr-menu .dr-act-start { --act-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 3.5v17a1 1 0 0 0 1.5.86l14-8.5a1 1 0 0 0 0-1.72l-14-8.5A1 1 0 0 0 6 3.5z'/%3E%3C/svg%3E"); }
+.dr-menu .dr-act-practice { --act-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 2h2v20H5zM8.5 3.5 21 8l-12.5 4.5z'/%3E%3C/svg%3E"); }
+.dr-menu .dr-act-leave { --act-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 3h10v3H6v12h7v3H3zM15 7l6 5-6 5v-3.5H9v-3h6z'/%3E%3C/svg%3E"); }
+.dr-menu .dr-actions .dr-act-vs::before { content: "VS"; width: auto; height: auto; background: none; -webkit-mask: none; mask: none; font-style: italic; font-size: .92em; letter-spacing: .02em; color: #ffd76a; }
+html:root[data-density="phone"] .desert-ride .dr-card.dr-menu .dr-tier.dr-tier { min-height: max(var(--phone-tap, 84px), 104px); }
+html:root[data-density="phone"] .desert-ride .dr-tier-stars { height: 26px; font-size: 24px; line-height: 26px; }
+html:root[data-density="phone"] .desert-ride .dr-tier-flag { font-size: 24px; }
+html:root[data-density="phone"] .desert-ride .dr-tier[data-cleared="true"]::after, html:root[data-density="phone"] .desert-ride .dr-tier[data-fresh="true"]:not([data-cleared="true"])::after { font-size: 18px; }
