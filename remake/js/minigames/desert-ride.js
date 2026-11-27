@@ -115,7 +115,8 @@ const FEEL = {
   // carveWave*: カーブの外へ巻き上がる砂の波（熱 0 → 1 の幅）。steerWake*: 鋭く切った時の砂（横の速さ 0.5 → 1.5 の幅）。flicker: 絵を揺らす速さ（1秒あたりのコマ）
   plumeFrom: 2.2, plumeTo: 4.4, plumeLife: 0.7, landWake: 2.6, landWakePerfect: 1.3, landWakeLife: 0.42,
   boostWakeWide: 3.0, boostWakeAlpha: 0.95, boostBoltsWide: 3.0, boostBoltsStart: 1, boostBoltsHold: 0.5,
-  carveWaveFrom: 1.5, carveWaveTo: 3.9, steerWakeFrom: 1.3, steerWakeTo: 2.7, flicker: 14,
+  // carveWave: 2026-11-27 オーナー「カーブは派手すぎる」（DSR102）で、幅 1.5→3.9 を 0.8→1.8 に、濃さ最大 1 を 0.6 に、高さを 0.7 倍（低く）にした
+  carveWaveFrom: 0.8, carveWaveTo: 1.8, carveWaveAlpha: 0.6, carveWaveSquash: 0.7, steerWakeFrom: 1.3, steerWakeTo: 2.7, flicker: 14,
 };
 /** 効果音の音量は、勝敗・得点への影響が大きい出来事ほど大きく（滑走・風のループはこれより小さい）。 */
 const SE_GAIN = Object.freeze({ fall: 0.7, goal: 0.7, leadChange: 0.6, perfect: 0.6, smash: 0.55, recover: 0.55, countdown: 0.55, boost: 0.5, thunder: 0.5,
@@ -2926,7 +2927,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
       // 砂の波の絵（DSR100）があれば、それをカーブの外へ巻き上げる。絵がまだ届いていない時は、図形の砂の壁
       if (game.air <= 0 && game.fallT <= 0 && bendSide && wallK > 0.05) {
         const wide = unit * (FEEL.carveWaveFrom + (FEEL.carveWaveTo - FEEL.carveWaveFrom) * wallK) * fxPulse(0.06, 1);
-        if (!drawFx("fxWave", cx - bendSide * unit * 0.26, groundY + unit * 0.05, wide, { flip: bendSide > 0, alpha: Math.min(1, 0.35 + 0.75 * wallK), squash: fxPulse(0.05, 2) }))
+        if (!drawFx("fxWave", cx - bendSide * unit * 0.26, groundY + unit * 0.05, wide, { flip: bendSide > 0, alpha: FEEL.carveWaveAlpha * Math.min(1, 0.4 + 0.6 * wallK), squash: FEEL.carveWaveSquash * fxPulse(0.05, 2) }))
           drawCarveWall(cx, groundY, unit, bendSide, wallK);
       }
       drawGroundFx(cx, groundY, unit, bendSide && wallK > 0.05);

@@ -14,8 +14,9 @@ const BASE = process.env.DESERT_URL || "http://127.0.0.1:8123/remake/desert-ride
 // 左上の得点の札（右端 275）と右上の速さの札（左端 1000）が入らない幅にしてある
 const CLIP = { low: { x: 280, y: 205, width: 720, height: 480 }, high: { x: 280, y: 115, width: 720, height: 480 } };
 const SHOTS = {
-  // よける: 岩がすぐ先に見えていて、鋭く切っている（カーブの砂の波が残っていない）
-  dodge: { clip: "low", when: "g.air <= 0 && g.fallT <= 0 && g.boostT <= 0 && !g.carving && fx.carveShow < 0.05 && Math.abs(g.vx) > 0.7 && g.course.features.some(f => f.kind === 'rock' && f.z > g.z + 4 && f.z < g.z + 26 && Math.abs(f.x - g.x) < 1.6)" },
+  // よける: 岩のすぐ横をかすめる瞬間（岩は人物の 1〜3.5m 先、当たり判定の外 0.02〜0.4 レーン）。体は岩と反対へ傾いている。
+  // 2026-11-27 オーナー「遊び方の岩避けてるの岩と離れててわかりずらい」（DSR103。それまでは 4〜26m 先の岩で、遠くに小さく写っていた）
+  dodge: { clip: "low", when: "g.air <= 0 && g.fallT <= 0 && g.boostT <= 0 && !g.carving && fx.carveShow < 0.05 && g.course.features.some(f => f.kind === 'rock' && !g.smashedRocks.has(f) && f.z - g.z > 1 && f.z - g.z < 3.5 && Math.abs(f.x - g.x) - (f.w + 0.1) > 0.02 && Math.abs(f.x - g.x) - (f.w + 0.1) < 0.4 && Math.sign(g.vx) === Math.sign(g.x - f.x) && Math.abs(g.vx) > 0.25)" },
   jump: { clip: "high", noSpin: true, when: "g.air > 0 && g.airKind === 'big' && !g.spinDir && Math.abs(g.rot) < 0.02 && (1 - g.air / g.airTotal) > 0.2 && (1 - g.air / g.airTotal) < 0.32" },
   spin: { clip: "high", when: "g.air > 0 && g.airKind === 'big' && g.spinDir !== 0 && Math.abs(g.rot) > 0.42 && Math.abs(g.rot) < 0.6 && fx.grains > 6" },
   boost: { clip: "low", when: "g.boostT > 0 && g.air <= 0 && boostAge > 0.14 && boostAge < 0.34 && !g.carving" },
