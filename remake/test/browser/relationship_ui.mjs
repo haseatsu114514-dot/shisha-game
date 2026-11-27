@@ -12,6 +12,7 @@ async function setup(page) {
     };
     await R.data.loadDeferredDialogues();
     R.ch1.setupHooks();
+    R.core.config.skipSeenOnly = false; // 未読の台詞も SKIP で送る（既定は既読のみ・#4194）
     R.fresh = () => {
       const s = R.core.newGame();
       Object.assign(s, { phase: "daily", day: 12, slot: 1 });
@@ -77,6 +78,8 @@ const reactions = {
 await suite("relationship-ui", async check => {
   for (const [device, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
     const press = async (page, selector) => device === "touch" ? page.locator(selector).tap() : page.locator(selector).click();
+    // SKIP は場面をまたいで入ったまま（#3558 項目7・#4228）。入っていない時だけ押して入れる（押すと切れるので）。
+    const skipOn = async page => { if (!await page.locator('[data-test="vn-skip"]').evaluate(node => node.classList.contains("on"))) await press(page, '[data-test="vn-skip"]'); };
 
     await check(`${device}-later-people-visibility`, async page => {
       await setup(page);
@@ -156,7 +159,7 @@ await suite("relationship-ui", async check => {
           R.pending = R.bonds.playQuestionVisit(id);
         }, id);
         await page.locator("#vn.active").waitFor();
-        await press(page, '[data-test="vn-skip"]');
+        await skipOn(page);
         await page.locator(".vn-choice").first().waitFor();
         await choicesFit(page, questions[id].map(text => `「${text}」`));
         await press(page, `[data-test="choice-${route === "romance" ? 0 : 1}"]`);
@@ -194,7 +197,7 @@ await suite("relationship-ui", async check => {
         ["hiyori", "hiyori_bond_question", ["また斧投げしましょう。次は負けませんよ", "ひよりさんに会えるなら、二人でどこでも"], 1,
           [/斧投げのあと、お腹すくから/, /二人で……。そっか/]],
         ["samechan", "samechan_shop_bond_question", ["サメちゃんに会いたいから、来ます", "またサメ映画の話、聞かせてください"], 0,
-          [/とっておきの一本/, /わ、わしにか/]],
+          [/とっておきの一本/, /…わしにか？/]], // 言いよどみは「…」に統一（36629a95）
       ]) for (const value of [0, 1]) {
         await page.evaluate(({ id, scene }) => {
           const s = R.fresh(); s.met[id] = true; s.affinity[id] = 33;
@@ -203,7 +206,7 @@ await suite("relationship-ui", async check => {
           R.pending = R.vn.play(scene);
         }, { id, scene });
         await page.locator("#vn.active").waitFor();
-        await press(page, '[data-test="vn-skip"]');
+        await skipOn(page);
         await page.locator(".vn-choice").first().waitFor();
         await choicesFit(page, replies);
         await press(page, `[data-test="choice-${value ? romanceIndex : 1 - romanceIndex}"]`);
@@ -453,7 +456,7 @@ await suite("relationship-ui", async check => {
       // 正式な♥3会話の導入・立ち絵を経て、最後のスクリーンショットを残す。
       await page.evaluate(() => { R.fresh(); R.pending = R.vn.play("ch1_minto_bond_question"); });
       await page.locator("#vn.active").waitFor();
-      await press(page, '[data-test="vn-skip"]');
+      await skipOn(page);
       await page.locator(".vn-choice").first().waitFor();
       await choicesFit(page, questions.minto.map(text => `「${text}」`));
       await page.evaluate(() => Promise.all([...document.querySelectorAll(".vn-choice")]

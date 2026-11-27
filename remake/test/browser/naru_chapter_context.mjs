@@ -76,11 +76,12 @@ await suite('naru-chapter-context', async check => {
       assert.doesNotMatch(resumed.text,/大会前の最後|本番、よろしく|勝った方が作る/);
       const finale=await page.evaluate(async () => {
         const start=N.vn.backlog().length,completed=await N.spots.visitChar('naru'),s=N.core.state;
+        // 別の保存を読み込むと会話LOGは消える（#4194 のLOG保持）ので、読んだ台詞はロードの前に控える
+        const text=N.vn.backlog().slice(start).map(x=>x.text).join('\n');
         N.core.saveToSlot('suien_remake_slot1');N.core.newGame();N.core.loadFromSlot('suien_remake_slot1');
         const loaded=N.core.state, before=JSON.stringify(loaded), replay=await N.bonds.playFinale('naru');
         return {completed,route:s.finales.naru?.route,gifts:loaded.owned.filter(x=>x==='suyaki_naru').length,
-          story:loaded.story.naru,replay,unchanged:JSON.stringify(loaded)===before,
-          text:N.vn.backlog().slice(start).map(x=>x.text).join('\n')};
+          story:loaded.story.naru,replay,unchanged:JSON.stringify(loaded)===before,text};
       });
       assert.equal(finale.completed,true);assert.equal(finale.route,'friend');assert.equal(finale.gifts,1);
       assert.equal(finale.story,targetIndex+1);assert.equal(finale.replay,false);assert.equal(finale.unchanged,true);
