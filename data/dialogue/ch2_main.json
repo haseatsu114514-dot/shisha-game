@@ -293,6 +293,10 @@
       },
       "lines": [
         {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "閉店の少し前。ドアベルが鳴って、大きな影が入口をふさいだ。"
@@ -611,6 +615,10 @@
         "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
       },
       "lines": [
+        {
+          "type": "sfx",
+          "id": "doorbell"
+        },
         {
           "speaker": "",
           "face": "",
@@ -1086,6 +1094,10 @@
             "text": "駅へ送る前、片づけを手伝った。俺が炭を確認し、スミさんが手元に皿を構える。"
           },
           {
+            "type": "sfx",
+            "id": "coal_place"
+          },
+          {
             "speaker": "",
             "face": "",
             "text": "目が合い、皿が止まる。声をかけてから炭を移した。分担を決め直す必要はなかった。"
@@ -1343,6 +1355,10 @@
         "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
       },
       "lines": [
+        {
+          "type": "sfx",
+          "id": "doorbell"
+        },
         {
           "speaker": "",
           "face": "",

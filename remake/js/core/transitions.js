@@ -513,6 +513,7 @@ export async function nightToMorning(host, mid) {
     if (reduced) {
       [dayFlip, leftFlip].filter(Boolean).forEach((s) => { s.firstChild.remove(); s.firstChild.style.transform = ""; s.firstChild.style.opacity = ""; });
       await move(card, [{ opacity: 0 }, { opacity: 1 }], 200, { easing: "ease" });
+      if (weather === "sun") SE.birds?.();
       await dawnReveal(node, day, grade, { reduced });
       await sleep(1100);
       await move(node, [{ opacity: 1 }, { opacity: 0 }], 300, { easing: "ease" });

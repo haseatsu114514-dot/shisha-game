@@ -25,12 +25,13 @@ assert.equal(COMPANION_TIME_IDS.length, OVERSEAS_HEROINES.length * 4);
 for (const [who, ids] of Object.entries(COMPANION_TIME_SCENES)) assert.deepEqual([...ids], [1, 2, 3, 4].map(n => `ch4_companion_${who}_${n}`));
 for (const [who, ids] of Object.entries(COMPANION_TIME_SCENES)) for (const id of ids) {
   const scene = companion[id];
-  assert(scene?.lines?.length >= 8, `${id}: 台本がある`);
+  const dialogue = scene?.lines?.filter(line => line.type !== "sfx");
+  assert(dialogue?.length >= 8, `${id}: 台本がある`);
   assert.equal(scene.metadata?.private_scene, true, `${id}: 私的な場面`);
-  assert(scene.lines.every(line => !line.type), `${id}: 報酬・分岐・旗を持たない`);
-  assert(scene.lines.some(line => line.speaker === who), `${id}: 同行者が話す`);
-  assert(scene.lines.every(line => ["", "hajime", who].includes(line.speaker)), `${id}: 二人だけ`);
-  assert.doesNotMatch(scene.lines.map(line => line.text).join(""), /優勝|準優勝|前夜祭|到着|別便|迎えに/, `${id}: 大会前・同じ便の場面`);
+  assert(dialogue.every(line => !line.type), `${id}: 報酬・分岐・旗を持たない`);
+  assert(dialogue.some(line => line.speaker === who), `${id}: 同行者が話す`);
+  assert(dialogue.every(line => ["", "hajime", who].includes(line.speaker)), `${id}: 二人だけ`);
+  assert.doesNotMatch(dialogue.map(line => line.text).join(""), /優勝|準優勝|前夜祭|到着|別便|迎えに/, `${id}: 大会前・同じ便の場面`);
 }
 assert.equal(classifyFlag(COMPANION_TIME_FLAG), "person");
 {

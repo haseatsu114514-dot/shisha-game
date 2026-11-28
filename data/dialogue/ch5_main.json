@@ -205,6 +205,10 @@
       "comment": "面接の翌日と、その一週間後の開店前。つむぎ目線（#4253・2026-11-27 オーナー）。地の文・心の声はつむぎ（私）。つむぎの台詞は portrait:false で本人の立ち絵を出さず、はじめは portrait 指定で立ち絵を出す。恋愛状態で分岐しない。旧 ch5_tsumugi_little_notes（あいさつの練習・猫のノート）をつむぎ目線で取り込み、初日の炭と『燃やす』『蒸らす』（旧 ch5_bridge_after_return の指導）を足した。終幕 ending_salaryman_name の『表さん』は、この場面のネクタイの猫を読む。「声は、裏返らなかった」は ch5_tsumugi_full_house の翌朝まで取っておく。",
       "lines": [
         {
+          "type": "sfx",
+          "id": "door"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "翌朝。開店の一時間前に、tonariのドアを開けた。"
@@ -1546,6 +1550,10 @@
           "color2": "#e8e2f6"
         },
         {
+          "type": "sfx",
+          "id": "bubbling"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "ゴボゴボ、ゴボボ……。いつもの水の音が、今日は客の席から聞こえる。"
@@ -2301,6 +2309,10 @@
           "speaker": "",
           "face": "",
           "text": "博士が再生を止めた。画面の外で、湯の沸く音がした。"
+        },
+        {
+          "type": "sfx",
+          "id": "doorbell"
         },
         {
           "speaker": "",
@@ -3200,6 +3212,10 @@
           "text": "博士が葉をほぐし、ボウルへ落としていく。量りの数字は、一度も見なかった。"
         },
         {
+          "type": "sfx",
+          "id": "coal_place"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "炭を置くのも博士だ。十何年ぶりの手つきは、少しだけ遅かった。"
@@ -3860,6 +3876,10 @@
           "speaker": "master_hookah",
           "face": "normal",
           "text": "いい。旅の客には、その店のいつものがいい"
+        },
+        {
+          "type": "sfx",
+          "id": "coal_place"
         },
         {
           "speaker": "",
@@ -5273,6 +5293,10 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（……顔、見てる）"
+        },
+        {
+          "type": "sfx",
+          "id": "coal_place"
         },
         {
           "speaker": "",

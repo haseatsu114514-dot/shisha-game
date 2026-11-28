@@ -1281,6 +1281,10 @@
           "text": "着いた！ ここが私の職場"
         },
         {
+          "type": "sfx",
+          "id": "desert_wind"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "車を降りると、砂丘が風紋を光らせながら、見渡す限り続いていた。"
@@ -1417,6 +1421,10 @@
     {
       "dialogue_id": "ch4_desert_sunset_first",
       "lines": [
+        {
+          "type": "sfx",
+          "id": "desert_wind"
+        },
         {
           "speaker": "",
           "face": "",

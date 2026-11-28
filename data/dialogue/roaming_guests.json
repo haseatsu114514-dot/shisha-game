@@ -5862,6 +5862,10 @@
           "text": "てつこは一度こちらを見て、塀の上へひょいと上がった。"
         },
         {
+          "type": "sfx",
+          "id": "mew"
+        },
+        {
           "speaker": "tetsuko",
           "face": "serious",
           "text": "……にゃ"
@@ -5905,6 +5909,10 @@
         {
           "speaker": "",
           "text": "てつこは前足を止めて、こちらをじっと見た。"
+        },
+        {
+          "type": "sfx",
+          "id": "mew"
         },
         {
           "speaker": "tetsuko",
@@ -5995,6 +6003,10 @@
         {
           "speaker": "",
           "text": "気づけば、mukaiの裏口の前だった。てつこはベンチに飛び乗った。"
+        },
+        {
+          "type": "sfx",
+          "id": "mew"
         },
         {
           "speaker": "tetsuko",

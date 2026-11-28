@@ -12,7 +12,6 @@
 // 動きは transform / opacity / clip-path（コンポジタで動く）。morph の形の変化だけは低解像度のキャンバスに描く。時間は MOTIONS の hold に足し、
 // 読む時間は削らない。「動きを減らす」では短いフェードだけにする。設定は config.introTransition。
 import { el } from "../core/util.js";
-import { SE } from "../core/audio.js";
 import { prepareShapeMorph } from "./intro-shape-morph.js";
 
 export const TRANSITIONS = ["none", "morph", "card", "slash"];
@@ -103,7 +102,7 @@ const finished = (animation) => animation.finished.catch(() => {});
 /**
  * つなぎを作る。enter() はカットインを置いて、文字の登場（animateIntro）を始めてよい時に解決する。
  * exit() は読み終わった後の退場。cancel() は途中で片づける。
- * @param ctx { id, fx, host, mount(): unmount, frame, standing: { rect, p } | null, colors: { color, secondary, shadow }, config }
+ * @param ctx { id, fx, host, mount(): unmount, onReveal(), frame, standing: { rect, p } | null, colors: { color, secondary, shadow }, config }
  */
 export function createTransition(variant, ctx) {
   if (!TRANSITIONS.includes(variant) || variant === "none") return plain(ctx);
@@ -260,7 +259,6 @@ function morph(ctx) {
       if (rect.img?.isConnected) keep(animate(rect.img, [{ opacity: 1 }, { opacity: 0 }], { duration: 120, delay: 260 }));
       // ② 影がカメラへ迫り、頭の位置をカットインに合わせる（260〜549ms、速度比較のB）
       keep(animate(sil, [{ transform: "none" }, { transform: t.to }], { duration: 289, delay: 260, easing: "cubic-bezier(.45,0,.2,1)" }));
-      setTimeout(() => SE.whoosh(), 260);
       await sleep(549);
       shape = await ready;
 
@@ -278,6 +276,7 @@ function morph(ctx) {
         const portrait = ctx.host.querySelector(".ci-portrait");
         portrait.style.opacity = "";
         const x0 = HEAD.faceX + 520, x1 = HEAD.faceX - 560;
+        ctx.onReveal?.();
         keep(animate(portrait, [{ clipPath: slashClip(x0) }, { clipPath: slashClip(x1) }], { duration: 260, easing: EASE.inOut }));
         keep(sweepEdge(edge, x0, x1, 300));
         keep(animate(sil, [{ opacity: 1 }, { opacity: 0 }], { duration: 260, delay: 60, easing: "ease-in" }));
@@ -298,6 +297,7 @@ function morph(ctx) {
       // ④ 光った影が、ポスター調の本人にほどける。斜めの光が一度だけ通る（940〜1220ms）
       const portrait = ctx.host.querySelector(".ci-portrait");
       portrait.style.opacity = "";
+      ctx.onReveal?.();
       keep(animate(portrait, [{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: "ease-out" }));
       keep(animate(shape.canvas, [{ opacity: 1 }, { opacity: 0 }], { duration: 240, delay: 40, easing: "ease-in" }));
       keep(sweepEdge(edge, HEAD.faceX + 420, HEAD.faceX - 520, 300));
@@ -371,7 +371,6 @@ function card(ctx) {
       keep(animate(cardEl, [{ opacity: 0, transform: "scale(1.08)" }, { opacity: 1, transform: "none" }], { duration: 240 }));
       await sleep(220);
       // ② 札が手前へ飛びながら裏返る。裏面がポスター調の本人（220〜660ms）
-      setTimeout(() => SE.whoosh(), 0);
       keep(animate(cardEl, [{ transform: "none" }, { transform: `${move} scale(${s.toFixed(4)}) rotateY(180deg)` }], { duration: 440, easing: EASE.inOut }));
       await sleep(300);
       // ③ 裏返りきる少し前に、カットインを札の下に置く。背景は奥から
@@ -383,6 +382,7 @@ function card(ctx) {
       await sleep(150);
       // ④ 札の裏面と同じ位置にある本物の人物へ切り替え、札の枠だけ消える
       portrait.style.opacity = "";
+      ctx.onReveal?.();
       keep(animate(cardEl, [{ opacity: 1 }, { opacity: 0 }], { duration: 160, delay: 40 }));
       return unmount;
     },
@@ -429,7 +429,7 @@ function slash(ctx) {
       unmount = showCutin(ctx);
       ctx.host.classList.add("ci-staged");
       const edge = el("div.ci-tr-edge"); over.append(edge);
-      SE.whoosh();
+      ctx.onReveal?.();
       keep(animate(ctx.host, [{ clipPath: slashClip(x0) }, { clipPath: slashClip(x1) }], { duration: 440, easing: EASE.inOut }));
       keep(sweepEdge(edge, x0, x1, 440));
       const bg = ctx.host.querySelector(".ci-art-background");

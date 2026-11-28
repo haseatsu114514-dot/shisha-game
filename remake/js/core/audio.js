@@ -54,8 +54,13 @@ const RECORDED_SE = {
   get: { files: ["item_get.wav"], gain: 1, minGap: .25 },
   birds: { files: ["morning_birds.mp3"], gain: 1 },
   page: { files: ["trpg/page_flip_01.wav", "trpg/page_flip_02.wav"], gain: 1, minGap: .25 },
+  outdoorBirds: { files: ["morning_birds.mp3"], gain: .32 },
+  desertWind: { files: ["desert_ride/wind_ambience.bgm"], gain: .65, fit: .5, seconds: 2.5 },
+  diceRoll: { files: ["trpg/die_throw_01.wav", "trpg/die_throw_02.wav"], gain: .9 },
+  axeImpact: { files: ["axe_throw/hit_1.wav", "axe_throw/hit_2.wav", "axe_throw/hit_3.wav"], gain: .28 },
 };
 const WATER_LOOP = "water_loop.wav", WATER_END = "water_end.wav";
+const INTRO_DRUM = "axe_throw/cue_drum.wav", INTRO_AIR = "ui_whoosh.wav";
 
 const seEnabled = () => audioUnlocked && ctx?.state === "running" && !document.hidden
   && !config.mute && !config.muted && Number(config.seVolume) > 0;
@@ -89,8 +94,8 @@ function loadSeBuffer(file) {
   return seLoads.get(file);
 }
 
-const allSeFiles = () => [...new Set([...Object.values(RECORDED_SE).flatMap(s => s.files), WATER_LOOP, WATER_END])];
-// 最初の操作の直後に要る画面操作の音（タイトル・メニュー・保存）。残りは1本ずつ読む（#3500 D-1）。
+const allSeFiles = () => [...new Set([...Object.values(RECORDED_SE).flatMap(s => s.files), INTRO_DRUM, WATER_LOOP, WATER_END])];
+// タイトル・メニュー・保存の音と、早い段階で鳴る登場の太鼓を先に読む（#3500 D-1）。
 const FIRST_SE = ["click", "select", "cancel", "whoosh", "jingle", "ch1Title", "card", "save"];
 let seWarm = null;
 
@@ -101,13 +106,13 @@ export function preloadSe() {
 }
 
 /**
- * 最初の操作で先読み。ゲーム進行は待たせず、最初の未読込SEは合成で補う。
- * 29本を一度に取りに行くと、同じ時に始まる BGM・場面の素材と回線とデコードを取り合う（遅い回線では5秒の打ち切りで半分ほどが落ちていた）。
+ * 最初の操作で先読み。ゲーム進行は待たせず、代用音のあるSEは未読込時に合成で補う。
+ * 一度に取りに行くと、同じ時に始まる BGM・場面の素材と回線とデコードを取り合う（遅い回線では5秒の打ち切りで半分ほどが落ちていた）。
  * 画面操作の数本を先に読み、残りは手の空いた時に1本ずつ読む。読み終わる前に鳴らした音は、今までどおりその場で読みに行く。
  */
 function warmSe() {
   if (!audioUnlocked || seWarm) return;
-  const first = FIRST_SE.flatMap(id => RECORDED_SE[id].files);
+  const first = [...FIRST_SE.flatMap(id => RECORDED_SE[id].files), INTRO_DRUM];
   const rest = allSeFiles().filter(file => !first.includes(file));
   const idle = () => typeof requestIdleCallback === "function" ? new Promise(resolve => requestIdleCallback(resolve, { timeout: 1000 })) : null;
   seWarm = Promise.all(first.map(loadSeBuffer)).then(async () => {
@@ -141,9 +146,16 @@ function recordedVoice(file, { gain = 1, rate = 1, loop = false, delay = 0 } = {
   return voice;
 }
 
+function fadeRecordedVoice(voice, gain, seconds, fade) {
+  const end = ctx.currentTime + seconds;
+  voice.output.gain.setValueAtTime(gain, end);
+  voice.output.gain.linearRampToValueAtTime(0, end + fade);
+  voice.source.stop(end + fade + .02);
+}
+
 function recordedSe(id, sec) {
   if (!seEnabled()) return true; // ミュートや非表示中に代用音へ回さない。
-  const { files, gain, fit } = RECORDED_SE[id];
+  const { files, gain, fit, seconds } = RECORDED_SE[id];
   const ready = files.filter(file => seBuffers.has(file));
   if (!ready.length) { files.forEach(loadSeBuffer); return false; }
   const choices = ready.filter(file => file !== lastVariant.get(id));
@@ -151,12 +163,8 @@ function recordedSe(id, sec) {
   lastVariant.set(id, file);
   const voice = recordedVoice(file, { gain });
   // 長さの指定がある呼び出し（歓声など）は、その秒数まで鳴らしてから fit 秒で消す。録音より長い指定は録音の終わりまで。
-  if (voice && fit && sec > 0 && sec + fit < voice.source.buffer.duration) {
-    const end = ctx.currentTime + sec;
-    voice.output.gain.setValueAtTime(gain, end);
-    voice.output.gain.linearRampToValueAtTime(0, end + fit);
-    voice.source.stop(end + fit + .02);
-  }
+  const hold = sec > 0 ? sec : seconds;
+  if (voice && fit && hold > 0 && hold + fit < voice.source.buffer.duration) fadeRecordedVoice(voice, gain, hold, fit);
   return true;
 }
 
@@ -836,7 +844,8 @@ export const recordedSeFiles = () => Object.fromEntries(Object.entries(RECORDED_
 const lastPlayedAt = new Map();
 SE.ch1Title = SE.jingle; // 章題の録音が未読込なら、従来の合成ジングルで補う。
 for (const id of Object.keys(RECORDED_SE)) {
-  const fallback = SYNTH_SE[id] = SE[id];
+  const fallback = SE[id];
+  if (fallback) SYNTH_SE[id] = fallback;
   const { minGap } = RECORDED_SE[id];
   SE[id] = (...args) => {
     if (minGap) {
@@ -844,9 +853,22 @@ for (const id of Object.keys(RECORDED_SE)) {
       if (now - (lastPlayedAt.get(id) ?? -Infinity) < minGap * 1000) return;
       lastPlayedAt.set(id, now);
     }
-    if (!recordedSe(id, Number(args[0]))) fallback(...args);
+    if (!recordedSe(id, Number(args[0]))) fallback?.(...args);
   };
 }
+// 登場の瞬間の低い太鼓に、少し遅れて短い風切りを重ねる。短縮版は読み送りに尾を持ち越さない。
+SE.introImpact = ({ brief = false } = {}) => {
+  if (!seEnabled() || rotateHeld) return;
+  const gain = brief ? .53 : .8;
+  const drum = recordedVoice(INTRO_DRUM, { gain, rate: .9 });
+  if (!drum) {
+    loadSeBuffer(INTRO_DRUM);
+    SE.stamp();
+  } else {
+    fadeRecordedVoice(drum, gain, brief ? .29 : .51, brief ? .14 : .24);
+  }
+  if (!recordedVoice(INTRO_AIR, { gain: brief ? .10 : .16, rate: .85, delay: .025 })) loadSeBuffer(INTRO_AIR);
+};
 // 好感度の段階が上がった時・恋人になった時: 同じベルを高さを変えて2回（1回目→完全5度上）。
 SE.affinityUp = () => {
   if (!seEnabled()) return;

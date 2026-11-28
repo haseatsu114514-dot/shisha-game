@@ -56,7 +56,14 @@ check("meeting and rumor/sighting script boundaries", () => {
   const doc = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/axe_bar_discovery.json", import.meta.url), "utf8"));
   const sighting = doc.dialogues.find(d => d.dialogue_id === "axe_bar_sighting");
   assert(sighting.lines.length >= 3);
+  const impact = sighting.lines.findIndex(line => line.type === "sfx");
+  assert(impact > 0);
+  assert.match(sighting.lines[impact + 1].text, /的の中心に刺さる/, "斧が的に刺さる行で鳴らす");
   for (const scene of doc.dialogues) for (const line of scene.lines) {
+    if (scene === sighting && line === sighting.lines[impact]) {
+      assert.deepEqual(line, { type: "sfx", id: "axe_impact" });
+      continue;
+    }
     assert(!line.type && !line.stats && !line.affinity && !line.money, "制御・報酬行を混ぜない");
     assert.notEqual(line.speaker, "hiyori", "匿名目撃や噂で本人の名前・立ち絵を出さない");
   }

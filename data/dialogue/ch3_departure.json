@@ -269,6 +269,10 @@
           "text": "（着いたら、まず大会の受付。それからmukaiだ）"
         },
         {
+          "type": "sfx",
+          "id": "phone_receive"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "発車してすぐ、スマホが震えた。スミさんからのLIMEだ。"

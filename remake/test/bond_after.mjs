@@ -21,7 +21,7 @@ for (const [id, scene] of Object.entries(scenes)) {
     assert.equal(line.condition_type, "tournament_finished", `${id}: 分岐は大会の前後だけ`);
     for (const key of [line.next_true, line.next_false]) assert(scene.branches?.[key]?.length, `${id}: 分岐 ${key} が無い`);
   }
-  const lines = [...scene.lines, ...Object.values(scene.branches || {}).flat()].filter(line => line.type !== "condition");
+  const lines = [...scene.lines, ...Object.values(scene.branches || {}).flat()].filter(line => line.type !== "condition" && line.type !== "sfx");
   for (const line of lines) {
     if (!line.speaker) continue;
     if (line.speaker === "customer") continue;

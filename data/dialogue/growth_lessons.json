@@ -433,6 +433,10 @@
           "text": "なら、四つ置いてみろ"
         },
         {
+          "type": "sfx",
+          "id": "coal_place"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "スミさんがボウルの縁に、炭を四つ、角をそろえて並べた。"
@@ -491,6 +495,10 @@
           "speaker": "sumi",
           "face": "normal",
           "text": "炭を縁に回すなら、穴も外周に寄せる手がある"
+        },
+        {
+          "type": "sfx",
+          "id": "foil_punch"
         },
         {
           "speaker": "",
@@ -891,6 +899,10 @@
           "speaker": "kumicho",
           "face": "normal",
           "text": "待つ代わりに、吸って火を呼ぶんですわ。低いところから、一口ずつな"
+        },
+        {
+          "type": "sfx",
+          "id": "bubbling"
         },
         {
           "speaker": "",
@@ -1557,6 +1569,10 @@
           "speaker": "volk",
           "face": "serious",
           "text": "Точность（トーチナスチ）。天気に、手を狂わされないことだ"
+        },
+        {
+          "type": "sfx",
+          "id": "page"
         },
         {
           "speaker": "",

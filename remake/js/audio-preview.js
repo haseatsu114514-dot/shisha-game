@@ -55,7 +55,7 @@ function unlock() {
   status.textContent = "録音を読み込んでいます…";
   ready = preloadSe().then(ok => {
     status.textContent = ok ? "録音を読み込みました。「今の音」は録音で鳴ります。"
-      : "一部の録音を読み込めませんでした。読み込めない音は合成音で鳴ります（通信を確かめて開き直してください）。";
+      : "一部の録音を読み込めませんでした。通信を確かめて開き直してください。";
     status.dataset.loaded = String(ok);
     return ok;
   });
@@ -80,11 +80,8 @@ const auditionGroups = [
   {
     title: "登場カットイン",
     current: [
-      { label: "鋭く入る（判の音）", synth: SE.stamp },
-      { label: "静かに切り替わる（打撃）", synth: SE.hit },
-      { label: "弾んで入る（選択音2回）", file: recorded.select[0], repeatAfter: 0.12 },
-      { label: "静かに浮かぶ（無音）" },
-      { label: "旧絵柄・動き軽減（選択音）", file: recorded.select[0] },
+      { label: "通常（太鼓と風切り）", play: () => SE.introImpact(), ms: 780 },
+      { label: "短縮（SKIP）", play: () => SE.introImpact({ brief: true }), ms: 460 },
     ],
     candidates: [
       { label: "A 重い判の音", file: "camel_race/stamp_drop.wav" },
@@ -124,7 +121,7 @@ function stopAudition(message = "") {
     audition.sources.forEach(source => { source.stop(); source.disconnect(); });
     audition.volume?.disconnect();
     clearTimeout(audition.timer);
-    if (audition.synth) coreSeVolume(0);
+    if (audition.core) coreSeVolume(0);
     audition.button.setAttribute("aria-pressed", "false");
     audition = null;
     auditionStop.disabled = true;
@@ -190,12 +187,12 @@ async function playAudition(group, sample, button) {
   stopPreviewBgm();
   coreSeVolume(0);
   if (wasPlaying) return;
-  if (!sample.file && !sample.synth) {
+  if (!sample.file && !sample.play) {
     auditionStatus.textContent = `${group.title} — ${sample.label}`;
     return;
   }
 
-  const active = { button, sources: [], timer: null, synth: false };
+  const active = { button, sources: [], timer: null, core: false };
   audition = active;
   auditionStop.disabled = false;
   button.setAttribute("aria-pressed", "true");
@@ -205,15 +202,15 @@ async function playAudition(group, sample, button) {
     if (audition === active) stopAudition(`再生終了 — ${label}`);
   };
   try {
-    if (sample.synth) {
-      unlockAudio();
+    if (sample.play) {
+      await unlock();
       await waitForCoreTail();
       if (request !== previewRequest) return;
-      active.synth = true;
+      active.core = true;
       coreSeVolume(0.7);
-      sample.synth();
-      seTailUntil = performance.now() + 230;
-      active.timer = setTimeout(finish, 230);
+      sample.play();
+      seTailUntil = performance.now() + sample.ms;
+      active.timer = setTimeout(finish, sample.ms);
     } else {
       const Context = window.AudioContext || window.webkitAudioContext;
       if (!Context) throw new Error("Web Audio unavailable");
@@ -223,17 +220,14 @@ async function playAudition(group, sample, button) {
       if (request !== previewRequest) return;
       const volume = auditionContext.createGain();
       active.volume = volume;
-      volume.gain.value = sample.repeatAfter && buffer.duration > sample.repeatAfter ? gain / 2 : gain;
+      volume.gain.value = gain;
       volume.connect(auditionContext.destination);
-      const at = auditionContext.currentTime;
-      for (const delay of sample.repeatAfter ? [0, sample.repeatAfter] : [0]) {
-        const source = auditionContext.createBufferSource();
-        source.buffer = buffer;
-        source.connect(volume);
-        active.sources.push(source);
-        source.start(at + delay);
-      }
-      active.sources.at(-1).onended = finish;
+      const source = auditionContext.createBufferSource();
+      source.buffer = buffer;
+      source.connect(volume);
+      active.sources.push(source);
+      source.onended = finish;
+      source.start();
     }
     auditionStatus.textContent = `再生中 — ${label}`;
   } catch {
@@ -246,7 +240,7 @@ for (const group of auditionGroups) {
     make("legend", { textContent: label }),
     make("div", { className: "buttons" }, samples.map(sample => {
       const button = make("button", { type: "button", textContent: sample.label, className: current ? "old" : "" });
-      if (sample.file || sample.synth) button.setAttribute("aria-pressed", "false");
+      if (sample.file || sample.play) button.setAttribute("aria-pressed", "false");
       button.addEventListener("click", () => void playAudition(group, sample, button));
       return button;
     })),

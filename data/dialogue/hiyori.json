@@ -981,6 +981,10 @@
           "face": "normal"
         },
         {
+          "type": "sfx",
+          "id": "coal_snip"
+        },
+        {
           "speaker": "",
           "text": "炭を持つ音も、グラスの置き方も、変わっていなかった。"
         },
@@ -1906,6 +1910,10 @@
           "face": "axe_throw"
         },
         {
+          "type": "sfx",
+          "id": "axe_impact"
+        },
+        {
           "speaker": "",
           "text": "斧が木に刺さる乾いた音。小さな青い円の縁に、刃が収まっている。"
         },
@@ -2234,12 +2242,20 @@
           "inner": "ごまかせてない。顔が完全に得意げになってる"
         },
         {
+          "type": "sfx",
+          "id": "coal_place"
+        },
+        {
           "speaker": "",
           "text": "言われたとおり、炭を少なめに載せる。"
         },
         {
           "speaker": "",
           "text": "ボウルが温まるまで、ひよりさんは黙ってホースの先を見ていた。"
+        },
+        {
+          "type": "sfx",
+          "id": "bubbling"
         },
         {
           "speaker": "",
@@ -2786,6 +2802,10 @@
           "face": "surprise"
         },
         {
+          "type": "sfx",
+          "id": "page"
+        },
+        {
           "speaker": "",
           "text": "ひよりさんは鞄から手帳を出して、ページをめくった。"
         },
@@ -2823,6 +2843,10 @@
         "private_scene": true
       },
       "lines": [
+        {
+          "type": "sfx",
+          "id": "phone_receive"
+        },
         {
           "speaker": "",
           "text": "仕事のあと、ひよりさんからLIMEが届いた。「……少しだけ、消える前に会えないかな」。"
@@ -2891,6 +2915,10 @@
           "speaker": "hajime",
           "text": "定食の話です。……両方かも、しれません",
           "face": "normal"
+        },
+        {
+          "type": "sfx",
+          "id": "phone"
         },
         {
           "speaker": "",

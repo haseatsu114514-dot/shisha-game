@@ -1015,6 +1015,10 @@
           "text": "終わらせたくねえ本ってのがある。……店もな"
         },
         {
+          "type": "sfx",
+          "id": "door"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "その時、閉めかけた扉が開いた。息を切らしたお客さんが、手袋の片方を握っている。"
@@ -1600,6 +1604,10 @@
       "dialogue_id": "ch2_shift_talk_salaryman",
       "lines": [
         {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "上がる少し前に、ドアベルが鳴った。鉄仮面さんだった。"
@@ -2105,6 +2113,10 @@
       "dialogue_id": "ch2_shift_talk_short_one",
       "lines": [
         {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "閉店まで、あと四十分。ドアベルが鳴って、仕事着のままの女の人が、息を切らして入ってきた。"
@@ -2208,6 +2220,10 @@
           "speaker": "sumi",
           "face": "normal",
           "text": "来なかったら、俺が吸う。炭を無駄にするよりはいい"
+        },
+        {
+          "type": "sfx",
+          "id": "doorbell"
         },
         {
           "speaker": "",

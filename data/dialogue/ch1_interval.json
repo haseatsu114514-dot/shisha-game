@@ -131,6 +131,10 @@
       "dialogue_id": "interval_day1_naru_lime",
       "lines": [
         {
+          "type": "sfx",
+          "id": "phone_receive"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "夜、LIMEの通知音が鳴った。なるからだ。"
@@ -182,6 +186,10 @@
     {
       "dialogue_id": "interval_day2_adam_lime",
       "lines": [
+        {
+          "type": "sfx",
+          "id": "phone_receive"
+        },
         {
           "speaker": "",
           "face": "",
