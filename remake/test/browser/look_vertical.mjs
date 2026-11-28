@@ -1,9 +1,10 @@
 // 様式「縦画面」（煙の舞台・C案。js/looks/vertical.js・要望台帳 VPN）: 縦持ちで、本編を縦の外枠に写して遊ぶ（第1章から作り、VPN17 で全章へ）。
 // 確かめること: タイトル→会話（本編の会話の箱が縦のテロップと同じ比の幅になり、2行ずつ送れる）、返事の中継、
 // 地図（左右で隣の店・一覧・決定で店に入る）、tonari の行動選び、LIME・MENU のシート、心得の盤（縦の外枠へ移して十字キーと丸ボタンで灯す・決定）、
-// 登場カットインの縦のポスター、シーシャ作りの詰め方・蒸らし時間は縦の作る場面（外枠の札・ボタンを本編へ中継して工程が進む・VPN30）、
+// 登場カットインの縦のポスター、シーシャ作りの詰め方・蒸らし時間は縦の作る場面（外枠の札・ボタンを本編へ中継して工程が進む・VPN30。
+// 本編の操作の説明はスミさんの説明のスポットライトで、段ごとに指す所を明るく抜く・VPN32）、
 // 水入れ・穴あけ・炭焼きも縦の作る場面（外枠の長押しを本編のボタンへ pointerdown／pointerup で中継し、炭は押した瞬間に本編の炭を取る。
-// 工程の結果の札も外枠で閉じる・VPN31）、
+// 工程の結果の札も外枠で閉じる・VPN31。初回の説明のスポットライトは工程の部品を順に指す・VPN32）、
 // まだ縦にしていない場面（シーシャ作りのほかの工程）は回転案内、横持ちは旧版、様式を替えると何も残らない、
 // 第2〜5章の日常（朝の小窓・地図・駅から隣町・場面カード・東京の地図の小窓・第5章の地図）も縦の外枠のまま。
 // 自動操作のブラウザの既定は旧版なので ?look=vertical を付けて選ぶ。
@@ -26,6 +27,68 @@ async function pad(page, dir) {
   await page.touchscreen.tap(box.x + box.width * at[0], box.y + box.height * at[1]);
 }
 const pressA = (page) => page.locator(t("vt-a")).tap();
+
+/**
+ * 作る場面のスミさんの説明のスポットライト（VPN32）の段: 画面全体を暗い幕で覆い、抜いた所が指す要素（target のセレクタに合う全部）を囲み、
+ * 吹き出しが抜いた所と重ならず、一言が2行までで、段の点が段の数だけあること。live を渡すと、一言が本編の説明の文にあるかも見る。
+ * 段が替わると抜く所が滑らかに動くので、指す要素を囲むまで待ってから測る。
+ */
+async function expectSpot(page, { index, count, target, say, live = "", last = false }) {
+  const label = `spotlight ${index}/${count} (${target})`;
+  await page.waitForFunction(({ index, target }) => {
+    const root = document.querySelector('[data-test="vt-craft-tut"]');
+    if (!root || root.hidden || root.dataset.index !== String(index)) return false;
+    const shell = root.getBoundingClientRect(), holeNode = document.querySelector('[data-test="vt-craft-tut-hole"]'), hole = holeNode.getBoundingClientRect();
+    const aims = [...document.querySelectorAll(target)].map((node) => node.getBoundingClientRect()).filter((r) => r.width && r.height);
+    if (!aims.length) return false;
+    // 抜く所が動き終わっている（置いた位置に着いている）
+    const at = ["left", "top", "width", "height"].map((k) => parseFloat(holeNode.style[k]));
+    if (Math.abs(hole.left - shell.left - at[0]) > 1 || Math.abs(hole.top - shell.top - at[1]) > 1 || Math.abs(hole.width - at[2]) > 1 || Math.abs(hole.height - at[3]) > 1) return false;
+    // 指す要素（画面の外にはみ出す分は除く）を、抜いた所が囲む
+    const aim = { left: Math.max(shell.left, Math.min(...aims.map((r) => r.left))), top: Math.max(shell.top, Math.min(...aims.map((r) => r.top))),
+      right: Math.min(shell.right, Math.max(...aims.map((r) => r.right))), bottom: Math.min(shell.bottom, Math.max(...aims.map((r) => r.bottom))) };
+    return hole.left <= aim.left + 1 && hole.top <= aim.top + 1 && hole.right >= aim.right - 1 && hole.bottom >= aim.bottom - 1;
+  }, { index, target }, { timeout: 5000 }).catch(() => { throw new Error(`${label}: the lit hole does not reach what the line points at`); });
+  const spot = await page.evaluate(() => {
+    const box = (node) => { const r = node.getBoundingClientRect(); return { left: r.left, top: r.top, right: r.right, bottom: r.bottom }; };
+    const root = document.querySelector('[data-test="vt-craft-tut"]'), hole = document.querySelector('[data-test="vt-craft-tut-hole"]');
+    const text = document.querySelector(".vtc-tut-text");
+    const dots = [...document.querySelectorAll('[data-test="vt-craft-tut-dots"] i')];
+    return {
+      shell: box(document.querySelector('[data-test="vt-craft"]')), cover: box(root), hole: box(hole), coach: box(document.querySelector('[data-test="vt-craft-tut-coach"]')),
+      shade: getComputedStyle(hole).boxShadow, say: text.textContent, lines: Math.round(text.getBoundingClientRect().height / parseFloat(getComputedStyle(text).lineHeight)),
+      dots: dots.length, on: dots.findIndex((dot) => dot.classList.contains("on")) + 1,
+      go: !document.querySelector('[data-test="vt-craft-tut-go"]').hidden, next: !document.querySelector('[data-test="vt-craft-tut-next"]').hidden,
+      face: document.querySelector('[data-test="vt-craft-tut-coach"] img').getAttribute("src"), telop: getComputedStyle(document.querySelector(".vtc-telop")).visibility,
+      paused: document.querySelector("#screen .bench .bench-guide").open,
+    };
+  });
+  assert.equal(spot.say, say, label);
+  assert(spot.lines <= 2, `${label}: the line fits in two lines ${JSON.stringify(spot)}`);
+  if (live) assert(live.includes(say), `${label}: the line comes from the bench's explanation ${JSON.stringify(live)}`);
+  assert(["left", "top", "right", "bottom"].every((k) => Math.abs(spot.cover[k] - spot.shell[k]) <= 1), `${label}: the dark cover spans the whole scene`);
+  assert(/rgba\(11, 8, 18, 0\.[6-9]/.test(spot.shade), `${label}: everything but the hole is darkened ${spot.shade}`);
+  const apart = spot.coach.bottom <= spot.hole.top + 1 || spot.coach.top >= spot.hole.bottom - 1;
+  assert(apart, `${label}: Sumi's bubble stays off the lit hole ${JSON.stringify({ hole: spot.hole, coach: spot.coach })}`);
+  assert(spot.face.endsWith("face_sumi.webp"), spot.face);
+  assert.equal(spot.telop, "hidden", `${label}: the usual line under the picture steps aside (no second face)`);
+  assert.deepEqual([spot.dots, spot.on], [count, index], `${label}: one dot per step, the current one lit`);
+  assert.deepEqual([spot.go, spot.next], [last, !last], `${label}: only the last step has "やってみる"`);
+  assert(spot.paused, `${label}: the bench's explanation stays open (its clock waits)`);
+}
+/** スポットライトの次の段へ（画面のどこを押しても進む。ここでは上の端の、暗い所を押す）。 */
+const nextSpot = (page) => page.locator(t("vt-craft-tut")).tap({ position: { x: 24, y: 24 } });
+/** スポットライトを今の段から最後の段まで送り、「やってみる」で本編の説明を閉じる（本編の説明が閉じるまで待つ）。 */
+async function finishSpots(page) {
+  await page.locator(t("vt-craft-tut")).waitFor();
+  const [now, count] = await page.evaluate(() => ["index", "count"].map((key) => Number(document.querySelector('[data-test="vt-craft-tut"]').dataset[key])));
+  for (let i = now; i < count; i++) {
+    await nextSpot(page);
+    await page.waitForFunction((n) => document.querySelector('[data-test="vt-craft-tut"]').dataset.index === String(n), i + 1);
+  }
+  await page.locator(t("vt-craft-tut-go")).tap();
+  await page.waitForFunction(() => !document.querySelector("#screen .bench .bench-guide").open);
+}
 
 /** 外枠が画面に収まり、横に送れないこと。 */
 async function assertFits(page, label) {
@@ -473,7 +536,8 @@ await suite("look_vertical", async (check) => {
 
   await check("craft-pack-and-steam-timer-in-the-shell", async (page) => {
     // シーシャ作りの詰め方と蒸らし時間は、縦の作る場面で遊ぶ（VPN30）。本編の作業台・工程の関数は裏でそのまま動き、
-    // 外枠の札・ボタンを押すと本編の要素へ中継する（自動の craftTest は使わない）。工程の初回の「操作の説明」も外枠に写る
+    // 外枠の札・ボタンを押すと本編の要素へ中継する（自動の craftTest は使わない）。工程の初回の「操作の説明」と「？」は、
+    // スミさんの説明のスポットライトで見せる（VPN32。段ごとに一言が指す所を明るく抜き、最後の「やってみる」で本編の説明を閉じる）
     await waitScene(page, "title");
     await page.evaluate(async () => {
       try { localStorage.removeItem("suien_step_intro"); } catch {}
@@ -491,17 +555,24 @@ await suite("look_vertical", async (check) => {
       guard: document.documentElement.dataset.rotateGuard || "", hud: document.querySelector(".vt-hud").childElementCount,
     }));
     assert.deepEqual(shell, { layout: "full", hint: "none", guard: "", hud: 0 }, "the craft scene fills the shell, without the rotate hint or the date and money");
-    // 初回の「操作の説明」: 本編の説明の文を写し、外枠の「説明を閉じて進む」で本編の説明を閉じる
-    await page.locator(t("vt-craft-guide")).waitFor();
-    const intro = await page.evaluate(() => ({
-      shell: document.querySelector('[data-test="vt-craft-guide"] .vtc-guide-text').textContent,
-      live: document.querySelector("#screen .bench .bench-guide-tip > p").textContent, open: document.querySelector("#screen .bench .bench-guide").open,
-    }));
-    assert(intro.open && intro.live && intro.shell.includes(intro.live), `the first-time explanation is mirrored ${JSON.stringify(intro)}`);
-    await page.locator(t("vt-craft-guide-close")).tap();
+    // 初回の「操作の説明」: 本編の説明の文を段に分け、器の絵→3枚の札→決定を順に明るく抜く（本編は札を出す前なので、外枠は決める前の札を見せる）
+    await page.locator(t("vt-craft-tut")).waitFor();
+    const live = await page.evaluate(() => document.querySelector("#screen .bench .bench-guide-tip > p").textContent);
+    await expectSpot(page, { index: 1, count: 3, target: t("vt-pack-bowl"), say: "ハガルは葉を入れる器、ボウルとも呼ぶ", live });
+    await nextSpot(page);
+    await expectSpot(page, { index: 2, count: 3, target: ".vtc-card", say: "詰め方で空気の通り道を作れ", live });
+    await nextSpot(page);
+    await expectSpot(page, { index: 3, count: 3, target: t("vt-pack-ok"), say: "見比べて決めろ。迷ったらノーマルだ", last: true });
+    // 最後の段は「やってみる」で閉じる（ほかを押しても段のまま。本編の説明も開いたまま）
+    await nextSpot(page);
+    await page.waitForTimeout(150);
+    assert.deepEqual(await page.evaluate(() => [document.querySelector('[data-test="vt-craft-tut"]').dataset.index, document.querySelector("#screen .bench .bench-guide").open]), ["3", true]);
+    await page.locator(t("vt-craft-tut-go")).tap();
     await page.waitForFunction(() => !document.querySelector("#screen .bench .bench-guide").open);
-    await page.locator(t("vt-pack-card-normal")).waitFor();
-    await page.locator(t("vt-craft-guide")).waitFor({ state: "hidden" });
+    // 本編が札を出し、外枠の札がその写しになるまで待つ（説明の間の決める前の札は、本編の札が出ると作り直す）
+    await page.waitForFunction(() => document.querySelector('#screen [data-test="opt-normal"]') && document.querySelector('[data-test="vt-pack-card-normal"]')
+      && window.__verticalLook?.scene?.() === "craft" && document.querySelector('[data-test="vt-pack-info"] span')?.textContent);
+    await page.locator(t("vt-craft-tut")).waitFor({ state: "hidden" });
     // 工程の並び（本編の工程。今の工程が光る）・器の絵・3枚の札
     const view = await page.evaluate(() => ({
       now: document.querySelector('[data-test="vt-craft-steps"] li.now')?.dataset.step,
@@ -521,13 +592,20 @@ await suite("look_vertical", async (check) => {
       && document.querySelector('[data-test="vt-pack-bowl"]').getAttribute("src").endsWith("ui-bowl-airy.webp"));
     const info = await page.evaluate(() => ({ shell: document.querySelector('[data-test="vt-pack-info"] b').textContent, live: document.querySelector("#screen .pack-caption b").textContent }));
     assert.deepEqual(info, { shell: "ふんわり", live: "ふんわり" });
-    // 「？」で本編の説明を開いて写し、閉じる
+    // 「？」で本編の説明を開くと、同じスポットライトで見せる。画面の大きさが変わると抜く所と吹き出しを置き直す。「やってみる」で本編の説明を閉じる
     await page.locator(t("vt-craft-help")).tap();
     await page.waitForFunction(() => document.querySelector("#screen .bench .bench-guide").open);
-    await page.locator(t("vt-craft-guide")).waitFor();
-    await page.locator(t("vt-craft-guide-close")).tap();
+    await expectSpot(page, { index: 1, count: 3, target: t("vt-pack-bowl"), say: "ハガルは葉を入れる器、ボウルとも呼ぶ" });
+    await page.setViewportSize(SHORT.viewport);
+    await expectSpot(page, { index: 1, count: 3, target: t("vt-pack-bowl"), say: "ハガルは葉を入れる器、ボウルとも呼ぶ" });
+    await page.setViewportSize(TALL.viewport);
+    await nextSpot(page);
+    await expectSpot(page, { index: 2, count: 3, target: ".vtc-card", say: "詰め方で空気の通り道を作れ" });
+    await nextSpot(page);
+    await expectSpot(page, { index: 3, count: 3, target: t("vt-pack-ok"), say: "見比べて決めろ。迷ったらノーマルだ", last: true });
+    await page.locator(t("vt-craft-tut-go")).tap();
     await page.waitForFunction(() => !document.querySelector("#screen .bench .bench-guide").open);
-    await page.locator(t("vt-craft-guide")).waitFor({ state: "hidden" });
+    await page.locator(t("vt-craft-tut")).waitFor({ state: "hidden" });
     // 決定で本編の詰め方が決まり、工程が終わる
     await page.locator(t("vt-pack-ok")).tap();
     await page.waitForFunction(() => window.packDone === true || window.vtCraftError);
@@ -538,10 +616,24 @@ await suite("look_vertical", async (check) => {
       const { runSteamTimer } = await import("./js/craft/timer.js");
       window.timerRun = runSteamTimer(window.vtCraft).then(() => { window.timerDone = true; }, (error) => { window.vtCraftError = String(error.stack || error); });
     });
-    await page.locator(t("vt-craft-guide")).waitFor();
-    await page.locator(t("vt-craft-guide-close")).tap();
+    // 初回の説明: タイマーの絵と液晶→分・秒→早見→（温度計はまだ無いので）液晶→スタートを順に明るく抜く
+    await page.locator(t("vt-craft-tut")).waitFor();
+    const timerLive = await page.evaluate(() => document.querySelector("#screen .bench .bench-guide-tip > p").textContent);
+    const timerSpots = (thermo) => [
+      { target: ".vtc-ktimer", say: "葉全体に熱をなじませる工程だ", live: timerLive },
+      { target: ".vtc-t-min, .vtc-t-sec", say: "分は1分、秒は10秒ずつ", live: timerLive },
+      { target: ".vtc-presets", say: "3分・5分・8分は押せば一発だ。迷ったら5分" },
+      { target: thermo ? t("vt-craft-thermo") : t("vt-timer-lcd"), say: "熱の目安を見て、3〜10分の範囲で時間を決めろ", live: timerLive },
+      { target: t("vt-timer-start"), say: "時間を決めたら、スタートだ", last: true },
+    ];
+    for (const [i, spot] of timerSpots(false).entries()) {
+      if (i) await nextSpot(page);
+      await expectSpot(page, { index: i + 1, count: 5, ...spot });
+    }
+    await page.locator(t("vt-craft-tut-go")).tap();
+    await page.waitForFunction(() => !document.querySelector("#screen .bench .bench-guide").open && document.querySelector('#screen [data-test="timer-start"]'));
     await page.locator(t("vt-timer-start")).waitFor();
-    await page.locator(t("vt-craft-guide")).waitFor({ state: "hidden" });
+    await page.locator(t("vt-craft-tut")).waitFor({ state: "hidden" });
     const clock = () => page.evaluate(() => ({
       live: document.querySelector('#screen [data-test="timer-display"] .clock-value').textContent,
       shell: document.querySelector('[data-test="vt-timer-lcd"]').getAttribute("aria-label"),
@@ -569,6 +661,17 @@ await suite("look_vertical", async (check) => {
     const thermo = await page.evaluate(() => ({ mode: document.querySelector('[data-test="vt-craft-thermo"]').dataset.mode,
       shown: !document.querySelector('[data-test="vt-craft-thermo"]').hidden, range: !document.querySelector(".vtc-th-range").hidden }));
     assert.deepEqual(thermo, { mode: "forecast", shown: true, range: true });
+    // 「？」: 温度計が出た後は、温度計の目安の段で温度計を明るく抜く。「やってみる」で本編の説明を閉じ、決めた時間はそのまま
+    await page.locator(t("vt-craft-help")).tap();
+    await page.waitForFunction(() => document.querySelector("#screen .bench .bench-guide").open);
+    for (const [i, spot] of timerSpots(true).entries()) {
+      if (i) await nextSpot(page);
+      await expectSpot(page, { index: i + 1, count: 5, ...spot });
+    }
+    await page.locator(t("vt-craft-tut-go")).tap();
+    await page.waitForFunction(() => !document.querySelector("#screen .bench .bench-guide").open);
+    await page.locator(t("vt-craft-tut")).waitFor({ state: "hidden" });
+    assert.deepEqual(await clock(), { live: "03:10", shell: "蒸らし時間 3分10秒", start: false, liveStart: false });
     await page.locator(t("vt-timer-start")).tap();
     await page.waitForFunction(() => window.timerDone === true || window.vtCraftError);
     assert.deepEqual(await page.evaluate(() => window.vtCraftError || { seconds: window.vtCraft.steamSeconds, min: window.vtCraft.steamMin }), { seconds: 190, min: 190 / 60 });
@@ -613,14 +716,37 @@ await suite("look_vertical", async (check) => {
     await runCraftStep(page, { module: "./js/craft/water-view.js", fn: "stepWater" });
     await waitScene(page, "craft");
     await assertCraftShell(page, "water intro");
-    // チュートリアルの初回の説明（部品の前）も、水入れの画面のまま写す
-    await page.locator(t("vt-craft-guide")).waitFor();
+    // チュートリアルの初回の説明（部品の前）も、水入れの画面のまま、スミさんの説明のスポットライトで見せる（VPN32）:
+    // 本編の説明の文を段に分け、ボトル→目安の線→注ぐ・こぼす→決定を順に明るく抜く（本編は部品を出す前なので、外枠はボタンを押せる形で見せる）
+    await page.locator(t("vt-craft-tut")).waitFor();
     assert.equal(await page.evaluate(() => document.querySelector(".vtc").dataset.step), "water");
-    await page.locator(t("vt-craft-guide-close")).tap();
+    const waterLive = await page.evaluate(() => document.querySelector("#screen .bench .bench-guide-tip > p").textContent);
+    const waterSpots = [
+      { target: ".vtc-bottle", say: "煙は水をくぐって冷える", live: waterLive },
+      { target: ".vtc-w-band, .vtc-w-mark", say: "量で吸い心地が変わるから、まずは目安に合わせろ", live: waterLive },
+      { target: `${t("vt-water-drain")}, ${t("vt-water-pour")}`, say: "注ぐときは長押し。こぼして戻してもいい" },
+      { target: t("vt-water-ok"), say: "線のあいだに収めたら、決定だ", last: true },
+    ];
+    const waterButtons = () => page.evaluate(() => ["drain", "pour", "ok"].map((key) => document.querySelector(`[data-test="vt-water-${key}"]`).disabled));
+    for (const [i, spot] of waterSpots.entries()) {
+      if (i) await nextSpot(page);
+      await expectSpot(page, { index: i + 1, count: waterSpots.length, ...spot });
+    }
+    assert.deepEqual(await waterButtons(), [false, false, false], "the buttons the lines point at look pressable during the explanation");
+    await page.locator(t("vt-craft-tut-go")).tap();
+    await page.waitForFunction(() => !document.querySelector("#screen .bench .bench-guide").open);
     // 説明を閉じると本編が水入れの部品を出し、外枠のボタンが押せるようになる
     await page.locator(`#screen ${t("water-pour")}`).waitFor();
     await page.locator(`${t("vt-water-pour")}:not([disabled])`).waitFor();
-    await page.locator(t("vt-craft-guide")).waitFor({ state: "hidden" });
+    await page.locator(t("vt-craft-tut")).waitFor({ state: "hidden" });
+    // 「？」も同じ段（本編は作業台を止めている。外枠のボタンは押せる形のまま）。「やってみる」で閉じると、本編のボタンが生きる
+    await page.locator(t("vt-craft-help")).tap();
+    await page.waitForFunction(() => document.querySelector("#screen .bench .bench-guide").open);
+    await expectSpot(page, { index: 1, count: waterSpots.length, ...waterSpots[0] });
+    assert.deepEqual(await waterButtons(), [false, false, false]);
+    await finishSpots(page);
+    await page.locator(t("vt-craft-tut")).waitFor({ state: "hidden" });
+    await page.waitForFunction(() => !document.querySelector('#screen [data-test="water-step"]').closest("[inert]"));
     const level = () => page.evaluate(() => Number(document.querySelector('#screen [data-test="water-meter"]').getAttribute("aria-valuenow")));
     const first = await page.evaluate(() => ({
       now: document.querySelector('[data-test="vt-craft-steps"] li.now')?.dataset.step, zone: document.querySelector('[data-test="vt-water-pic"]').dataset.zone,
@@ -667,9 +793,27 @@ await suite("look_vertical", async (check) => {
     await runCraftStep(page, { module: "./js/craft/holes.js", fn: "runHoles" });
     await waitScene(page, "craft");
     await assertCraftShell(page, "holes intro");
-    await page.locator(t("vt-craft-guide")).waitFor();
+    // チュートリアルの初回の説明（配置の札の前）も、穴あけの画面のまま、スミさんの説明のスポットライトで見せる（VPN32）:
+    // 本編の説明の文を段に分け、アルミ→刺す→（刺す）→開けた穴の数を順に明るく抜く（本編は配置の札の前なので、外枠は穴あけの形と既定の配置の数の点を見せる）
+    await page.locator(t("vt-craft-tut")).waitFor();
     assert.equal(await page.evaluate(() => document.querySelector(".vtc").dataset.step), "holes");
-    await page.locator(t("vt-craft-guide-close")).tap();
+    const holesLive = await page.evaluate(() => document.querySelector("#screen .bench .bench-guide-tip > p").textContent);
+    const holesSpots = [
+      { target: t("vt-holes-foil"), say: "アルミは葉を覆うふた、穴は空気と熱の入口だ", live: holesLive },
+      { target: t("vt-holes-poke"), say: "目印に針を合わせて、同じ加減で刺せ", live: holesLive },
+      { target: t("vt-holes-poke"), say: "押しすぎると穴が大きくなる", live: holesLive },
+      { target: `${t("vt-holes-pips")}, .vtc-hole-count`, say: "周りの点が開けた穴だ。金ならちょうどいい", last: true },
+    ];
+    for (const [i, spot] of holesSpots.entries()) {
+      if (i) await nextSpot(page);
+      await expectSpot(page, { index: i + 1, count: holesSpots.length, ...spot });
+    }
+    const preview = await page.evaluate(() => ({ pips: document.querySelectorAll(".vtc-pip").length, made: document.querySelectorAll(".vtc-pip.done, .vtc-pip.good").length,
+      count: document.querySelector(".vtc-hole-count").textContent, poke: document.querySelector('[data-test="vt-holes-poke"]').disabled }));
+    assert.deepEqual(preview, { pips: 24, made: 0, count: "0/24", poke: false }, "before the game's foil, the points of the default layout and a pressable 刺す are shown");
+    await page.locator(t("vt-craft-tut-go")).tap();
+    await page.waitForFunction(() => !document.querySelector("#screen .bench .bench-guide").open);
+    await page.locator(t("vt-craft-tut")).waitFor({ state: "hidden" });
     // 配置選び: 本編の札を写し、決定で本編の「穴あけを始める」へ
     await page.locator(`${t("vt-holes-start")}:not([disabled])`).waitFor();
     const choose = await page.evaluate(() => ({
@@ -690,6 +834,21 @@ await suite("look_vertical", async (check) => {
     await page.waitForFunction(() => !document.querySelector("#fx > .countdown"));
     await page.locator(`${t("vt-holes-poke")}:not([disabled])`).waitFor();
     await assertCraftShell(page, "holes");
+    // 穴あけの間の「？」も同じ段（本編は作業台を止めている。指す「刺す」は押せる形のまま）。「やってみる」で閉じると穴あけに戻る
+    await page.locator(t("vt-craft-help")).tap();
+    await page.waitForFunction(() => document.querySelector("#screen .bench .bench-guide").open);
+    await expectSpot(page, { index: 1, count: holesSpots.length, ...holesSpots[0] });
+    await nextSpot(page);
+    await expectSpot(page, { index: 2, count: holesSpots.length, ...holesSpots[1] });
+    assert.equal(await page.evaluate(() => document.querySelector('[data-test="vt-holes-poke"]').disabled), false);
+    await finishSpots(page);
+    await page.locator(t("vt-craft-tut")).waitFor({ state: "hidden" });
+    await page.locator(`${t("vt-holes-poke")}:not([disabled])`).waitFor();
+    // 本編の時計は説明を閉じた toggle の届きで再開する（その前の押しは本編が受けない）。再開してから刺す
+    await page.waitForFunction(() => {
+      const bench = document.querySelector("#screen .bench");
+      return bench?.dataset.helpPaused !== "true" && !bench?.querySelector(".bench-panel")?.inert;
+    });
     let pressed = null;
     for (let i = 0; i < 60; i++) {
       const view = await page.evaluate(() => {
@@ -745,10 +904,30 @@ await suite("look_vertical", async (check) => {
     await runCraftStep(page, { module: "./js/craft/heat.js", fn: "runHeat" });
     await waitScene(page, "craft");
     await assertCraftShell(page, "heat intro");
-    await page.locator(t("vt-craft-guide")).waitFor();
+    // チュートリアルの初回の説明（炭の前）も、炭焼きの画面のまま、スミさんの説明のスポットライトで見せる（VPN32）:
+    // 本編の説明の文を段に分け、炭壺を持つはじめの絵→コンロの炭ひとつ→炭全部を順に明るく抜く（本編は炭を出す前なので、外枠はまだ焼いていない炭を見せる）
+    await page.locator(t("vt-craft-tut")).waitFor();
     assert.equal(await page.evaluate(() => document.querySelector(".vtc").dataset.step), "heat");
-    await page.locator(t("vt-craft-guide-close")).tap();
+    const heatLive = await page.evaluate(() => document.querySelector("#screen .bench .bench-guide-tip > p").textContent);
+    const heatSpots = [
+      { target: ".vtc-coal-hero", say: "炭の全面に火を入れる工程だ", live: heatLive },
+      { target: t("vt-heat-coal-0"), say: "黒い面が消えて全面が赤くなったら取り出す合図", live: heatLive },
+      { target: ".vtc-coal", say: "炭を押せば取れる。三つとも焼くぞ", last: true },
+    ];
+    for (const [i, spot] of heatSpots.entries()) {
+      if (i) await nextSpot(page);
+      await expectSpot(page, { index: i + 1, count: heatSpots.length, ...spot });
+    }
+    assert.equal(await page.evaluate(() => document.querySelectorAll(".vtc-coal").length), 3, "unburnt coals sit on the stove before the game's coals");
+    await page.locator(t("vt-craft-tut-go")).tap();
+    await page.waitForFunction(() => !document.querySelector("#screen .bench .bench-guide").open);
+    await page.locator(t("vt-craft-tut")).waitFor({ state: "hidden" });
     await page.locator(t("vt-heat-coal-0")).waitFor();
+    // 説明の間は外枠がまだ焼いていない炭を置いている。本編が炭を出し、外枠がそれを写すまで待つ
+    await page.waitForFunction(() => {
+      const live = document.querySelectorAll("#screen .heat .stove .coal").length;
+      return live > 0 && document.querySelectorAll(".vtc-coal").length === live;
+    });
     const first = await page.evaluate(() => ({
       shell: document.querySelectorAll(".vtc-coal").length, live: document.querySelectorAll("#screen .heat .stove .coal").length,
       stove: document.querySelector(".vtc-stove > img").getAttribute("src"), hero: document.querySelector(".vtc-coal-hero > img").getAttribute("src"),
