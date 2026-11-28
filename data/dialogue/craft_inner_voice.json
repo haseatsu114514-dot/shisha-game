@@ -95,11 +95,11 @@
     },
     {
       "dialogue_id": "craft_inner_pull_retry",
-      "lines": [{ "speaker": "hajime", "face": "serious", "text": "温度を合わせきれなかった。ホースを握る手が、固い" }]
+      "lines": [{ "speaker": "hajime", "face": "serious", "text": "温度を合わせきれなかった。ホースを握る手が、硬い" }]
     },
     {
       "dialogue_id": "craft_inner_default_watch",
-      "lines": [{ "speaker": "hajime", "face": "normal", "text": "手元を確かめながら、1つずつ進めよう" }]
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "手元を確かめながら、一つずつ進めよう" }]
     },
     {
       "dialogue_id": "craft_inner_default_good",
