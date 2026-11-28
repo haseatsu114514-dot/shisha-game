@@ -1200,7 +1200,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "停電！？ うそ、真っ暗じゃん！ ……あ、く、暗いのは苦手だわ"
+          "text": "停電！？ うそ、真っ暗じゃん！ ……あ、…暗いのは苦手だわ"
         },
         {
           "speaker": "hajime",
@@ -1456,7 +1456,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "止まっちゃった！？ ……あ、ま、まだ間に合うかしら"
+          "text": "止まっちゃった！？ ……あ、…まだ間に合うかしら"
         },
         {
           "speaker": "kuraudo",
