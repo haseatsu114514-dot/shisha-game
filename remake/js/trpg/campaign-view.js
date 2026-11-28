@@ -89,7 +89,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       el("span", { text: "本棚" }), el("small", { text: "過去プレイを再生" }),
     ]));
     root.append(el("header.trpg-campaign-header", [
-      el("div", [!readOnly ? storeLogo("trpg_bar", { width: 130, height: 72 }) : null, el("span.trpg-kicker", { text: readOnly ? "TABLETOP MEMORIES" : "ボドゲカフェ / TABLETOP CAFE" }),
+      el("div", [!readOnly ? storeLogo("trpg_bar", { width: 130, height: 72 }) : null, el("span.trpg-kicker", { text: readOnly ? "TABLE TALK MEMORIES" : "ボドゲカフェ / BOARD GAME CAFE" }),
         el("h1", { text: readOnly ? "遊んだ記録" : completed ? "今夜の卓を終えました" : daytime ? "昼の試遊と本選び" : "今夜、誰と物語を囲む？" })]),
       el("div.trpg-campaign-meta", [el("span", { text: state ? `CH.${state.chapter} · DAY ${chapterDay(state)} · ${yen(state.money)}` : "まだ記録がありません" }),
         shelfHelpButton(() => root, { title: "ボドゲカフェの遊び方", sections: help, test: "trpg-campaign-help" }),
