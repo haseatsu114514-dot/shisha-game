@@ -515,6 +515,11 @@
 .vtc-pull-controls { --pill:calc(5.4 * var(--u)); --puff:min(calc(14 * var(--u)),calc(var(--cp) * .45)); color:white; text-align:center; }
 .vtc-pull-status { position:absolute; inset:0 0 auto; color:#d7c9bc; font-size:calc(1.15 * var(--u)); }
 .vtc-pull-dial { position:absolute; --width:min(77%,calc((var(--cp) - var(--pill) - var(--low) - var(--puff) * .5 - var(--u)) * 1.9)); left:50%; right:auto; top:auto; bottom:calc(var(--low) + var(--pill) + var(--puff) * .51); width:var(--width); aspect-ratio:212/112; transform:translateX(-50%); }
+/* 外枠が吸い出しを表示中も本編で採点・入力を扱う。裏の針、作業風景、温度計の描画だけを休む。 */
+.bench[data-portrait-pull] :is(.pull-play, .pull > .thermo, .bench-worker) { content-visibility:hidden; }
+.vtc-pull-bands, .vtc-pull-pointer { position:absolute; inset:0; pointer-events:none; }
+/* 試作の針の軸 (100,100) は viewBox (-6,-2,212,112) のこの位置。帯の上で針の層だけを回す。 */
+.vtc-pull-pointer { transform-origin:50% 91.07142857%; will-change:transform; }
 .vtc-pull-dial .z { stroke:#110c18; stroke-width:1; }
 .vtc-pull-dial .z-cold { fill:#4aa3ff; } .vtc-pull-dial .z-hot { fill:#ff5a3c; }
 .vtc-pull-dial .z-keep, .vtc-pull-dial .z-just { fill:#fff; }

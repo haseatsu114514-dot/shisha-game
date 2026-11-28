@@ -513,7 +513,10 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
     moveNeedle(landed);
     // CRN06: 押した瞬間に返す。針先と止めた帯が光り、芯ならその帯の芯が強く光る（判定の文字は出さない・TH36）
     if (renewal) {
-      delete play.dataset.stopped; void play.offsetWidth;
+      if (play.dataset.stopped && !play.closest?.("[data-portrait-pull]")) {
+        delete play.dataset.stopped;
+        void play.offsetWidth; // 同じ帯をもう一度止めたとき、表示中の光を先頭から再生する。
+      }
       play.dataset.stopped = isJust ? "just" : "plain";
       play.dataset.stopZone = z.id;
       SE.click?.();

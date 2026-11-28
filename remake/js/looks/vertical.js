@@ -292,6 +292,12 @@ function start() {
       const target = record.target.nodeType === 1 ? record.target : record.target.parentElement;
       if (target === motionLayer.root && record.type === "childList") { dirty = true; other = true; continue; }
       if (!target || own.some((mine) => mine.contains(target))) continue;
+      // 吸い出し内部の数値・表示文の更新では場面は切り替わらない。針は専用の購読、
+      // 温度と文は通常の sync、吸う・提供の可否は次のフレームで反映する。
+      if (sceneName === "craft" && target.closest(".bench[data-portrait-pull] .pull")) {
+        if (record.attributeName === "disabled") { dirty = true; wake(); }
+        continue;
+      }
       // 縦のメーターは本編の針位置を直接購読する。吸引中の温度や進捗の描画でシーン全体を再検出しない。
       if (sceneName === "craft" && record.attributeName === "style" && target.closest(".pull-play, .pull .thermo")) continue;
       if (scene?.syncText && target.closest?.("#vn .vn-text, #vn .vn-inner")) typed = true;

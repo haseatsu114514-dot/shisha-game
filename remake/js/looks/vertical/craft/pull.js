@@ -4,24 +4,27 @@ import { portraitBreath } from "../../../craft/portrait-breath.js";
 import { smokeAllowed, smokeLayer } from "../../../core/smoke.js";
 import { setAttr, setFlag, setText } from "../../../core/dom-write.js";
 
-import { meterHtml, portraitTools } from "./art.js";
+import { meterHtml, meterNeedle, meterViewBox, portraitTools } from "./art.js";
 
 export const pullView = {
   id: "pull", step: "pull", intro: true,
   match: panel => !!panel.querySelector(".pull, :scope > .result-card"),
-  create({ relay }) {
+  create() {
     const art = new URL("previews/portrait-stage/img/", document.baseURI);
     const pic = el("div.vtc-pull-art", ["hold", "rest"].map((pose, i) =>
       el("img." + pose, { src: new URL(i ? "craft-pull-hajime-exhale.webp" : "craft-pull-hajime.webp", art).href, alt: "" })));
     const smoke = el("div.vtc-pull-smoke");
     pic.append(smoke);
-    const gauge = el("div.vtc-pull-dial", { html: meterHtml() });
+    const bands = el("div.vtc-pull-bands", { html: meterHtml(undefined, false) });
+    const pointer = el("div.vtc-pull-pointer", { "aria-hidden": "true",
+      html: `<svg viewBox="${meterViewBox}">${meterNeedle}</svg>` });
+    const gauge = el("div.vtc-pull-dial", [bands, pointer]);
     const status = el("div.vtc-pull-status");
     const life = el("span.vtc-pull-life", { role: "img" });
     let leafSignature = "", bandSignature = "", needleObserver;
     const actions = el("div.vtc-pull-actions");
     const ctrl = el("div.vtc-pull-controls", [gauge, status, life, actions]);
-    let panel, buttons = [], sourceDial, sourcePlay, layer, poseTimer;
+    let panel, sourceBench, buttons = [], sourceDial, sourcePlay, layer, poseTimer;
     function endPose() {
       clearTimeout(poseTimer);
       pic.classList.remove("exhaling");
@@ -43,6 +46,7 @@ export const pullView = {
         endPose();
         layer?.destroy();
         needleObserver?.disconnect();
+        sourceBench?.removeAttribute("data-portrait-pull");
         sourcePlay?.removeEventListener("pull-exhale", exhale);
         sourcePlay?.removeEventListener("pull-inhale", endPose);
       },
@@ -56,6 +60,8 @@ export const pullView = {
         if (sourceDial !== dial) {
           sourcePlay?.removeEventListener("pull-exhale", exhale);
           sourcePlay?.removeEventListener("pull-inhale", endPose);
+          sourceBench = play.closest(".bench");
+          sourceBench.setAttribute("data-portrait-pull", "");
           sourcePlay = play;
           play.addEventListener("pull-inhale", endPose);
           play.addEventListener("pull-exhale", exhale);
@@ -63,8 +69,7 @@ export const pullView = {
           bandSignature = "";
           needleObserver?.disconnect();
           const needle = dial.querySelector(".pg-needle");
-          const aim = () => gauge.querySelector(".needle")?.setAttribute("transform",
-            "rotate(" + (Number(needle.dataset.pos) * 1.8 - 90) + " 100 100)");
+          const aim = () => { pointer.style.transform = `rotate(${Number(needle.dataset.pos) * 1.8 - 90}deg)`; };
           needleObserver = new MutationObserver(aim);
           needleObserver.observe(needle, { attributes: true, attributeFilter: ["data-pos"] });
           aim();
@@ -73,10 +78,11 @@ export const pullView = {
             const available = () => source.isConnected && !source.disabled && !source.closest("[inert]");
             const button = el("button.vtc-bench-button", { type: "button", dataset: { test: "vt-" + source.dataset.test },
               onclick: event => {
-                if ((!timed || event.detail === 0) && available()) relay(source);
+                if ((!timed || event.detail === 0) && available()) source.click();
               } });
+            // 全ボタンに本編の click 入口がある。座標を読まず、指を置いた瞬間に同じ判定を呼ぶ。
             if (timed) button.addEventListener("pointerdown", event => {
-              if (event.button === 0 && available()) { event.preventDefault(); relay(source); }
+              if (event.button === 0 && available()) { event.preventDefault(); source.click(); }
             });
             const kind = source.dataset.test;
             const tool = kind === "pull-stop" ? "mouthpiece" : kind === "pull-serve" ? "serve" : null;
@@ -93,9 +99,7 @@ export const pullView = {
         const bounds = [...dial.querySelectorAll(".pg-just")].flatMap(z => [Number(z.dataset.from), Number(z.dataset.to)]);
         if (String(bounds) !== bandSignature) {
           bandSignature = String(bounds);
-          gauge.innerHTML = meterHtml(bounds);
-          const pos = Number(dial.querySelector(".pg-needle").dataset.pos || 0);
-          gauge.querySelector(".needle").setAttribute("transform", "rotate(" + (pos * 1.8 - 90) + " 100 100)");
+          bands.innerHTML = meterHtml(bounds, false);
         }
         const leaves = play.querySelector(".leaf-icon");
         if (leaves) {

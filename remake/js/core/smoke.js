@@ -199,7 +199,8 @@ export function createSmokeField({ random = Math.random } = {}) {
     /** いまの煙を、幅 W・高さ H の升目（Uint32Array。ImageData と同じ並び）へ描く。戻り値は塗った升目の数 */
     paint(px, W = GRID_W, H = GRID_H) {
       if (bufW !== W || bufH !== H) { z = new Float32Array(W * H); al = new Float32Array(W * H); pl = new Uint8Array(W * H); bufW = W; bufH = H; }
-      z.fill(0); al.fill(0);
+      z.fill(0); al.fill(0); px.fill(0);
+      let left = W, right = -1, topRow = H, bottomRow = -1;
       // 形と光は基準の升目で計算する。描画先の細かさや縦横比が変わっても、煙の座標と大きさは同じ。
       const xScale = W / GRID_W, yScale = H / GRID_H, xStep = 1 / xScale, yStep = 1 / yScale;
       // 1) 丸を「てっぺんがほぼ平らな丘」として重ね、升目ごとにいちばん高い丘を残す
@@ -217,6 +218,9 @@ export function createSmokeField({ random = Math.random } = {}) {
           const rx = r * xScale, ry = r * yScale;
           const x0 = Math.max(0, Math.floor(cx - rx)), x1 = Math.min(W - 1, Math.ceil(cx + rx));
           const y0 = Math.max(0, Math.floor(cy - ry)), y1 = Math.min(H - 1, Math.ceil(cy + ry));
+          if (x0 > x1 || y0 > y1) continue;
+          left = Math.min(left, x0); right = Math.max(right, x1);
+          topRow = Math.min(topRow, y0); bottomRow = Math.max(bottomRow, y1);
           const inv = 1 / (r * r), top = 2.5 + .3 * r;
           for (let y = y0; y <= y1; y++) {
             const dy = (y + .5 - cy) * yStep, dy2 = dy * dy;
@@ -235,17 +239,18 @@ export function createSmokeField({ random = Math.random } = {}) {
       // 2) 丘の傾きから、光の当たり方で4色に塗り分ける。雲の外周は塗り分けない（外へ落ちる傾きを数えない）
       const [lx, ly, lz] = LIGHT, s2 = 3, flat = s2 * lz;
       let painted = 0;
-      for (let y = 0, i = 0; y < H; y++) {
-        for (let x = 0; x < W; x++, i++) {
+      // 一口目や消えぎわの煙は画面の一部だけを占める。光を計算するのは丸が届く範囲だけ。
+      for (let y = topRow; y <= bottomRow; y++) {
+        for (let x = left, i = y * W + left; x <= right; x++, i++) {
           const zc = z[i];
-          if (zc <= 0) { px[i] = 0; continue; }
+          if (zc <= 0) continue;
           const zl = x > 0 ? z[i - 1] : 0, zr = x < W - 1 ? z[i + 1] : 0, zu = y > 0 ? z[i - W] : 0, zd = y < H - 1 ? z[i + W] : 0;
           const gx = ((zr > 0 ? zr : zc) - (zl > 0 ? zl : zc)) * xScale;
           const gy = ((zd > 0 ? zd : zc) - (zu > 0 ? zu : zc)) * yScale;
           const lam = (-gx * lx - gy * ly + flat) / Math.sqrt(gx * gx + gy * gy + s2 * s2);
           const tone = lam >= .8 ? 3 : lam >= .44 ? 2 : lam >= .16 ? 1 : 0;
           const step = Math.round(Math.min(1, al[i]) * ALPHA_STEPS);
-          if (!step) { px[i] = 0; continue; } // soft の煙の、いちばん外の縁
+          if (!step) continue; // soft の煙の、いちばん外の縁
           px[i] = palettes[pl[i]][tone][step];
           painted++;
         }

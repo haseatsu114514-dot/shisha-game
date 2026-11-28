@@ -1107,7 +1107,18 @@ await suite("look_vertical", async (check) => {
     const serve = page.locator(t("vt-pull-serve"));
     await page.locator(t("vt-pull-stop") + ":enabled").waitFor();
     assert(await serve.isDisabled());
-    await rotateBench(page);
+    await page.setViewportSize({ width: 844, height: 390 });
+    await page.waitForFunction(() => !document.querySelector(".bench[data-portrait-pull]")
+      && getComputedStyle(document.querySelector(".pull-play")).contentVisibility !== "hidden");
+    await page.setViewportSize(TALL.viewport);
+    await page.waitForFunction(() => {
+      const pointer = document.querySelector(".vtc-pull-pointer");
+      if (!pointer || getComputedStyle(document.querySelector(".pull-play")).contentVisibility !== "hidden") return false;
+      const pos = Number(document.querySelector("#screen .pg-needle").dataset.pos);
+      // 縦の針は描画を分けても本編の採点位置（半円の-90°〜90°）と一致する。
+      const rot = new DOMMatrixReadOnly(getComputedStyle(pointer).transform);
+      return Math.abs(Math.atan2(rot.b, rot.a) * 180 / Math.PI - (pos * 1.8 - 90)) < .1;
+    });
     for (let i = 0; i < 2; i++) {
       await page.waitForFunction(() => {
         const pos = Number(document.querySelector("#screen .pg-needle")?.dataset.pos);

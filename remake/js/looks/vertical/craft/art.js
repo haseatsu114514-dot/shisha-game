@@ -20,7 +20,10 @@ export const portraitTools = {
   attack: `<svg class="tool-svg tool-attack" viewBox="0 0 100 100" aria-hidden="true"><path class="gl-arc" d="M18 70C26 38 52 20 84 18"/><path d="M84 18L70 14 76 28Z"/><path class="gl-arc2" d="M30 80C38 58 54 44 76 38"/></svg>`,
 };
 
-export function meterHtml([cold, coldEnd, center, centerEnd, hot, hotEnd] = [.13, .2, .44, .56, .8, .87]) {
+export const meterViewBox = "-6 -2 212 112";
+export const meterNeedle = '<g class="needle"><path d="M100 10L103.2 96L96.8 96Z"/></g>';
+
+export function meterHtml([cold, coldEnd, center, centerEnd, hot, hotEnd] = [.13, .2, .44, .56, .8, .87], withNeedle = true) {
   const C = 100, RO = 92, RI = 60;
   const pt = (t, r) => { const a = Math.PI * (1 - t); return [C + r * Math.cos(a), C - r * Math.sin(a)]; };
   const band = (t0, t1, cls, style = "") => {
@@ -28,9 +31,9 @@ export function meterHtml([cold, coldEnd, center, centerEnd, hot, hotEnd] = [.13
     return `<path class="${cls}" ${style ? `style="${style}"` : ""} d="M${x0.toFixed(2)} ${y0.toFixed(2)}A${RO} ${RO} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}L${x2.toFixed(2)} ${y2.toFixed(2)}A${RI} ${RI} 0 0 0 ${x3.toFixed(2)} ${y3.toFixed(2)}Z"/>`;
   };
   const steps = (t0, t1, cls, n, from, to) => Array.from({ length: n }, (_, i) => band(t0 + (t1 - t0) * i / n, t0 + (t1 - t0) * (i + 1) / n + 0.002, cls, `--mix:${Math.round(from + (to - from) * i / (n - 1))}%`)).join("");
-  return `<svg class="meter" viewBox="-6 -2 212 112" role="img" aria-label="吸い出しのメーター">
+  return `<svg class="meter" viewBox="${meterViewBox}" role="img" aria-label="吸い出しのメーター">
     ${band(0, cold, "z z-cold")}${band(cold, coldEnd, "z z-keep")}${steps(coldEnd, center, "z z-cool", 6, 100, 0)}
     ${band(center, centerEnd, "z z-just")}${steps(centerEnd, hot, "z z-warm", 6, 0, 100)}${band(hot, hotEnd, "z z-keep")}${band(hotEnd, 1, "z z-hot")}
-    <g class="needle"><path d="M100 10L103.2 96L96.8 96Z"/></g>
+    ${withNeedle ? meterNeedle : ""}
   </svg>`;
 }
