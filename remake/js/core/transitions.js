@@ -74,7 +74,7 @@ export function strokeBand({ angle = STROKE.angle, fill = COLOR.purple, edge = C
 
 // 前の背景を幕で覆わず、煙の形の境目で下から上へほどいて、下に置いた次の背景を見せる。境目と一緒に薄い煙が昇る。
 // マスクと煙は計算で作った小さな画像（asset_sources/transitions/smoke-dissolve-20261111/make_masks.py）。
-// 紫の一筆（下の strokeBand）は、DS風の2画面（黒の暗転）と再挑戦（retryStroke）だけに残る。
+// 紫の一筆（下の strokeBand）は、再挑戦（retryStroke）だけに残る。
 let smokeUrls = null;
 /** マスク2枚と煙の絵の URL（js-<版>/ へ写しても同じ深さなので、このファイルからの相対で引く） */
 export function smokeArt() {
@@ -193,7 +193,7 @@ function smokeCurtain(host, { fast = false, reduced = false } = {}) {
 
 /**
  * 背景を替えるときの標準の切り替え。煙のにじみ（smokeCurtain・TMG44）。
- * DS風の2画面では黒の暗転（game-ds.css。中身の紫の一筆は見せない）。マップ→場所は移動の型（transition-moves.js）。
+ * マップ→場所は移動の型（transition-moves.js）。
  * 素材の読み込みを待つ間は、前の背景のまま待つ（ui.setBg）。
  */
 export function createSceneCurtain(host, { fast = false, sceneArrival = takeSceneArrival() } = {}) {
@@ -201,42 +201,9 @@ export function createSceneCurtain(host, { fast = false, sceneArrival = takeScen
   const { cued, commitArrival: entry } = sceneArrival;
   const arrival = (curtain) => Object.assign(curtain, { commitArrival: entry });
   if (cued?.kind === "place" && !fast && !reduced) return arrival(withStoreArrival(host, moveCurtain(host, moveStyle(cued.opts), cued.opts), cued.opts, { fast, reduced }));
-  if (!(typeof document !== "undefined" && document.body?.classList.contains("game-ds"))) {
-    warmSmoke();
-    const smoke = smokeCurtain(host, { fast, reduced });
-    return arrival(cued?.kind === "place" ? withStoreArrival(host, smoke, cued.opts, { fast, reduced }) : smoke);
-  }
-  const coverMs = reduced ? 90 : fast ? 150 : 340;
-  const revealMs = reduced ? 90 : fast ? 170 : 400;
-  const node = el("div.scene-curtain.stroke", { "aria-hidden": "true", style: { "--st-ms": `${coverMs}ms` }, dataset: { transition: reduced ? "fade" : "stroke" } });
-  const band = reduced ? null : strokeBand();
-  if (band) node.append(band.art);
-  else node.classList.add("veil");
-  const unhold = holdKeys();
-  host.append(node);
-  const covered = (async () => {
-    await nextFrame();
-    node.classList.add("cover");
-    if (band) await move(band.mov, [{ transform: `translateY(${STROKE.from}px)` }, { transform: `translateY(${STROKE.cover}px)` }], coverMs, { easing: EASE.in });
-    else await move(node, [{ opacity: 0 }, { opacity: 1 }], coverMs, { easing: "ease" });
-  })();
-  let released = false;
-  const curtain = { covered, async release() {
-    if (released) return;
-    released = true;
-    try {
-      await covered;
-      // 次の背景・画面・台詞を幕の内側で描いてから開く。
-      await nextFrame(); await nextFrame();
-      node.classList.add("reveal");
-      if (band) await move(band.mov, [{ transform: `translateY(${STROKE.cover}px)` }, { transform: `translateY(${STROKE.to}px)` }], revealMs, { easing: EASE.out });
-      else await move(node, [{ opacity: 1 }, { opacity: 0 }], revealMs, { easing: "ease" });
-    } finally {
-      node.remove();
-      unhold();
-    }
-  } };
-  return arrival(cued?.kind === "place" ? withStoreArrival(host, curtain, cued.opts, { fast, reduced }) : curtain);
+  warmSmoke();
+  const smoke = smokeCurtain(host, { fast, reduced });
+  return arrival(cued?.kind === "place" ? withStoreArrival(host, smoke, cued.opts, { fast, reduced }) : smoke);
 }
 
 // ---------------------------------------------------------------- 覆ったまま次の場面へ渡す
@@ -436,9 +403,9 @@ async function flip(span) {
 }
 
 /** いま見えている背景（#bg のいちばん上の絵）の写し。夜明けの幕の中で、眠る前と朝の場面として使う。
- *  無い時と DS風の2画面（背景は上画面だけ・幕は両画面）では null（暗い面だけで明ける） */
+ *  背景が無い時は null（暗い面だけで明ける） */
 export function bgSnapshot() {
-  const host = typeof document !== "undefined" && !document.body?.classList?.contains("game-ds") ? document.getElementById?.("bg") : null;
+  const host = typeof document !== "undefined" ? document.getElementById?.("bg") : null;
   const top = host ? [...host.children].filter((n) => n.classList?.contains("bg-img")).at(-1) : null;
   if (!top?.cloneNode) return null;
   const copy = top.cloneNode(true);

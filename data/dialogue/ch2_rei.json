@@ -214,7 +214,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "……と思った瞬間、カウンター奥でガタンと音がした。クラウドが炭トングを倒したらしい。"
+            "text": "……と思った瞬間、カウンター奥でガタンと音がした。その人が炭トングを倒したらしい。"
           },
           {
             "speaker": "hajime",
@@ -229,7 +229,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "クラウドは視線を逸らして、トングを拾い上げた。何も言わない。"
+            "text": "その人は視線を逸らして、トングを拾い上げた。何も言わない。"
           },
           {
             "speaker": "hajime",
@@ -242,6 +242,15 @@
             "tournament_chapter": 2,
             "next_true": "visit_after",
             "next_false": "visit_before"
+          },
+          {
+            "speaker": "kuraudo",
+            "face": "serious",
+            "text": "……†黒羅雨℃†。クラウドでいい"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_kuraudo"
           }
         ]
       }
@@ -370,12 +379,12 @@
         {
           "speaker": "kuraudo",
           "face": "smile",
-          "text": "……同士だ"
+          "text": "……同志だ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（同士にされた。サビだけなのに、否定が追いつかなかった）"
+          "text": "（同志にされた。サビだけなのに、否定が追いつかなかった）"
         },
         {
           "speaker": "",
@@ -1382,12 +1391,12 @@
         {
           "speaker": "kuraudo",
           "face": "smile",
-          "text": "……やっぱり、同士だ"
+          "text": "……やっぱり、同志だ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（また同士にされた。曲名は、一つも知らないのに）"
+          "text": "（また同志にされた。曲名は、一つも知らないのに）"
         },
         {
           "speaker": "",
@@ -1479,7 +1488,7 @@
         {
           "speaker": "kuraudo",
           "face": "normal",
-          "text": "……前に、同士だって言った"
+          "text": "……前に、同志だって言った"
         },
         {
           "speaker": "hajime",

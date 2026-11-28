@@ -1043,6 +1043,13 @@ function phoneShell({ time, title, signal }) {
     });
     // 返信欄が広がった後の表示範囲で、末尾の本文・添付まで読める位置へ。
     ui.scroll();
+    if (document.fonts?.status === "loading") {
+      const gen = ui.gen, bottom = chat.scrollTop;
+      // 書体の到着で返信が折り返され、本文の表示範囲が縮む。履歴を上に読んでいる人の位置は保つ。
+      document.fonts.ready.then(() => {
+        if (ui.live(gen) && actions.contains(buttons[0]) && chat.scrollTop >= bottom - 1) ui.scroll();
+      });
+    }
   });
   ui.close = async () => {
     ui.open = false;

@@ -535,7 +535,7 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "昨日うまくいった置き方は、今朝やめた。同じ果実を、そうやって詰めてきた"
+          "text": "昨日うまくいった置き方は、今朝やめた。同じダブルアップルを、そうやって詰めてきた"
         },
         {
           "speaker": "adam",
@@ -603,7 +603,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "何があっても、私はここにいるから。疲れたら、いつでも吸いにおいで。ね？"
+          "text": "何があっても、みんとはここにいるから。疲れたら、いつでも吸いにおいで。ね？"
         },
         {
           "speaker": "",
@@ -784,39 +784,11 @@
           "text": "……今日は、線がすぐに途切れます"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "前と違う色なの？"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "違うのは、よくあることです。私も、日によって違うので"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "でも今日は……ずっと息を止めてるみたいで"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……今は、色の話より、点の話がしたいんだ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "すぐに返した声が、自分でも思ったより硬かった。"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……少し、お水を飲みませんか"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "つむぎは色の名前を決めず、コップをこちらへ寄せた。"
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch1_tsumugi_smoke_color",
+          "next_true": "color_known",
+          "next_false": "color_unknown"
         },
         {
           "speaker": "tsumugi",
@@ -843,7 +815,83 @@
           "face": "",
           "text": "受け取ったコップは、少しだけ冷たかった。言い返す言葉は、見つからなかった。"
         }
-      ]
+      ],
+      "branches": {
+        "color_known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "前と違う色なの？"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "違うのは、よくあることです。私も、日によって違うので"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "でも今日は……ずっと息を止めてるみたいで"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……今は、色の話より、点の話がしたいんだ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "すぐに返した声が、自分でも思ったより硬かった。"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……少し、お水を飲みませんか"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎは色の名前を決めず、コップをこちらへ寄せた。"
+          }
+        ],
+        "color_unknown": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "前と違う線なの？"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "違うのは、よくあることです。私も、日によって違うので"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "でも今日は……ずっと息を止めてるみたいで"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……今は、絵の話より、点の話がしたいんだ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "すぐに返した声が、自分でも思ったより硬かった。"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……少し、お水を飲みませんか"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎは線の続きを言わず、コップをこちらへ寄せた。"
+          }
+        ]
+      }
     }
   ]
 }

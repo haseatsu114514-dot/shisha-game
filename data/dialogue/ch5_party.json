@@ -19,7 +19,7 @@
       "dialogue_id": "ch5_party_seat_sumi",
       "lines": [
         { "speaker": "sumi", "face": "normal", "text": "主役が、こっちに座ってどうする" },
-        { "speaker": "hajime", "face": "smile", "text": "ここが一番、落ち着くので" },
+        { "speaker": "hajime", "face": "smile", "text": "ここがいちばん、落ち着くので" },
         { "speaker": "sumi", "face": "smile", "text": "……好きにしろ" },
         { "speaker": "", "face": "", "text": "スミさんは黙って、俺のグラスに水を足した。" }
       ]
@@ -42,27 +42,27 @@
           { "type": "condition", "condition_type": "lover", "char_id": "minto", "next_true": "minto", "next_false": "met_tsumugi" }
         ],
         "minto": [
-          { "speaker": "", "face": "", "text": "栞さんが座っていたのは、カウンターのいちばん端の席だった。" },
-          { "speaker": "minto", "face": "ura_smile", "text": "……主役がこっちに来ちゃって、いいの？" },
+          { "speaker": "", "face": "", "text": "みんとが座っていたのは、カウンターのいちばん端の席だった。" },
+          { "speaker": "minto", "face": "smile", "text": "……主役がこっちに来ちゃって、いいの？" },
           { "speaker": "hajime", "face": "normal", "text": "ここがいい" },
-          { "speaker": "minto", "face": "ura_normal", "text": "……この席ね、私の指定席だったの。誰にも言ってないけど" },
+          { "speaker": "minto", "face": "normal", "text": "……この席ね、私の指定席だったの。誰にも言ってないけど" },
           { "speaker": "", "face": "", "text": "知っている。tonariの隅で、静かに一台を吸っていた『お姉さん』の席だ。" },
-          { "speaker": "hajime", "face": "normal", "text": "俺が、初めて栞さんに一台出した席だ" },
-          { "speaker": "minto", "face": "ura_smug", "text": "偵察のつもりで座ったのにね。……その新人くんが、世界一だって" },
-          { "speaker": "minto", "face": "ura_smile", "text": "おめでとう、はじめくん。……これは、ここで言いたかったの" },
+          { "speaker": "hajime", "face": "normal", "text": "俺が、初めてみんとに一台出した席だ" },
+          { "speaker": "minto", "face": "wink", "text": "偵察のつもりで座ったのにね。……その新人くんが、世界一だって" },
+          { "speaker": "minto", "face": "smile", "text": "おめでとう、はじめくん。……これは、ここで言いたかったの" },
           { "speaker": "", "face": "", "text": "向こうのテーブルから、「みんとちゃん、乾杯の写真！」と声が飛んだ。" },
-          { "speaker": "minto", "face": "ura_smile", "text": "はーい♡ かわいく撮ってねー" },
-          { "speaker": "", "face": "", "text": "店の声で手を振ってから、栞さんはこっちへ向き直った。声が、すっと小さくなる。" },
-          { "speaker": "minto", "face": "ura_normal", "text": "……前はね、ここから見てるだけだったの。はじめくんが、誰かに一台出すとこ" },
-          { "speaker": "minto", "face": "ura_normal", "text": "今日は、隣に座っていいんだよね" },
+          { "speaker": "minto", "face": "smile", "text": "はーい♡ かわいく撮ってねー" },
+          { "speaker": "", "face": "", "text": "店の声で手を振ってから、みんとはこっちへ向き直った。声が、すっと小さくなる。" },
+          { "speaker": "minto", "face": "normal", "text": "……前はね、ここから見てるだけだったの。はじめくんが、誰かに一台出すとこ" },
+          { "speaker": "minto", "face": "normal", "text": "今日は、隣に座っていいんだよね" },
           { "speaker": "hajime", "face": "normal", "text": "うん。……今日だけじゃなくて" },
-          { "speaker": "minto", "face": "ura_surprise", "text": "……っ。そういうの、みんながいるとこで言わないで" },
-          { "speaker": "", "face": "", "text": "栞さんはグラスで顔を半分隠した。耳まで赤いのは、照明のせいじゃなさそうだった。" },
+          { "speaker": "minto", "face": "surprise", "text": "……っ。そういうの、みんながいるとこで言わないで" },
+          { "speaker": "", "face": "", "text": "みんとはグラスで顔を半分隠した。耳まで赤いのは、照明のせいじゃなさそうだった。" },
           { "speaker": "", "face": "", "text": "スミさんが通りがかりに、ミントの一台をカウンターの端へ置いていった。何も言わずに。" },
-          { "speaker": "minto", "face": "ura_smug", "text": "……スミさん、全部お見通しだね" },
+          { "speaker": "minto", "face": "wink", "text": "……スミさん、全部お見通しだね" },
           { "speaker": "hajime", "face": "smile", "text": "昔から、ああいう人だから" },
           { "speaker": "", "face": "", "text": "一本のホースを、二人で回した。ミントの煙が、カウンターの端でゆっくりほどけていく。" },
-          { "speaker": "minto", "face": "ura_smile", "text": "……また、ここで一台作ってね。この席、空けとくから" },
+          { "speaker": "minto", "face": "smile", "text": "……また、ここで一台作ってね。この席、空けとくから" },
           { "speaker": "hajime", "face": "smile", "text": "うん。いつでも" }
         ],
         "met_tsumugi": [
@@ -126,7 +126,7 @@
           { "type": "condition", "condition_type": "lover", "char_id": "ageha", "next_true": "ageha", "next_false": "met_mashiro" }
         ],
         "ageha": [
-          { "speaker": "", "face": "", "text": "あげはは、さっきまで向こうのテーブルで一番大きな声を出していた。" },
+          { "speaker": "", "face": "", "text": "あげはは、さっきまで向こうのテーブルでいちばん大きな声を出していた。" },
           { "speaker": "", "face": "", "text": "隣に座ると、その声がすっと小さくなった。" },
           { "speaker": "ageha", "face": "surprise", "text": "え、ハジメっち、こっち来んの？ 主役なのに？" },
           { "speaker": "hajime", "face": "normal", "text": "うん。こっちがいい" },
@@ -178,17 +178,17 @@
           { "speaker": "samechan", "face": "ventriloquism", "text": "勇者はじめよ、よくぞ戻った。世界の王の座、大儀であった", "voice": "korochan" },
           { "speaker": "samechan", "face": "normal", "text": "……コロちゃん。王はお主ではなく、はじめじゃ" },
           { "speaker": "samechan", "face": "ventriloquism", "text": "余の側近は、朝から祝いの言葉を練習していた", "voice": "korochan" },
-          { "speaker": "samechan", "face": "surprise", "text": "…それは言わぬ約束じゃ！" },
+          { "speaker": "samechan", "face": "surprise", "text": "……それは言わぬ約束じゃ！" },
           { "speaker": "hajime", "face": "smile", "text": "練習したの、聞かせてください" },
           { "speaker": "samechan", "face": "normal", "text": "……うむ。ならば、コロちゃんは少し休んでおれ" },
           { "speaker": "", "face": "", "text": "サメちゃんは右手からコロちゃんを外して、膝に座らせた。" },
           { "speaker": "samechan", "face": "normal", "text": "……世界一、おめでとう。これは、わしの口から言うのじゃ" },
           { "speaker": "hajime", "face": "normal", "text": "ありがとうございます。……練習した甲斐、ありました？" },
-          { "speaker": "samechan", "face": "surprise", "text": "…甲斐があったかは、お主が決めることじゃ" },
+          { "speaker": "samechan", "face": "surprise", "text": "……甲斐があったかは、お主が決めることじゃ" },
           { "speaker": "hajime", "face": "smile", "text": "すごく、嬉しかったです" },
           { "speaker": "samechan", "face": "smile", "text": "……うむ。なら、よい" },
           { "speaker": "", "face": "", "text": "膝の上のコロちゃんは、こちらを向いたまま、口を閉じていた。" },
-          { "speaker": "samechan", "face": "normal", "text": "次は、シーシャークでも祝うのじゃ。お主の席、空けておく" },
+          { "speaker": "samechan", "face": "normal", "text": "次は、SHISHARKでも祝うのじゃ。お主の席、空けておく" },
           { "speaker": "hajime", "face": "smile", "text": "はい。必ず行きます" },
           { "speaker": "", "face": "", "text": "グラスを置いたサメちゃんの手が、俺の手をきゅっと握った。今度は、自分の手で。" }
         ],
@@ -210,7 +210,7 @@
           { "speaker": "hiyori", "face": "normal", "text": "……私がいた頃のtonariから、世界一が出たんだね", "inner": "スミさん、絶対ちょっと泣いた。私も泣きそう" },
           { "speaker": "hiyori", "face": "normal", "text": "後輩が世界一なんて、先輩としては、すごく誇らしいです" },
           { "speaker": "hajime", "face": "normal", "text": "先輩にそう言われると、照れます" },
-          { "speaker": "hiyori", "face": "love_blush", "text": "……彼氏としても、誇らしいよ。儚くないほうの声で、言っとくね" },
+          { "speaker": "hiyori", "face": "love_blush", "text": "……彼女としても、誇らしいよ。儚くないほうの声で、言っとくね" },
           { "speaker": "hajime", "face": "smile", "text": "俺も、ひよりさんが隣にいてくれて、嬉しいです" },
           { "speaker": "hiyori", "face": "smile", "text": "じゃあ、今夜は消えないでおいてあげる", "inner": "終電まで、絶対ここにいる" },
           { "speaker": "", "face": "", "text": "ひよりさんが、カウンターの下で俺の袖をつまんだ。捕まえていてほしい時の、つまみ方だった。" }
@@ -244,7 +244,7 @@
       "comment": "修羅場の引き金（2026-11-11 オーナー「最後の修羅場は演出をしっかり・やってしまった感」）。恋人が2人以上いる打ち上げで、選んだ席ごとに一つ読む（ch5-party-plan.js の partyTrigger）。ここまでは店の曲のまま。次の ch5_party_shuraba_open で曲が止まる。恋人の隣の場面（ch5_party_trigger_<ID>）の甘い行は、恋人が1人の時の ch5_party_seat_lover から引いていて、最後の地の文で「見られた・聞かれた」と気づく。報酬行は置かない。",
       "lines": [
         { "speaker": "sumi", "face": "normal", "text": "主役が、こっちに座ってどうする" },
-        { "speaker": "hajime", "face": "smile", "text": "ここが一番、落ち着くので" },
+        { "speaker": "hajime", "face": "smile", "text": "ここがいちばん、落ち着くので" },
         { "speaker": "", "face": "", "text": "本当は、どの席も選べなかっただけだ。" },
         { "speaker": "", "face": "", "text": "スミさんが、俺のグラスに水を足そうとした。その手が、止まった。" }
       ]
@@ -262,10 +262,10 @@
       "dialogue_id": "ch5_party_trigger_minto",
       "comment": "修羅場の引き金。恋人のみんと（栞）の隣。恋人なら面識・本名・『お姉さん』の正体は確定している（ch5_party_seat_lover と同じ前提）。",
       "lines": [
-        { "speaker": "", "face": "", "text": "栞さんが座っていたのは、カウンターのいちばん端の席だった。" },
-        { "speaker": "minto", "face": "ura_smile", "text": "……主役がこっちに来ちゃって、いいの？" },
+        { "speaker": "", "face": "", "text": "みんとが座っていたのは、カウンターのいちばん端の席だった。" },
+        { "speaker": "minto", "face": "smile", "text": "……主役がこっちに来ちゃって、いいの？" },
         { "speaker": "hajime", "face": "normal", "text": "ここがいい" },
-        { "speaker": "minto", "face": "ura_normal", "text": "今日は、隣に座っていいんだよね" },
+        { "speaker": "minto", "face": "normal", "text": "今日は、隣に座っていいんだよね" },
         { "speaker": "hajime", "face": "normal", "text": "うん。……今日だけじゃなくて" },
         { "speaker": "", "face": "", "text": "言ってから、気づいた。店の中は、思っていたより静かだった。" }
       ]
@@ -336,7 +336,7 @@
       "lines": [
         { "speaker": "", "face": "", "text": "ひよりさんは、カウンターの端で、物憂げに窓の外を見ていた。" },
         { "speaker": "hiyori", "face": "normal", "text": "……世界一の光って、私には少し眩しすぎるね", "inner": "本物来た。近い。世界一が近い" },
-        { "speaker": "hiyori", "face": "love_blush", "text": "……彼氏として、誇らしいよ。儚くないほうの声で、言っとくね" },
+        { "speaker": "hiyori", "face": "love_blush", "text": "……彼女として、誇らしいよ。儚くないほうの声で、言っとくね" },
         { "speaker": "", "face": "", "text": "ひよりさんが、カウンターの下で俺の袖をつまんだ。" },
         { "speaker": "", "face": "", "text": "儚くないほうの声は、店の奥まで、よく通った。" }
       ]

@@ -25,10 +25,9 @@ import { installSaveFailedNotice } from "./core/save-failed-notice.js";
 import { createDevInspector } from "./core/dev-inspector.js";
 import { createEventPreview } from "./core/dev-event-preview.js";
 import { createIsolatedEventPlayer } from "./core/dev-isolated-player.js";
-import { craftTest } from "./craft/session.js";
+import { craftTest } from "./craft/test-controls.js";
 import { showTitle } from "./scenes/title.js";
 import { pickTitleArt, prepareTitleArt } from "./scenes/title-art.js";
-import { resumeGame } from "./chapters/ch1.js";
 import { setGrowthPreview, growthEnabled, gainExp, ensureGrowth, openGrowthBoard } from "./core/growth.js";
 installNoZoom(); // ダブルタップによる拡大を止める（#2826。ピンチは禁止しない）
 installDoubleTapGuard(); // ダブルタップ拡大の保険（#2852）。no-zoom が入っていれば __suienNoZoom を見て自動で何もしない
@@ -105,7 +104,7 @@ export async function boot() {
   await withLoading(async ({ report }) => {
     // データと一緒に書体も待つ（読み込み前の代わりの字で一瞬崩れて見えないように）。遅い回線では4秒で先へ
     const fonts = Promise.race([
-      Promise.all(["500", "700", "900"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線あA7"))),
+      Promise.all(["500", "700"].map((w) => document.fonts.load(`${w} 20px "Suien Title"`, "水煙前線あA7"))),
       new Promise((r) => setTimeout(r, 4000)),
     ]).catch(() => {});
     // ロゴと枠絵は DB に依存しないので、データ・書体と同時に取り始める（#3500 A-19）。ここでは待たない。
@@ -130,7 +129,10 @@ export async function boot() {
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
   const resumeRequested = consumeResumeOnBoot();
   let trial;
-  if (resumeRequested && load()) resumeGame();
+  if (resumeRequested && load()) {
+    const { resumeGame } = await import("./chapters/ch1.js");
+    resumeGame();
+  }
   // TRPGの試遊（TRF21）: ?trial=trpg で、タイトルの代わりに本編と同じボドゲカフェを使い捨ての状態で開く。
   // セーブは読み書きしない。「タイトルへ戻る」でふだんのタイトルへ。
   else if (new URLSearchParams(location.search).get("trial") === "trpg") {

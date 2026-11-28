@@ -632,7 +632,7 @@ html:root .kuji-overlay.kuji-multi .kj-actions .kj-done:is(:hover, :focus-visibl
 /* スマホでは1回引きの札の説明（補足）を出さず、札の title で読む（#2729・2026-11-08「文字が多い」）。賞・景品名・重複の買い取りは出す */
 html:root[data-density="phone"] .kuji-card:not(.kuji-short) .kuji-desc { display: none; }
 /* 結果のボタンは共通のスマホ規格（phone-density.css の --phone-tap）を使い、実寸 40px を下回る画面ではそのぶん大きくする */
-html:root[data-density="phone"] body:not(.game-ds) .kj-actions .btn { min-height: max(var(--phone-tap, 72px), calc(40px / var(--k, 1))); }
+html:root[data-density="phone"] body:not(:root) .kj-actions .btn { min-height: max(var(--phone-tap, 72px), calc(40px / var(--k, 1))); }
 /* スマホ横持ち: stage が縮むぶん（--k）を戻し、実寸で文字 12px・押せる所 40px を下回らせない（#2835）。縦持ちは扱わない */
 @media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
   .kuji-card:not(.kuji-short) .kuji-name { font-size: max(30px, calc(14px / var(--k, 1))); }

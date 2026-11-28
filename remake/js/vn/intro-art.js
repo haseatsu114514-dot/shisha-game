@@ -95,7 +95,7 @@ export function illustratedIntro(id, variant, intro, main, portrait, art, backgr
     // 読む順番: 名前→二つ名→一言→好きなフレーバー（2026-10-31）
     el(`div.ci-quote-area${flavor ? ".has-flavor" : ""}`, [
       el("div.ci-quote-rule", { "aria-hidden": "true" }),
-      el("div.ci-line", { text: `「${plainLine(intro.line)}」` }),
+      el("div.ci-line", { text: `「${plainLine(intro.line)}」`, dataset: { line: intro.line ?? "" } }),
       flavorTag(flavor),
     ].filter(Boolean)),
     el("div.ci-flash", { "aria-hidden": "true" }),

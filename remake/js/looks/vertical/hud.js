@@ -27,10 +27,3 @@ export function readHud() {
     hidane: text(hud.querySelector(".hud-menu .hidane-badge:not([hidden])")),
   };
 }
-
-/** 現行のボタン（data-test）を押す。無ければ何もしない。 */
-export function pressTest(id) {
-  const target = document.querySelector(`[data-test="${id}"]`);
-  if (target && !target.disabled) target.click();
-  return !!target;
-}

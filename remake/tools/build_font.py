@@ -9,6 +9,8 @@
                 https://github.com/google/fonts/tree/main/ofl/zenkakugothicnew
                 いずれも SIL OFL 1.1）
 
+起動用の部分書体だけを作り直す: python3 remake/tools/build_font.py --title
+
 収録する文字 = 同梱済みサブセットが持っていた字種（安全集合として引き継ぐ）
                ＋ data/ と remake/ に実際に出てくる全文字。
 Noto Sans JP が持たない字（キリル文字など、ヴォルクのロシア語で使う）は、
@@ -75,6 +77,16 @@ def subset_font(src_path, unicodes, out_path):
     return TTFont(str(out_path)).getBestCmap()
 
 
+def build_title_fonts():
+    """タイトルとロード漫画で使う文字。未収録の文字は CSS で元の同書体へ戻す。"""
+    paths = ["index.html", "js/scenes/title.js", "js/scenes/saves.js", "js/core/loading.js",
+             "js/core/loading-comics.js", "js/core/chapter-clock.js"]
+    text = "".join((OUT.parent / rel).read_text(encoding="utf-8") for rel in paths)
+    codes = set(map(ord, text)) | set(range(32, 127)) | set(range(0x3041, 0x3100))
+    for weight, _ in WEIGHTS:
+        subset_font(OUT / f"NotoSansJP-{weight}.woff2", codes, OUT / f"Title-{weight}.woff2")
+
+
 def main():
     src = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
     base_unicodes = {ord(c) for c in used_chars()} | set(SUPPLEMENT)
@@ -127,4 +139,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if sys.argv[1:] != ["--title"]:
+        main()
+    build_title_fonts()

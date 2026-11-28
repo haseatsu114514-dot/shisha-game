@@ -451,11 +451,11 @@ export function play(idOrDlg, opts = {}) {
       opts.signal.addEventListener("abort", cancel, { once: true });
       if (opts.signal.aborted) { cancel(); return; }
     }
-    prefetch(dlg);
     // 画像の待ち時間は場面転換の幕で覆う。短い固定待ちで読み込みを打ち切らない。
     // 最初の行を出す前に名前欄と本文の明朝を待つ。失敗時は代替書体で続ける。
     const fontsReady = loadVnFonts().catch(() => []);
     const assetsReady = Promise.all([settingsReady, fontsReady, bgReady.assetsReady || bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]);
+    prefetch(dlg);
     waitSceneAssets(bgReady, me, assetsReady).then(() => {
       if (running !== me) return;
       sceneBgm(meta);
@@ -530,11 +530,7 @@ const PREFETCH_FIRST = 16; // 会話の入口（開始・jump）で先に読む�
 const PREFETCH_AHEAD = 16; // 送りに合わせて、この先の何行ぶんを先に読むか（#3500 C-8）
 function collectArt(lines, urls) {
   for (const l of lines || []) {
-    const character = l.portrait === false ? null : l.portrait || l.speaker;
-    if (character && canShowPortrait(character, !!l.portrait)) {
-      const p = scenePortraitInfo(character, l.portrait_face || l.face);
-      if (p) urls.add(p.src);
-    }
+    if (!l.type) for (const url of linePortraits(l)) urls.add(url);
     if (l.type === "show_cg") {
       if (!l.portrait_only) urls.add(cgUrl(l.cg_id));
       else if (document.documentElement.dataset.vt === "on") urls.add(portraitStillUrl(l.cg_id));
@@ -551,8 +547,7 @@ function requestArt(urls, r = running) {
 }
 function prefetch(dlg) {
   if (!dlg) return;
-  const urls = collectArt(dlg.lines, new Set());
-  Object.values(dlg.branches || {}).forEach((lines) => collectArt(lines, urls));
+  const urls = collectArt((dlg.lines || []).slice(0, PREFETCH_AHEAD), new Set());
   requestArt([...urls].slice(0, PREFETCH_FIRST));
 }
 /** 入口の16枚より後ろの表情・CGも、読み進めるのに合わせて先の行のぶんを頼む（分岐は選ばれて差し込まれた時点で入る）。 */
@@ -981,6 +976,7 @@ async function showLine(line) {
     const type = getComputedStyle(node);
     const font = `${type.fontStyle} ${type.fontWeight} ${type.fontSize} ${type.fontFamily}`;
     const sample = node === dom.text ? String(line.text || "あ") : "あ";
+    if (document.fonts.check?.(font, sample)) return;
     // 書体待ちが止まると本文が出ない。先読み（vn-fonts.js）と同じ上限で、届き次第差し替える。
     let timer;
     return Promise.race([
@@ -993,6 +989,11 @@ async function showLine(line) {
   await waitSceneAssets(Promise.all([fontReady, frameReady, ...images.map((url) => imageReady(url, 15000))]), r);
   if (running !== r) return;
   if (line._romanceTransient && !r.hesitation?.model.current(state)) return finish(true);
+  // 読んでいる間に直後の台詞の立ち絵をデコードし、表示時と同じ準備を共有する。
+  const nextLine = r.queue[0];
+  if (!vnTest.turbo && !skipMode && nextLine && !nextLine.type) {
+    for (const url of linePortraits(nextLine)) void imageReady(url, 15000);
+  }
   if (!line._romanceTransient && hooks.onLine) hooks.onLine(r.currentId || r.id, line);
   const speaker = String(line.speaker || "");
   const face = String(line.face || "");

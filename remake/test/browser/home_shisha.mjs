@@ -359,7 +359,7 @@ await suite("home-shisha", async check => {
         await page.locator("#boot").waitFor({ state: "detached" });
         await page.evaluate(() => { __remake.vnTest.turbo = true; });
         await hit("title-load"); await hit("slot-0");
-        await page.waitForFunction(() => __remake.state.day === 9 && __remake.state.slot === 0
+        await page.waitForFunction(() => __remake.state?.day === 9 && __remake.state.slot === 0
           && document.querySelector('[data-destination-selection]:not(.done)'), null, { timeout: 30000 });
       };
       await continueSave();
