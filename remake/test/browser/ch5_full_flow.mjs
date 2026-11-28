@@ -60,6 +60,16 @@ async function loadSlot(page, slot) {
   await page.locator(dt(`slot-${slot}`)).click();
 }
 
+const watchArrival = page => page.evaluateHandle(async () => {
+  const { hooks } = await import("./js/vn/engine.js");
+  const lines = [];
+  hooks.onLine = (id, line) => {
+    if (id === "ch5_match_day_arrival") lines.push(line.text);
+  };
+  return lines;
+});
+const isSendoff = text => !!text?.includes("私、明日もここで作ります");
+
 await suite("ch5-full-flow", async check => {
   await check("r10-scene-comments-stay-out-of-vn-and-log", async page => {
     const cases = await page.evaluate(async () => {
@@ -241,9 +251,15 @@ await suite("ch5-full-flow", async check => {
 
     // 8. 試合: 到着→一杯目→二本目の前→二本目の制作→挙手の合計（勝ち＋余韻）。
     // 到着→一杯目→二杯目の前は1回の「続きを読む」で連続再生される。
+    const sendoffLines = await watchArrival(page);
     await page.locator(dt("ch5-continue")).click();
     // 二本目: 同じダブルアップル12gを実際に制作し、調整2回の出来で観客の挙手が決まる（#1665）。
     await page.locator(dt("ch5-second-cup")).waitFor();
+    const departure = await sendoffLines.jsonValue();
+    const sendoff = departure.findIndex(isSendoff);
+    const arrival = departure.findIndex(text => text?.startsWith("SMOKE LABに着いた"));
+    assert(sendoff >= 0 && arrival > sendoff, "The blackboard scene leads to Tsumugi's send-off before the lab");
+    assert.equal(departure.filter(isSendoff).length, 1);
     state = await get(page);
     assert.equal(state.flags._ch5.secondCup ?? null, null, "The second cup is not decided before it is made");
     const copy = await page.evaluateHandle(async () => {
@@ -1397,6 +1413,30 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._noor_confession_visit, undefined, "The confession mark only lives while the scene is read");
     const gallery = await page.evaluate(async () => (await import("./js/core/gallery-progress.js")).readGalleryProgress().routeRecords.noor?.becameLover);
     assert.equal(gallery, true, "The gallery records the route as 恋人成立");
+  });
+
+  await check("chapter-five-legacy-blackboard-controls-send-off", async page => {
+    for (const readBoard of [false, true]) {
+      await page.evaluate(async readBoard => {
+        const core = await import("./js/core/state.js");
+        const value = core.newGame();
+        Object.assign(value, { chapter: 5, day: 52, slot: 0, phase: "tournament", contacts: ["sumi"] });
+        const read = { ch5_bridge_after_return: true, ch5_opening: true, ch5_unrecorded_day: true, ch5_schedule_contact: true };
+        if (readBoard) read.ch5_tsumugi_menu_board = true;
+        Object.assign(value.flags, {
+          _ch4_cleared: true, _ch5_match_scheduled: true, _ch5_match_started: true,
+          _ch5: { startDay: 51, stage: 2, part: "match", titleSeen: true, read, scheduleDecision: "decide",
+            aftermath: 0, finale: 0, finaleScenes: null, won: null, secondCup: null },
+        });
+        core.save();
+      }, readBoard);
+      await loadSlot(page, 0);
+      await page.locator(matchScene("ch5_match_day_arrival")).waitFor();
+      const sendoffLines = await watchArrival(page);
+      await page.locator(dt("ch5-continue")).click();
+      await committed(page, "ch5_match_day_arrival");
+      assert.equal((await sendoffLines.jsonValue()).filter(isSendoff).length, Number(readBoard));
+    }
   });
 
   await check("chapter-five-weak-second-cup-loses-on-votes-and-continues", async page => {

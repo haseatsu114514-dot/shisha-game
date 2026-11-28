@@ -278,6 +278,78 @@ await suite("roamers", async check => {
     assert.deepEqual([result.after.center_cafe, result.after.alley_cafe], [[], []], "シフトと約束のあるカフェは休まない");
   });
 
+  await check("dubai-roamers-before-and-after-the-world-tournament", async page => {
+    const result = await page.evaluate(async () => {
+      const { newGame } = await import("./js/core/state.js");
+      const { chapterFourDubaiDefinition } = await import("./js/chapters/ch4-dubai-daily.js");
+      const { chapterFiveDailyDefinition } = await import("./js/chapters/ch5-daily.js");
+      const { roamerPlan, roamerScene, meetRoamer } = await import("./js/daily/roamers.js");
+      const { vnTest, hooks } = await import("./js/vn/engine.js");
+      const value = newGame();
+      Object.assign(value, { chapter: 4, phase: "daily", day: 31, slot: 1 });
+      const { CH4_PROLOGUE } = await import("./js/chapters/ch4-progress.js");
+      value.flags._ch4 = { startDay: 30, day: 2, stage: CH4_PROLOGUE.length, part: "free", titleSeen: true,
+        read: {}, firstDay: null, resolution: 0, attempts: 0, routeVersion: 2 };
+      value.met.naru = true;
+      value.flags._roam_seen_naru = 9; // 地元で何度会っていても、和解後の初回から
+      chapterFourDubaiDefinition({});
+      function sample() {
+        const found = new Map();
+        for (let seed = 0; seed < 256; seed++) {
+          value.seed = seed;
+          const plan = roamerPlan();
+          if (plan) found.set(plan.id, plan);
+        }
+        return Object.fromEntries(found);
+      }
+      const before = sample();
+      value.flags._ch4.read.ch4_festa = true;
+      value.met.master_hookah = true;
+      const festa = sample().da_silva;
+      value.day = 33; // 龍龍水煙所の休み
+      const wang = sample().master_hookah;
+      const naruScene = roamerScene("naru");
+      value.chapter = 5;
+      Object.assign(value.met, { sheikh: true, da_silva: true });
+      value.flags._ch2_region = "dubai";
+      chapterFiveDailyDefinition({});
+      const away = sample();
+      const alley = "ch5_dubai_alley";
+      // 旅装のシェイクがいる二回目と、通いの続きが始まる四回目には相席を重ねない。
+      value.flags._ch5_dubai_talks = { [alley]: 1 };
+      const withSheikh = sample();
+      value.flags._ch5_dubai_talks[alley] = 2;
+      const afterSheikh = sample();
+      value.flags._ch5_dubai_talks[alley] = 3;
+      const withChain = sample();
+      delete value.flags._ch5_dubai_talks;
+      value.flags._roam_seen_da_silva = 3;
+      const heard = [];
+      hooks.onLine = (id, line) => heard.push(line.text);
+      vnTest.turbo = true;
+      const ok = await meetRoamer({ id: away.da_silva.spotId }, away.da_silva);
+      const after = roamerScene("da_silva");
+      value.day = 38;
+      value.flags._ch2_region = "home";
+      const home = sample();
+      return { before, festa, wang, naruScene, away, withSheikh, afterSheikh, withChain, home, ok, after, heard };
+    });
+    assert.deepEqual(Object.keys(result.before), ["naru"]);
+    assert.equal(result.before.naru.spotId, "ch4_dubai_cafe");
+    assert.equal(result.naruScene, "roam_dubai_naru_first");
+    assert.equal(result.festa.reason, "closed");
+    assert.equal(result.wang.reason, "closed");
+    assert.deepEqual(Object.keys(result.away).sort(), ["da_silva", "master_hookah", "sheikh"]);
+    assert(Object.values(result.away).every(plan => plan.spotId === "ch5_dubai_alley" && plan.reason === "free"));
+    assert.deepEqual(result.withSheikh, {});
+    assert.deepEqual(result.afterSheikh, result.away);
+    assert.deepEqual(result.withChain, {});
+    assert.deepEqual(Object.keys(result.home), ["naru"]);
+    assert.equal(result.home.naru.reason, "closed");
+    assert(result.ok && result.heard.some(t => t?.includes("審査の席")));
+    assert.equal(result.after, "roam_da_silva_a");
+  });
+
   await check("emil-is-a-stranger-until-the-national-tournament", async page => {
     const result = await page.evaluate(async () => {
       const core = await import("./js/core/state.js"), roamers = await import("./js/daily/roamers.js");

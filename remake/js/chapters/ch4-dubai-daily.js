@@ -17,6 +17,7 @@
 //     使い、カフェ・専門店は夜がにぎわう（夜の一行。初めての夜は短い場面）。スークの後に屋台で軽く買える（体力が少し戻る）。
 //     ドバイの値段には約何ディルハムかを添える
 // 読了の確定は ch4-progress.js の completeChapterFourScene だけ（本筋の場面）。現在地は flags._ch2_region = "dubai"。
+import { addRoamerSpots } from "../daily/roamers.js";
 import { state, save, timeOfDay } from "../core/state.js";
 import { DB, bgUrl, callName, displayName } from "../core/data.js";
 import { layers, setBg, toast, modal } from "../core/ui.js";
@@ -254,8 +255,11 @@ async function readPlain(id, bg, owner, { growthScene = false } = {}) {
 }
 
 // ---- 章定義 -----------------------------------------------------------------------------
+const dubaiRoamerSpots = () => state.chapter === 4 && state.flags._ch4?.part === "free" ? CH4_DUBAI_SPOTS : [];
+
 /** @param io.readAndCommit (id) => Promise<boolean> 本筋の場面を読んで確定・保存する（ch4.js） */
 export function chapterFourDubaiDefinition(io) {
+  addRoamerSpots(dubaiRoamerSpots);
   return {
     get untilDay() { return dubaiEveDay(state); },
     tournamentName: "HAZE: GRAND SMOKE",
