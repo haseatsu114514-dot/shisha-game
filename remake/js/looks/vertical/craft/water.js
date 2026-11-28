@@ -5,8 +5,12 @@
 // 毎フレーム読み、浸かり具合は status の data-band、注いでいる・こぼしているは .craft-water の data-flow。押す操作は本編のボタン
 // （water-pour・water-drain は長押しのまま pointerdown／pointerup、water-confirm はタップ）へ中継する。水量の増え方・目安・判定は本編のまま。
 // 目安の線の高さは本編の値（craft/water.js の WATER.low・high）。ボトルの形・水面の揺れ・水流は試作の絵の動き（見た目だけ）。
+// 説明の間（チュートリアルの初回の説明は本編が部品を出す前、「？」は本編が作業台を止めている）は、説明が指すボタンを押せる形で見せる
+// （押しても本編へは届かない）。説明のスポットライト（craft/tutorial.js・VPN32）は、ボトル→目安の線→注ぐ・こぼす→決定の順に明るく抜く。
 import { el } from "../../../core/util.js";
 import { WATER } from "../../../craft/water.js";
+import { TUTORIAL_STEP_HELP } from "../../../craft/bench-ui.js";
+import { speech } from "./tutorial.js";
 
 const ART = new URL("../../../../img/ui/vertical-craft/", import.meta.url).href;
 // ボトルの絵（ui-bottle-open.webp 540×800）の中の形。inner＝ガラスの内側（底 y=755 から受け口のすぐ下 y=209 まで）。
@@ -38,6 +42,11 @@ const DRAIN_SVG = `<svg class="vtc-tool vtc-tool-drain" viewBox="0 0 100 100" ar
   <g class="vtc-gl-drop"><path d="M25 46C25 46 19.5 53.5 19.5 56.5A5.5 5.5 0 0 0 30.5 56.5C30.5 53.5 25 46 25 46Z"/><path d="M22 66C22 66 17.5 71.5 17.5 74A4.5 4.5 0 0 0 26.5 74C26.5 71.5 22 66 22 66Z"/></g></g></svg>`;
 const LIVE = { pour: '[data-test="water-pour"]', drain: '[data-test="water-drain"]', ok: '[data-test="water-confirm"]' };
 let uid = 0;
+// 本編の説明（チュートリアルの初回と「？」。TUTORIAL_STEP_HELP.water）。この文の時は段を分けて、指す所を決める
+const WATER_HELP = speech(TUTORIAL_STEP_HELP.water.detail);
+// ほかの文（チュートリアル以外の「？」の本文と、本編が足す補足）は、話している部品を指す。決定を指す段は最後に回す
+const AIM = [[/目安|線/, "band"], [/長押し|押して|注|こぼ|離す/, "hold"], [/決め|進む/, "ok"]];
+const aimOf = (say) => AIM.find(([pattern]) => pattern.test(say))?.[1] || "bottle";
 
 export const waterView = {
   id: "water",
@@ -45,6 +54,19 @@ export const waterView = {
   match: (panel) => !!panel.querySelector('[data-test="water-step"] [data-test="water-pour"]'),
   // チュートリアルは、水入れの部品を出す前に初回の説明を開く（機材の初回の説明とは作業台の見出しで見分ける）
   intro: (bench) => bench.querySelector(".bench-title")?.textContent.trim() === "水入れ",
+  // 説明のスポットライトの段（craft/tutorial.js）。本編の説明の文を段に分け、ボトル・目安の線・注ぐとこぼす・決定を順に指す
+  tutorial: ({ text, lines, extras }) => {
+    if (text === WATER_HELP) return [
+      { target: "bottle", say: "煙は水をくぐって冷える" }, // 本編の文のまま
+      { target: "band", say: "量で吸い心地が変わるから、まずは目安に合わせろ" }, // 本編の文のまま
+      // 本編の水入れのチュートリアルの案内（craft/water-view.js の stepWater「注ぐときは長押し。二本の線を目安に、こぼして戻してもいい」）から、
+      // 線の話（前の段で話す）を省いた文
+      { target: "hold", say: "注ぐときは長押し。こぼして戻してもいい" },
+      { target: "ok", say: "線のあいだに収めたら、決定だ" }, // 足した文（作る場面の一言「線のあいだまで注げ」と、本編の brief「目安の44〜56%に収めて進む」から）
+    ];
+    const steps = [...lines.map((say) => ({ say })), ...extras].map((line) => ({ ...line, target: aimOf(line.say) }));
+    return [...steps.filter((step) => step.target !== "ok"), ...steps.filter((step) => step.target === "ok")];
+  },
   create({ hold, relay }) {
     const id = `vtcw${++uid}`, { w, h, inner } = BOTTLE;
     const bottle = el("div.vtc-bottle", { html: `<img class="vtc-sink" src="${ART}ui-sink-faucet.webp" alt="" draggable="false">
@@ -198,11 +220,14 @@ export const waterView = {
 
     return {
       pic, ctrl,
+      spots: { bottle, band: [S.band, S.mark], hold: [drain, pour], ok },
       coach: () => "線のあいだまで注げ",
       thermo: () => null, // 試作の水入れは温度計を出さない（加熱前の帯は配合・詰め方で見る）
-      sync(livePanel) {
+      sync(livePanel, bench) {
         panel = livePanel;
-        const state = Object.keys(LIVE).map((key) => !usable(key));
+        // 説明の間は、説明が指すボタンを押せる形で見せる（本編のボタンが無い・止まっているので、押しても何も起きない）
+        const explaining = !!bench?.querySelector(".bench-guide")?.open;
+        const state = Object.keys(LIVE).map((key) => !explaining && !usable(key));
         const next = JSON.stringify(state);
         if (next === sig) return;
         sig = next;
