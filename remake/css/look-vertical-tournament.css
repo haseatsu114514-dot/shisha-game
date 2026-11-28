@@ -83,7 +83,7 @@
   :is(.ch2-contest, .ch4-standings) :is(.judge-legend, .judge-left, .ch2-contest-note, .ch2-contest-reason p) {
     font-size: 20px; line-height: 1.4;
   }
-  #screen > .ch2-contest > .ch2-contest-actions { margin-top: auto; bottom: -18px; margin-inline: -20px; }
+  #screen > .ch2-contest:has(> .ch2-contest-board) > .ch2-contest-actions { margin-top: auto; bottom: -18px; margin-inline: -20px; }
   #modal > .ts-contest-modal {
     width: calc(100% - 32px); max-width: none; max-height: calc(100% - var(--head) - var(--foot));
     padding: 20px;
@@ -116,4 +116,20 @@
   .sui-cut.ts-final .nc-cut-art img { width: 155%; left: -18%; top: -5%; bottom: auto; }
   .sui-cut.ts-final .nc-cut-text { left: 20px; bottom: var(--foot); }
   .sui-cut.ts-final .nc-stamp { top: 62%; left: 25%; font-size: 50px; }
+}
+
+/* 機械仕掛けの神の一対一。二台目の前と挙手の集計には本編のカードと開閉できる内訳を使う。 */
+:root[data-vt-tournament] #stage .ch2-contest:is([data-test="ch5-second-cup"], [data-test="ch5-match"]) {
+  inset: var(--head) 18px var(--foot);
+  margin-block: auto; height: fit-content; max-height: calc(100% - var(--head) - var(--foot));
+  overflow: auto; overscroll-behavior: contain;
+  padding: 26px; gap: 22px;
+  .ch2-contest-header { position: static; }
+  .ch2-contest-header h1 { font-size: 42px; }
+  .ch2-contest-description, .ch2-contest-note, .tournament-result-reason, summary {
+    font-size: calc(16px / var(--page-scale)); line-height: 1.6;
+  }
+  summary { padding-block: 8px; align-content: center; min-height: calc(44px / var(--page-scale)); }
+  .ch2-contest-actions { position: static; margin: 0; padding: 0; }
+  .ch2-contest-actions .primary { font-size: calc(16px / var(--page-scale)); }
 }

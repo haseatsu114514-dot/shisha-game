@@ -101,6 +101,8 @@ function portraitScene(own, frontMotion) {
   if (live) return { kind: "live", name: live };
   if (found.variant === "end" && document.querySelector('#screen > .gameover[data-layout="manga"]:not(.done)')) {
     found = { kind: "scene", name: "continue" };
+  } else if (found.variant === "end" && document.querySelector("#screen > .end-screen.clear:not(.done) [data-test=end-chapter2]")) {
+    found = { kind: "scene", name: "chapterClear" };
   }
   // シーシャ作り: 作業台の今の工程に縦の画面があれば、作る場面として写す（会話・写せる小窓が上に出ている間と、画面の一番上の小窓の間は除く）
   if (found.kind !== "scene" && !topDialogOpen() && craftOpen()) found = { kind: "scene", name: "craft" };
@@ -169,7 +171,7 @@ function start() {
   const scenes = {
     // CONTINUE は本編の文字・ボタン・アニメーションを直接表示する。
     continue: { native: true }, tournament: { native: true }, tournamentResult: createTournamentResultScene(),
-    interlude: { native: true },
+    interlude: { native: true }, chapterClear: { native: true },
     title: createTitleScene(frame), vn: createTalkScene(frame), map: createMapScene(frame), menu: createMenuScene(frame),
     sheet: createSheetScene(frame), cover: createCoverScene(frame, own), board: createBoardScene(frame), craft: createCraftScene(frame),
   };
@@ -204,6 +206,7 @@ function start() {
     root.toggleAttribute("data-vt-tournament", next === "tournament");
     root.toggleAttribute("data-vt-result", next === "tournamentResult");
     root.toggleAttribute("data-vt-interlude", next === "interlude");
+    root.toggleAttribute("data-vt-clear", next === "chapterClear");
     if (next !== "cover") holdSince = 0; // 覆いを待つ時間は、覆いに入るたびに数え直す（前の転換から数えると、すぐ待ちすぎと判断してしまう）
     if (scene && !scene.native) {
       root.dataset.vtShell = "on";

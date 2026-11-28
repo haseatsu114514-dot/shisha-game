@@ -79,18 +79,23 @@ export function selectSuites(manifest, changedFiles) {
     changedFiles.some((f) => f.startsWith("remake/test/browser/") && matchesAny(f, s.paths)));
 }
 
+// A measured runtime can guide sharding independently of PR selection.
+export function estimatedMinutes(suite) {
+  return suite.estimatedMinutes ?? suite.weight;
+}
+
 // Spread suites over groups so each group takes about `target` minutes,
 // longest suites first (LPT). Returns [] when nothing is selected.
 export function shard(suites, { maxShards = 8, target = 12 } = {}) {
   if (!suites.length) return [];
-  const total = suites.reduce((n, s) => n + s.weight, 0);
+  const total = suites.reduce((n, s) => n + estimatedMinutes(s), 0);
   const count = Math.max(1, Math.min(maxShards, suites.length, Math.ceil(total / target)));
   const groups = Array.from({ length: count }, () => ({ suites: [], weight: 0 }));
-  const sorted = [...suites].sort((a, b) => b.weight - a.weight || a.id.localeCompare(b.id));
+  const sorted = [...suites].sort((a, b) => estimatedMinutes(b) - estimatedMinutes(a) || a.id.localeCompare(b.id));
   for (const s of sorted) {
     const g = groups.reduce((best, x) => (x.weight < best.weight ? x : best), groups[0]);
     g.suites.push(s);
-    g.weight += s.weight;
+    g.weight += estimatedMinutes(s);
   }
   return groups.map((g, i) => ({
     shard: i + 1,
