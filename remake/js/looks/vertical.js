@@ -55,10 +55,11 @@ function syncOrientation() {
   if (session) return;
   const mine = ++loadToken;
   // 見た目の CSS は縦画面を使う時だけ読み込む（index.html の styles-look-vertical。ほかの端末には読ませない）
-  withMinigameStyles("look-vertical", null, () => {
+  // withMinigameStyles はテンプレートが無い（読み込み済み）時に Promise でなく開始結果を返すため、包んでから catch する
+  Promise.resolve(withMinigameStyles("look-vertical", null, () => {
     if (mine !== loadToken || !active || !query?.matches || session) return;
     session = start();
-  }).catch((error) => console.error("[look] 縦画面の見た目を読み込めませんでした", error));
+  })).catch((error) => console.error("[look] 縦画面の見た目を読み込めませんでした", error));
 }
 
 function start() {
