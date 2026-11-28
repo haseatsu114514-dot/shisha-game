@@ -36,7 +36,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
   --acc: #c3b0ff;
   --deep: #0b0812;
   /* 土台の配置（VPN09・VPN16）: 上画面（絵・テロップ・札・返事）と下画面（補助ボタンの段・輪の十字キー・丸ボタン）。
-     下画面の部品はどの場面でも同じ位置に置き、指を置いたまま遊べるようにする（「指の位置を移動させすぎず常に置いておけるように」）。
+     下画面の部品は共通の位置に置く。会話と返事では、絵の場所を広げた専用の配置を使う。
      下画面の高さと部品の大きさ・位置は、オーナーが合格を出した試作の会話画面（previews/portrait-stage/style.css の .ctrl・案1の補助ボタン）と同じ:
      幅 39 に対して下画面 30.2（844 の画面で約36%。上画面にゆとりを残す）、補助ボタンの段のすぐ下に十字キー。
      はじめの 6:4 では下画面が広く、板も敷いていたので圧迫して見えた（VPN16・オーナー「圧迫しすぎ」）。
@@ -45,7 +45,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
   --ctrl-h: calc(30.2 * var(--u));
   --chips-h: calc(6.4 * var(--u));
   --chip-h: calc(5.4 * var(--u));
-  --ring: calc(20.4 * var(--u));
+  --ring: calc(20.4 * var(--u) * var(--ring-scale, 1));
   --a: calc(14.6 * var(--u));
   --pad-top: calc(8.2 * var(--u));
   --safe-b: env(safe-area-inset-bottom, 0px);
@@ -188,6 +188,18 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-choice[aria-disabled="true"], .vt-choice[disabled] { color: #ffffff73; }
 .vt-choice[aria-disabled="true"] small { color: #ff9a8f; }
 .vt-choice[data-hint="fortune"] b::after, .vt-choice[data-hint="growth"] b::after { content: "　✦"; color: #ffe2a6; }
+
+/* 会話・返事は輪を少し小さくし、補助ボタン列と画面下端の間で両方のパッドを中央に置く。 */
+.vt-shell[data-scene="vn"] {
+  --ring-scale: .87;
+  --pad-gap: max(calc(.6 * var(--u)), calc(var(--safe-b) * 2 / 3));
+}
+.vt-shell[data-scene="vn"] > * {
+  --pad-top: calc(var(--chips-h) + var(--pad-gap));
+  --bottom-h: calc(var(--pad-top) + var(--ring) + var(--pad-gap));
+  --top-h: calc(var(--shell-h) - var(--bottom-h));
+}
+.vt-shell[data-scene="vn"] .vt-a-t:has(.vt-glyph) { display: flex; margin: 0; }
 
 /* 下画面に板は敷かない（試作どおり）。ぼかした背景と暗い幕（.vt-veil）が上画面から続き、絵の裾が溶けて見える */
 .vt-ctrl { position: relative; height: var(--bottom-h); pointer-events: auto; }
@@ -567,11 +579,11 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 /* 背の低い画面（試作の @container phone (max-height: 80rem)・(max-height: 71rem) と同じ段階。外枠の幅は 39u なので、高さ 80u 以下 ＝ 縦横比 39/80 以上）。
    上と下の高さは外枠の直下の層ごとに計算し直す（外枠に書いた式は外枠の値で決まってしまうため） */
 @container vtshell (min-aspect-ratio: 39 / 80) {
-  .vt-shell > * { --ctrl-h: calc(27.2 * var(--u)); --chips-h: calc(5.8 * var(--u)); --chip-h: calc(4.8 * var(--u)); --ring: calc(18.2 * var(--u)); --a: calc(13.2 * var(--u)); --pad-top: calc(7.4 * var(--u));
+  .vt-shell > * { --ctrl-h: calc(27.2 * var(--u)); --chips-h: calc(5.8 * var(--u)); --chip-h: calc(4.8 * var(--u)); --ring: calc(18.2 * var(--u) * var(--ring-scale, 1)); --a: calc(13.2 * var(--u)); --pad-top: calc(7.4 * var(--u));
     --bottom-h: calc(var(--ctrl-h) + var(--safe-b)); --top-h: calc(var(--shell-h) - var(--bottom-h)); }
 }
 @container vtshell (min-aspect-ratio: 39 / 71) {
-  .vt-shell > * { --ctrl-h: calc(23.6 * var(--u)); --chips-h: calc(5.1 * var(--u)); --chip-h: calc(4.3 * var(--u)); --ring: calc(15.4 * var(--u)); --a: calc(11.2 * var(--u)); --pad-top: calc(6.5 * var(--u));
+  .vt-shell > * { --ctrl-h: calc(23.6 * var(--u)); --chips-h: calc(5.1 * var(--u)); --chip-h: calc(4.3 * var(--u)); --ring: calc(15.4 * var(--u) * var(--ring-scale, 1)); --a: calc(11.2 * var(--u)); --pad-top: calc(6.5 * var(--u));
     --bottom-h: calc(var(--ctrl-h) + var(--safe-b)); --top-h: calc(var(--shell-h) - var(--bottom-h)); }
   .vt-glass { min-height: calc(9.8 * var(--u)); padding: calc(1.2 * var(--u)) calc(1.6 * var(--u)) calc(1.3 * var(--u)); }
   .vt-name { min-height: calc(2.6 * var(--u)); margin-bottom: calc(0.6 * var(--u)); } .vt-name b { font-size: calc(2.2 * var(--u)); }
