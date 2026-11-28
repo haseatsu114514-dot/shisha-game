@@ -1359,6 +1359,11 @@
           "text": "書かないんですか？　記録しないことは、忘れることと同じだって"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_ch3_volk_jam",
+          "portrait_only": true
+        },
+        {
           "speaker": "volk",
           "face": "normal",
           "duck": true,
@@ -1378,6 +1383,10 @@
           "speaker": "",
           "face": "",
           "text": "ヴォルクは布を掛けた壁を見ないまま、ジャムを舐めた。俺も、同じようにした。"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "type": "apply",
