@@ -50,9 +50,6 @@ html:root[data-ui-theme] body:not(:root) .vn-box {
 html:root[data-ui-theme] body:not(:root) .vn-text {
   font-size:28px; font-weight:500; line-height:44px; min-height:88px; letter-spacing:.035em;
 }
-html:root:is([data-ui-theme="cut-paper"],[data-ui-theme="amber"],[data-ui-theme="classic"]) body:not(:root) .vn-text {
-  font-family:"Suien Blue Mincho",serif; font-weight:400; letter-spacing:.04em;
-}
 html:root[data-ui-theme] body:not(:root) .vn-box.has-inner .vn-text { min-height:44px; }
 html:root[data-ui-theme] body:not(:root) .vn-inner { font-size:28px; line-height:44px; margin-top:2px; white-space:nowrap; }
 /* 名前札を上辺へ重ねる。操作札は紙・金枠では少し離し、煙では低い輪郭へ接続する。 */
