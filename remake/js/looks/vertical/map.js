@@ -122,12 +122,13 @@ export function createMapScene(frame) {
   function camera(animate = true) {
     const w = view.clientWidth, h = view.clientHeight;
     if (!w || !h) return;
-    const mh = h * 1.12, mw = mh * 16 / 9;
+    const mw = h * 1.12 * 16 / 9;
+    const mh = overview ? Math.min(h * 0.61, w * 0.86) * mw / w : h * 1.12;
     pan.style.width = `${mw}px`; pan.style.height = `${mh}px`;
     const spot = current();
     let x, y, scale = 1;
     if (overview) {
-      scale = w / mw; x = 0; y = h * 0.47 - mh * scale / 2;
+      scale = w / mw; x = 0; y = w * 0.19;
     } else if (cam) ({ x, y } = cam);
     else {
       x = w / 2 - mw * (spot?.x ?? 50) / 100;

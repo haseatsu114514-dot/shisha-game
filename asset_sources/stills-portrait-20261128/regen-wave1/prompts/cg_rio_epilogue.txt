@@ -1,0 +1,9 @@
+## cg_rio_epilogue
+
+参照画像（添付順） `remake/img/sprites/character_variants/new/rio/chr_rio_normal.webp`、`remake/img/cgs/portrait/cg_rio_epilogue.webp`
+
+```text
+Use case: illustration-story. Create one new 1024×1536 (2:3) portrait anime game CG, cg_rio_epilogue. Image 1 is the current Rio sprite, for character and clothing design only. Image 2 is the existing scene reference: Rio's after-hours fragrance showroom, the slip of paper with her ring size, and a quietly intimate scene. Use a completely new shot of the moment just before she folds and offers the same little slip, while she finishes writing it.
+The subject is the small ivory paper slip and Rio's two adult hands: one naturally grips a plain thin dark pen with the pen tip actually touching the paper while she finishes the last pen stroke; the other lightly pins one side of the slip to the desk with the fingers. Keep the note almost blank except for tiny, indistinct ink marks, not readable words or numbers. The crisp rolled white shirt cuffs are recognizable from the sprite; if any part of her head appears, it is only a few cropped dark strands touching the upper border, no visible eyes or face. No viewer limbs, no other hands, no rings or gift box.
+Close detail shot from a strongly oblique overhead angle immediately above the writing hands. The hand, pen and slip are large, crisp and arranged at a dynamic diagonal in the upper-middle/center of the vertical image. A little desk surface around them leads into soft focus, with the warm desk lamp and two small subdued fragrance sample bottles as background location cues. Dim cool gray showroom tones with a quiet, warm pool of light on the paper. Clean hand anatomy, intimate stillness, matte flat anime colors with a limited number of controlled cel-shadow shapes. No text, logo or watermark.
+```

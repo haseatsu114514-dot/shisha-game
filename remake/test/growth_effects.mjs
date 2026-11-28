@@ -435,25 +435,39 @@ for(const base of [50,80,82,83,84,85,86,87,88,90,98]){
  voteImpact.push(tally);
 }
 assert.equal(voteImpact[0].boostedWins,0,"授業を覚えても低い制作点は勝利にならない");
-// 版1の旧保存の境界は旧期待値のまま残す。計測アダプターは新規挑戦なので、ここだけ実投票を版1で使う。
-const legacyTournament=await import("../js/chapters/ch3-tournament-state.js");
-const boundaryVote=(scenario,seed,{p})=>{
- const value={chapter:3,day:42,weatherSeed:seed,flags:{}};
- const progress=legacyTournament.startAttempt(value,{careHistory:[]});delete progress.rulesVersion;delete progress.baseVotes;
- for(const [round,performance]of [80,84,80,scenario.final].entries()) assert(legacyTournament.castVotes(progress,round,performance,null,p));
- const rows=legacyTournament.standings(progress);
- return {rank:rows.find(r=>r.id==="hajime").rank,votes:Object.fromEntries(rows.map(r=>[r.id,r.points]))};
-};
-const withoutGrape=boundaryVote({id:"without",final:82},1,{p:0}),withGrape=boundaryVote({id:"with",final:84},1,{p:0});
-assert.equal(withoutGrape.rank,2);assert.equal(withGrape.rank,1,"既存の総票・同点規則のまま境界例では勝敗が変わる");
-assert.equal(withoutGrape.votes.hajime,9);assert.equal(withGrape.votes.hajime,11);
-// 最新の版の新規挑戦にも同じ+2の境界効果がある。敵値やassertを下げず、明示的な新基準を別に固定する。
-// 版3（#3916 WIN11・相手が各−1.5）では境界が1点下がるので、出来を1点下げた同じ形の例で固定する（票は版2の例と同じ10→12）。
-const currentBoundary=createCh3TournamentEvaluate({performanceOf:s=>({rounds:[83,88,83,s.final]})});
-const currentWithout=currentBoundary({id:"without",final:85},1,{p:0}),currentWith=currentBoundary({id:"with",final:87},1,{p:0});
-assert.equal(currentWithout.rank,2);assert.equal(currentWith.rank,1);
-assert.equal(currentWithout.votes.hajime,10);assert.equal(currentWith.votes.hajime,12);
-console.log("[grape lesson] PASS: family/unique-most, learned/off/failure, +2 once/cap/SAVE/LOAD, legacy/current C3 rules and exact +2 boundaries",JSON.stringify(voteImpact));
+// 比較票を導入する前の保存は、途中からも開始時の方式で投票する。
+const legacyTournament = await import("../js/chapters/ch3-tournament-state.js");
+function savedBoundaryVote(rounds, version) {
+  const value = { chapter: 3, day: 42, weatherSeed: 1, flags: {} };
+  const progress = legacyTournament.startAttempt(value, { careHistory: [] });
+  delete progress.comparisonBallot;
+  delete progress.rivalForm;
+  progress.rulesVersion = version;
+  if (version === 1) {
+    delete progress.rulesVersion;
+    delete progress.baseVotes;
+  }
+  const saved = JSON.parse(JSON.stringify(progress));
+  for (const [round, performance] of rounds.entries()) {
+    assert(legacyTournament.castVotes(saved, round, performance, null, 0));
+  }
+  const player = legacyTournament.standings(saved).find(row => row.id === "hajime");
+  return { rank: player.rank, points: player.points };
+}
+assert.deepEqual(savedBoundaryVote([80, 84, 80, 82], 1), { rank: 2, points: 9 });
+assert.deepEqual(savedBoundaryVote([80, 84, 80, 84], 1), { rank: 1, points: 11 });
+assert.deepEqual(savedBoundaryVote([83, 88, 83, 85], 3), { rank: 2, points: 10 });
+assert.deepEqual(savedBoundaryVote([83, 88, 83, 87], 3), { rank: 1, points: 12 });
+
+// seed 3 の新規挑戦は、同じ出来の差で調子と比較票を含めて10票から13票に増え、逆転する。
+const currentBoundary = createCh3TournamentEvaluate({ performanceOf: scenario => ({ rounds: [83, 88, 83, scenario.final] }) });
+const currentWithout = currentBoundary({ id: "without", final: 85 }, 3, { p: 0 });
+const currentWith = currentBoundary({ id: "with", final: 87 }, 3, { p: 0 });
+assert.equal(currentWithout.rank, 2);
+assert.equal(currentWith.rank, 1);
+assert.equal(currentWithout.votes.hajime, 10);
+assert.equal(currentWith.votes.hajime, 13);
+console.log("[grape lesson] PASS: family/unique-most, learned/off/failure, +2 once/cap/SAVE/LOAD, legacy/current C3 vote totals and rank boundaries",JSON.stringify(voteImpact));
 {
  // #2213・オーナー判断 2026-11-04 案1: K11「火の番」は、熱管理の交換でトングで持ってくる焼き炭の焼け具合を1段よくする。
  const { replacementCoals, FIRE_KEEPER_STEP, HEAT_GRADES } = await import("../js/craft/heat_logic.js");

@@ -31,7 +31,9 @@ async function fixture() {
   if(o.title==='誰と撮る？')return mode==='guest'?guest:mode;
   return mode;
  }})],
- ['core/data.js',fixed('core/data.js',{DB:{characters:{hajime:{},ageha:{},kumicho:{},kuraudo:{},tsumugi:{},rio:{},hiyori:{},adam:{role:'rival_ch1'},uezono:{role:'judge'},sensu:{role:'judge'},dr_charcoal:{role:'judge_and_hidden_boss'}}},displayName:id=>id,portraitInfo:id=>({src:id+'.webp'}),cgUrl:id=>`img/cgs/${id}.webp`})],
+ ['core/data.js',fixed('core/data.js',{DB:{characters:{hajime:{},ageha:{},kumicho:{},kuraudo:{},tsumugi:{},rio:{},hiyori:{},adam:{role:'rival_ch1'},uezono:{role:'judge'},sensu:{role:'judge'},dr_charcoal:{role:'judge_and_hidden_boss'}}},displayName:id=>id,portraitInfo:id=>({src:id+'.webp'}),img:rel=>rel,cgUrl:id=>`img/cgs/${id}.webp`})],
+ ['core/scene-art.js',fixed('core/scene-art.js',{homeRigFile:()=>null})],
+ ['core/purikura-doodle.js',fixed('core/purikura-doodle.js',{chooseBooth:async()=>({}),finishBooth:async()=>'',receivePrint:async()=>true})],
  ['core/util.js',fixed('core/util.js',{el})],
  ['core/bus.js',fixed('core/bus.js',{emit:(...args)=>log.push({kind:'emit',args})})],
   ['daily/spot-people.js',fixed('daily/spot-people.js',{spotPeople:()=>present})],
@@ -231,7 +233,7 @@ await check('PFC19 solo receipt is the first challenge once, then a daily solo',
 });
 await check('PFC19/20 lovers get lover photos where they exist, otherwise friend photos; friends never get lover photos',async f=>{
  const at=(lovers,history=[])=>({slot:0,lovers,flags:{_ageha_purikura_history:history}});
- for(const id of ['ageha','tsumugi','rio','hiyori']){
+ for(const id of ['ageha','tsumugi','rio','hiyori','minto']){
   const lover=photosOf(id,true).map(p=>p.cg),friend=photosOf(id).map(p=>p.cg);
   assert(lover.length>=2&&friend.length>=2,`${id} has friend and lover pictures`);
   for(let i=0;i<10;i++){

@@ -26,6 +26,15 @@ export function createMotionLayer() {
     root: layer,
     mount() { document.body.append(layer); fit(); },
     relayout: fit,
-    unmount() { watch.disconnect(); layer.remove(); },
+    unmount() {
+      watch.disconnect();
+      // 日付の途中で横に戻しても同じ札と終了タイマーを使う。
+      const fx = document.getElementById("fx");
+      for (const card of layer.querySelectorAll(":scope > :is(.day-card, .tr-dawn)")) {
+        card.classList.remove("mo-portrait");
+        fx?.append(card);
+      }
+      layer.remove();
+    },
   };
 }

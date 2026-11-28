@@ -5448,6 +5448,23 @@
       ]
     },
     {
+      "id": "portrait-bond-still",
+      "title": "縦スチル: 絆締めくくりの縦専用スチルが縦でのみ出入りし、横では取得せず、既読とギャラリーへ影響しないこと",
+      "kind": "browser",
+      "weight": 5,
+      "timeout": 10,
+      "paths": [
+        "remake/js/looks/vertical/stills.js",
+        "remake/js/looks/vertical/talk.js",
+        "remake/js/vn/engine.js",
+        "data/dialogue/ch1_bonds.json",
+        "remake/test/browser/portrait_bond_still.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/portrait_bond_still.mjs"
+      ]
+    },
+    {
       "id": "look-neo",
       "title": "新版: 第1〜5章の会話の帯と操作の札・地図とHUD・MENU・場面カード・モーダル・タイトル・ショップ・LIME・レベルアップ・ギャラリーの収まりと、旧版へ戻した時に痕跡が残らないこと",
       "kind": "browser",

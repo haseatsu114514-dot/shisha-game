@@ -114,9 +114,10 @@ export function createTalkScene(frame) {
     const node = document.querySelector("#vn .vn-cg");
     const cs = node ? getComputedStyle(node) : null;
     const landscape = cs ? cssUrl(cs.backgroundImage) : "";
-    const opacity = cs ? (parseFloat(cs.opacity) || 0) * (parseFloat(getComputedStyle(node.parentElement).opacity) || 0) : 0;
-    const on = !!landscape && opacity > 0.05;
-    const portrait = on ? portraitStillUrl(node.dataset.cg) : null;
+    const portrait = portraitStillUrl(node?.dataset.portraitCg || node?.dataset.cg);
+    const portraitOnly = !!(node?.dataset.portraitCg && portrait);
+    const opacity = cs ? (portraitOnly ? 1 : parseFloat(cs.opacity)) * parseFloat(getComputedStyle(node.parentElement).opacity) : 0;
+    const on = !!(landscape || portraitOnly) && opacity > 0.05;
     const url = portrait || landscape;
     cg.hidden = !on;
     actors.hidden = on;

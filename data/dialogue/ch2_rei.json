@@ -1527,6 +1527,11 @@
           "text": "クラウドはすぐには続けなかった。流れていた曲の、最後の音が消えるまで。"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_bond_kuraudo",
+          "portrait_only": true
+        },
+        {
           "speaker": "kuraudo",
           "face": "smile",
           "text": "……今の顔は、練習じゃない"
@@ -1540,6 +1545,10 @@
           "speaker": "kuraudo",
           "face": "smile",
           "text": "……知ってた"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "type": "apply",
