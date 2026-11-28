@@ -1409,7 +1409,7 @@ await suite("growth-levelup", async (runCheck) => {
     await page.reload(); await page.locator(t("title-load")).click();
     await page.evaluate(async () => { const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0; });
     await page.locator(t("slot-0")).click();
-    const tokyoMap = slot => page.waitForFunction(slot => __remake.state.day === 44 && __remake.state.slot === slot
+    const tokyoMap = slot => page.waitForFunction(slot => __remake.state?.day === 44 && __remake.state.slot === slot
       && document.querySelector('.map:not(.done) [data-test="pin-ch3_tokyo_mukai"]') && !document.querySelector("#modal.show"), slot, { timeout: 60000 });
     const readUntil = async id => {
       for (let i = 0; i < 200 && !(await page.evaluate(id => !!__remake.state.growth?.read?.includes(id), id)); i++) {
