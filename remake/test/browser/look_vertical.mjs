@@ -232,6 +232,57 @@ await suite("look_vertical", async (check) => {
     assert.equal(await page.locator(".result-table:not(.done)").count(), 0);
   }, { ...SHORT, pageEntry: entry });
 
+  await check("boot-fades-onto-portrait-title", async (page) => {
+    // 通常の検査は #boot が消えてから始まる。開き直してフェード中も1フレームずつ調べる。
+    await page.addInitScript(() => {
+      window.wideTitleFrames = 0;
+      const sample = () => {
+        const boot = document.getElementById("boot");
+        if (document.querySelector("#screen > .title") && (!boot || Number(getComputedStyle(boot).opacity) < 0.98)
+          && Number(getComputedStyle(document.getElementById("viewport")).opacity) > 0) window.wideTitleFrames++;
+        if (boot || !document.querySelector('[data-test="vt-title-new"]')) requestAnimationFrame(sample);
+      };
+      requestAnimationFrame(sample);
+    });
+    await page.reload();
+    await page.locator("#boot").waitFor({ state: "detached" });
+    await waitScene(page, "title");
+    assert.equal(await page.evaluate(() => window.wideTitleFrames), 0);
+
+    // ロード画面の「進む」にタップが届き、閉じるとすぐにタイトルに戻る。
+    await page.evaluate(async () => {
+      const { withLoading } = await import("./js/core/loading.js");
+      window.gateTest = withLoading(() => new Promise(resolve => { window.finishGate = resolve; }),
+        { delayMs: 0, comics: [] });
+    });
+    await page.locator(".loading-gate:not(.is-preparing)").waitFor();
+    assert(await page.evaluate(() => {
+      const button = document.querySelector(".loading-gate .loading-proceed").getBoundingClientRect();
+      return !!document.elementFromPoint(button.x + button.width / 2, button.y + button.height / 2)?.closest(".loading-gate");
+    }));
+    await page.evaluate(() => { window.finishGate(); return window.gateTest; });
+    await page.locator(t("vt-title-config")).tap();
+    await waitScene(page, "sheet");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("first-rotation-waits-for-portrait-styles", async (page) => {
+    let release;
+    const paused = new Promise(resolve => { release = resolve; });
+    await page.route("**/css/look-vertical.css*", async route => { await paused; await route.continue(); });
+    const request = page.waitForRequest("**/css/look-vertical.css*");
+    await page.setViewportSize(TALL.viewport);
+    await request;
+    try {
+      assert.equal(await page.locator("#viewport").isVisible(), false);
+      await page.setViewportSize(WIDE.viewport);
+      await page.locator(t("title-new")).waitFor();
+      await page.setViewportSize(TALL.viewport);
+    } finally { release(); }
+    await waitScene(page, "title");
+    await page.locator(t("vt-title-config")).tap();
+    await waitScene(page, "sheet");
+  }, { ...WIDE, pageEntry: entry });
+
   await check("title-and-conversation-in-two-line-pages", async (page) => {
     await waitScene(page, "title");
     assert.equal(await page.evaluate(() => document.documentElement.dataset.look), "vertical");

@@ -870,6 +870,11 @@ small.dc-sub { font-size: 20px; color: #f1e7d6; }
   :root:not([data-look="vertical"]):not([data-look-boot]) #rotate-hint { display: grid; }
 }
 
+/* 初めて縦に持ち替えた時は、縦用 CSS が届くまで横長の画面とその操作を隠す。 */
+@media (orientation: portrait) {
+  :root[data-vt-pending] #viewport { visibility: hidden; }
+}
+
 /* 選択済みで次の画面を待っている画面は触れない */
 .done, .done * { pointer-events: none !important; }
 

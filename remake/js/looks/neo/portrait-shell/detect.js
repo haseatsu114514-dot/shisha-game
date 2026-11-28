@@ -50,7 +50,7 @@ export function topDialogOpen() {
 }
 
 /** 読み込み・起動の画面（自前の縦長の配置を持つ）。この間は「横向きにすると…」の一言も出さない。 */
-export const isLoading = () => !!(byId("boot") || document.querySelector(".loading-gate"));
+export const isLoading = () => !!document.querySelector("#boot:not(.done), .loading-gate");
 
 function layerOf(node, stage) {
   if (!stage.contains(node)) return "outside";
@@ -145,8 +145,7 @@ function knownBase() {
  */
 export function detectState(own = []) {
   const body = document.body, stage = byId("stage");
-  if (!stage || byId("boot")) return NONE;
-  if (document.querySelector(".loading-gate")) return NONE;
+  if (!stage || isLoading()) return NONE;
   const modal = byId("modal");
   const rect = stage.getBoundingClientRect();
   if (!rect.width || !rect.height) return NONE;

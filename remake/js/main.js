@@ -66,7 +66,7 @@ export async function boot() {
   const lookParam = new URLSearchParams(location.search).get("look");
   if (lookParam !== null && normalizeLook(lookParam) === lookParam) { cfg.look = lookParam; saveConfig(); }
   initLook({ look: cfg.look, chapter: () => (document.body.dataset.screen === "title" ? 1 : state?.chapter || 1) });
-  installLooks();
+  const lookReady = installLooks();
   // 左右の余白（煙と縁・縦書きの帯・親指ボタン。YHK）。設定と見た目の様式が決まってから作る。
   initSideArea({ stage: $("#stage"), advance: tapAdvance });
   // 設定「揺れ・閃光を減らす」を CSS からも見えるようにする（場面の演出の閃光を省く・#2688 F11）
@@ -118,7 +118,7 @@ export async function boot() {
     }, (manifest) => {
       // 台本と並行して読む分、従来の15秒より長く待てる。途中で代替の絵へ切り替えない。
       titleArtPromise = prepareTitleArt(pickTitleArt(manifest), 30000);
-    }), fonts]);
+    }), fonts, lookReady]);
     // 抽選した1枚だけをデコードしてから幕を開ける。全候補を起動時にダウンロードしない。
     // タイトル曲は再生許可を得た時に playBgm が読む。音声の準備でタイトル表示を待たせない。
     [titleArt] = await Promise.all([titleArtPromise ?? prepareTitleArt(), Promise.all([

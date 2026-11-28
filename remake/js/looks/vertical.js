@@ -46,27 +46,36 @@ export function setActive(on) {
     if (typeof window.matchMedia !== "function") return;
     query = window.matchMedia(PORTRAIT);
     query.addEventListener?.("change", syncOrientation);
-    syncOrientation();
-    return;
+    return syncOrientation();
   }
   query?.removeEventListener?.("change", syncOrientation);
   query = null;
   syncOrientation();
 }
 
-let loadToken = 0;
+let styleRequest;
 async function syncOrientation() {
   const want = active && !!query?.matches;
-  if (!want) { loadToken++; session?.stop(); session = null; return; }
+  const root = document.documentElement;
+  if (!want) {
+    styleRequest?.abort();
+    delete root.dataset.vtPending;
+    session?.stop(); session = null;
+    return;
+  }
   if (session) return;
-  const mine = ++loadToken;
+  const request = new AbortController();
+  styleRequest = request;
+  root.dataset.vtPending = "";
   // 見た目の CSS は縦画面を使う時だけ読み込む（index.html の styles-look-vertical。ほかの端末には読ませない）
   try {
-    await withMinigameStyles("look-vertical", null, () => {
-      if (mine !== loadToken || !active || !query?.matches || session) return;
+    await withMinigameStyles("look-vertical", request.signal, () => {
+      if (request.signal.aborted || !active || !query?.matches || session) return;
+      delete root.dataset.vtPending;
       session = start();
     });
   } catch (error) {
+    if (!request.signal.aborted) delete root.dataset.vtPending;
     console.error("[look] 縦画面の見た目を読み込めませんでした", error);
   }
 }
@@ -143,10 +152,19 @@ function start() {
   function evaluate(now, periodic) {
     const wipe = document.querySelector("#wipe.resume");
     if (wipe) resumeSmoke.append(...wipe.querySelectorAll(".wipe-smoke, .wipe-haze"));
+    // 漫画を読んでいる間は背後の場面を保ち、閉じたら最初の確認で次の場面を出す。
+    if (isLoading()) {
+      if (root.dataset.vtHint !== "hold") {
+        root.dataset.vtHint = "hold";
+        window.dispatchEvent(new Event("resize"));
+      }
+      fresh = true;
+      return;
+    }
     // 第1章の幕は本編の札をそのまま全面に出す。重なった小窓や操作画面があれば通常の判定に任せる。
     const frontMotion = motionLayer.root.lastElementChild;
     const frontFx = document.getElementById("fx")?.lastElementChild;
-    const interlude = state?.chapter === 1 && !isLoading() && !topDialogOpen() && !document.querySelector("#modal.show") &&
+    const interlude = state?.chapter === 1 && !topDialogOpen() && !document.querySelector("#modal.show") &&
       (frontMotion ? frontMotion.matches(".day-card, .tr-dawn") :
         frontFx?.matches('.beat, .round-cut, .entrance, .day-card, .tr-dawn, .chapter-poem[data-poem="poem_ch1"]'));
     let found = interlude ? { kind: "scene", name: "interlude" } : boardOpen() ? { kind: "scene", name: "board" } : detectState(wipe ? [...own, wipe] : own);
@@ -215,8 +233,8 @@ function start() {
       setScene("cover");
       candidate = null; streak = 0;
     } else { candidate = null; streak = 0; }
-    // 外枠を出している間と、読み込みの画面（縦持ち用の配置を持つ）の間は回転案内を隠す
-    const holdHint = !!scene || isLoading() || dialogOpen;
+    // 外枠や端末に合わせて表示する小窓の上には回転案内を出さない
+    const holdHint = !!scene || dialogOpen;
     if ((root.dataset.vtHint === "hold") !== holdHint) {
       if (holdHint) root.dataset.vtHint = "hold"; else delete root.dataset.vtHint;
       window.dispatchEvent(new Event("resize"));
@@ -301,7 +319,8 @@ function start() {
   window.addEventListener("resize", onResize);
   window.visualViewport?.addEventListener("resize", onResize);
   document.addEventListener("visibilitychange", onVisibility);
-  wake();
+  runStep(performance.now(), true);
+  schedule();
 
   return {
     stop() {

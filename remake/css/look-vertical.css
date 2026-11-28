@@ -5,6 +5,9 @@
 
 /* ───────── 本編側の調整（縦画面を使っている間だけ） ───────── */
 :root[data-look="vertical"][data-vt-shell="on"] #viewport { opacity: 0; }
+/* 読み込み中の漫画・進むボタンは、切り替え中の外枠 (990) と再開時の煙 (991) より上に置く。 */
+:root[data-vt="on"] body > #boot.is-viewport { z-index: 992; }
+:root[data-vt="on"] body > :is(.loading-gate, .loading-exit-haze).is-viewport { z-index: 993; }
 /* 回転案内は、まだ縦にしていない場面（シーシャ作り・大会・店番・ミニゲーム）でだけ出す（js/looks/vertical.js が外枠を出せない間）。
    外枠を出している間・読み込みの画面・縦の小窓（data-vt-hint="hold"）は出さない。縦持ちが基本なので、ほかの場面では回転案内を使わない（base.css・VPO01） */
 @media (orientation: portrait) and (hover: none) and (pointer: coarse) {
