@@ -1,5 +1,6 @@
 // 半円の帯と針は本編の成功帯・針位置をそのまま表示する。
 import { el } from "../../../core/util.js";
+import { imgFileUrl } from "../../../core/img-file.js";
 import { portraitBreath } from "../../../craft/portrait-breath.js";
 import { smokeAllowed, smokeLayer } from "../../../core/smoke.js";
 import { setAttr, setFlag, setText } from "../../../core/dom-write.js";
@@ -9,6 +10,10 @@ import { meterHtml, meterNeedle, meterViewBox, portraitTools } from "./art.js";
 export const pullView = {
   id: "pull", step: "pull", intro: true,
   match: panel => !!panel.querySelector(".pull, :scope > .result-card"),
+  tutorial: ({ lines, extras }) => [
+    ...lines.map(say => ({ target: "gauge", say })),
+    ...extras.map(line => ({ target: "gauge", ...line })),
+  ],
   create() {
     const art = new URL("previews/portrait-stage/img/", document.baseURI);
     const pic = el("div.vtc-pull-art", ["hold", "rest"].map((pose, i) =>
@@ -45,7 +50,7 @@ export const pullView = {
       }
     }
     return {
-      pic, ctrl,
+      pic, ctrl, spots: { gauge: [legend, gauge] },
       leave() {
         endPose();
         layer?.destroy();
@@ -113,7 +118,10 @@ export const pullView = {
           const stages = [...leaves.children].map(n => n.dataset.stage).join(",");
           if (stages !== leafSignature) {
             leafSignature = stages;
-            life.replaceChildren(...[...leaves.children].map(node => node.cloneNode(true)));
+            life.replaceChildren(...Array.from(leaves.children, node =>
+              el("span.flavor-leaf", { "aria-hidden": "true", dataset: { stage: node.dataset.stage } }, [
+                el("img.leaf-skin", { src: imgFileUrl("ui/making/ui_mockup_flavor_leaf.webp"), alt: "" }),
+              ])));
             setAttr(life, "aria-label", leaves.getAttribute("aria-label") || "葉の持ち " + leaves.dataset.hp);
           }
         }

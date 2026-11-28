@@ -68,8 +68,9 @@ async function expectSpot(page, { index, count, target, say, live = "", last = f
   if (live) assert(live.includes(say), `${label}: the line comes from the bench's explanation ${JSON.stringify(live)}`);
   assert(["left", "top", "right", "bottom"].every((k) => Math.abs(spot.cover[k] - spot.shell[k]) <= 1), `${label}: the dark cover spans the whole scene`);
   assert(/rgba\(11, 8, 18, 0\.[6-9]/.test(spot.shade), `${label}: everything but the hole is darkened ${spot.shade}`);
-  const apart = spot.coach.bottom <= spot.hole.top + 1 || spot.coach.top >= spot.hole.bottom - 1;
-  assert(apart, `${label}: Sumi's bubble stays off the lit hole ${JSON.stringify({ hole: spot.hole, coach: spot.coach })}`);
+  const coachGap = Math.max(spot.hole.top - spot.coach.bottom, spot.coach.top - spot.hole.bottom);
+  assert(coachGap >= (spot.shell.right - spot.shell.left) / 55,
+    `${label}: Sumi's bubble leaves a gap around the lit hole ${JSON.stringify({ hole: spot.hole, coach: spot.coach })}`);
   assert(spot.face.endsWith("face_sumi.webp"), spot.face);
   assert.equal(spot.telop, "hidden", `${label}: the usual line under the picture steps aside (no second face)`);
   assert.deepEqual([spot.dots, spot.on], [count, index], `${label}: one dot per step, the current one lit`);
@@ -1264,7 +1265,10 @@ await suite("look_vertical", async (check) => {
     await page.waitForFunction(() => window.vtStepDone);
     assert.equal(await page.evaluate(() => window.vtCraft.mix.double_apple), 9);
     await runCraftStep(page, { module: "./js/craft/pull.js", fn: "runPull", setup: { mix: { mint: 3, double_apple: 9 } } });
+    await page.setViewportSize(SHORT.viewport);
+    await expectSpot(page, { index: 1, count: 2, target: ".vtc-pull-legend, .vtc-pull-dial", say: "吸い出しは提供前の温度合わせだ" });
     await finishSpots(page);
+    await page.setViewportSize(TALL.viewport);
     const stop = page.locator(t("vt-pull-stop"));
     const serve = page.locator(t("vt-pull-serve"));
     await page.locator(t("vt-pull-stop") + ":enabled").waitFor();
@@ -1278,6 +1282,18 @@ await suite("look_vertical", async (check) => {
       });
     });
     assert.deepEqual(regions, ["down", "down", "keep", "keep", "keep", "up", "up"]);
+    const clearances = await page.evaluate(() => {
+      const box = selector => document.querySelector(selector).getBoundingClientRect();
+      const telop = box(".vtc-telop"), legend = box(".vtc-pull-legend"), stop = box('[data-test="vt-pull-stop"]');
+      const leaves = box(".vtc-pull-life");
+      return { comment: legend.top - telop.bottom, stop: leaves.top - stop.bottom,
+        leaves: [...document.querySelectorAll(".vtc-pull-life img")].map(img => {
+          const p = img.getBoundingClientRect();
+          return p.left > leaves.left + 2 && p.right < leaves.right - 2 && p.top >= leaves.top + 2 && p.bottom <= leaves.bottom - 2;
+        }) };
+    });
+    assert(clearances.comment >= 10 && clearances.stop >= 0, JSON.stringify(clearances));
+    assert.deepEqual(clearances.leaves, [true, true, true, true, true], JSON.stringify(clearances));
     assert(await serve.isDisabled());
     await page.setViewportSize({ width: 844, height: 390 });
     await page.waitForFunction(() => !document.querySelector(".bench[data-portrait-pull]")

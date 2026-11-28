@@ -1283,7 +1283,7 @@ class Phone {
     if (bowl) {
       // 赤寄りの葉の割合で、茶色の層の上に赤の層を重ねる
       const red = total ? MIX.reduce((n, f, i) => n + (f.leaf === "red" ? st.mix[i] : 0), 0) / total : 1;
-      const part = Math.max(0, Math.min(1, (t - 0.05) / 0.35)), full = Math.max(0, Math.min(1, (t - 0.5) / 0.5));
+      const part = Math.max(0, Math.min(1, t / 0.26)), full = Math.max(0, Math.min(1, (t - 0.5) / 0.5));
       bowl.querySelector(".b-airy.brown").style.opacity = part.toFixed(2); bowl.querySelector(".b-airy.red").style.opacity = (part * red).toFixed(2);
       bowl.querySelector(".b-full.brown").style.opacity = full.toFixed(2); bowl.querySelector(".b-full.red").style.opacity = (full * red).toFixed(2);
     }

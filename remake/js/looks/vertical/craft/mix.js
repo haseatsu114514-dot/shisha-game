@@ -141,7 +141,7 @@ export const mixView = {
         const [total, cap] = lcd.split("/").map(parseFloat);
         const fill = total / cap, redRatio = total ? red / total : 0;
         const alpha = v => Math.max(0, Math.min(1, v));
-        const partial = alpha((fill - .05) / .35), full = alpha((fill - .5) / .5);
+        const partial = alpha(fill / .26), full = alpha((fill - .5) / .5);
         [1, partial, partial * redRatio, full, full * redRatio].forEach((a, i) => { layers[i].style.opacity = a.toFixed(2); });
         setText(grams, `${total.toFixed(1)}g`);
         const rule = live.querySelector(".reg-line").textContent;
