@@ -2016,8 +2016,8 @@
       "id": "ch2-tournament",
       "title": "Chapter 2 browser suite ch2_tournament",
       "kind": "browser",
-      "weight": 6.5,
-      "timeout": 10,
+      "weight": 10.5,
+      "timeout": 14,
       "paths": [
         "remake/chapter2-preview.html",
         "remake/js/chapters/ch2*.js",
@@ -5621,6 +5621,27 @@
       ],
       "run": [
         "node remake/test/browser/look_vertical.mjs"
+      ]
+    },
+    {
+      "id": "purikura-studio",
+      "title": "プリクラの自分でらくがき（VPO22〜VPO24）: 背景をえらんでね♪からコマごとに柄を敷き、らくがきタイムの残り時間・プリント中♪。縦持ちは縦の舞台・横持ちはステージに収まり、文字（キーボード・書体・色・ふち）・スタンプ（ずらす・大きさ・消す）・ペン・1つ戻すが効く。2回目からの撮影の受け取りで描き直し・おまかせに戻すができ、記録とギャラリーに自分の落書きが残る",
+      "kind": "browser",
+      "weight": 0.4,
+      "timeout": 4,
+      "paths": [
+        "remake/js/daily/purikura-studio.js",
+        "remake/js/core/purikura-doodle.js",
+        "remake/js/core/purikura-photo.js",
+        "remake/js/core/purikura-data.js",
+        "remake/js/chapters/ch2-purikura.js",
+        "remake/css/purikura-studio.css",
+        "remake/js/core/purikura-key-data.js",
+        "remake/img/cgs/purikura-key/**",
+        "remake/test/browser/purikura_studio.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/purikura_studio.mjs"
       ]
     },
     {

@@ -1,3 +1,4 @@
+import { PURIKURA_KEY_PANELS } from "./purikura-key-data.js";
 // MELTY PUFF のプリクラの写真（PFC18・#3941）。画面を持たない定義だけを置く（撮影・ギャラリーが共通で読む）。
 // 撮るたびに、撮った相手の写真のうち、まだ撮っていないものから1枚（そろった後は同じ相手の写真からもう一度）。
 // with: "solo"（一人）／"ageha"（あげはと撮る）／居合わせた相手の id。
@@ -50,3 +51,12 @@ export const PURIKURA_PHOTOS = Object.freeze([
 
 /** ギャラリーの人物の札（core/gallery-catalog.js の CHAR_LABELS にある人だけ。ほかは「その他」） */
 export const PURIKURA_CHAR = Object.freeze({ minto: "minto", ageha: "ageha", tsumugi: "tsumugi", rio: "rio" });
+
+/**
+ * プリ機のグリーンバックで抜いた写真（VPO22・VPO24。asset_sources/purikura-greenback-20261128/。2026-11-28 オーナー
+ * 「文字が入ってない版のそのプリにする／再生成してもいい／背景選んだりプリクラらしさも入れたい」）。落書きを消してコマの背景を抜いた絵と、
+ * 抜いたコマの位置（core/purikura-key-data.js。生成の道具が書く）。2回目からの撮影で「自分でらくがき」を選ぶと、
+ * 選んだ背景の上にこの絵を重ね、その上に文字・スタンプ・ペンで描く（daily/purikura-studio.js）。この絵の無い写真は「自分でらくがき」を出さない。
+ */
+export const purikuraKey = (cg) => (cg && Object.hasOwn(PURIKURA_KEY_PANELS, cg)
+  ? { url: `img/cgs/purikura-key/${cg}.webp`, panels: PURIKURA_KEY_PANELS[cg] } : null);

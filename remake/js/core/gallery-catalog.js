@@ -118,6 +118,11 @@ export function galleryEntries(manifest, catalog, progress, seen) {
     kind: cgKindOverrides[id] || (id.includes("cheki") ? "cheki" : id.includes("purikura") ? "purikura" : "still"),
     title: labels[id] || "物語のスチル " + (i + 1), unlocked: got.has(id),
   }));
+  // 自分でらくがきした写真（VPO22）は、その絵の項目で、いちばん新しい落書きを重ねて見せる（おまかせの絵にも切り替えられる）
+  for (const p of progress.purikura) {
+    const entry = p.cg && p.doodle ? entries.find(e => e.id === p.cg) : null;
+    if (entry) entry.doodle = p.doodle;
+  }
   // 絵のある撮影は、上の絵の項目に出す（同じ写真を立ち絵の写真として重ねない）。絵の無い撮影・旧セーブだけ撮影ごとに出す
   const pictured = new Set(entries.map(e => e.id));
   progress.purikura.filter(p => p.design || !(p.cg && pictured.has(p.cg))).forEach(p => entries.push({

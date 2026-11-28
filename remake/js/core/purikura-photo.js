@@ -2,13 +2,35 @@
 import { homeRigFile } from "./scene-art.js";
 import { DB, cgUrl, img, portraitInfo } from "./data.js";
 import { el } from "./util.js";
+import { purikuraKey } from "./purikura-data.js";
+import { backdropSvg, doodleSvg, normalizeDoodle } from "./purikura-doodle.js";
 
-/** 選定した写真（core/purikura-data.js）のある撮影は、その絵を出す（PFC18）。 */
-export function purikuraPhoto(cg, people, mode, nameFor) {
+/**
+ * 選定した写真（core/purikura-data.js）のある撮影は、その絵を出す（PFC18）。
+ * doodle: 「自分でらくがき」の落書き（VPO22）。落書き無しの写真の上に、保存した文字・スタンプ・ペンを重ねて描き直す
+ */
+export function purikuraPhoto(cg, people, mode, nameFor, { doodle = null } = {}) {
+  const label = people.map(nameFor).join("と") + "のプリクラ";
+  const own = doodledPhoto(cg, doodle, label + "（自分でらくがき）");
+  if (own) { own.dataset.mode = mode; return own; }
   const url = cg ? cgUrl(cg) : null;
   if (!url) return stickerPhoto(people, mode, nameFor);
-  return el("div.purikura-photo.purikura-photo-real", { dataset: { test: "purikura-photo", mode, cg }, "aria-label": people.map(nameFor).join("と") + "のプリクラ" }, [
-    el("img", { src: url, alt: people.map(nameFor).join("と") + "のプリクラ" }),
+  return el("div.purikura-photo.purikura-photo-real", { dataset: { test: "purikura-photo", mode, cg }, "aria-label": label }, [
+    el("img", { src: url, alt: label }),
+  ]);
+}
+
+/**
+ * 自分でらくがきした1枚（撮影の受け取り・ギャラリー）。選んだコマの背景 → グリーンバックで抜いた写真（枠つき）→ 落書き の順に重ねる（VPO24）。
+ * 抜いた写真か落書きが無ければ null
+ */
+export function doodledPhoto(cg, doodle, label) {
+  const drawn = doodle && normalizeDoodle(doodle), key = drawn && purikuraKey(cg);
+  if (!key) return null;
+  return el("div.purikura-photo.purikura-photo-real.purikura-photo-doodle", { dataset: { test: "purikura-photo", cg, doodle: "own" }, "aria-label": label }, [
+    backdropSvg(drawn.bg, key.panels),
+    el("img.pkd-photo", { src: key.url, alt: label }),
+    doodleSvg(drawn),
   ]);
 }
 
@@ -111,8 +133,5 @@ export function printedPurikura(photo, nameFor) {
       if (design?.v === 1 && Array.isArray(design.marks)) return sheet(photo, design, nameFor);
     } catch { /* 古い記録・読めない落書きは元の写真で表示。 */ }
   }
-  return purikuraPhoto(photo.cg, photo.people, photo.mode, nameFor);
+  return purikuraPhoto(photo.cg, photo.people, photo.mode, nameFor, { doodle: photo.doodle });
 }
-
-
-export { themes, stamps, colors, LIMIT, paint, sheet };

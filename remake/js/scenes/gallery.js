@@ -8,7 +8,7 @@ import { state, SAVE_SLOTS, readSlot } from "../core/state.js";
 import { SE } from "../core/audio.js";
 import { readGalleryProgress, recordGalleryProgress, shouldAnnounceCompletion, markCompletionAnnounced } from "../core/gallery-progress.js";
 import { CHAR_LABELS, GALLERY_TABS, galleryEntries, galleryStats, galleryHint } from "../core/gallery-catalog.js";
-import { printedPurikura } from "../core/purikura-photo.js";
+import { printedPurikura, doodledPhoto } from "../core/purikura-photo.js";
 
 const KEY = "suien_remake_gallery";
 const photoName = id => id === "samechan" ? "サメちゃん" : id === "minto" ? "みんと" : realName(id);
@@ -38,7 +38,7 @@ export function openGallery() {
   // 中身が1つも無い札（採用前の漫画）は「0/0」でなく「準備中」と読ませる
   const tabCount = s => s.total === 0 ? "準備中" : `${s.unlocked}/${s.total}`;
   return new Promise(resolve => {
-    let tab = "all", closed = false, active = null, page = 0, trigger = null;
+    let tab = "all", closed = false, active = null, page = 0, trigger = null, showAuto = false;
     let observer;
     let cancelImageLoad = null;
     const count = el("span.gal-count");
@@ -142,7 +142,7 @@ export function openGallery() {
     }
     function show(entry, button) {
       if (!entry.unlocked || closed) return;
-      active = entry; page = 0; trigger = button;
+      active = entry; page = 0; trigger = button; showAuto = false;
       viewer.classList.add("show"); drawViewer(); SE.select();
     }
     function drawViewer() {
@@ -162,11 +162,18 @@ export function openGallery() {
         content.append(scroll);
       } else if (active.photo) {
         content.append(printedPurikura(active.photo, photoName));
+      } else if (active.doodle && !showAuto && doodledPhoto(active.cg, active.doodle, active.title)) {
+        // 自分でらくがきした写真（VPO22）。おまかせの落書きの絵にも切り替えられる
+        content.append(doodledPhoto(active.cg, active.doodle, active.title + "（自分でらくがき）"));
+        controls.splice(1, 0, el("button.btn", { text: "おまかせの落書きを見る", dataset: { test: "gallery-doodle-auto" }, onclick: () => { showAuto = true; drawViewer(); } }));
       } else {
         const url = cgUrl(active.cg);
         const img = image(url, active.title);
         content.append(img);
         trackImageLoad(img);
+        if (active.doodle && doodledPhoto(active.cg, active.doodle, active.title)) {
+          controls.splice(1, 0, el("button.btn", { text: "自分の落書きを見る", dataset: { test: "gallery-doodle-own" }, onclick: () => { showAuto = false; drawViewer(); } }));
+        }
       }
       tools.replaceChildren(...controls); back.focus({ preventScroll: true });
     }
@@ -186,7 +193,9 @@ export function openGallery() {
         ]);
         const button = el("button.gal-cell", { title: entry.title, "aria-label": entry.title,
           dataset: { test: "gal-" + entry.id, cg: entry.cg, kind: entry.kind }, onclick: () => show(entry, button) });
-        if (entry.cg) button.append(thumbnail(cgThumbUrl(entry.cg) || cgUrl(entry.cg)));
+        const own = entry.doodle ? doodledPhoto(entry.cg, entry.doodle, entry.title) : null;
+        if (own) { own.classList.add("gal-photo-thumb", "gal-doodle-thumb"); button.append(own); }
+        else if (entry.cg) button.append(thumbnail(cgThumbUrl(entry.cg) || cgUrl(entry.cg)));
         else if (entry.kind === "comic") button.append(thumbnail(entry.pages[0]));
         else if (entry.photo) {
           const thumb = printedPurikura(entry.photo, photoName); thumb.classList.add("gal-photo-thumb"); button.append(thumb);

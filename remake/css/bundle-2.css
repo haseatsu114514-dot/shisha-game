@@ -9935,3 +9935,131 @@ body.reduce-shake :is(.loading-gate, .boot-gate).is-ready .loading-bar::after { 
 .loading-exit-haze { position: absolute; inset: 0; z-index: 110; pointer-events: none;
   background: radial-gradient(ellipse 70% 60% at 50% 70%, #dcd1f433, transparent 70%), url("../img/ui/loading/loading_bg.webp") center / cover no-repeat, #100b18; }
 .loading-exit-haze.is-viewport { position: fixed; z-index: 900; }
+
+/* ===== css/purikura-studio.css ===== */
+/* プリクラの「自分でらくがき」の画面（js/daily/purikura-studio.js・要望台帳 VPO22）。
+   縦画面の縦の舞台（.tall・幅 720 × 高さ H）と、本編のステージ（.wide・1280×720）で並べ方を変える。写真の大きさは JS（--pks-w・--pks-h）。
+   平成ギャルのプリ機の画面: ピンクの豹柄の地、白と濃いピンクの縁、丸いボタン。押す所は縦の舞台で高さ 76px 以上（390 幅の画面で約 41px） */
+.pks { position: absolute; inset: 0; z-index: 120; display: grid; font-family: var(--font); color: #2a1420; --pk-hot: #ff3d9a; --pk-pink: #ff8fc7; --pk-baby: #ffe3f1; pointer-events: auto; overflow: hidden; }
+.pks-back { position: absolute; inset: 0; z-index: -1;
+  background: radial-gradient(ellipse 15px 11px at 14% 22%, #ffa8d6 0 38%, #b8106a 42% 72%, transparent 76%), radial-gradient(ellipse 10px 13px at 52% 12%, #ffa8d6 0 30%, #b8106a 36% 70%, transparent 75%),
+    radial-gradient(ellipse 13px 9px at 82% 38%, #ffa8d6 0 34%, #b8106a 40% 70%, transparent 75%), radial-gradient(ellipse 11px 14px at 34% 62%, #ffa8d6 0 36%, #b8106a 42% 72%, transparent 76%),
+    radial-gradient(ellipse 16px 10px at 70% 80%, #ffa8d6 0 36%, #b8106a 42% 70%, transparent 75%), #ff6db3;
+  background-size: 112px 96px; }
+.pks-back::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, #ffffff22, #8a0d4c66 100%); }
+.pks button { font-family: inherit; line-height: 1.2; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.pks button:disabled { opacity: 0.45; cursor: default; }
+
+/* 見出し */
+.pks-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pks-title { margin: 0; padding: 8px 26px; border-radius: 999px; background: var(--pk-hot); color: #fff; font-size: 34px; font-weight: 900; letter-spacing: 0.06em; box-shadow: 0 0 0 4px #fff, 0 6px 14px #0003; white-space: nowrap; }
+.pks-head-tools { display: flex; gap: 10px; }
+.pks-tool { min-height: 64px; padding: 0 20px; border: 4px solid #fff; border-radius: 999px; background: #ffffffe6; color: var(--pk-hot); font-size: 24px; font-weight: 900; box-shadow: 0 4px 10px #0003; }
+
+/* 写真と落書きの層 */
+.pks-photo { position: relative; width: var(--pks-w); height: var(--pks-h); border-radius: 10px; overflow: hidden; background: #fff; box-shadow: 0 0 0 6px #fff, 0 0 0 10px var(--pk-hot), 0 14px 34px #5a0f3a88; }
+.pks-photo > :is(.pkd-backdrop, .pks-shot) { position: absolute; inset: 0; width: 100%; height: 100%; display: block; -webkit-user-drag: none; user-select: none; pointer-events: none; }
+.pks-layer { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; overflow: visible; }
+.pks-layer .pkd-item { cursor: grab; }
+.pks-layer.drawing { cursor: crosshair; }
+.pks-layer.drawing .pkd-item { pointer-events: none; }
+
+/* 道具（もじ・スタンプ・ペン） */
+.pks-tools { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; gap: 10px; align-content: start; padding: 14px; border: 6px solid #fff; border-radius: 30px; background: #fff5faf0; box-shadow: 0 10px 26px #5a0f3a55; }
+.pks-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.pks-tab { min-height: 72px; border: 4px solid var(--pk-pink); border-radius: 22px; background: #fff; color: var(--pk-hot); font-size: 28px; font-weight: 900; letter-spacing: 0.04em; white-space: nowrap; }
+.pks-tab[aria-selected="true"] { background: var(--pk-hot); border-color: #fff; color: #fff; box-shadow: 0 0 0 3px var(--pk-hot); }
+.pks-panel { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; gap: 10px; }
+.pks-panel[hidden] { display: none; }
+.pks-row { display: flex; gap: 10px; align-items: center; }
+.pks-typing { gap: 10px; }
+/* 入力欄の字の大きさは base.css の入力欄の規則（画面で 16px 以上・iOS が入力の時に画面を拡大しないように）。縦の舞台の縮み具合 --k は JS が置く */
+.pks .pks-input { flex: 1; min-width: 0; height: 76px; padding: 0 20px; border: 4px solid var(--pk-pink); border-radius: 20px; background: #fff; color: #2a1420; font-family: var(--font); font-weight: 700; outline: none; }
+.pks-input:focus { border-color: var(--pk-hot); box-shadow: 0 0 0 4px #ff3d9a44; }
+.pks-place { min-width: 120px; height: 76px; border: 0; border-radius: 20px; background: var(--pk-hot); color: #fff; font-size: 30px; font-weight: 900; box-shadow: 0 4px 0 #c21f72; }
+.pks-choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.pks-choice { min-height: 64px; padding: 0 16px; border: 3px solid var(--pk-pink); border-radius: 16px; background: #fff; color: #5b2a44; font-size: 22px; font-weight: 800; }
+.pks-choice[aria-checked="true"] { border-color: var(--pk-hot); background: var(--pk-baby); color: var(--pk-hot); box-shadow: inset 0 0 0 2px var(--pk-hot); }
+/* 書体4つとふち3つを1段に（書体の札は「あア」と名前、ふちの札は名前だけなので、ふちを少し広く） */
+.pks-faces { display: grid; grid-template-columns: 4fr 3.9fr; gap: 8px; }
+.pks-faces > .pks-choices { display: grid; min-width: 0; gap: 6px; }
+.pks-faces > .pks-fonts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pks-faces > .pks-edges { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pks-faces .pks-choice { padding: 0 2px; min-width: 0; }
+.pks-font-face { display: grid; justify-items: center; gap: 0; line-height: 1.1; }
+.pks-font-face > span { font-size: 30px; }
+.pks-font-face small { font-size: 18px; }
+.pks-swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+.pks-swatch { width: 64px; height: 64px; padding: 0; border: 4px solid #fff; border-radius: 50%; background: var(--sw); box-shadow: 0 0 0 2px #d9b7c8, 0 3px 6px #0002; }
+.pks-swatch[aria-checked="true"] { box-shadow: 0 0 0 4px var(--pk-hot), 0 3px 6px #0003; transform: scale(1.08); }
+.pks-stamps { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
+.pks-stamp { aspect-ratio: 1; padding: 6px; border: 3px solid var(--pk-pink); border-radius: 18px; background: #fff; }
+.pks-stamp svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.pks-hint { margin: 0; font-size: 24px; font-weight: 800; color: var(--pk-hot); }
+.pks-pens .pks-choice { display: grid; place-items: center; min-width: 76px; }
+.pks-pen-dot { display: grid; justify-items: center; gap: 2px; }
+.pks-pen-dot::before { content: ""; width: var(--w); height: var(--w); border-radius: 50%; background: var(--pk-hot); }
+.pks-pen-dot small { font-size: 16px; }
+
+/* 選んでいる文字・スタンプの大きさ・傾き・消す */
+.pks-selbar { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 20px; background: var(--pk-baby); }
+.pks-selbar[hidden] { display: none; }
+.pks-slide { display: grid; gap: 2px; font-size: 20px; font-weight: 800; color: #8a3a62; }
+.pks-range { width: 100%; height: 40px; accent-color: var(--pk-hot); }
+.pks-remove { min-height: 64px; padding: 0 20px; border: 0; border-radius: 16px; background: #2a1420; color: #fff; font-size: 24px; font-weight: 900; }
+
+/* 終わりのボタン */
+.pks-foot { display: grid; grid-template-columns: 1fr 1.4fr; gap: 14px; }
+.pks-leave, .pks-done { min-height: 92px; border-radius: 999px; font-size: 32px; font-weight: 900; letter-spacing: 0.06em; white-space: nowrap; }
+.pks-leave { border: 4px solid #fff; background: #ffffffd9; color: #8a3a62; font-size: 26px; letter-spacing: 0; }
+.pks-done { border: 0; background: linear-gradient(180deg, #ff8fc7, #ff3d9a); color: #fff; box-shadow: 0 0 0 5px #fff, 0 8px 18px #c21f7266; }
+
+/* 縦の舞台（720×H）: 上から 見出し → 写真 → 道具 → 終わりのボタン。道具の高さは決めておき（タブを替えても写真が動かない）、写真は残りいっぱい（JS） */
+.pks.tall { grid-template-rows: 96px 1fr 540px 92px; grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 18px 22px 26px; }
+.pks.tall :is(.pks-choice, .pks-remove) { min-height: 72px; }
+.pks.tall .pks-photo-wrap { align-self: center; }
+.pks-head { min-width: 0; }
+.pks.tall .pks-tool { min-height: 60px; padding: 0 16px; font-size: 22px; }
+.pks.tall .pks-tools { overflow: auto; overscroll-behavior: contain; }
+/* 本編のステージ（1280×720）: 左に写真、右に見出し・道具・終わりのボタン */
+.pks.wide { grid-template-columns: calc(var(--pks-w) + 60px) 1fr; grid-template-rows: 80px 1fr auto; gap: 12px 18px; padding: 16px 28px 18px 20px; }
+.pks.wide .pks-photo-wrap { grid-column: 1; grid-row: 1 / span 3; align-self: center; }
+.pks.wide .pks-head { grid-column: 2; }
+.pks.wide .pks-tools { grid-column: 2; overflow: auto; }
+.pks.wide .pks-foot { grid-column: 2; }
+.pks.wide .pks-title { font-size: 28px; }
+.pks.wide :is(.pks-tab, .pks-place) { min-height: 60px; height: auto; font-size: 26px; }
+.pks.wide .pks-input { height: 60px; }
+.pks.wide .pks-stamps { grid-template-columns: repeat(12, 1fr); }
+.pks.wide :is(.pks-leave, .pks-done) { min-height: 72px; font-size: 28px; }
+.pks-hint.full { color: #2a1420; }
+
+/* 背景（VPO24）: どのコマに敷くか と、柄の札（6列×2段） */
+.pks-targets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pks-bgs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.pks-bg { display: grid; gap: 4px; justify-items: center; padding: 6px 4px 8px; border: 3px solid var(--pk-pink); border-radius: 16px; background: #fff; color: #5b2a44; font-size: 18px; font-weight: 800; line-height: 1.1; }
+.pks-bg svg { width: 100%; aspect-ratio: 4 / 3; border-radius: 10px; display: block; box-shadow: inset 0 0 0 1px #0001; }
+.pks-bg span { min-width: 0; overflow-wrap: anywhere; text-align: center; }
+.pks-rig { min-width: 0; flex: 1; font: inherit; }
+.pks-bg[aria-checked="true"] { border-color: var(--pk-hot); background: var(--pk-baby); color: var(--pk-hot); box-shadow: inset 0 0 0 3px var(--pk-hot); }
+
+/* らくがきタイムの残り時間: 写真の右上の角に付けた丸い札（ストップウォッチのシール） */
+.pks-photo-wrap { position: relative; justify-self: center; align-self: center; min-width: 0; }
+.pks-timer { position: absolute; right: -26px; top: -22px; z-index: 2; width: 104px; height: 104px; display: grid; place-content: center; justify-items: center; gap: 0; border-radius: 50%;
+  background: #fff; color: var(--pk-hot); box-shadow: 0 0 0 5px var(--pk-hot), 0 6px 14px #5a0f3a66; transform: rotate(8deg); font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+.pks-timer[hidden] { display: none; }
+.pks-timer b { font-size: 40px; }
+.pks-timer small { font-size: 17px; }
+.pks-timer.hurry { background: var(--pk-hot); color: #fff; animation: pks-hurry 1s steps(2) infinite; }
+@keyframes pks-hurry { 50% { transform: rotate(8deg) scale(1.1); } }
+.pks.tall .pks-title { font-size: 30px; padding: 8px 20px; }
+
+/* 印刷: 札が出て、写真が下の取り出し口へ降りていく */
+.pks-print { position: absolute; left: 50%; top: 42%; z-index: 5; display: grid; gap: 6px; justify-items: center; padding: 22px 40px; border: 6px solid #fff; border-radius: 30px;
+  background: var(--pk-hot); color: #fff; transform: translate(-50%, -50%); box-shadow: 0 12px 30px #5a0f3a88; animation: pks-pop 0.3s cubic-bezier(.2,1.4,.4,1) both; }
+.pks-print strong { font-size: 44px; letter-spacing: 0.08em; }
+.pks-print span { font-size: 22px; font-weight: 800; }
+@keyframes pks-pop { from { transform: translate(-50%, -50%) scale(0.6); opacity: 0; } }
+.pks.printing .pks-photo { animation: pks-drop 1.1s 0.25s cubic-bezier(.5,0,.8,.4) both; }
+.pks.printing :is(.pks-tools, .pks-foot, .pks-head-tools) { pointer-events: none; opacity: 0.4; transition: opacity 0.2s; }
+@keyframes pks-drop { to { transform: translateY(120%) rotate(4deg); opacity: 0; } }
