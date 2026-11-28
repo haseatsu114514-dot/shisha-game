@@ -1,4 +1,4 @@
-// 巻頭ポエム: 各章の詩は章タイトルの直前に、会話ウインドウではなく専用の読ませる画面（縦書きの全文が一緒に浮かぶ）で出る。
+// 巻頭ポエム: 各章の詩は章タイトルの直前に、会話ウインドウではなく専用の読ませる画面（縦書きの詩が一行ずつ浮かぶ）で出る。
 // 第1章の詩は序詩を兼ね、コールドオープンの後に出る（序詩は独立させない）。
 // 台本・文書との一致と接続点の静的な検査は ../chapter_poems.mjs。ここでは実際の表示順・操作・再開を見る。
 import assert from "node:assert/strict";
@@ -49,7 +49,7 @@ await suite("chapter-poems", async check => {
       window.reading = poem.playChapterPoem(1);
     });
     const card = page.locator(POEM);
-    await card.locator(".cp-body.on").waitFor();
+    await card.locator(".cp-line.on").first().waitFor();
     await page.locator(POEM + ':popover-open[data-phase="holding"]').waitFor();
     const lines = card.locator(".cp-line");
     assert.equal(await lines.count(), 6);
@@ -148,7 +148,7 @@ await suite("chapter-poems", async check => {
     assert.ok(!(await tokens(page)).some(token => token.startsWith("poem:")), "詩を繰り返さない");
   });
 
-  // 全文のフェード・縦書き・操作（タップ／Enter／Ctrl／中断）
+  // 各行のフェード・縦書き・操作（タップ／Enter／Ctrl／中断）
   await check("poem-card-full-text-and-reading-controls", async page => {
     page.setDefaultTimeout(30000);
     await watch(page, { turbo: false });
@@ -161,9 +161,9 @@ await suite("chapter-poems", async check => {
     const closed = () => page.waitForFunction(() => window.RESULT !== undefined, null, { timeout: 8000 });
     const card = page.locator(POEM);
     const body = card.locator(".cp-body");
-    const holding = () => page.locator(POEM + '[data-phase="holding"]').waitFor();
+    const holding = () => page.waitForFunction(() => document.querySelector(".chapter-poem")?.dataset.phase === "holding");
 
-    // 第2章の4行と2行が、一つの縦書き本文の中で同じタイミングで浮かぶ。
+    // 第2章の4行と2行が、一つの縦書き本文の中で右から順に浮かぶ。
     await start(2);
     await page.locator(`${POEM}[data-poem="poem_ch2"]`).waitFor();
     assert.equal(await body.count(), 1);
@@ -171,7 +171,7 @@ await suite("chapter-poems", async check => {
     assert.equal(await body.locator(".cp-line").count(), 6);
     assert.equal(await body.locator(".cp-line.stanza-start").evaluate(node => [...node.parentElement.children].indexOf(node)), 4);
     assert.ok(await body.locator(".cp-line.stanza-start").evaluate(node => parseFloat(getComputedStyle(node).marginBlockStart) > 0));
-    assert.equal(await body.evaluate(node => getComputedStyle(node).opacity), "0");
+    assert.equal(await body.locator(".cp-line").first().evaluate(node => getComputedStyle(node).opacity), "0");
     assert.equal(await body.locator("rt").count(), 0);
     // 詩の上に、横長のコマ絵（絵の比率のまま。4:1〜5.6:1）。細い枠つきで、詩より上に置く
     assert.equal(await page.locator(`${POEM}.has-panel`).count(), 1);
@@ -188,18 +188,16 @@ await suite("chapter-poems", async check => {
     const stage = await page.locator(`${POEM} .cp-stage`).boundingBox();
     assert.ok(stage.y >= box.y + box.height - 1, "詩の領域はコマ絵の下");
     assert.ok(box.width <= 1280 * 0.62 && box.x > 150, "画面いっぱいではなく、余白のある横長の枠");
-    // 絵の表示中にタップしても、詩は予定どおり全文が一緒に浮かぶ。
+    // 絵の表示中にタップしても、詩は予定どおり一行ずつ浮かぶ。
     await page.mouse.click(640, 360);
-    assert.equal(await body.evaluate(node => node.classList.contains("on")), false);
-    await page.waitForFunction(() => {
-      const node = document.querySelector(".cp-body.on");
-      if (!node) return false;
-      const opacity = Number(getComputedStyle(node).opacity);
-      return opacity > 0 && opacity < 1 && [...node.children].every(line => getComputedStyle(line).opacity === "1");
-    });
+    const visibleLines = body.locator(".cp-line.on");
+    await visibleLines.first().waitFor();
+    assert.equal(await visibleLines.count(), 1);
+    assert.equal(await body.locator(".cp-line").nth(1).evaluate(node => getComputedStyle(node).opacity), "0");
+    await visibleLines.nth(1).waitFor();
+    assert.equal(await visibleLines.count(), 2);
     await holding();
-    assert.equal(await body.evaluate(node => getComputedStyle(node).opacity), "1");
-    assert.equal(await body.locator(".cp-line").count(), 6);
+    assert.equal(await visibleLines.count(), 6);
     await page.mouse.click(640, 360);
     await page.waitForTimeout(120);
     assert.equal(await card.getAttribute("data-phase"), "holding", "表示直後の誤タップは無視する");
@@ -285,10 +283,12 @@ await suite("chapter-poems", async check => {
     await watch(page, { turbo: false });
     await page.evaluate(async () => { window.POEM_MODULE.playChapterPoem(3).then(result => { window.RESULT = result; }); });
     await page.locator(`${POEM}[data-poem="poem_ch3"]`).waitFor();
-    const body = page.locator(`${POEM}[data-phase="holding"] .cp-body.on`);
-    await body.waitFor({ timeout: 4000 });
+    const body = page.locator(`${POEM} .cp-body`);
+    await body.locator(".cp-line.on").first().waitFor();
+    assert.equal(await body.locator(".cp-line.on").count(), 1);
+    await page.locator(POEM + '[data-phase="holding"]').waitFor();
     assert.equal(await body.locator(".cp-line").count(), 5);
-    assert.equal(await body.evaluate(node => getComputedStyle(node).filter), "none");
+    assert.equal(await body.locator(".cp-line.on").first().evaluate(node => getComputedStyle(node).filter), "none");
     await page.keyboard.press("Control");
     await page.waitForFunction(() => window.RESULT === true);
   }, { reducedMotion: "reduce" });

@@ -134,7 +134,7 @@ assert.match(module, /reducedMotion\(\)/, "動き軽減に従う");
 assert.match(module, /line\.gap \? "p\.cp-line\.stanza-start"/, "連の区切りに余白を入れる");
 assert.match(module, /panelUrl/, "コマ絵の読み込みがある");
 assert.match(read("remake/css/motions/chapter-poem.css"), /\.cp-panel/, "コマ絵のスタイルがある");
-assert.match(read("remake/css/motions/chapter-poem.css"), /\.cp-body\.on/, "全文に共有のフェードがある");
+assert.match(read("remake/css/motions/chapter-poem.css"), /\.cp-line\.on/, "各行にフェードがある");
 
 function indexesOf(source, needle) {
   const found = [];

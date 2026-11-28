@@ -878,7 +878,7 @@ html:root .kuji-overlay.vt-kj.kuji-multi .kj-actions .btn { min-width: 440px; mi
 
 /* ===== css/motions/chapter-poem.css ===== */
 /* 巻頭ポエム（序詩と第1〜5章の章頭詩）の読ませる画面。詩の上に、横長の漫画風のコマ絵（.cp-panel）を細い枠つきで出す。js/scenes/chapter-poem.js が .chapter-poem を fx 層へ出す。
-   縦書きの全文を一度のフェードで見せ、連の区切りは列の余白で示す。 */
+   縦書きの各行を右から順に浮かべ、連の区切りは列の余白で示す。 */
 .chapter-poem {
   --cp-accent: 214, 178, 112;
   position: absolute; inset: 0; z-index: 70; overflow: hidden;
@@ -929,11 +929,13 @@ html:root .kuji-overlay.vt-kj.kuji-multi .kj-actions .btn { min-width: 440px; mi
   writing-mode: vertical-rl; text-orientation: mixed;
   font-family: "Suien Blue Mincho", "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif; font-weight: 400;
   font-size: 30px; line-height: 2.25; letter-spacing: .16em;
-  opacity: 0; filter: blur(7px);
-  transition: opacity 1300ms ease, filter 1300ms ease;
 }
-.cp-body.on { opacity: 1; filter: none; }
-.cp-line { margin: 0; white-space: pre; }
+.cp-line {
+  margin: 0; white-space: pre;
+  opacity: 0; filter: blur(7px);
+  transition: opacity 800ms ease, filter 800ms ease;
+}
+.cp-line.on { opacity: 1; filter: none; }
 .cp-line.stanza-start { margin-block-start: .85em; }
 /* コマ絵があるときは、詩の領域が狭くなるので、字を少し小さくする。 */
 .chapter-poem.has-panel .cp-body { font-size: 22px; max-height: 96%; }
@@ -951,10 +953,10 @@ html:root .kuji-overlay.vt-kj.kuji-multi .kj-actions .btn { min-width: 440px; mi
 .chapter-poem[data-phase="holding"] .cp-next { animation: cp-next 1900ms ease-in-out infinite; }
 @keyframes cp-next { 0%, 100% { opacity: .18; } 50% { opacity: .65; } }
 
-.chapter-poem.turbo .cp-body, .chapter-poem.turbo .cp-panel { transition: none; }
+.chapter-poem.turbo .cp-line, .chapter-poem.turbo .cp-panel { transition: none; }
 @media (prefers-reduced-motion: reduce) {
   .cp-mist { animation: none; }
-  .cp-body { filter: none; transition: opacity 300ms ease; }
+  .cp-line { filter: none; transition: opacity 300ms ease; }
   .cp-panel { filter: none; transform: none; transition: opacity 300ms ease; }
   .chapter-poem[data-phase="holding"] .cp-next { animation: none; opacity: .4; }
 }
