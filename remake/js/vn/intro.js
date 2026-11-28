@@ -15,6 +15,7 @@ import { state, markMet, config } from "../core/state.js";
 import { layers, imageReady } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 
+import { verticalPortraits } from "../core/portrait-resolver.js";
 import { mountIntro } from "./intro-fit.js";
 
 import { motifs } from "./intro-motifs.js";
@@ -72,7 +73,7 @@ export function introSources(id, intro = introOf(id) || {}) {
   // 登場カットインの配置は現行原画用。会話の画風設定と独立して選ぶ。
   let p = portraitInfo(id, intro.face || "normal", "classic");
   let art = DB.manifest.introArt?.[id];
-  const graphic = art && p ? graphicIntro(id, config.introArtStyle) : null;
+  const graphic = art && p ? graphicIntro(id, verticalPortraits() ? "graphic" : config.introArtStyle) : null;
   if (graphic) {
     // 新しい絵柄: 人物は専用の一枚絵、配置は共通。背景は描き直した分だけ差し替える
     p = { ...p, src: graphic.portrait, face: "graphic" };
@@ -141,8 +142,9 @@ export async function playIntro(id, {
       SE.introImpact?.({ brief });
     };
     // 立ち絵からの「変身」のつなぎ（グラフィック絵柄のときだけ。既定 none は今まで通り）
-    const standingRect = !brief && graphic ? measureStanding(id, layers.fx) : null;
-    const transition = createTransition(!brief && graphic ? (override.transition ?? config.introTransition ?? "none") : "none", {
+    const landscapeMotion = !brief && !verticalPortraits();
+    const standingRect = landscapeMotion && graphic ? measureStanding(id, layers.fx) : null;
+    const transition = createTransition(landscapeMotion && graphic ? (override.transition ?? config.introTransition ?? "none") : "none", {
       id, fx: layers.fx, host, frame: graphic?.frame, config,
       standing: standingRect && standingInfo ? { rect: standingRect, p: standingInfo } : null,
       colors: { color: art.color, secondary: art.secondary, shadow: art.shadow },
@@ -154,7 +156,7 @@ export async function playIntro(id, {
     try {
       unmount = await transition.enter();
       const twoLines = layoutIntro(host, id, variant, intro);
-      if (!brief) animations.push(...animateIntro(host, id, motion, { skip: transition.skip }));
+      if (landscapeMotion) animations.push(...animateIntro(host, id, motion, { skip: transition.skip }));
       host.classList.remove("ci-staged");
       appear();
       await holdIntro(host, { brief, motion, twoLines, reveal, exit: transition.exit ? () => transition.exit() : null });

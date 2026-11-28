@@ -6,9 +6,12 @@
 
 /* ───────── 本編側の調整（縦画面を使っている間だけ） ───────── */
 :root[data-look="vertical"][data-vt-shell="on"] #viewport { opacity: 0; }
-/* 読み込み中の漫画・進むボタンは、切り替え中の外枠 (990) と再開時の煙 (991) より上に置く。 */
-:root[data-vt="on"] body > #boot.is-viewport { z-index: 992; }
-:root[data-vt="on"] body > :is(.loading-gate, .loading-exit-haze).is-viewport { z-index: 993; }
+/* 従来の舞台と外枠の両方より前に読み込み画面を置く。ゲートが薄れても横の舞台は見せない。 */
+:root[data-vt="on"] body:has(> :is(#boot, .loading-gate).is-viewport) #rotate-hint { display: none; }
+:root[data-vt="on"] body > #boot.is-viewport { z-index: 1001; }
+:root[data-vt="on"] body > :is(.loading-gate, .loading-exit-haze).is-viewport { z-index: 1002; }
+:root[data-vt-loading] #viewport { opacity: 0; }
+:root[data-vt-loading] :is(.vt-shell, .vt-motion) { visibility: hidden; }
 /* 回転案内は、まだ縦にしていない場面（シーシャ作り・大会・店番・ミニゲーム）でだけ出す（js/looks/vertical.js が外枠を出せない間）。
    外枠を出している間・読み込みの画面・縦の小窓（data-vt-hint="hold"）は出さない。縦持ちが基本なので、ほかの場面では回転案内を使わない（base.css・VPO01） */
 @media (orientation: portrait) and (hover: none) and (pointer: coarse) {
@@ -454,8 +457,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-cv-veil { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 0%, transparent 46%, color-mix(in srgb, var(--ci-shadow) 70%, transparent) 62%, var(--ci-shadow) 86%); }
 /* 人物の下端は不透明な名前帯の後ろで切る。画像の縦横比や入場の動きに依存しない。 */
 .vt-cv-figure { position: absolute; inset: 0 0 auto; height: calc(var(--band-top) + var(--band-h) / 2); overflow: hidden; }
-.vt-cv-art { position: absolute; z-index: 1; width: var(--art-w); max-width: none; left: calc(var(--art-x) - var(--focus) * var(--art-w)); top: var(--art-top);
-  filter: drop-shadow(0 var(--u) calc(2 * var(--u)) #0009); }
+.vt-cv-art { position: absolute; z-index: 1; width: var(--art-w); max-width: none; left: calc(var(--art-x) - var(--focus) * var(--art-w)); top: var(--art-top); }
 .vt-cv-band { position: absolute; z-index: 2; left: -8%; right: -8%; top: var(--band-top); height: var(--band-h); display: flex; align-items: center; padding-left: calc(8% + 2.4 * var(--u)); background: #f6f3e9; box-shadow: 0 calc(1.2 * var(--u)) calc(2.4 * var(--u)) #0009; transform: rotate(-5deg); animation: vt-cv-wipe 0.4s var(--ease-out) 0.22s both; }
 .vt-cv-accent { position: absolute; left: 0; right: 0; bottom: calc(-1.3 * var(--u)); height: calc(0.8 * var(--u)); background: var(--ci); }
 .vt-cv-name { font-family: var(--gothic); font-size: var(--nsz); font-weight: 900; line-height: 1.05; letter-spacing: -0.05em; white-space: nowrap; color: #090e15; transform: skewX(-10deg) scaleX(0.92); transform-origin: left center; animation: vt-cv-stamp 0.45s var(--ease-out) 0.46s both; }
@@ -473,7 +475,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-cv[data-m="sharp"] .vt-cv-art, .vt-cv[data-m="still"] .vt-cv-art { animation: vt-cv-art-sharp 0.4s var(--ease-out) 0.08s both; }
 @keyframes vt-cv-bg { from { opacity: 0; transform: scale(1.12); } }
 @keyframes vt-cv-wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
-@keyframes vt-cv-stamp { from { opacity: 0; transform: skewX(-10deg) scaleX(0.92) scale(1.35); filter: blur(calc(0.6 * var(--u))); } }
+@keyframes vt-cv-stamp { from { opacity: 0; transform: skewX(-10deg) scaleX(0.92) scale(1.35); } }
 @keyframes vt-cv-tag { from { opacity: 0; translate: calc(-2 * var(--u)) 0; } }
 @keyframes vt-cv-up { from { opacity: 0; translate: 0 calc(1.4 * var(--u)); } }
 @keyframes vt-cv-next { 0%, 100% { opacity: 0.9; } 50% { opacity: 0.4; } }

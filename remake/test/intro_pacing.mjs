@@ -35,7 +35,9 @@ const context = vm.createContext({
   getComputedStyle: () => ({ backgroundColor: "#101820" }),
   ResizeObserver: class { observe() {} disconnect() {} },
 });
+let vertical = false;
 const sources = {
+  "../core/portrait-resolver.js": { verticalPortraits: () => vertical },
   "../core/util.js": {
     el: () => new Node(),
     sleep: async (ms) => {
@@ -142,4 +144,7 @@ await check("sumi", {
 }, true, [600], ["none"]);
 await check("sumi", {}, true, [600], ["none"]);
 
+vertical = true;
+state.cycleId = "vertical";
+await check("sumi", {}, false, [30, 4400, 400], ["none", "exit"]);
 console.log("intro_pacing: OK");

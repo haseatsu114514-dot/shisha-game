@@ -269,6 +269,45 @@ await suite("look_vertical", async (check) => {
     assert.equal(await page.locator(".result-table:not(.done)").count(), 0);
   }, { ...SHORT, pageEntry: entry });
 
+  await check("portrait-cold-start-hides-landscape-before-game-loads", async page => {
+    let release;
+    const paused = new Promise(resolve => { release = resolve; });
+    await page.route(/\/(?:main\.js|loading_bg\.webp)(?:\?|$)/, async route => {
+      await paused;
+      await route.continue();
+    });
+    try {
+      await page.reload({ waitUntil: "domcontentloaded" });
+      await page.locator("body > #boot.is-viewport.is-preparing").waitFor({ state: "attached" });
+      assert(await page.locator("html[data-look-boot]").count(), "様式の決定前を検査する");
+      assert.equal(await page.locator("#viewport").evaluate(node => getComputedStyle(node).opacity), "0",
+        "ロード絵と本体が届く前にも、黒地に16:9の舞台が浮かばない");
+    } finally { release(); }
+    await waitScene(page, "title");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("loading-keeps-landscape-covered", async page => {
+    await waitScene(page, "title");
+    await page.evaluate(async () => {
+      const { withLoading } = await import("./js/core/loading.js");
+      window.landscapeFrames = 0;
+      window.loadingRun = withLoading(() => new Promise(resolve => { window.finishLoad = resolve; }),
+        { delayMs: 0, comics: [] });
+      const sample = () => {
+        if (getComputedStyle(document.getElementById("viewport")).opacity !== "0") window.landscapeFrames++;
+        window.sampleFrame = requestAnimationFrame(sample);
+      };
+      sample();
+    });
+    await page.waitForFunction(() => window.finishLoad && document.documentElement.dataset.vtLoading);
+    assert(await page.locator(".loading-gate").evaluate(gate => gate.contains(document.elementFromPoint(innerWidth / 2, innerHeight / 2))));
+    await page.waitForTimeout(800); // 通常の未対応場面の猶予（600ms）より長く待つ
+    await page.evaluate(() => { window.finishLoad(); return window.loadingRun; });
+    await page.waitForFunction(() => !document.documentElement.hasAttribute("data-vt-loading"));
+    await waitScene(page, "title");
+    assert.equal(await page.evaluate(() => { cancelAnimationFrame(window.sampleFrame); return window.landscapeFrames; }), 0);
+  }, { ...TALL, pageEntry: entry });
+
   await check("boot-fades-onto-portrait-title", async (page) => {
     // 通常の検査は #boot が消えてから始まる。開き直してフェード中も1フレームずつ調べる。
     await page.addInitScript(() => {
@@ -647,6 +686,15 @@ await suite("look_vertical", async (check) => {
 
   await check("intro-cutin-poster", async (page) => {
     await waitScene(page, "title");
+    const classicSprites = await page.evaluate(async () => {
+      const { DB, portraitInfo } = await import("./js/core/data.js");
+      const classic = [];
+      for (const [id, entry] of Object.entries(DB.manifest.portraits)) {
+        for (const face of entry.faces) if (portraitInfo(id, face, "classic")?.style !== "new") classic.push([id, face]);
+      }
+      return classic;
+    });
+    assert.deepEqual(classicSprites, [], "縦持ちでは旧設定の全員・全表情も新版に解決する");
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js");
       const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 1, day: 5, slot: 1 });

@@ -14,6 +14,7 @@ import { el } from "../core/util.js";
 import { detectState, isLoading, topDialogOpen } from "./vertical/detect.js";
 import { withMinigameStyles } from "../minigames/minigame-styles.js";
 import { createFrame } from "./vertical/frame.js";
+import { refreshPortraits } from "../vn/engine.js";
 import { createTalkScene } from "./vertical/talk.js";
 import { createMapScene } from "./vertical/map.js";
 import { createMenuScene } from "./vertical/menu.js";
@@ -155,6 +156,7 @@ function start() {
   const root = document.documentElement;
   root.dataset.vt = "on"; // 本編の会話の箱を縦のテロップと同じ比にする（css/look-vertical.css）
   root.dataset.vtHint = "hold"; // 最初の確認までは回転案内を出さない（出すかは evaluate() が決める）
+  refreshPortraits();
   let scene = null, sceneName = "";
   const frame = createFrame({
     dir: (dir) => { scene?.dir?.(dir); wake(400); },
@@ -230,7 +232,21 @@ function start() {
         root.dataset.vtHint = "hold";
         window.dispatchEvent(new Event("resize"));
       }
+      root.dataset.vtLoading = "on";
+      if (!scene && !document.getElementById("stage")?.dataset.portraitScene) setScene("cover");
+      holdSince = noneSince = 0;
+      coverBlocked = false;
       fresh = true;
+      return;
+    }
+    if (root.dataset.vtLoading) delete root.dataset.vtLoading;
+    if (document.querySelector("#fx > .vn-loading")) {
+      root.dataset.vtHint = "hold";
+      hold = true;
+      gap = false;
+      pressable = false;
+      setScene("cover");
+      holdSince = noneSince = 0;
       return;
     }
     const found = portraitScene(wipe ? [...own, wipe] : own, motionLayer.root.lastElementChild);
@@ -321,7 +337,7 @@ function start() {
       if (periodic) lastDetect = now;
       evaluate(now, periodic);
     }
-    if (!scene?.sync) return;
+    if (!scene?.sync || root.dataset.vtLoading) return;
     if (dirty || now - lastSync >= SYNC_MS) {
       dirty = false;
       lastSync = now;
@@ -353,18 +369,14 @@ function start() {
       const target = record.target.nodeType === 1 ? record.target : record.target.parentElement;
       if (target === motionLayer.root && record.type === "childList") { dirty = true; other = true; continue; }
       if (!target || own.some((mine) => mine.contains(target)) || hint?.contains(target)) continue;
-      dirty = true;
-      if (target.closest?.(".vn-text, .vn-inner")) typed = true;
+      if (scene?.syncText && target.closest?.("#vn .vn-text, #vn .vn-inner")) typed = true;
       else other = true;
     }
-    if (other) detectSoon = true;
-    if (typed && scene?.sync && !stopped && !other) {
-      dirty = false;
-      lastSync = performance.now();
-      scene.sync?.({ pressable, gap, hold });
-      return;
+    if (typed && !other) scene.syncText();
+    if (other) {
+      dirty = detectSoon = true;
+      wake();
     }
-    if (dirty) wake();
   });
   observer.observe(document.documentElement, {
     subtree: true, childList: true, characterData: true, attributes: true,
@@ -402,6 +414,8 @@ function start() {
       hintText?.remove();
       delete window.__verticalLook;
       delete root.dataset.vt;
+      delete root.dataset.vtLoading;
+      refreshPortraits();
       delete root.dataset.vtShell;
       delete root.dataset.vtHint;
       window.dispatchEvent(new Event("resize")); // 回転案内と会話の箱を現行どおりに戻す
