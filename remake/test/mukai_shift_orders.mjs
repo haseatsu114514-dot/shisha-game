@@ -40,12 +40,13 @@ for (const order of MUKAI_ORDERS) {
 const dialogues = Object.fromEntries(JSON.parse(read("data/dialogue/mukai_shift.json")).dialogues.map(d => [d.dialogue_id, d]));
 for (const id of MUKAI_REACTION_IDS) assert(dialogues[id]?.lines?.length, id);
 for (const id of ["first_timer", "anything_fine"]) for (const index of [0, 1]) {
-  const [question, answer] = dialogues[`mukai_shift_${id}_${index}`].lines;
+  const [question, answer] = dialogues[`mukai_shift_${id}_${index}`].lines.filter(line => line.type !== "sfx");
   assert.equal(question.speaker, "hajime", `${id}_${index}: hajime asks first`);
   assert.equal(answer.speaker, "customer", `${id}_${index}: the customer answers`);
 }
 for (const [id, scene] of Object.entries(dialogues)) {
   for (const line of scene.lines) {
+    if (line.type === "sfx") continue;
     assert(["", "customer", "hajime", "mukai_master"].includes(line.speaker), `${id}: ${line.speaker}`);
     // 味覚が戻る前の第3章でも読めるよう、はじめ自身が味を確かめる言い方をしない
     if (line.speaker === "hajime") assert(!/吸ってみ|味見|舌で/.test(line.text), `${id}: ${line.text}`);
