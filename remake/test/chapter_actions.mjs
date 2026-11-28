@@ -264,7 +264,7 @@ for (const chapter of [4, 5]) {
     let names = [...parentSource.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)]
       .find(match => match[2] === spec)[1].split(',').map(name => name.trim());
     if (target.pathname.endsWith('/core/state.js')) {
-      names = ['state', 'save', 'autoSaveResult', 'loadFromSlot', 'requestResumeOnBoot', 'SCHEMA', 'SAVE_SLOTS', 'readSlot', 'saveToSlotResult'];
+      names = ['state', 'save', 'autoSaveResult', 'loadFromSlot', 'requestResumeOnBoot', 'SCHEMA', 'SAVE_SLOTS', 'readSlot', 'readSlotRaw', 'saveToSlotResult'];
     }
     const stub = new vm.SyntheticModule(names, function () {
       for (const name of names) this.setExport(name, bindings[name] ?? (() => {}));
