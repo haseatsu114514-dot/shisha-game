@@ -2,7 +2,7 @@
 
 **最初に全面化したいのは、巻頭詩、朝・大会当日の日付、夜イベントの一行、大会の選手入場と ROUND の帯。** 390 × 844 CSS px では、これらの場面にも下端の **302 px** が割り当てられ、背景と演出の表示枠は **542 px** だった。本文送りや行き先選択が戻る瞬間に、従来の親指位置へ戻す。コンティニューは維持する。
 
-採用後の第1章では、選手入場を「エントリーナンバー1　なる」から「エントリーナンバー4　はじめ」まで選手ごとの登場カットインの人物絵と背景で紹介する。上部には朱縁の黒札が入り、手描き文字の隣に金箔調の番号が大きく現れる。少し遅れて選手名が入る。二つ名・選手名・スミの台詞は下部の別々の行に表示する。[実装後の入場画面（左・なる、右・はじめ）](entrants-implemented.webp)／[3番・みんとから4番・はじめへの切り替わり（動画）](entry-number-motion.webp)
+採用後の第1章では、選手入場を「エントリーナンバー01　なる」から「エントリーナンバー04　はじめ」まで選手ごとの登場カットインの人物絵と背景で紹介する。上部には細いセリフの二桁番号と横一行の「エントリーナンバー」を紙色で刷ったように重ねる。番号は静かに現れ、続いて選手名が入る。二つ名・選手名・スミの台詞は下部の別々の行に表示する。[実装後の入場画面（左・なる、右・はじめ）](entrants-implemented.webp)／[3番・みんとから4番・はじめへの切り替わり（動画）](entry-number-motion.webp)
 
 ここでのパッドは左の輪形十字キーと右の丸ボタン（以下 A）の組。片方でも役割があれば「要る」。写真・文・ボタンを直接タップできるだけでは、パッドを外す理由にしない。以下の判定は **main `abf2a5731` の第1章・「縦画面／煙の舞台」** に限る。演出が重なるときは最前面で入力を受ける画面を優先する。
 
@@ -27,7 +27,7 @@
 | 優勝後の会話・LIME受信・章クリア | 会話・クリアシートは**要る**。受信前の単独グリッチは**要らない** | 会話は A、LIME はアプリ内操作。クリアは成長グラフや記録を上下で読み、「第2章へ進む」等を選ぶ。コンティニューと同じ `end` 名で一律に消さない。 |
 | 空のつなぎ・未知の覆い・未対応から戻る瞬間 | 一時表示・**要る側に保留** | `gap` でも A の中継が許可される場合がある。`hold` は短い間だけ操作を止める。次の本編要素が先に現れるため、空に見えたことだけで無入力と決めない。 |
 
-進行の入口は [第1章台本](../../../remake/js/chapters/ch1.js)、場面の見分けは [detectState](../../../remake/js/looks/neo/portrait-shell/detect.js)、縦画面への振り分けは [vertical.js](../../../remake/js/looks/vertical.js)。ボタンの実際の行き先は [会話](../../../remake/js/looks/vertical/talk.js)、[地図](../../../remake/js/looks/vertical/map.js)、[行動選び](../../../remake/js/looks/vertical/menu.js)、[シート](../../../remake/js/looks/vertical/sheet.js)、[盤](../../../remake/js/looks/vertical/board.js)、[制作工程](../../../remake/js/looks/vertical/craft.js) で確認できる。
+進行の入口は [第1章台本](../../../remake/js/chapters/ch1.js)、場面の見分けは [detectState](../../../remake/js/looks/vertical/detect.js)、縦画面への振り分けは [vertical.js](../../../remake/js/looks/vertical.js)。ボタンの実際の行き先は [会話](../../../remake/js/looks/vertical/talk.js)、[地図](../../../remake/js/looks/vertical/map.js)、[行動選び](../../../remake/js/looks/vertical/menu.js)、[シート](../../../remake/js/looks/vertical/sheet.js)、[盤](../../../remake/js/looks/vertical/board.js)、[制作工程](../../../remake/js/looks/vertical/craft.js) で確認できる。
 
 ## パッドを外した見た目と、場面ごとの根拠
 

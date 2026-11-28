@@ -10,7 +10,7 @@
         { "speaker": "naru", "face": "smile", "text": "冗談だ。座れ。今日の一台、試してほしい" },
         { "speaker": "", "face": "", "text": "なるが炭を載せるのを、席で見ていた。しばらく蒸らしてから、なるは俺の前に台を置いた。" },
         { "speaker": "", "face": "", "text": "バニラの甘さの奥に、焼いたパンのような香ばしさが残る一台だった。" },
-        { "speaker": "naru", "face": "normal", "text": "前は甘さだけで押してた。今は、二口目に客が息をつける所を作ってる" },
+        { "speaker": "naru", "face": "normal", "text": "前は甘さだけで押してた。今は、二口目に客が息をつけるところを作ってる" },
         { "speaker": "hajime", "face": "normal", "text": "……吸ってる人の速さ、まだ数えてるんだ" },
         { "speaker": "naru", "face": "smile", "text": "癖になった。……お前も、まだ数えてんだろ" },
         { "speaker": "hajime", "face": "smile", "text": "……ばれてた" }
@@ -23,7 +23,7 @@
         { "speaker": "naru", "face": "normal", "text": "博士との勝負、日はまだ決めてないんだってな" },
         { "speaker": "hajime", "face": "normal", "text": "うん。準備ができたら、こっちから連絡する" },
         { "speaker": "naru", "face": "serious", "text": "急かすやつがいたら言え。俺が代わりに文句を言ってやる" },
-        { "speaker": "hajime", "face": "smile", "text": "なるが一番、急かしそうだけど" },
+        { "speaker": "hajime", "face": "smile", "text": "なるがいちばん、急かしそうだけど" },
         { "speaker": "naru", "face": "smile", "text": "……否定はしねえ" },
         { "speaker": "naru", "face": "normal", "text": "閉店後なら、台は空いてる。練習するなら使え" },
         { "speaker": "hajime", "face": "smile", "text": "……それ、急かしてない？" },
@@ -51,7 +51,7 @@
         { "speaker": "hajime", "face": "surprise", "text": "（ここでも、顔を覚えられてる）" },
         { "speaker": "shop_clerk", "face": "", "text": "炭、いちばんいいのを用意しますね。お水もすぐ！" },
         { "speaker": "", "face": "", "text": "案内された席の壁に、世界大会の記事の切り抜きが貼ってあった。" },
-        { "speaker": "", "face": "", "text": "一台を吸うあいだも、切り抜きの中の自分と目が合う気がした。" },
+        { "speaker": "", "face": "", "text": "一台を吸う間も、切り抜きの中の自分と目が合う気がした。" },
         { "speaker": "hajime", "face": "normal", "text": "（味はいつもと変わらないのに）" },
         { "speaker": "hajime", "face": "normal", "text": "（……ちょっと、落ち着かないな）" }
       ]
@@ -64,7 +64,7 @@
         { "speaker": "old_man", "face": "", "text": "いい一台は、吸い終わってもホースがなかなか置けなくなる。なるの一台がそうだった、ってな" },
         { "speaker": "hajime", "face": "normal", "text": "ホースを、置けなくなる……" },
         { "speaker": "old_man", "face": "", "text": "今は、お前の一台でも同じ話をしてるよ" },
-        { "speaker": "hajime", "face": "smile", "text": "（……なるさんの話が、こっちにも回ってきたんだ）" }
+        { "speaker": "hajime", "face": "smile", "text": "（……なるの話が、こっちにも回ってきたんだ）" }
       ]
     },
     {
@@ -75,8 +75,8 @@
         { "speaker": "shop_clerk", "face": "", "text": "……出ないですよね？" },
         { "speaker": "hajime", "face": "smile", "text": "出ません。でも、見には来ます" },
         { "speaker": "shop_clerk", "face": "", "text": "よかった。出られたら、みんな困っちゃうので" },
-        { "speaker": "shop_clerk", "face": "", "text": "でも、見に来てくれるなら、ポスターは一番目立つ所に貼らないと" },
-        { "speaker": "hajime", "face": "normal", "text": "……目立たない所で、お願いします" },
+        { "speaker": "shop_clerk", "face": "", "text": "でも、見に来てくれるなら、ポスターはいちばん目立つところに貼らないと" },
+        { "speaker": "hajime", "face": "normal", "text": "……目立たないところで、お願いします" },
         { "speaker": "", "face": "", "text": "新しいポスターには、去年より大きな字で「初出場歓迎」と書いてあった。" }
       ]
     },
@@ -84,7 +84,7 @@
       "dialogue_id": "ch5_minto_shop",
       "lines": [
         { "speaker": "", "face": "", "text": "PEPPERMINT。ドアを開けると、ミントの香りがふわっと広がった。" },
-        { "speaker": "minto", "face": "smile", "text": "いらっしゃーいっ♡　世界一のお客さま、ご来店でーす" },
+        { "speaker": "minto", "face": "smile", "text": "いらっしゃーいっ♡ 世界一のお客さま、ご来店でーす" },
         { "speaker": "hajime", "face": "normal", "text": "その紹介、やめてほしいんだけど" },
         { "speaker": "minto", "face": "wink", "text": "だめー。今日だけ、みんとの店の自慢にさせて" },
         { "speaker": "", "face": "", "text": "カウンターの端に、世界大会の記事が小さく貼ってあった。" },
@@ -100,11 +100,11 @@
         { "speaker": "minto", "face": "wink", "text": "じゃーん。人気No.1キャストの新作、『チョコミント』でーすっ♡" },
         { "speaker": "hajime", "face": "surprise", "text": "……載せたんだ、これ" },
         { "speaker": "minto", "face": "smile", "text": "載せたの。お手本は昔の喫茶店のパフェ。まだ届いてないけどね" },
-        { "speaker": "minto", "face": "normal", "text": "届くまで出さないの、やめたんだ。お客さんと直すほうが、早いもん" },
+        { "speaker": "minto", "face": "normal", "text": "届くまで出さないの、やめたんだ。お客さんと直す方が、早いもん" },
         { "speaker": "", "face": "", "text": "そのチョコミントを頼んで、席で待った。しばらくして、みんとが一台運んできた。" },
         { "speaker": "", "face": "", "text": "一口目はチョコで、三口目でもミントは尖らない。奥に、少しだけ苦みが残った。" },
         { "speaker": "hajime", "face": "normal", "text": "三口目まで、ちゃんとチョコが前にいる" },
-        { "speaker": "minto", "face": "smile", "text": "でしょ？ 苦いとこは宿題♡　感想、正直にね。世界一の舌でしょ？" }
+        { "speaker": "minto", "face": "smile", "text": "でしょ？ 苦いとこは宿題♡ 感想、正直にね。世界一の舌でしょ？" }
       ]
     },
     {
@@ -114,7 +114,7 @@
         { "speaker": "minto", "face": "smile", "text": "ごめんね、今日ちょっと混んでて。カウンターの端でいい？" },
         { "speaker": "hajime", "face": "normal", "text": "うん。……みんな、誰かと話しに来てるんだね" },
         { "speaker": "minto", "face": "normal", "text": "そうだよ。一人ひとり、来た理由が違うの" },
-        { "speaker": "minto", "face": "normal", "text": "煙を吸いに来る人より、お話しに来る人のほうが多いかも" },
+        { "speaker": "minto", "face": "normal", "text": "煙を吸いに来る人より、お話しに来る人の方が多いかも" },
         { "speaker": "", "face": "", "text": "奥のテーブルでは、二人連れが小さな声で笑っていた。" },
         { "speaker": "hajime", "face": "normal", "text": "理由か……うまく言えるかな" },
         { "speaker": "minto", "face": "smile", "text": "はじめくんの理由は、あとで聞かせてね" }
@@ -139,7 +139,7 @@
         { "speaker": "samechan", "face": "excited", "text": "来週、路地裏シネマでサメ映画の二本立てなのじゃ！" },
         { "speaker": "hajime", "face": "normal", "text": "二本とも、サメですか" },
         { "speaker": "samechan", "face": "smile", "text": "当然じゃ。一本目で泣いて、二本目で笑うのが通の見方よ" },
-        { "speaker": "hajime", "face": "normal", "text": "二本目は、どんなサメなんですか。笑うほうだと聞きましたけど" },
+        { "speaker": "hajime", "face": "normal", "text": "二本目は、どんなサメなんですか。笑う方だと聞きましたけど" },
         { "speaker": "samechan", "face": "excited", "text": "空を飛ぶのじゃ。理屈は考えてはならぬ、心で観るものよ" },
         { "speaker": "samechan", "face": "ventriloquism", "text": "側近は、一本目で寝るのである", "voice": "korochan" }
       ]
@@ -190,7 +190,7 @@
         { "speaker": "hajime", "face": "smile", "text": "みんな、楽しそうだね" },
         { "speaker": "", "face": "", "text": "奥の席では、ギャルの子がオタクの子の推しの話に身を乗り出していた。" },
         { "speaker": "ageha", "face": "smile", "text": "あの二人、さっき会ったばっか。うちの店だと、だいたい一本目で友達になってる" },
-        { "speaker": "ageha", "face": "normal", "text": "それが一番。カワイイは最強、楽しいはもっと最強" },
+        { "speaker": "ageha", "face": "normal", "text": "それがいちばん。カワイイは最強、楽しいはもっと最強" },
         { "speaker": "ageha", "face": "smile", "text": "ハジメっちも、楽しい顔して帰ってよね" }
       ]
     },
@@ -208,7 +208,7 @@
         { "type": "sfx", "id": "foil_punch" },
         { "speaker": "", "face": "", "text": "あげはは穴をあけ、炭を置いた。指は細かく揺れていたけれど、置く位置は迷わなかった。" },
         { "speaker": "", "face": "", "text": "熱が回るのを待って、あげはは自分で吸い出しを確かめた。" },
-        { "speaker": "", "face": "", "text": "できた一台を、窓ぎわの常連の席へ運ぶ。しばらくして、客がカウンターへ顔を向けた。" },
+        { "speaker": "", "face": "", "text": "できた一台を、窓際の常連の席へ運ぶ。しばらくして、客がカウンターへ顔を向けた。" },
         { "speaker": "", "face": "", "text": "「あげはちゃん、今日の、おいしい」。" },
         { "speaker": "ageha", "face": "smile", "text": "でしょ！ 今日のは、とくべつ" },
         { "speaker": "", "face": "", "text": "客が席に戻ると、あげはは俺の袖を、カウンターの陰で引いた。" },
@@ -229,7 +229,7 @@
         { "speaker": "", "face": "", "text": "あげはは、片方の丸椅子を足で少しだけ引いた。" },
         { "speaker": "ageha", "face": "smile", "text": "でも、こないだフォイル張ってもらって、思った。……見られても、べつにいっか、って" },
         { "speaker": "hajime", "face": "normal", "text": "座っていいの？" },
-        { "speaker": "ageha", "face": "smile", "text": "座って。ここ、ハジメっちの席。客席じゃないほう" },
+        { "speaker": "ageha", "face": "smile", "text": "座って。ここ、ハジメっちの席。客席じゃない方" },
         { "speaker": "", "face": "", "text": "並んで座ると、カウンターの向こうの、誰もいない客席がよく見えた。" },
         { "speaker": "ageha", "face": "normal", "text": "震える日だけじゃなくて、震えない日も、ここ座ってていいから" },
         { "speaker": "hajime", "face": "smile", "text": "じゃあ、毎回ここに座る" },
@@ -307,12 +307,12 @@
       "dialogue_id": "ch5_rio_shop_b",
       "comment": "第5章の通いの小会話（BLC08・chapters/ch5-shops.js の chapterFiveShowroom）。Dr.fookah の2階・夜だけ。世界大会の後・博士との勝負の前。恋人でも友人でも読めるよう、呼び方だけ恋人で分ける。",
       "lines": [
-        {"speaker": "", "face": "", "text": "夜の2階。凛想さんは、窓ぎわの椅子で目を閉じて座っていた。"},
+        {"speaker": "", "face": "", "text": "夜の2階。凛想さんは、窓際の椅子で目を閉じて座っていた。"},
         {"speaker": "rio", "face": "normal", "text": "……あ。寝てないよ。鼻を休ませてたの"},
         {"speaker": "hajime", "face": "surprise", "text": "鼻を、休ませる？"},
         {"speaker": "rio", "face": "normal", "text": "一日に嗅げる香りには、上限があるの。超えると、全部同じ匂いになる"},
         {"speaker": "hajime", "face": "normal", "text": "今度の相手は、上限がないかもしれません。機械なので"},
-        {"speaker": "rio", "face": "serious", "text": "ふうん。……なら、上限のあるほうの強さを持っていけばいい"},
+        {"speaker": "rio", "face": "serious", "text": "ふうん。……なら、上限のある方の強さを持っていけばいい"},
         {"speaker": "rio", "face": "normal", "text": "休ませた鼻は、一口目をちゃんと覚えてる。疲れた鼻には、それができないの"},
         {"speaker": "rio", "face": "smug", "text": "覚えなくていいよ。今夜は君も、鼻を休ませて帰って"}
       ]
@@ -354,7 +354,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "前には、湯気の立つ湯のみ。注文書の控えを、膝の上で握ったままだ。"
+          "text": "前には、湯気の立つ湯呑み。注文書の控えを、膝の上で握ったままだ。"
         },
         {
           "speaker": "naru",
@@ -385,7 +385,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "なるは湯のみを両手で包んで、少しずつ飲んでいる。"
+          "text": "なるは湯呑みを両手で包んで、少しずつ飲んでいる。"
         },
         {
           "speaker": "rio",
@@ -410,7 +410,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "…ごちそうさまでした。店に戻ります"
+          "text": "……ごちそうさまでした。店に戻ります"
         },
         {
           "type": "condition",
@@ -421,7 +421,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "なるは湯のみを置いて頭を下げると、早足で階段を降りていった。"
+          "text": "なるは湯呑みを置いて頭を下げると、早足で階段を降りていった。"
         },
         {
           "speaker": "rio",
@@ -448,7 +448,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "机の上の湯のみは、きれいに空になっていた。"
+          "text": "机の上の湯呑みは、きれいに空になっていた。"
         }
       ],
       "branches": {
@@ -487,7 +487,7 @@
       "metadata": { "setting": "なる→凛想の続き（#3468 E案）。第5章のDr.fookahの2階で、お茶の場面（ch5_rio_naru_tea）の後、通いの小会話を2本読んだ次の来店に一度だけ（chapters/ch5-shops.js の extras）。憧れはそのまま、仕事は少し対等に。呼び名（ケムリヤさん／円頓寺さん）は変えず、凛想は好意に気づかない。お茶はご褒美ではなく、仕入れ相談に座って話すためのもの。" },
       "lines": [
         { "speaker": "", "face": "", "text": "2階に上がると、応接の机でなるが注文書を広げていた。" },
-        { "speaker": "", "face": "", "text": "湯のみはまだ出ていない。なるの手には、ペンが握られている。" },
+        { "speaker": "", "face": "", "text": "湯呑みはまだ出ていない。なるの手には、ペンが握られている。" },
         { "speaker": "naru", "face": "normal", "text": "よう、はじめ。今、仕入れの相談中だ" },
         { "speaker": "rio", "face": "normal", "text": "ケムリヤさん。前のバニラ、焼き菓子の台に回してたでしょ" },
         { "speaker": "rio", "face": "normal", "text": "熱が入った後半で、焦げた砂糖に寄らないか。袋の口で何度も確かめてた" },
@@ -499,14 +499,14 @@
         { "speaker": "naru", "face": "serious", "text": "円頓寺さん。今回は、条件を先に言わせてください" },
         { "speaker": "naru", "face": "normal", "text": "甘さは二口目で引いてほしいんです。客が、そこで息をつけるように" },
         { "speaker": "naru", "face": "normal", "text": "後半は焦がしたくない。量は少なめで回して、湿り気は前のロットくらいで" },
-        { "speaker": "", "face": "", "text": "凛想さんは伝票の束を脇へ寄せて、棚から湯のみを二つ出した。" },
+        { "speaker": "", "face": "", "text": "凛想さんは伝票の束を脇へ寄せて、棚から湯呑みを二つ出した。" },
         { "speaker": "rio", "face": "normal", "text": "座って話そう。条件の多い注文は、立ったままだと聞き漏らすから" },
         { "speaker": "", "face": "", "text": "なるは一瞬固まって、それから椅子を引いた。" },
         { "speaker": "rio", "face": "normal", "text": "焦げに寄らないのは、こっちのロット。ただ、甘さの引きは前より早い" },
         { "speaker": "naru", "face": "normal", "text": "早いなら、菓子の台じゃなくてパンの方に回せます" },
         { "speaker": "rio", "face": "smile", "text": "じゃあ、二つに分けて少しずつ入れる。合わなかったら、次の便で戻す" },
         { "speaker": "hajime", "face": "normal", "text": "（……俺が口を挟むところ、どこにもないな）" },
-        { "speaker": "", "face": "", "text": "湯のみが空になるまで、なるは一度も腰を浮かさなかった。" },
+        { "speaker": "", "face": "", "text": "湯呑みが空になるまで、なるは一度も腰を浮かさなかった。" },
         { "speaker": "naru", "face": "normal", "text": "ごちそうさまでした。細かいところは、注文書に書いて送ります" },
         { "type": "condition", "condition_type": "lover", "char_id": "rio", "next_true": "naru_lover" },
         { "speaker": "", "face": "", "text": "なるは頭を下げて、階段を降りていった。足音は、前よりゆっくりだった。" },
@@ -521,11 +521,11 @@
           { "speaker": "naru", "face": "smile", "text": "……はじめ。円頓寺さんの仕事、ちゃんと見とけよ" }
         ],
         "friend": [
-          { "speaker": "hajime", "face": "smile", "text": "……仕事の顔でしたね、なるさん" },
+          { "speaker": "hajime", "face": "smile", "text": "……仕事の顔でしたね、なる" },
           { "speaker": "rio", "face": "smile", "text": "うん。いい取引先だよ" }
         ],
         "lover": [
-          { "speaker": "hajime", "face": "smile", "text": "……仕事の顔でしたね、なるさん" },
+          { "speaker": "hajime", "face": "smile", "text": "……仕事の顔でしたね、なる" },
           { "speaker": "rio", "face": "smile", "text": "うん。君の感想と同じくらい、読みがいがある" }
         ]
       }
@@ -547,7 +547,7 @@
         { "speaker": "", "face": "", "text": "菓子の皿に、焼き色の薄い端が残っていた。" },
         { "speaker": "naru", "face": "normal", "text": "味見して。そこ、切ると毎回余るんだ" },
         { "speaker": "hajime", "face": "normal", "text": "……こっちの方が、粉の匂いがする" },
-        { "speaker": "naru", "face": "normal", "text": "そう！　そのために焼いてんのに、誰も取らねえ" },
+        { "speaker": "naru", "face": "normal", "text": "そう！ そのために焼いてんのに、誰も取らねえ" },
         { "speaker": "hajime", "face": "normal", "text": "先に出したらいいじゃん。俺は欲しい" },
         { "speaker": "naru", "face": "smile", "text": "いいな。皿の真ん中に置いてみるか" }
       ]
@@ -569,8 +569,8 @@
         { "speaker": "", "face": "", "text": "袋の端を、なるが指先でつまんだ。" },
         { "speaker": "naru", "face": "normal", "text": "バニラって書くと、どの店でもバニラだろ" },
         { "speaker": "hajime", "face": "normal", "text": "でも、なるの店で頼むと少し違うよね" },
-        { "speaker": "naru", "face": "normal", "text": "うん。箱を開けたときより、焼いた方に寄せてる" },
-        { "speaker": "hajime", "face": "normal", "text": "俺なら、注文するときに知りたいな" },
+        { "speaker": "naru", "face": "normal", "text": "うん。箱を開けた時より、焼いた方に寄せてる" },
+        { "speaker": "hajime", "face": "normal", "text": "俺なら、注文する時に知りたいな" },
         { "speaker": "naru", "face": "smile", "text": "じゃあ口で言うか。好きなやつは聞いてくれる" }
       ]
     },
@@ -578,7 +578,7 @@
       "dialogue_id": "ch5_naru_shop_h",
       "lines": [
         { "speaker": "", "face": "", "text": "カウンターには、紙のおしぼりが並んでいた。" },
-        { "speaker": "naru", "face": "normal", "text": "開け口どっちに向ける？　客の右？" },
+        { "speaker": "naru", "face": "normal", "text": "開け口どっちに向ける？ 客の右？" },
         { "speaker": "hajime", "face": "normal", "text": "右にすると、俺は楽だけど" },
         { "speaker": "naru", "face": "normal", "text": "俺もそう思ってた。左手の客が、毎回ひっくり返すまでな" },
         { "speaker": "hajime", "face": "normal", "text": "じゃあ、こっちは端を折って分かるようにしよう" },
@@ -588,11 +588,11 @@
     {
       "dialogue_id": "ch5_minto_shop_d",
       "lines": [
-        { "speaker": "", "face": "", "text": "ぺぱーみんとの窓辺に、小さな鏡が置いてあった。" },
+        { "speaker": "", "face": "", "text": "PEPPERMINTの窓辺に、小さな鏡が置いてあった。" },
         { "speaker": "minto", "face": "smile", "text": "そこ、みんとのツノが映る角度なんです♡" },
-        { "speaker": "hajime", "face": "normal", "text": "注文を取るときに、見えるんですね" },
+        { "speaker": "hajime", "face": "normal", "text": "注文を取る時に、見えるんだね" },
         { "speaker": "minto", "face": "normal", "text": "うん。顔を上げる前に、来たって分かるでしょ？" },
-        { "speaker": "hajime", "face": "normal", "text": "……先にツノに会釈しそうです" },
+        { "speaker": "hajime", "face": "normal", "text": "……先にツノに会釈しそう" },
         { "speaker": "minto", "face": "smile", "text": "あら。ツノだけ接客してもらおっかな♪" }
       ]
     },
@@ -601,10 +601,10 @@
       "lines": [
         { "speaker": "", "face": "", "text": "みんとはメニューの端に指を置いた。" },
         { "speaker": "minto", "face": "smile", "text": "これ、青と緑。どっちに見えます？" },
-        { "speaker": "hajime", "face": "normal", "text": "外から見て、緑だと思ってました" },
+        { "speaker": "hajime", "face": "normal", "text": "外から見て、緑だと思ってた" },
         { "speaker": "minto", "face": "normal", "text": "席に着くと、光で青が強くなるんです" },
-        { "speaker": "hajime", "face": "normal", "text": "同じメニューなのに、得した気分です" },
-        { "speaker": "minto", "face": "smile", "text": "でしょ？　どっちの色で覚えて帰るか、内緒で教えてね♡" }
+        { "speaker": "hajime", "face": "normal", "text": "同じメニューなのに、得した気分だな" },
+        { "speaker": "minto", "face": "smile", "text": "でしょ？ どっちの色で覚えて帰るか、内緒で教えてね♡" }
       ]
     },
     {
@@ -623,7 +623,7 @@
       "lines": [
         { "speaker": "", "face": "", "text": "テーブルに「本日のおすすめ」の札が立っていた。" },
         { "speaker": "minto", "face": "smile", "text": "今日は、おすすめに丸を付けてないんです♡" },
-        { "speaker": "hajime", "face": "normal", "text": "珍しいですね。何を頼めば？" },
+        { "speaker": "hajime", "face": "normal", "text": "珍しいね。何を頼めばいい？" },
         { "speaker": "minto", "face": "normal", "text": "迷ってくれたら、みんとが話しかけられるの" },
         { "speaker": "hajime", "face": "normal", "text": "……今、乗せられたな" },
         { "speaker": "minto", "face": "smile", "text": "はいっ。じゃあ、まず甘いのから聞かせてください♪" }
@@ -634,10 +634,10 @@
       "lines": [
         { "speaker": "", "face": "", "text": "カウンターでみんとが、包み紙の角を揃えていた。" },
         { "speaker": "minto", "face": "normal", "text": "これ、葉っぱの向きを合わせて折るの" },
-        { "speaker": "hajime", "face": "normal", "text": "面倒なのに、毎回揃えるんですか？" },
+        { "speaker": "hajime", "face": "normal", "text": "面倒なのに、毎回揃えるの？" },
         { "speaker": "minto", "face": "smile", "text": "ふふ、開ける人の方に、葉っぱが向くのがいいんです♡" },
         { "speaker": "hajime", "face": "normal", "text": "じゃあ、俺からは逆さまに見えるはずか" },
-        { "speaker": "minto", "face": "smile", "text": "正解♪　だからそっちに渡すときは、回します" }
+        { "speaker": "minto", "face": "smile", "text": "正解♪ だからそっちに渡す時は、回します" }
       ]
     },
     {
@@ -654,9 +654,9 @@
     {
       "dialogue_id": "ch5_rio_shop_e",
       "lines": [
-        { "speaker": "", "face": "", "text": "凛想が窓を少しだけ開けた。" },
+        { "speaker": "", "face": "", "text": "凛想さんが窓を少しだけ開けた。" },
         { "speaker": "rio", "face": "normal", "text": "じゃあ、どっちの試香紙から嗅ぐ？" },
-        { "speaker": "hajime", "face": "normal", "text": "手前ので。あ、風が来た" },
+        { "speaker": "hajime", "face": "normal", "text": "手前ので。あ、風が来ました" },
         { "speaker": "rio", "face": "normal", "text": "そう。風下だと、開ける前から二枚とも同じ匂い" },
         { "speaker": "hajime", "face": "normal", "text": "俺、嗅ぐ順番より座る位置を考えた方がいいですね" },
         { "speaker": "rio", "face": "smile", "text": "うん。知らずに採った感想も残すよ。風あり、って" }
@@ -665,7 +665,7 @@
     {
       "dialogue_id": "ch5_rio_shop_f",
       "lines": [
-        { "speaker": "", "face": "", "text": "ラベルのない袋を、凛想は裏側から開けた。" },
+        { "speaker": "", "face": "", "text": "ラベルのない袋を、凛想さんは裏側から開けた。" },
         { "speaker": "rio", "face": "normal", "text": "色で名前を当てようとしたことある？" },
         { "speaker": "hajime", "face": "normal", "text": "あります。ぶどうで外しました" },
         { "speaker": "rio", "face": "normal", "text": "いい外れ。葉の色じゃ、名前より工場の癖が出る" },
@@ -676,11 +676,11 @@
     {
       "dialogue_id": "ch5_rio_shop_g",
       "lines": [
-        { "speaker": "", "face": "", "text": "凛想は検品表の端を折って置いた。" },
+        { "speaker": "", "face": "", "text": "凛想さんは検品表の端を折って置いた。" },
         { "speaker": "rio", "face": "normal", "text": "はじめての人の感想、何から聞く？" },
-        { "speaker": "hajime", "face": "normal", "text": "俺は、吸いやすかったか聞くかな" },
+        { "speaker": "hajime", "face": "normal", "text": "俺は、吸いやすかったか聞くと思います" },
         { "speaker": "rio", "face": "normal", "text": "よかった。差が分かったか、から聞きそうになってた" },
-        { "speaker": "hajime", "face": "normal", "text": "分からなくても、おいしいときあります" },
+        { "speaker": "hajime", "face": "normal", "text": "分からなくても、おいしい時があります" },
         { "speaker": "rio", "face": "smile", "text": "それも一行もらわないとね。差は空欄のままで" }
       ]
     },
@@ -709,7 +709,7 @@
     {
       "dialogue_id": "ch5_samechan_shop_e",
       "lines": [
-        { "speaker": "", "face": "", "text": "側近がコロちゃんを棚の端から下ろした。" },
+        { "speaker": "", "face": "", "text": "サメちゃんが右手のコロちゃんを席の方へ向けた。" },
         { "speaker": "samechan", "face": "normal", "text": "そっちはお主の席じゃ。そろそろ本人に覚えさせねば" },
         { "speaker": "hajime", "face": "normal", "text": "俺、そこに座るんですか？" },
         { "speaker": "samechan", "face": "normal", "text": "いや、そこからならコロちゃんと目が合うというだけじゃ" },
@@ -724,7 +724,7 @@
         { "speaker": "samechan", "face": "normal", "text": "それを裏返すと、席を片づけておる合図なのじゃ" },
         { "speaker": "hajime", "face": "normal", "text": "口を閉じてる方が、準備中なんですね" },
         { "speaker": "samechan", "face": "normal", "text": "逆じゃ。口を開けておる間は、まだ食事中じゃ" },
-        { "speaker": "hajime", "face": "normal", "text": "……食べ終わったら、客が座れるんだ" },
+        { "speaker": "hajime", "face": "normal", "text": "……食べ終わったら、客が座れるんですね" },
         { "speaker": "samechan", "face": "smile", "text": "うむ。あとは吸い口を並べたら、お主の番じゃ" }
       ]
     },
@@ -732,11 +732,11 @@
       "dialogue_id": "ch5_samechan_shop_g",
       "lines": [
         { "speaker": "", "face": "", "text": "小さな水差しに、氷が浮いていた。" },
-        { "speaker": "samechan", "face": "normal", "text": "店の奥まで運ぶとき、氷が鳴るか聞いておくれ" },
+        { "speaker": "samechan", "face": "normal", "text": "店の奥まで運ぶ時、氷が鳴るか聞いておくれ" },
         { "speaker": "hajime", "face": "normal", "text": "……鳴りました。途中の段で" },
-        { "speaker": "samechan", "face": "normal", "text": "やはりの。側近だけ音がせんのは、なぜじゃ" },
-        { "speaker": "hajime", "face": "normal", "text": "今、段の手前で水差しだけ持ち上げてました" },
-        { "speaker": "samechan", "face": "smile", "text": "なるほど。わしも水だけ先に泳がせればよいのじゃな" }
+        { "speaker": "samechan", "face": "normal", "text": "やはりの。そっと運んでも鳴ってしまうのは、なぜじゃ" },
+        { "speaker": "hajime", "face": "normal", "text": "今、段の手前で水差しが揺れてました" },
+        { "speaker": "samechan", "face": "smile", "text": "なるほど。段の手前で水差しだけ持ち上げればよいのじゃな" }
       ]
     },
     {
@@ -744,7 +744,7 @@
       "lines": [
         { "speaker": "", "face": "", "text": "サメちゃんが、ホースを二通りに巻いてみせた。" },
         { "speaker": "samechan", "face": "normal", "text": "こっちは尾が長い。どちらが取りやすいかの" },
-        { "speaker": "hajime", "face": "normal", "text": "長い方かな。すぐ手が届く" },
+        { "speaker": "hajime", "face": "normal", "text": "長い方ですかね。すぐ手が届きます" },
         { "speaker": "samechan", "face": "normal", "text": "机に肘を置いたままでも届くのう" },
         { "speaker": "hajime", "face": "normal", "text": "手が伸びる前に、煙の方を見ていられます" },
         { "speaker": "samechan", "face": "smile", "text": "なら、お主の席にはこっちじゃ。尾まで見て帰るがよい" }
@@ -758,13 +758,13 @@
         { "speaker": "hajime", "face": "normal", "text": "これ、思ったよりおとなしい音だね" },
         { "speaker": "ageha", "face": "normal", "text": "リボン結んだら、チリって余韻だけになった" },
         { "speaker": "hajime", "face": "normal", "text": "店の曲の途中でも鳴らせそう" },
-        { "speaker": "ageha", "face": "smile", "text": "そうそう！　うちだけ振り向けばいいんだもん" }
+        { "speaker": "ageha", "face": "smile", "text": "そうそう！ うちだけ振り向けばいいんだもん" }
       ]
     },
     {
       "dialogue_id": "ch5_ageha_shop_e",
       "lines": [
-        { "speaker": "", "face": "", "text": "白いグミの皿から、あげはがひとつ摘まんだ。" },
+        { "speaker": "", "face": "", "text": "白いグミの皿から、あげはが一つ摘まんだ。" },
         { "speaker": "ageha", "face": "normal", "text": "うち、白いの先に食べる派。ハジメっちは？" },
         { "speaker": "hajime", "face": "normal", "text": "俺、最後に残すかも" },
         { "speaker": "ageha", "face": "surprise", "text": "えっ、残ってる間ずっと気になんない？" },
@@ -777,8 +777,8 @@
       "lines": [
         { "speaker": "", "face": "", "text": "メニューに、丸い空欄が一つあった。" },
         { "speaker": "ageha", "face": "normal", "text": "そこ、まだメニューの名前決まってなくて" },
-        { "speaker": "hajime", "face": "normal", "text": "名前なくても頼めます？" },
-        { "speaker": "ageha", "face": "smile", "text": "もちろん！　指で、この丸って言ってくれたら出す" },
+        { "speaker": "hajime", "face": "normal", "text": "名前なくても頼めるの？" },
+        { "speaker": "ageha", "face": "smile", "text": "もちろん！ 指で、この丸って言ってくれたら出す" },
         { "speaker": "hajime", "face": "normal", "text": "それ、もう名前が丸になりそう" },
         { "speaker": "ageha", "face": "smile", "text": "やば。いちばん呼びやすいじゃん、丸" }
       ]
@@ -791,7 +791,7 @@
         { "speaker": "hajime", "face": "normal", "text": "近くないけど、隣の声はよく聞こえる" },
         { "speaker": "ageha", "face": "normal", "text": "よし。曲は好きだけど、話してる子の口も見たいし" },
         { "speaker": "hajime", "face": "normal", "text": "音量は同じ？" },
-        { "speaker": "ageha", "face": "smile", "text": "同じ！　壁がいい感じに間に入ってくれたわ" }
+        { "speaker": "ageha", "face": "smile", "text": "同じ！ 壁がいい感じに間に入ってくれたわ" }
       ]
     },
     {
@@ -800,15 +800,15 @@
         { "speaker": "", "face": "", "text": "明るいテーブルに、色の違うストローが並んだ。" },
         { "speaker": "ageha", "face": "normal", "text": "ハジメっち、うちの選んだやつどれだと思う？" },
         { "speaker": "hajime", "face": "normal", "text": "ピンク。あ、でも全部ピンクだね" },
-        { "speaker": "ageha", "face": "smile", "text": "正解！　いちばんピカっとするの選んだら全部だった" },
+        { "speaker": "ageha", "face": "smile", "text": "正解！ いちばんピカっとするの選んだら全部だった" },
         { "speaker": "hajime", "face": "normal", "text": "じゃあ、俺は曲がってる方で" },
-        { "speaker": "ageha", "face": "smile", "text": "あ、それ昨日うちが曲げたやつ！　よく見つけたね" }
+        { "speaker": "ageha", "face": "smile", "text": "あ、それ昨日うちが曲げたやつ！ よく見つけたね" }
       ]
     },
     {
       "dialogue_id": "ch5_adam_repeat",
       "lines": [
-        { "speaker": "", "face": "", "text": "エデンの棚で、赤い箱が一つだけ横を向いていた。" },
+        { "speaker": "", "face": "", "text": "EDENの棚で、赤い箱が一つだけ横を向いていた。" },
         { "speaker": "adam", "face": "normal", "text": "同志よ。なぜあれだけ横か分かるか" },
         { "speaker": "hajime", "face": "normal", "text": "ラベルが剥がれたんですか？" },
         { "speaker": "adam", "face": "normal", "text": "裏の方が、林檎の絵が大きい" },
@@ -820,8 +820,8 @@
       "dialogue_id": "ch5_adam_repeat_b",
       "lines": [
         { "speaker": "", "face": "", "text": "アダムは開いた袋の口を、指で閉じていた。" },
-        { "speaker": "adam", "face": "normal", "text": "同じ林檎でも、開けた瞬間は驚くものだ" },
-        { "speaker": "hajime", "face": "normal", "text": "いつも吸ってても？" },
+        { "speaker": "adam", "face": "normal", "text": "同じダブルアップルでも、開けた瞬間は驚くものだ" },
+        { "speaker": "hajime", "face": "normal", "text": "いつも吸っててもですか？" },
         { "speaker": "adam", "face": "normal", "text": "ああ。待ってる間に、忘れるとこがある" },
         { "speaker": "hajime", "face": "normal", "text": "今ので何を思い出したんです？" },
         { "speaker": "adam", "face": "normal", "text": "……鼻に近づけすぎると、くしゃみが出ることだ" }
@@ -833,7 +833,7 @@
         { "speaker": "", "face": "", "text": "皿の上に、短いトングと長いトングがあった。" },
         { "speaker": "adam", "face": "normal", "text": "好きな方を取れ。俺は残った方を使う" },
         { "speaker": "hajime", "face": "normal", "text": "俺、持ちやすい方でいいんですか？" },
-        { "speaker": "adam", "face": "normal", "text": "俺にとっては、どちらも林檎に通じる" },
+        { "speaker": "adam", "face": "normal", "text": "俺にとっては、どちらもダブルアップルに通じる" },
         { "speaker": "hajime", "face": "normal", "text": "じゃあ短い方。俺は下がよく見えます" },
         { "speaker": "adam", "face": "smile", "text": "承知した。長い方なら、俺は手を引かずに済む" }
       ]
@@ -842,10 +842,10 @@
       "dialogue_id": "ch5_adam_repeat_d",
       "lines": [
         { "speaker": "", "face": "", "text": "窓際の椅子に、袋がすっぽり掛かっていた。" },
-        { "speaker": "adam", "face": "normal", "text": "あれは林檎を買いに行くときの袋だ" },
+        { "speaker": "adam", "face": "normal", "text": "あれはダブルアップルを仕入れに行く時の袋だ" },
         { "speaker": "hajime", "face": "normal", "text": "レジに置いとく方が、忘れなさそうですけど" },
         { "speaker": "adam", "face": "normal", "text": "忘れても、椅子が覚えている。座ると音がする" },
-        { "speaker": "hajime", "face": "normal", "text": "……座ってから気づくんだ" },
+        { "speaker": "hajime", "face": "normal", "text": "……座ってから気づくんですね" },
         { "speaker": "adam", "face": "smile", "text": "ああ。席から立つ理由ができるという寸法だ" }
       ]
     },
@@ -853,7 +853,7 @@
       "dialogue_id": "ch5_adam_repeat_e",
       "lines": [
         { "speaker": "", "face": "", "text": "アダムは水を注いで、皿を手前に寄せた。" },
-        { "speaker": "adam", "face": "normal", "text": "水と林檎、どっちから置くべきだと思う" },
+        { "speaker": "adam", "face": "normal", "text": "水とダブルアップル、どっちから置くべきだと思う" },
         { "speaker": "hajime", "face": "normal", "text": "喉が渇いてたら水ですね" },
         { "speaker": "adam", "face": "normal", "text": "俺の店でもか" },
         { "speaker": "hajime", "face": "normal", "text": "はい。渇いてたら、吸う前に飲みたいです" },
@@ -867,7 +867,7 @@
         { "speaker": "adam", "face": "normal", "text": "箱は重ねられる。袋は負けて潰れる" },
         { "speaker": "hajime", "face": "normal", "text": "何が入ってるんです？" },
         { "speaker": "adam", "face": "normal", "text": "葉だ。……そこ、底から持ってくれ" },
-        { "speaker": "hajime", "face": "normal", "text": "あ、意外とずっしりする" },
+        { "speaker": "hajime", "face": "normal", "text": "あ、意外とずっしりしますね" },
         { "speaker": "adam", "face": "smile", "text": "だろう。袋への見立ては、持つまでできん" }
       ]
     },
@@ -885,8 +885,8 @@
     {
       "dialogue_id": "ch5_adam_repeat_h",
       "lines": [
-        { "speaker": "", "face": "", "text": "アダムは薄い紙を、林檎の箱の隙間に入れた。" },
-        { "speaker": "adam", "face": "normal", "text": "蓋を締めると鳴る。空けていると鳴らん" },
+        { "speaker": "", "face": "", "text": "アダムは薄い紙を、ダブルアップルの箱の隙間に入れた。" },
+        { "speaker": "adam", "face": "normal", "text": "蓋を閉めると鳴る。開けていると鳴らん" },
         { "speaker": "hajime", "face": "normal", "text": "紙が擦れる音ですね" },
         { "speaker": "adam", "face": "normal", "text": "ああ。棚の奥でも閉めたと分かる" },
         { "speaker": "hajime", "face": "normal", "text": "目で見えなくても安心ですね" },
@@ -922,7 +922,7 @@
         { "speaker": "kumicho", "face": "normal", "text": "熱いうちは、指がこう逃げやす" },
         { "speaker": "hajime", "face": "normal", "text": "持つのを代わりましょうか" },
         { "speaker": "kumicho", "face": "normal", "text": "いい手だがね、客の前じゃ湯を止める方が早い" },
-        { "speaker": "hajime", "face": "normal", "text": "いったん置いて、持ち直せばいいのか" },
+        { "speaker": "hajime", "face": "normal", "text": "いったん置いて、持ち直せばいいんですね" },
         { "speaker": "kumicho", "face": "smile", "text": "へい。手が滑らねえうちなら、茶も待ってくれやす" }
       ]
     },
@@ -944,7 +944,7 @@
         { "speaker": "kumicho", "face": "normal", "text": "あんちゃん、倒しそうになったらそれ使いなせえ" },
         { "speaker": "hajime", "face": "normal", "text": "手が盆に当たりにくいですね" },
         { "speaker": "kumicho", "face": "normal", "text": "そう。淹れる側は背が高い方が楽なんでさ" },
-        { "speaker": "hajime", "face": "normal", "text": "飲む方は、持つまで分からないんだな" },
+        { "speaker": "hajime", "face": "normal", "text": "飲む方は、持つまで分からないんですね" },
         { "speaker": "kumicho", "face": "smile", "text": "へい。盆のそばで、客に選んでもらいやす" }
       ]
     },
@@ -977,7 +977,7 @@
         { "speaker": "kumicho", "face": "normal", "text": "戸を閉める前に、その石を一度見るんでさ" },
         { "speaker": "hajime", "face": "normal", "text": "何かの目印ですか？" },
         { "speaker": "kumicho", "face": "normal", "text": "石が通りへ出てたら、開けっぱなしを誰かが直した証拠" },
-        { "speaker": "hajime", "face": "normal", "text": "閉じてくれた人がいるって分かるんだ" },
+        { "speaker": "hajime", "face": "normal", "text": "閉じてくれた人がいるって分かるんですね" },
         { "speaker": "kumicho", "face": "smile", "text": "へい。おかげで覚えてらんない日でも、礼が言えやす" }
       ]
     },
@@ -987,7 +987,7 @@
         { "speaker": "", "face": "", "text": "ターンテーブルの横に、白い糸が落ちていた。" },
         { "speaker": "kuraudo", "face": "normal", "text": "……針についたら、曲の頭で分かる" },
         { "speaker": "hajime", "face": "normal", "text": "音が割れるんですか？" },
-        { "speaker": "kuraudo", "face": "normal", "text": "……かすれる。いい音のときもあるけど" },
+        { "speaker": "kuraudo", "face": "normal", "text": "……かすれる。いい音の時もあるけど" },
         { "speaker": "hajime", "face": "normal", "text": "今日は取りますか" },
         { "speaker": "kuraudo", "face": "smile", "text": "……うん。この曲は、澄んでた方が好き" }
       ]
@@ -1000,7 +1000,7 @@
         { "speaker": "hajime", "face": "normal", "text": "かけたら思い出しそうですね" },
         { "speaker": "kuraudo", "face": "normal", "text": "……続きは分かる。途中から何度も聴いたから" },
         { "speaker": "hajime", "face": "normal", "text": "じゃあ、今日は頭からどうです？" },
-        { "speaker": "kuraudo", "face": "smile", "text": "……うん。入り口の音も、ちゃんと聞く" }
+        { "speaker": "kuraudo", "face": "smile", "text": "……うん。入口の音も、ちゃんと聞く" }
       ]
     },
     {
@@ -1010,7 +1010,7 @@
         { "speaker": "kuraudo", "face": "normal", "text": "……線から下は、今使ってる分" },
         { "speaker": "hajime", "face": "normal", "text": "減ったら線も下げるんです？" },
         { "speaker": "kuraudo", "face": "normal", "text": "……下げない。前の箱の減り方、覚えておきたくて" },
-        { "speaker": "hajime", "face": "normal", "text": "それで箱を取ってあるんだ" },
+        { "speaker": "hajime", "face": "normal", "text": "それで箱を取ってあるんですね" },
         { "speaker": "kuraudo", "face": "smile", "text": "……うん。たまに開ける。紙がまだ甘い" }
       ]
     },
@@ -1019,8 +1019,8 @@
       "lines": [
         { "speaker": "", "face": "", "text": "店のスピーカーの間に、小さな時計があった。" },
         { "speaker": "kuraudo", "face": "normal", "text": "……秒針が目に入ると、曲が短く感じる" },
-        { "speaker": "hajime", "face": "normal", "text": "あ、目が待っちゃうからかな" },
-        { "speaker": "kuraudo", "face": "normal", "text": "……ボクは途中の音を抜かしてしまう" },
+        { "speaker": "hajime", "face": "normal", "text": "あ、目が待っちゃうからですかね" },
+        { "speaker": "kuraudo", "face": "normal", "text": "……俺は途中の音を抜かしてしまう" },
         { "speaker": "hajime", "face": "normal", "text": "時計、横にできますよ" },
         { "speaker": "kuraudo", "face": "smile", "text": "……ありがとう。これなら音から帰ってこられる" }
       ]
@@ -1031,7 +1031,7 @@
         { "speaker": "", "face": "", "text": "細い照明が、テーブルの端だけを照らしていた。" },
         { "speaker": "kuraudo", "face": "normal", "text": "……席の奥に置くと、赤が黒くなる" },
         { "speaker": "hajime", "face": "normal", "text": "何の赤ですか？" },
-        { "speaker": "kuraudo", "face": "normal", "text": "……ボクのメニュー。同じページなのに違う" },
+        { "speaker": "kuraudo", "face": "normal", "text": "……俺のメニュー。同じページなのに違う" },
         { "speaker": "hajime", "face": "normal", "text": "俺、今の暗い方も好きです" },
         { "speaker": "kuraudo", "face": "smile", "text": "……そう。じゃあ、そのまま選んで" }
       ]
@@ -1050,11 +1050,11 @@
     {
       "dialogue_id": "ch5_kuraudo_repeat_g",
       "lines": [
-        { "speaker": "", "face": "", "text": "灰皿の隣に、撥が置きっぱなしだった。" },
+        { "speaker": "", "face": "", "text": "灰皿の隣に、ピックが置きっぱなしだった。" },
         { "speaker": "kuraudo", "face": "normal", "text": "……片づける場所、あとで分からなくなる" },
         { "speaker": "hajime", "face": "normal", "text": "そこが置きやすかったんですね" },
         { "speaker": "kuraudo", "face": "normal", "text": "……手が止まった場所。今、思い出した" },
-        { "speaker": "hajime", "face": "normal", "text": "じゃあ、練習の続きもそこから？" },
+        { "speaker": "hajime", "face": "normal", "text": "じゃあ、練習の続きもそこからですか？" },
         { "speaker": "kuraudo", "face": "smile", "text": "……うん。指を置くとこまで覚えてる" }
       ]
     },
@@ -1062,8 +1062,8 @@
       "dialogue_id": "ch5_kuraudo_repeat_h",
       "lines": [
         { "speaker": "", "face": "", "text": "クラウドが、新しい紙に短い線を引いた。" },
-        { "speaker": "kuraudo", "face": "normal", "text": "……無音の所。今、何か聞こえた？" },
-        { "speaker": "hajime", "face": "normal", "text": "扉の向こうで、誰かが靴を引いた音" },
+        { "speaker": "kuraudo", "face": "normal", "text": "……無音のところ。今、何か聞こえた？" },
+        { "speaker": "hajime", "face": "normal", "text": "扉の向こうで、誰かが靴を引いた音です" },
         { "speaker": "kuraudo", "face": "normal", "text": "……曲の音が途切れると、外の音が急に近い" },
         { "speaker": "hajime", "face": "normal", "text": "そこ、また聴けます？" },
         { "speaker": "kuraudo", "face": "smile", "text": "……曲は戻せる。外のは、一度きりだね" }
@@ -1077,7 +1077,7 @@
         { "speaker": "hajime", "face": "normal", "text": "ランプを寄せる？" },
         { "speaker": "tsumugi", "face": "normal", "text": "いえ。暗い方が楽そうに座る方もいるので" },
         { "speaker": "hajime", "face": "normal", "text": "じゃあ、札だけ見えるようにしとこうか" },
-        { "speaker": "tsumugi", "face": "smile", "text": "はい。読むときだけ、明るい席ですね" }
+        { "speaker": "tsumugi", "face": "smile", "text": "はい。読む時だけ、明るい席ですね" }
       ]
     },
     {
@@ -1106,7 +1106,7 @@
       "dialogue_id": "ch5_tonari_tsumugi_d",
       "lines": [
         { "speaker": "", "face": "", "text": "小さなトレーが、手前に引き出してあった。" },
-        { "speaker": "tsumugi", "face": "normal", "text": "はじめさん、ご注文を取るとき、どこを見てますか" },
+        { "speaker": "tsumugi", "face": "normal", "text": "はじめさん、ご注文を取る時、どこを見てますか" },
         { "speaker": "hajime", "face": "normal", "text": "最初は、メニューかな" },
         { "speaker": "tsumugi", "face": "normal", "text": "……私、トレーの揺れを見ちゃうんです" },
         { "speaker": "hajime", "face": "normal", "text": "先に置ける場所を決めたら、どうかな" },
@@ -1153,14 +1153,14 @@
         { "speaker": "tsumugi", "face": "normal", "text": "……四角いのに、底は丸いんです" },
         { "speaker": "hajime", "face": "normal", "text": "真ん中の跡は、丸しか残らないね" },
         { "speaker": "tsumugi", "face": "normal", "text": "その丸のところだけ、布が引っかからないです" },
-        { "speaker": "hajime", "face": "normal", "text": "磨くときも、そこから回したら楽そう" },
+        { "speaker": "hajime", "face": "normal", "text": "磨く時も、そこから回したら楽そう" },
         { "speaker": "tsumugi", "face": "smile", "text": "……形を見てると、手が先に動くことがあるんですね" }
       ]
     },
     {
       "dialogue_id": "ch5_tonari_sumi",
       "lines": [
-        { "speaker": "", "face": "", "text": "スミさんは、伏せてあったグラスをひとつ起こした。" },
+        { "speaker": "", "face": "", "text": "スミさんは、伏せてあったグラスを一つ起こした。" },
         { "speaker": "sumi", "face": "normal", "text": "はじめ、洗った印なら伏せとけ" },
         { "speaker": "hajime", "face": "normal", "text": "立てた方が乾くかと思って" },
         { "speaker": "sumi", "face": "normal", "text": "棚に上げる前まではな。ここでは口を触らねえ" },
@@ -1183,10 +1183,10 @@
       "dialogue_id": "ch5_tonari_sumi_c",
       "lines": [
         { "speaker": "", "face": "", "text": "スミさんは水差しを、通路の外へ寄せた。" },
-        { "speaker": "sumi", "face": "normal", "text": "はじめ、いつもの所に手を伸ばしたな" },
+        { "speaker": "sumi", "face": "normal", "text": "はじめ、いつものところに手を伸ばしたな" },
         { "speaker": "hajime", "face": "normal", "text": "……はい。前までそこにあったので" },
         { "speaker": "sumi", "face": "normal", "text": "客が上着を置けるように動かした。悪くないぞ" },
-        { "speaker": "hajime", "face": "normal", "text": "俺の手が、まだ覚えてないだけか" },
+        { "speaker": "hajime", "face": "normal", "text": "俺の手が、まだ覚えてないだけですかね" },
         { "speaker": "sumi", "face": "smile", "text": "ああ。慣れるまで動かしていい。通路は空けとけ" }
       ]
     },
@@ -1198,7 +1198,7 @@
         { "speaker": "hajime", "face": "normal", "text": "そんなに小さかったんですね" },
         { "speaker": "sumi", "face": "normal", "text": "ああ。外して初めて、支えてたと分かる" },
         { "speaker": "hajime", "face": "normal", "text": "新しいのはもう入れました？" },
-        { "speaker": "sumi", "face": "smile", "text": "入れた。今度お前が外すときは、下から持て" }
+        { "speaker": "sumi", "face": "smile", "text": "入れた。今度お前が外す時は、下から持て" }
       ]
     },
     {
@@ -1215,11 +1215,11 @@
     {
       "dialogue_id": "ch5_tonari_sumi_f",
       "lines": [
-        { "speaker": "", "face": "", "text": "スミさんは伝票を一枚、風の当たらない所へ移した。" },
+        { "speaker": "", "face": "", "text": "スミさんは伝票を一枚、風の当たらないところへ移した。" },
         { "speaker": "sumi", "face": "normal", "text": "はじめ、お前ならどっちを先に片づける" },
         { "speaker": "hajime", "face": "normal", "text": "空いてる席からやります" },
         { "speaker": "sumi", "face": "normal", "text": "空いてても、忘れ物があったらそれは別だ" },
-        { "speaker": "hajime", "face": "normal", "text": "あ、これ。ハンカチ" },
+        { "speaker": "hajime", "face": "normal", "text": "あ、これ。ハンカチですね" },
         { "speaker": "sumi", "face": "smile", "text": "伝票の下にしろ。誰が見つけても席が分かる" }
       ]
     },
@@ -1229,7 +1229,7 @@
         { "speaker": "", "face": "", "text": "氷の箱を閉じる前に、スミさんが手を止めた。" },
         { "speaker": "sumi", "face": "normal", "text": "今の音、最後に何が鳴った" },
         { "speaker": "hajime", "face": "normal", "text": "氷が、蓋に挟まる音ですか" },
-        { "speaker": "sumi", "face": "normal", "text": "そうだ。空けとくと次のやつが困る" },
+        { "speaker": "sumi", "face": "normal", "text": "そうだ。開けとくと次のやつが困る" },
         { "speaker": "hajime", "face": "normal", "text": "すぐ拭けるところに布、置いときます" },
         { "speaker": "sumi", "face": "smile", "text": "おう。手が濡れる仕事は、次の手を先に考えろ" }
       ]
@@ -1274,7 +1274,7 @@
         { "speaker": "master_hookah", "face": "normal", "text": "土の色は、こうして見ると違うね" },
         { "speaker": "hajime", "face": "normal", "text": "薄い青に見えます" },
         { "speaker": "master_hookah", "face": "normal", "text": "私の目には白い。同じ場所でも、君の窓が間にある" },
-        { "speaker": "hajime", "face": "normal", "text": "近くで見ると違う色なんだな" },
+        { "speaker": "hajime", "face": "normal", "text": "近くで見ると違う色なんですね" },
         { "speaker": "master_hookah", "face": "smile", "text": "そう。今見えた青も、せっかくだから覚えておこう" }
       ]
     },
@@ -1296,7 +1296,7 @@
         { "speaker": "master_hookah", "face": "normal", "text": "この厚紙、匂いは持っていかないね" },
         { "speaker": "hajime", "face": "normal", "text": "袋より、外の紙ですか？" },
         { "speaker": "master_hookah", "face": "normal", "text": "そう。香りを思い出していたら、もう一枚紙があった" },
-        { "speaker": "hajime", "face": "normal", "text": "葉と同じ匂いがすると思ったんだ" },
+        { "speaker": "hajime", "face": "normal", "text": "葉と同じ匂いがすると思ったんですね" },
         { "speaker": "master_hookah", "face": "smile", "text": "私の鼻より、先に手が覚えていたらしい" }
       ]
     },
@@ -1307,7 +1307,7 @@
         { "speaker": "master_hookah", "face": "normal", "text": "この影、何に見えるかな" },
         { "speaker": "hajime", "face": "normal", "text": "蓋……ですか？" },
         { "speaker": "master_hookah", "face": "normal", "text": "器の影だ。もう少しこっちまで来ると蓋に見える" },
-        { "speaker": "hajime", "face": "normal", "text": "……影の方から手を伸ばしたくなる" },
+        { "speaker": "hajime", "face": "normal", "text": "……影の方から手を伸ばしたくなりますね" },
         { "speaker": "master_hookah", "face": "smile", "text": "うん。それで、置く前に一つ場所を空けた" }
       ]
     },
@@ -1327,10 +1327,10 @@
       "lines": [
         { "speaker": "", "face": "", "text": "画面の向こうで、王煙楼が空の皿を掲げた。" },
         { "speaker": "master_hookah", "face": "normal", "text": "今日は戸口に、客が手を置く場所を探していた" },
-        { "speaker": "hajime", "face": "normal", "text": "この皿を置くんですか？" },
+        { "speaker": "hajime", "face": "normal", "text": "その皿を置くんですか？" },
         { "speaker": "master_hookah", "face": "normal", "text": "上に何か載せるとふさがる。空のままにしておく" },
         { "speaker": "hajime", "face": "normal", "text": "置いてもいいか、先に分かる形だといいですね" },
-        { "speaker": "master_hookah", "face": "smile", "text": "私も、そこを考えていた。次に話すとき、また見てくれるかな" }
+        { "speaker": "master_hookah", "face": "smile", "text": "私も、そこを考えていた。次に話す時、また見てくれるかな" }
       ]
     }
   ]

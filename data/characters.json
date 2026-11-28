@@ -444,7 +444,7 @@
       "notes": "日々見た煙や、誰かの小さな手つきが、いつの間にかいつもの生き物の線に混ざっている。絵も本人も出会いの集合として受け入れたまま、話せる相手が増えるにつれ、色のことや今日見た景色を言葉にもできるようになる。"
     },
     "visual_concepts": [
-      "21 year old petite japanese art student, brown bob cut with straight bangs, reddish-brown eyes, small earrings, oversized purple zip hoodie with floral embroidery on the sleeves, black pleated skirt, black knee socks and dark loafers, hugging a cracked tablet to her chest, quiet calm expression",
+      "21 year old petite japanese art student, brown bob cut with straight bangs, reddish-brown eyes, bare earlobes, oversized purple zip hoodie with floral embroidery on the sleeves, black pleated skirt, black knee socks and dark loafers, hugging a cracked tablet to her chest, quiet calm expression",
       "reticent young illustrator at a window seat of a small shisha cafe, drawing a cat with leaf ears and a smoke tail on a cracked tablet, calm and self-accepting rather than lonely, soft lavender smoke"
     ],
     "spriteScale": 0.88,
@@ -580,7 +580,7 @@
     "play_style": "N/A",
     "description": "第1章やエンディングなど、ストーリーの要所で登場する象徴的な客。通常のランダム接客（日常営業）には一切登場しないストーリー限定キャラクター。\n感情を全く顔に出さない手強い客だが、本当に上手いシーシャを出すと心が動き、主人公の成長を測る指標となる。 TRPGには参加しない。",
     "background_secret": "社内政治や家族との軋轢で完全に心が摩耗しきっている。tonariの煙だけが彼にとって唯一「何者でもない自分」に戻れる呼吸の場所となっている。",
-    "favorite_flavor": "アールグレイ（仮）",
+    "favorite_flavor": "ダブルアップルにミント少し",
     "specialty_flavor": "N/A",
     "growth_stats": {
       "primary": "洞察",
@@ -626,7 +626,7 @@
     "spriteScale": 1.06,
     "intro_cutin": {
       "title": "水煙の龍",
-      "display_name": "神崎《かんざき》 竜二《りゅうじ》（組長《くみちょう》）",
+      "display_name": "神崎《かんざき》 竜二《りゅうじ》",
       "line": "火の前じゃ、／礼儀が先ですわ",
       "face": "normal",
       "color": "#b6a4cf",

@@ -28,7 +28,8 @@ try {
   fs.mkdirSync(sharedFonts, { recursive: true });
   fs.writeFileSync(path.join(sharedFonts, "DotGothic16-Regular.woff2"), "");
   fs.writeFileSync(path.join(out, "js/main.js"), 'import "./core/a.js";\nexport function boot() {}\n');
-  fs.writeFileSync(path.join(out, "js/bundle/main.js"), 'export function boot() {}\n');
+  fs.writeFileSync(path.join(out, "js/bundle/main.js"), 'export function boot() { return import("./chapter.js"); }\n');
+  fs.writeFileSync(path.join(out, "js/bundle/chapter.js"), 'export const chapter = 1;\n');
   fs.writeFileSync(path.join(out, "js/core/a.js"), "export {};\n");
 
   const source = fs.readFileSync(path.join(remake, "index.html"), "utf8");
@@ -51,6 +52,7 @@ try {
   assert.doesNotMatch(html, /import\("\.\/js\/bundle\/main\.js"\)/);
   assert.match(html, /href="js-abc1234\/bundle\/main\.js"/);
   assert(fs.existsSync(path.join(out, "js-abc1234/bundle/main.js")));
+  assert(fs.existsSync(path.join(out, "js-abc1234/bundle/chapter.js")), "遅延チャンクも同じ版から読む");
   assert(fs.existsSync(path.join(out, "js-abc1234/core/a.js")));
   assert(fs.existsSync(path.join(out, "js/main.js")));
   assert(fs.existsSync(path.join(out, "js/bundle/main.js")));
@@ -65,7 +67,7 @@ try {
   const bundleCount = JSON.parse(fs.readFileSync(path.join(remake, "css/bundles.json"), "utf8")).segments.length;
   assert.equal(links.length, bundleCount);
   for (const href of links) assert.match(href, /^css\/[\w./-]+\.css\?v=abc1234$/, href);
-  for (const group of ["camel-race", "desert-ride", "ichidai", "tetsuko"]) {
+  for (const group of ["axe", "camel-race", "desert-ride", "ichidai", "tetsuko"]) {
     const template = html.match(new RegExp('<template id="styles-' + group + '">([\\s\\S]*?)<\\/template>'));
     assert.ok(template, group);
     const files = [...template[1].matchAll(/href="([^"]+)"/g)].map(m => m[1]);
@@ -73,7 +75,7 @@ try {
     for (const href of files) assert.match(href, /^css\/[\w-]+\.css\?v=abc1234$/, href);
   }
   for (const weight of ["Medium", "Bold"]) {
-    assert(html.includes(`href="fonts/NotoSansJP-${weight}.woff2?v=abc1234"`));
+    assert(html.includes(`href="fonts/Title-${weight}.woff2?v=abc1234"`));
   }
   assert.match(html, /<link rel="preload" as="image" href="img\/ui\/ui_title_logo_rich\.webp">/);
   // 起動画面の背景は共通ロード画面の CSS（css/loading.css → bundle-2.css）にある。画像の url() は版を付けない
@@ -83,7 +85,7 @@ try {
   // CSS の @import とフォントの url() も版付き
   const trpg = fs.readFileSync(path.join(out, "css/trpg.css"), "utf8");
   assert.match(trpg, /@import url\("venue-host\.css\?v=abc1234"\)/);
-  for (const [filename, count] of Object.entries({ "base.css": 5, "bundle-base.css": 5, "bundle-1.css": 2, "bundle-2.css": 2 })) {
+  for (const [filename, count] of Object.entries({ "base.css": 7, "bundle-base.css": 7, "bundle-1.css": 2, "bundle-2.css": 2 })) {
     const css = fs.readFileSync(path.join(out, "css", filename), "utf8");
     const fontUrls = [...css.matchAll(/url\("([^"\n]+\.woff2[^"\n]*)"\)/g)].map(match => match[1]);
     assert.equal(fontUrls.length, count, filename);

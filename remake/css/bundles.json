@@ -3,8 +3,7 @@
   {
    "out": "bundle-base.css",
    "files": [
-    "base.css",
-    "axe-throw.css"
+    "base.css"
    ]
   },
   {
@@ -90,7 +89,6 @@
     "look-neo.css",
     "look-neo-board.css",
     "look-neo-art.css",
-    "look-neo-portrait.css",
     "loading.css",
     "purikura-studio.css"
    ]

@@ -14,6 +14,8 @@ const idsOf = chapter => {
 };
 const sorted = list => [...list].sort();
 assert.deepEqual(idsOf(1), ["naru", "adam", "minto", "hajime"]);
+const hajimeTitles = [...block.matchAll(/\{ id: "hajime", ring: "([^"]+)"/g)].map(match => match[1]);
+assert.deepEqual(hajimeTitles, ["tonariの新星", "橙須の新星", "A県を背負う職人", "日本を背負う職人"]);
 for (const [chapter, roster] of [[2, CH2], [3, CH3], [4, CH4]]) {
   const ids = idsOf(chapter);
   assert.deepEqual(sorted(ids), sorted(roster), `第${chapter}章の入場カードが出場者と一致しない`);

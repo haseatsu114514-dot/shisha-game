@@ -14,25 +14,25 @@ export const ENTRANCE_CARDS = Object.freeze({
     { id: "naru", ring: "孤高の探求者", note: "なるさんなら、レモンの香りをどこまで拾うだろう" },
     { id: "adam", ring: "ダブルアップルの匠", note: "ダブルアップルにレモンか。俺ならどっちを立てるだろう" },
     { id: "minto", ring: "甘い嵐", note: "甘い煙であれだけ評判の人だ。酸味をどう使うんだろう" },
-    { id: "hajime", ring: "tonari の新星", note: "……俺だ。よし、行こう" },
+    { id: "hajime", ring: "tonariの新星", note: "……俺だ。よし、行こう" },
   ],
   2: [
     { id: "ageha", ring: "MELTY PUFF の直感", note: "あげはさん、もう葉を決めてるのかな。迷いが顔に出ない" },
     { id: "kumicho", ring: "スジを通す煙", note: "神崎さんの煙、あんなに穏やかなのに味が残るんだよな" },
     { id: "kuraudo", ring: "カシスの余韻", note: "吸い終わった後の香りか。クラウドさんならそこまで考えてそうだ" },
-    { id: "hajime", ring: "県大会の挑戦者", note: "手順は頭に入ってる。よし、最後まで作りきろ" },
+    { id: "hajime", ring: "橙須の新星", note: "手順は頭に入ってる。よし、最後まで作りきろ" },
   ],
   3: [
     { id: "ayatori", ring: "煙幕の勝負師", note: "綾取さん、何を混ぜたんだろう。……もう考えさせられてる" },
     { id: "steve", ring: "低温の研究家", note: "スティーブさんなら、低い熱でチョコの甘さを引き出せそうだ" },
     { id: "volk", ring: "鉄の煙", note: "ヴォルクさんは手がぶれない。二度目の調整も強そうだ" },
-    { id: "hajime", ring: "柚ヶ谷の代表", note: "……呼ばれた。息を吐こう。よし、俺の番だ" },
+    { id: "hajime", ring: "A県を背負う職人", note: "……呼ばれた。息を吐こう。よし、俺の番だ" },
   ],
   4: [
     { id: "naru", ring: "孤高の探求者", note: "なるとまた同じ舞台だ。あの甘さ、今日はどう来るかな" },
     { id: "master_hookah", ring: "龍龍水煙所の宗師", note: "王さん、客席を見てる。もう吸う人の息を見てるのか" },
     { id: "sheikh", ring: "世界王者", note: "あれだけ歓声が上がっても、王者は自分の間で歩くんだな" },
-    { id: "hajime", ring: "日本の挑戦者", note: "ここまで来た。俺の一台、吸ってもらおう" },
+    { id: "hajime", ring: "日本を背負う職人", note: "ここまで来た。俺の一台、吸ってもらおう" },
   ],
 });
 
@@ -56,10 +56,11 @@ function ticketImage(name) {
 }
 
 function entryTag(number) {
+  const folio = String(number).padStart(2, "0");
   return el("span.ent-tag", [
-    el("span.ent-tag-label", [el("span", { text: "エントリー" }), el("span", { text: "ナンバー" })]),
-    ticketImage("ticket"),
-    el("b.ent-number", [String(number), number <= 4 ? ticketImage(`digit-${number}`) : null]),
+    el("span.ent-tag-label", { text: "エントリーナンバー" }),
+    ticketImage("caption"),
+    el("b.ent-number", [folio, number <= 4 ? ticketImage(`number-${folio}`) : null]),
   ]);
 }
 

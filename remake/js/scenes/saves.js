@@ -1,7 +1,7 @@
 // セーブ／ロードの枠選び。タイトルの「ロード」と、章内・日常の MENU から開く。
 import { el, yen } from "../core/util.js";
 import { layers, modal, toast } from "../core/ui.js";
-import { SCHEMA, SAVE_SLOTS, readSlot, autoSaveResult, saveToSlotResult, loadFromSlot, state } from "../core/state.js";
+import { SCHEMA, SAVE_SLOTS, readSlot, readSlotRaw, autoSaveResult, saveToSlotResult, loadFromSlot, state } from "../core/state.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { cycleBadgeText, overwriteCycleNote } from "../core/cycle-display.js";
 import { chapterFivePrologue } from "../chapters/ch5-prologue.js";
@@ -221,11 +221,14 @@ export async function loadFlow({ inGame = false } = {}) {
 }
 
 /** タイトルの「つづきから」は表示中の枠を直接読み、失敗した時だけ枠選びを案内する。 */
-export async function loadWithRecovery({ inGame = false, initialSlot = null } = {}) {
+export async function loadWithRecovery({ inGame = false, initialSlot = null, beforeLoad = null } = {}) {
   for (;;) {
     const key = initialSlot?.key ?? await loadFlow({ inGame });
     if (!key) return false;
-    if (loadFromSlot(key, { expectedRaw: initialSlot?.raw })) return true;
+    // 枠選びはすぐ表示し、章の準備は選択後に待つ。待ち時間中に他のタブが枠を変えたら読み直す。
+    const expectedRaw = initialSlot?.raw ?? (beforeLoad ? readSlotRaw(key) : undefined);
+    if (beforeLoad && !await beforeLoad()) return false;
+    if (loadFromSlot(key, { expectedRaw })) return true;
     initialSlot = null;
     const retry = await modal({
       title: "ロードできませんでした",
