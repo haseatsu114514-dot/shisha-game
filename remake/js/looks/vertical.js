@@ -89,11 +89,12 @@ async function syncOrientation() {
 function portraitScene(own, frontMotion) {
   // 一台勝負は地図などを背後に残してステージへ直接重なる横専用のゲーム。
   if (document.querySelector("#stage .ichi-game")) return { kind: "none" };
-  // 第1章の幕は本編の札をそのまま全面に出す。重なった小窓や操作画面があれば通常の判定に任せる。
+  // 大会入場は全章で同じ縦ポスターを使う。日付や幕の札は第1章だけを全面に出す。
   const frontFx = document.getElementById("fx")?.lastElementChild;
-  const interlude = state?.chapter === 1 && !topDialogOpen() && !document.querySelector("#modal.show") &&
-    (frontMotion ? frontMotion.matches(".day-card, .tr-dawn") :
-      frontFx?.matches('.beat, .round-cut, .entrance, .day-card, .tr-dawn, .chapter-poem[data-poem="poem_ch1"]'));
+  const entrance = !frontMotion && frontFx?.matches(".entrance");
+  const chapterOneCard = state?.chapter === 1 && (frontMotion ? frontMotion.matches(".day-card, .tr-dawn") :
+    frontFx?.matches('.beat, .round-cut, .day-card, .tr-dawn, .chapter-poem[data-poem="poem_ch1"]'));
+  const interlude = (entrance || chapterOneCard) && !topDialogOpen() && !document.querySelector("#modal.show");
   let found = interlude ? { kind: "scene", name: "interlude" } : boardOpen() ? { kind: "scene", name: "board" } : detectState(own, true);
   // 作業台に重なった大会中継・投票は、前面の大会用レイアウトで操作する。
   const tournament = found.name === "tournament" || found.name === "tournamentResult";

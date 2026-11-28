@@ -14,25 +14,25 @@ export const ENTRANCE_CARDS = Object.freeze({
     { id: "naru", ring: "孤高の探求者", note: "なる……人格者だが、煙は別人だ。基礎が異常に堅い" },
     { id: "adam", ring: "ダブルアップルの匠", note: "アダムは一点突破。正面から殴り合うな" },
     { id: "minto", ring: "甘い嵐", note: "みんとは緩急で揺さぶってくる。乗せられるな" },
-    { id: "hajime", ring: "tonari の新星", note: "──行ってこい。目の前の一人に届けてこい" },
+    { id: "hajime", ring: "tonariの新星", note: "──行ってこい。目の前の一人に届けてこい" },
   ],
   2: [
     { id: "ageha", ring: "MELTY PUFF の直感", note: "あげはは理屈より先に手が動く。あれを真似しようとするな" },
     { id: "kumicho", ring: "スジを通す煙", note: "神崎さんの煙は穏やかだ。派手さで勝とうとしたら負ける" },
     { id: "kuraudo", ring: "カシスの余韻", note: "クラウドは間で聴かせる。お前は自分の拍で作れ" },
-    { id: "hajime", ring: "県大会の挑戦者", note: "前の大会の自分と比べろ。隣は見なくていい" },
+    { id: "hajime", ring: "橙須の新星", note: "前の大会の自分と比べろ。隣は見なくていい" },
   ],
   3: [
     { id: "ayatori", ring: "煙幕の勝負師", note: "綾取は相手の判断を動かしてくる。味の名前に釣られるな" },
     { id: "steve", ring: "低温の研究家", note: "スティーブは熱を急がない。最後の一口まで崩れないぞ" },
     { id: "volk", ring: "鉄の煙", note: "ヴォルクの精度は本物だ。数字で張り合っても仕方ない" },
-    { id: "hajime", ring: "柚ヶ谷の代表", note: "全国だろうが、やることは一台だ。いつもどおり作ってこい" },
+    { id: "hajime", ring: "A県を背負う職人", note: "全国だろうが、やることは一台だ。いつもどおり作ってこい" },
   ],
   4: [
     { id: "naru", ring: "孤高の探求者", note: "なる……ここまで来たか。あいつの基礎は世界でも通じる" },
     { id: "master_hookah", ring: "龍龍水煙所の宗師", note: "王さんは派手な煙の裏で、相手の呼吸を見ている" },
     { id: "sheikh", ring: "世界王者", note: "王者は急がない。全部受け止めるつもりで来るぞ" },
-    { id: "hajime", ring: "日本の挑戦者", note: "──行ってこい。目の前の一人に届けてこい" },
+    { id: "hajime", ring: "日本を背負う職人", note: "──行ってこい。目の前の一人に届けてこい" },
   ],
 });
 
@@ -58,10 +58,11 @@ function ticketImage(name) {
 }
 
 function entryTag(number) {
+  const folio = String(number).padStart(2, "0");
   return el("span.ent-tag", [
-    el("span.ent-tag-label", [el("span", { text: "エントリー" }), el("span", { text: "ナンバー" })]),
-    ticketImage("ticket"),
-    el("b.ent-number", [String(number), number <= 4 ? ticketImage(`digit-${number}`) : null]),
+    el("span.ent-tag-label", { text: "エントリーナンバー" }),
+    ticketImage("caption"),
+    el("b.ent-number", [folio, number <= 4 ? ticketImage(`number-${folio}`) : null]),
   ]);
 }
 
