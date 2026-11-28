@@ -94,7 +94,7 @@
         {
           "speaker": "shop_clerk",
           "face": "",
-          "text": "いらっしゃいませ、……あ、いつもの"
+          "text": "いらっしゃいませ。……あ、いつもの"
         },
         {
           "speaker": "",
@@ -1760,7 +1760,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（鼻を貸しただけなのに、……でも、うれしい）"
+          "text": "（鼻を貸しただけなのに……でも、うれしい）"
         },
         {
           "speaker": "",
@@ -2178,7 +2178,7 @@
         {
           "speaker": "steve",
           "face": "smile",
-          "text": "客を取ったなんて言うなよ、……取ったけどな"
+          "text": "客を取ったなんて言うなよ。……取ったけどな"
         },
         {
           "speaker": "",
@@ -2321,7 +2321,7 @@
         {
           "speaker": "shop_clerk",
           "face": "",
-          "text": "では、閉店のあとに、……一度だけですよ"
+          "text": "では、閉店のあとに……一度だけですよ"
         },
         {
           "speaker": "hajime",
@@ -3725,7 +3725,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "指をかける場所がないですね"
+          "text": "指をかける場所がないね"
         },
         {
           "speaker": "minto",
@@ -3740,7 +3740,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……こうすると、葉っぱが裏に隠れますね"
+          "text": "……こうすると、葉っぱが裏に隠れるね"
         },
         {
           "speaker": "minto",
@@ -3765,7 +3765,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "最初から揃ってるより、触りたくなりますね"
+          "text": "最初から揃ってるより、触りたくなるね"
         },
         {
           "speaker": "minto",
@@ -3780,7 +3780,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あ、ここを持てばいいって分かります"
+          "text": "あ、ここを持てばいいって分かるよ"
         },
         {
           "speaker": "minto",
@@ -3875,7 +3875,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ホースの尾を、側近が卓に置いた。尾はすぐ床へ垂れた。"
+          "text": "ホースの尾を、サメちゃんが卓に置いた。尾はすぐ床へ垂れた。"
         },
         {
           "speaker": "samechan",
@@ -3925,7 +3925,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "わしが描いた口は、側近が見て大きすぎると言ったがの"
+          "text": "わしが描いた口は、コロちゃんが見て大きすぎると言ったがの"
         },
         {
           "speaker": "",
@@ -4190,7 +4190,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "エデンで、アダムが箱の蓋を音もなく閉めた。"
+          "text": "EDENで、アダムが箱の蓋を音もなく閉めた。"
         },
         {
           "speaker": "adam",
@@ -4260,7 +4260,7 @@
         {
           "speaker": "adam",
           "face": "smile",
-          "text": "ほう。なら、次は林檎の袋で試してみるか"
+          "text": "ほう。なら、次はダブルアップルの袋で試してみるか"
         }
       ]
     },
@@ -4365,7 +4365,7 @@
         {
           "speaker": "kuraudo",
           "face": "normal",
-          "text": "……うん。ボクは、今まで針の音だと思ってた"
+          "text": "……うん。俺は、今まで針の音だと思ってた"
         },
         {
           "speaker": "",
@@ -4405,7 +4405,7 @@
         {
           "speaker": "kuraudo",
           "face": "normal",
-          "text": "……ボクは、キミが椅子に座り直す音を聞いた"
+          "text": "……俺は、キミが椅子に座り直す音を聞いた"
         },
         {
           "speaker": "",
@@ -4515,7 +4515,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……真ん中は拭けるんですけど、角が残ります"
+          "text": "……真ん中は拭けるんですけど、縁が残ります"
         },
         {
           "speaker": "hajime",
@@ -4530,7 +4530,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "滑らないね。角、全部触れたよ"
+          "text": "滑らないね。縁、全部触れたよ"
         },
         {
           "speaker": "",
@@ -4640,7 +4640,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あ、持った手でそのまま横にできるんだ"
+          "text": "あ、持った手でそのまま横にできるんですね"
         },
         {
           "speaker": "hiyori",
@@ -4680,7 +4680,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "カップの取っ手と缶が、同じ側に寄ってますね"
+          "text": "カップの取っ手と缶が、同じ側に寄ってるね"
         },
         {
           "speaker": "mashiro",
@@ -4695,7 +4695,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "じゃあ今度は、カップを真ん中から取ってみます"
+          "text": "じゃあ今度は、カップを真ん中から取ってみる"
         },
         {
           "speaker": "mashiro",
@@ -4720,7 +4720,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "缶が真ん中なら、両方から取れますね"
+          "text": "缶が真ん中なら、両方から取れるね"
         },
         {
           "speaker": "mashiro",
@@ -4735,7 +4735,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺、さっきまで逆さまから読んでました"
+          "text": "俺、さっきまで逆さまから読んでた"
         },
         {
           "speaker": "mashiro",
@@ -4815,7 +4815,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も、足跡のところまで行けるかな"
+          "text": "俺も、足跡のところまで行けますかね"
         },
         {
           "speaker": "noor",
@@ -4845,7 +4845,7 @@
         {
           "speaker": "master_hookah",
           "face": "normal",
-          "text": "うん。手を置く前に、持つ道具に見えたんだ"
+          "text": "ああ。手を置く前に、持つ道具に見えたんだ"
         },
         {
           "speaker": "",
@@ -4885,7 +4885,7 @@
         {
           "speaker": "master_hookah",
           "face": "normal",
-          "text": "うん。手を置く人もいたよ。ここで少し待っていた"
+          "text": "ああ。手を置く人もいたよ。ここで少し待っていた"
         },
         {
           "speaker": "",
@@ -4900,7 +4900,7 @@
         {
           "speaker": "master_hookah",
           "face": "smile",
-          "text": "うん。君の店なら、何が置かれるか見てみたいな"
+          "text": "そうだね。君の店なら、何が置かれるか見てみたいな"
         }
       ]
     }

@@ -73,12 +73,12 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "…してません"
+          "text": "……してません"
         },
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "してる。眉毛、ここ、……ほら、また寄った"
+          "text": "してる。眉毛、ここ。……ほら、また寄った"
         },
         {
           "speaker": "",
@@ -158,7 +158,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "…してません。さっきの砂の道の続きが聞きたいです"
+          "text": "……してません。さっきの砂の道の続きが聞きたいです"
         },
         {
           "speaker": "noor",
@@ -350,7 +350,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "…違います。線を引く前に、手が止まってたから"
+          "text": "……違います。線を引く前に、手が止まってたから"
         },
         {
           "speaker": "noor",
@@ -698,7 +698,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "…からかわないでください"
+          "text": "……からかわないでください"
         },
         {
           "speaker": "noor",
@@ -764,7 +764,7 @@
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "そう、それ。膝はもう少し曲げて、……うん、いい感じ"
+          "text": "そう、それ。膝はもう少し曲げて……うん、いい感じ"
         },
         {
           "speaker": "hajime",
@@ -998,7 +998,7 @@
         {
           "speaker": "noor",
           "face": "surprise",
-          "text": "あ、……砂は別！ 砂は待たなくていいの"
+          "text": "あ……砂は別！ 砂は待たなくていいの"
         },
         {
           "speaker": "",
@@ -1054,7 +1054,7 @@
         {
           "speaker": "noor",
           "face": "surprise",
-          "text": "…それは練習だったから！ 板の上は、ガイドの仕事で……"
+          "text": "……それは練習だったから！ 板の上は、ガイドの仕事で……"
         },
         {
           "speaker": "noor",
@@ -1104,7 +1104,7 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "あはは、今のも冗談、……半分だけ"
+          "text": "あはは、今のも冗談。……半分だけ"
         },
         {
           "speaker": "",
@@ -1377,7 +1377,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "…近いです"
+          "text": "……近いです"
         },
         {
           "speaker": "noor",
@@ -1407,7 +1407,7 @@
         {
           "speaker": "noor",
           "face": "surprise",
-          "text": "…そういうこと言うから、つつけないの！"
+          "text": "……そういうこと言うから、つつけないの！"
         },
         {
           "speaker": "",
@@ -1614,7 +1614,7 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "…いいの！ ここに戻ってくるんだから、合ってるでしょ"
+          "text": "……いいの！ ここに戻ってくるんだから、合ってるでしょ"
         }
       ]
     },
@@ -1805,12 +1805,12 @@
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "冷たい。でも、日が出ると一気に変わるの。レースの朝も？"
+          "text": "冷たい。でも、日が出ると一気に変わるの。ファーリスも朝、砂漠へ出ることある？"
         },
         {
           "speaker": "faris",
           "face": "smile",
-          "text": "同じ。ラクダも、日が高くなる前の方がよく走る"
+          "text": "あるよ。ラクダレースの朝は早いんだ。日が高くなる前の方が、ラクダはよく走る"
         },
         {
           "speaker": "noor",

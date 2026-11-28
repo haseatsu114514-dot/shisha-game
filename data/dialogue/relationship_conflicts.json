@@ -31,7 +31,7 @@
       "lines": [
         {
           "speaker": "minto",
-          "face": "ura_normal",
+          "face": "normal",
           "text": "……へえ。ずいぶん、親しそうに呼ぶんだね"
         }
       ]
@@ -92,7 +92,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "ちょ、スティーブさん……！"
+          "text": "ちょっと、スティーブさん……！"
         },
         {
           "speaker": "",
@@ -479,7 +479,7 @@
         {
           "speaker": "hajime",
           "face": "sad",
-          "text": "栞さんなら笑って許してくれるって、甘えてた、……ごめん"
+          "text": "栞さんなら笑って許してくれるって、甘えてた。……ごめん"
         }
       ],
       "branches": {
@@ -875,7 +875,7 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "来てくれたんだ、……座って"
+          "text": "来てくれたんだ。……座って"
         },
         {
           "speaker": "minto",
@@ -1001,7 +1001,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "つむぎちゃんは見せてくれたのに、俺は見せなかった、……ごめん"
+          "text": "つむぎちゃんは見せてくれたのに、俺は見せなかった。……ごめん"
         },
         {
           "speaker": "tsumugi",
@@ -1224,7 +1224,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "……うん。聞いたよ、……でも、まだ悲しい"
+          "text": "……うん。聞いたよ。……でも、まだ悲しい"
         },
         {
           "speaker": "mashiro",
@@ -1489,7 +1489,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "座れ、……ひどい顔だな"
+          "text": "座れ。……ひどい顔だな"
         },
         {
           "speaker": "",
@@ -1499,7 +1499,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "この何日か、店に来たぞ。お前の彼女たちが、一人ずつ"
+          "text": "この何日か、お前の彼女たちと話したぞ。一人ずつ"
         },
         {
           "speaker": "hajime",
@@ -1509,7 +1509,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "全員、お前の文句を言いに来た。全員、最後まで聞いた"
+          "text": "全員、お前の文句を言ってた。全員、最後まで聞いた"
         },
         {
           "type": "condition",

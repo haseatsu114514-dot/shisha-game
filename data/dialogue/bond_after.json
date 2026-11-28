@@ -32,7 +32,7 @@
         {"speaker": "customer", "face": "normal", "text": "アニキ、いやすか……って、見ねえ顔だな。新入りかい"},
         {"speaker": "hajime", "face": "normal", "text": "いえ、留守番です。神崎さんの……兄弟分、です"},
         {"speaker": "", "face": "", "text": "客の背筋が、音がしそうなほど伸びた。"},
-        {"speaker": "customer", "face": "surprise", "text": "きょ、兄弟分……！ …失礼しやした"},
+        {"speaker": "customer", "face": "surprise", "text": "……兄弟分……！ ……失礼しやした"},
         {"speaker": "", "face": "", "text": "客は深々と頭を下げ、出された番茶を正座で飲み干して帰っていった。"},
         {"speaker": "", "face": "", "text": "戻ってきた神崎さんに話すと、湯呑みを持つ手が一度止まった。"},
         {"speaker": "kumicho", "face": "serious", "text": "……客の前で、兄弟分なんて言うんじゃねえ"},
@@ -448,7 +448,7 @@
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。ダブルアップルは果物の林檎ではなく、アニスとリコリスで描いた林檎（2026-07-20確定）。差し入れの林檎で、その話をする。",
       "lines": [
         {"speaker": "", "face": "", "text": "手土産に、八百屋で林檎を三つ買ってきた。"},
-        {"speaker": "hajime", "face": "smile", "text": "アダムさん、差し入れです。リンゴ"},
+        {"speaker": "hajime", "face": "smile", "text": "アダムさん、差し入れです。林檎"},
         {"speaker": "adam", "face": "surprise", "text": "……果実の方か"},
         {"speaker": "hajime", "face": "surprise", "text": "え、だめでした？"},
         {"speaker": "adam", "face": "serious", "text": "いいか、同志。ダブルアップルは林檎ではない。アニスとリコリスで描いた、林檎の姿だ"},
@@ -769,7 +769,7 @@
         {"speaker": "minto", "face": "wink", "text": "なに見てるの、はじめくん。みんとの身分証は、見せられないよ？"},
         {"speaker": "hajime", "face": "smile", "text": "知ってる。内緒にするって言ったし"},
         {"speaker": "minto", "face": "normal", "text": "……うん。あの時、きみが黙って返してくれたの、ちょっと助かったんだよ"},
-        {"speaker": "minto", "face": "wink", "text": "お礼に、今日のミントはひとつまみ多め♡ ……年の数ぶんは、入れないからね？"}
+        {"speaker": "minto", "face": "wink", "text": "お礼に、今日のミントはひとつまみ多め♡ ……これは二人だけの内緒ね？"}
       ]
     },
     {
@@ -929,7 +929,7 @@
         {"speaker": "", "face": "", "text": "真っ白だった縁が、薄く色づいている。サメちゃんは顔を近づけて、目を閉じた。"},
         {"speaker": "samechan", "face": "normal", "text": "……柑橘と、何かの花じゃな。それから、ほんの少しだけ、スプリングウォーター"},
         {"speaker": "hajime", "face": "smile", "text": "分かりますか。一回だけ、真似してみたんです"},
-        {"speaker": "samechan", "face": "surprise", "text": "…わしの好きな葉を、わしの渡した素焼きで……。お主、ずるいのじゃ"},
+        {"speaker": "samechan", "face": "surprise", "text": "……わしの好きな葉を、わしの渡した素焼きで……。お主、ずるいのじゃ"},
         {"speaker": "samechan", "face": "ventriloquism", "text": "側近、耳まで赤いのである", "voice": "korochan"},
         {"speaker": "samechan", "face": "serious", "text": "……それは、言わんでよいのじゃ"}
       ]
@@ -961,7 +961,7 @@
         {"speaker": "hajime", "face": "normal", "text": "……サメちゃん、見えてます？"},
         {"speaker": "samechan", "face": "serious", "text": "見ておる。コロちゃんの目で、見ておるのじゃ"},
         {"speaker": "samechan", "face": "ventriloquism", "text": "余は、側近の目をふさいでいるだけである", "voice": "korochan"},
-        {"speaker": "samechan", "face": "surprise", "text": "………うむ。……お主、終わったら教えるのじゃ"}
+        {"speaker": "samechan", "face": "surprise", "text": "……うむ。……お主、終わったら教えるのじゃ"}
       ]
     },
     {
@@ -1065,7 +1065,7 @@
         {"speaker": "", "face": "", "text": "ひよりさんの鞄に、気の抜けた顔のクマのキーホルダーが増えていた。"},
         {"speaker": "hajime", "face": "normal", "text": "それ、新しいですね"},
         {"speaker": "hiyori", "face": "sad", "text": "……拾ったの。行き場のない子だったから", "inner": "ガチャ七回目でやっと出た。本命"},
-        {"speaker": "hajime", "face": "normal", "text": "値札のシール、付いたままですけど"},
+        {"speaker": "hajime", "face": "normal", "text": "保護フィルム、付いたままですけど"},
         {"speaker": "hiyori", "face": "surprise", "text": "……っ！"},
         {"speaker": "hiyori", "face": "smile", "text": "……七回。七回、回しました。儚さより、物欲が勝ちました"}
       ]
@@ -1749,13 +1749,13 @@
       "dialogue_id": "bond_after_noor_3",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第4章ドバイのカフェ・オアシス（chapters/ch4-desert.js の雑談の代わり）。はじめは「ヌールさん」と敬語、ヌールは「ハジメ」「私」。友だちに教わった変わった日本語は、その部分だけ片仮名で、ときどき。はじめの大会・味覚・恋愛には踏み込まない（character_profiles）。お父さんは台詞を持たない。ネットの友だちに教わった日本語（character_profiles）。はじめは笑わず、意味は合っていると伝える。",
       "lines": [
-        {"speaker": "noor", "face": "smile", "text": "ハジメ、新しい日本語、覚えたよ。『チョベリグ』"},
+        {"speaker": "noor", "face": "smile", "text": "ハジメ、面白い言い方、覚えたよ。『上々』"},
         {"speaker": "hajime", "face": "surprise", "text": "……どこで覚えたんですか"},
         {"speaker": "noor", "face": "normal", "text": "ネットの友だち。とってもいい、って意味でしょ？"},
-        {"speaker": "hajime", "face": "normal", "text": "意味は合ってます。ただ、ちょっと昔の言葉かもしれません"},
+        {"speaker": "hajime", "face": "normal", "text": "意味は合ってます。少し昔っぽく聞こえるかもしれません"},
         {"speaker": "noor", "face": "surprise", "text": "昔？ ……私の日本語、変？"},
-        {"speaker": "hajime", "face": "smile", "text": "変じゃないです。スミさんが聞いたら、懐かしがると思います"},
-        {"speaker": "noor", "face": "smile", "text": "じゃあ、スミさんに会えたら言う。チョベリグ！"}
+        {"speaker": "hajime", "face": "smile", "text": "変じゃないです。スミさんも「上々だ」って言いそうです"},
+        {"speaker": "noor", "face": "smile", "text": "じゃあ、スミさんに会えたら言おう。今日の砂は上々、って"}
       ]
     },
     {
@@ -1954,7 +1954,7 @@
         {"speaker": "sheikh", "face": "smile", "text": "覚えていたか"},
         {"speaker": "hajime", "face": "normal", "text": "日本だと、こういう時は『ごちそうさま』って言います"},
         {"speaker": "sheikh", "face": "normal", "text": "ゴチソウサマ"},
-        {"speaker": "", "face": "", "text": "シェイクは自分の杯を左右に振りながら、もう一度、小さく口の中で繰り返した。"},
+        {"speaker": "", "face": "", "text": "シェイクさんは自分の杯を左右に振りながら、もう一度、小さく口の中で繰り返した。"},
         {"speaker": "sheikh", "face": "smile", "text": "杯と言葉、両方で伝えるのが、いちばん確かだ"}
       ]
     },
@@ -1962,11 +1962,11 @@
       "dialogue_id": "bond_after_sheikh_5",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「シェイクさん」と敬語、シェイクは「私」「君」「ハジメ」で短く、急がず話す。決勝・金の台には触れない。袖のしわを自分で伸ばす人（ch5_sheikh_bond_1）。旅の間は自分で茶を淹れる。",
       "lines": [
-        {"speaker": "", "face": "", "text": "屋敷の厨房で、シェイクが自分で湯を沸かしていた。"},
+        {"speaker": "", "face": "", "text": "屋敷の厨房で、シェイクさんが自分で湯を沸かしていた。"},
         {"speaker": "", "face": "", "text": "入口では、使用人たちがおろおろしている。"},
         {"speaker": "hajime", "face": "surprise", "text": "シェイクさんが、お茶を？"},
         {"speaker": "sheikh", "face": "normal", "text": "旅の間は、自分で淹れる。屋敷に戻ると、やらせてもらえない"},
-        {"speaker": "", "face": "", "text": "湯が沸くと、シェイクは手際よく茶葉を落とした。"},
+        {"speaker": "", "face": "", "text": "湯が沸くと、シェイクさんは手際よく茶葉を落とした。"},
         {"speaker": "", "face": "", "text": "使用人たちは、黙って見守るしかなかった。"},
         {"speaker": "sheikh", "face": "smile", "text": "君の分も淹れた。屋敷で私の茶を飲むのは、君が初めてだ"},
         {"speaker": "hajime", "face": "smile", "text": "光栄です。……使用人の皆さんの視線が、ちょっと痛いですけど"}
@@ -1990,7 +1990,7 @@
       "dialogue_id": "bond_after_sheikh_short_c",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「シェイクさん」と敬語、シェイクは「私」「君」「ハジメ」で短く、急がず話す。決勝・金の台には触れない。5本の後の短い汎用。",
       "lines": [
-        {"speaker": "", "face": "", "text": "シェイクは窓辺で本を閉じ、向かいの席を手で示した。"}
+        {"speaker": "", "face": "", "text": "シェイクさんは窓辺で本を閉じ、向かいの席を手で示した。"}
       ]
     },
     {
