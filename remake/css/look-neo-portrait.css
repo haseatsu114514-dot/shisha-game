@@ -305,7 +305,7 @@
 .retro-shell :is(.tx-warn, .tx-red) { color: #b3261e; font-weight: 400; }
 .retro-shell :is(.tx-hint, .tx-blue) { color: #2456a6; }
 .retro-shell .tx-sub { color: #6b5a80; font-size: .75em; }
-.retro-shell .tx-voice { color: #6b5a80; font-size: 1em; text-shadow: none; }
+.retro-shell .tx-voice { color: #4d425e; font-size: 1em; text-shadow: none; }
 .retro-vn-next {
   position: absolute;
   right: calc(var(--d) * 6);
