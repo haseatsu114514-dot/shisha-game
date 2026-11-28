@@ -131,7 +131,7 @@ export function createShell() {
   }
 
   return {
-    root, note, canvas, top, bottom, maphead, markers, layout, setStatus, setKeys, setNotices, setCaption, paint,
+    root, note, canvas, top, bottom, maphead, markers, layout, setStatus, setKeys, setNotices, setCaption, paint: "hd",
     dotScale: () => dotScale,
     mount() { document.body.append(root, note); layout(); },
     unmount() { root.remove(); note.remove(); },
