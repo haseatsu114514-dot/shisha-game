@@ -545,7 +545,8 @@ await suite("look_vertical", async (check) => {
       shell: document.querySelector('[data-test="vt-timer-lcd"]').getAttribute("aria-label"),
       start: document.querySelector('[data-test="vt-timer-start"]').disabled, liveStart: document.querySelector('#screen [data-test="timer-start"]').disabled,
     }));
-    assert.equal(await page.evaluate(() => document.querySelector('[data-test="vt-craft-steps"] li.now')?.dataset.step), "steam");
+    // 工程の並びは本編の工程の札を定期の写しで読むので、本編が「蒸らし」を今の工程にして写るまで待つ（遅い環境では説明を閉じた直後はまだ前の写し）
+    await page.waitForFunction(() => document.querySelector('[data-test="vt-craft-steps"] li.now')?.dataset.step === "steam", null, { timeout: 5000 });
     assert.deepEqual(await clock(), { live: "00:00", shell: "蒸らし時間 0分0秒", start: true, liveStart: true }, "start waits for a time");
     await page.locator(t("vt-timer-preset-5")).tap();
     await page.waitForFunction(() => document.querySelector('#screen [data-test="timer-display"] .clock-value').textContent === "05:00");
