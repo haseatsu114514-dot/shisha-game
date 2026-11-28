@@ -4623,11 +4623,21 @@ body:not(:root) .vn-choices:has(> .vn-choice:nth-child(6)) > .vn-choice {
   text-align: left;
   transition: transform 0.2s var(--ease-out), color 0.2s;
 }
-.title-item:disabled { opacity: 0.35; cursor: default; }
+.title-item:disabled, .title-item.is-locked { opacity: 0.35; cursor: default; }
 .ti-en { font-family: var(--font); font-size: 26px; line-height: 1.25; letter-spacing: 0.16em; }
 .ti-ja { font-size: 15px; color: var(--text-dim); letter-spacing: 0.04em; }
 /* 「つづきから」に添える、いちばん新しいセーブの章と日付（開く前に、どこから再開するかが分かる）。主文の下の行。 */
 .ti-note { flex-basis: 100%; font-size: 15px; line-height: 1.3; color: var(--gold); letter-spacing: 0.06em; white-space: nowrap; }
+/* 「つづきから」の行の右下の小さな押し所「セーブを選ぶ」（ロードの行の代わり・EXT02）。注記（章と日付）と同じ高さに、行の右端へ寄せる。
+   行の中の押し所なので、押しても「つづきから」にはならない（scenes/title.js が行へ伝えない）。→キーでも開く。 */
+.title-item[data-test="title-continue"] { position: relative; }
+.ti-sub { position: absolute; right: 18px; bottom: 8px; padding: 2px 12px 3px; border: 1px solid color-mix(in srgb, var(--gold) 55%, transparent); border-radius: 999px;
+  font-size: 14px; line-height: 1.3; letter-spacing: 0.06em; color: var(--gold); background: #0b081266; white-space: nowrap; cursor: pointer; transition: background 0.2s, color 0.2s; }
+.ti-sub:hover, .ti-sub.is-picked { background: color-mix(in srgb, var(--gold) 22%, #0b0812); color: #fff3cf; }
+.ti-sub[hidden] { display: none; }
+@media (pointer: coarse) and (hover: none) {
+  .title:not(:root) .ti-sub { font-size: max(14px, calc(11.2px / var(--k, 1))); }
+}
 /* 副題（はじめから等）は残す（2026-11-08 オーナー指示）。通常版では主文のすぐ右に、下端（ベースライン）をそろえて並べ、
    その1行を行の高さの中央に置く（flex-wrap + align-content。折り返さない幅は検査で確かめる）。
    スマホ横持ちのタッチ端末では副題を実寸11px以上（ステージ上 21〜24px。丸め誤差で11pxを割らないよう11.2pxで割る）に上げ、主文（26px）より一段小さいまま。
@@ -4646,10 +4656,10 @@ body:not(:root) .vn-choices:has(> .vn-choice:nth-child(6)) > .vn-choice {
 .title-menu:has(> :nth-child(6)) { gap: 10px; margin-top: 12px; }
 /* 選んでいる行（.is-current）はいつも1つ。開いた時はおすすめの行に付き、マウス・Tab・↑↓で動く（scenes/title.js）。
    マウスを乗せた行・フォーカスのある行も同じ見た目（script が is-current をそこへ移すので、2行が同時に光ることはない）。 */
-.title-item:is(.is-current, :hover, :focus-visible):not(:disabled) { color: var(--gold-hi); transform: translateX(10px); outline: none; }
+.title-item:is(.is-current, :hover, :focus-visible):not(:disabled, .is-locked) { color: var(--gold-hi); transform: translateX(10px); outline: none; }
 /* 印（◆）は行の左の余白に出す（主文と、その下の添え書きの左端をそろえたまま）。 */
 .ti-en { position: relative; }
-.title-item:is(.is-current, :hover):not(:disabled) .ti-en::before { content: "◆"; position: absolute; right: 100%; top: 50%; margin-right: 12px; translate: 0 -50%; font-size: 16px; letter-spacing: 0; color: var(--gold); }
+.title-item:is(.is-current, :hover):not(:disabled, .is-locked) .ti-en::before { content: "◆"; position: absolute; right: 100%; top: 50%; margin-right: 12px; translate: 0 -50%; font-size: 16px; letter-spacing: 0; color: var(--gold); }
 /* 押した行は一瞬白く光る（決定の手応え。確認の小窓や煙の幕より先に出る）。 */
 .title-item.is-picked:not(:disabled) .ti-en { animation: title-pick 0.32s ease-out; }
 @keyframes title-pick { 0% { color: #fff; text-shadow: 0 0 18px rgba(255, 226, 166, 0.95); } 100% { text-shadow: 0 0 0 rgba(255, 226, 166, 0); } }

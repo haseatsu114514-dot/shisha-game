@@ -74,7 +74,7 @@ await suite("save-load", async check => {
         return localStorage.getItem(core.SAVE_SLOTS[0].key);
       });
       await page.locator('[data-test="title-continue"]:enabled').waitFor();
-      await page.locator('[data-test="title-load"]:enabled').waitFor();
+      await page.locator('[data-test="title-load"]:not([disabled])').waitFor(); // 「つづきから」の行の押し所（span）。セーブが無い間は disabled 属性（EXT02）
       assert.match(await resume.locator(".ti-note").innerText(), /DAY 7/);
       await page.locator('[data-test="title-new"]').click();
       await page.locator('[data-test="cancel-new"]').click();

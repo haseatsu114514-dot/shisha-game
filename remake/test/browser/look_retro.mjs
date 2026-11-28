@@ -176,7 +176,10 @@ await suite("look_retro", async (check) => {
       retro: [...document.querySelectorAll(".retro-title > .retro-menu")].map((n) => [n.dataset.test.replace(/^retro-/, ""), n.disabled, n.querySelector("b").textContent]),
     }));
     assert.deepEqual(menus.retro, menus.classic, "the lower screen mirrors the title menu, including disabled items");
-    assert(menus.retro.some(([test, disabled]) => test === "title-load" && disabled), "LOAD is disabled without a save");
+    // ロードは「つづきから」の行の中の押し所（EXT02）。DS風では下画面の本体のボタン「セーブを選ぶ」で、セーブが無い間は出ない
+    assert.equal(await page.locator(t("retro-key-load")).count(), 0, "no セーブを選ぶ without a save");
+    assert(menus.retro.some(([test, , label]) => test === "title-extra" && label === "？？？"), "EXTRA stays ？？？ until the axe is played");
+    assert.equal(await page.locator(`${t("retro-title-extra")}.is-locked`).count(), 1, "the locked EXTRA row looks locked on the lower screen");
     // NEW GAME の中継: 現行のタイトルが閉じて、冒頭の会話が始まる
     await page.locator(t("retro-title-new")).tap();
     await page.waitForFunction(() => document.body.dataset.screen !== "title" && document.body.classList.contains("in-vn"), null, { timeout: 20000 });
@@ -643,7 +646,7 @@ await suite("look_retro", async (check) => {
     await page.locator(shellFor("title")).waitFor({ timeout: 30000 });
     await page.locator("#boot").waitFor({ state: "detached" });
     await arm(page);
-    await page.locator(t("retro-title-load")).tap();
+    await page.locator(t("retro-key-load")).tap();
     await page.locator(t("slot-0")).waitFor({ state: "attached" });
     await page.evaluate(() => document.querySelector('[data-test="slot-0"]').click());
     const pins = await mapRows(page, "chapter 5 home map");
