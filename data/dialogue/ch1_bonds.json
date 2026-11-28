@@ -472,6 +472,11 @@
           "text": "閉店後の客は気前がいいんだ。覚えとけ"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_bond_sumi",
+          "portrait_only": true
+        },
+        {
           "speaker": "sumi",
           "face": "normal",
           "text": "……ほら、お前も吸え。自分の一台だろう"
@@ -480,6 +485,10 @@
           "speaker": "",
           "face": "",
           "text": "二人分の煙が、暖かな灯りの下で重なり、ゆっくり消えていった。"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "type": "apply",
@@ -575,6 +584,11 @@
           "text": "おう。お互い、確かめ合う仲ってことで"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_bond_naru",
+          "portrait_only": true
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "拳を合わせる。教わってきた手が、今日は対等な重さで返ってきた。"
@@ -583,6 +597,10 @@
           "speaker": "naru",
           "face": "normal",
           "text": "あ、手入れは水洗いだけな。洗剤使ったら、二度と口きかねえから"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "type": "condition",
@@ -985,6 +1003,11 @@
           "text": "……はい。ここで描いたので。ここの人に、最初に"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_bond_tsumugi",
+          "portrait_only": true
+        },
+        {
           "speaker": "hajime",
           "face": "smile",
           "text": "……いい絵だね。この子、ここで寝てるのがいちばん似合う"
@@ -993,6 +1016,10 @@
           "speaker": "tsumugi",
           "face": "smile",
           "text": "……はい。私も、そう思います"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "speaker": "",
@@ -1225,6 +1252,11 @@
           "text": "でもね。ミントを吸う理由が、上書きだけじゃなくなってきたの"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_bond_minto",
+          "portrait_only": true
+        },
+        {
           "speaker": "minto",
           "face": "ura_smile",
           "text": "きみの一台を待つ時間とか。こうして、外で話す時間とか"
@@ -1238,6 +1270,10 @@
           "speaker": "",
           "face": "",
           "text": "布の中から、すっとしたミントの匂いがした。店で嗅ぐより、少しだけやわらかい匂いだった。"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "type": "condition",
@@ -1441,6 +1477,11 @@
           "text": "それ、レポートには書けないやつだね。……もう一回、聞かせて"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_bond_rio",
+          "portrait_only": true
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "同じ話をもう一度すると、凛想さんは今度は目を閉じて聞いていた。"
@@ -1454,6 +1495,10 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "これを使ってた日の話も、聞いていいですか"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "speaker": "rio",

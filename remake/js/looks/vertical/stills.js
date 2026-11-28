@@ -23,6 +23,24 @@ export const PORTRAIT_STILLS = new Set([
   // 告白・結末
   "cg_minto_confession", "cg_tsumugi_confession", "cg_ageha_confession", "cg_mashiro_confession", "cg_rio_confession",
   "cg_hiyori_confession", "cg_samechan_confession", "cg_ending_tonari_night",
+  // 正本照合済みの回想・絆の締めくくり（横の元絵が無いもの）。
+  "cg_ch4_cigar_bar_friend",
+  "cg_ch4_sensu_first_shisha",
+  "cg_ch4_master_keys",
+  "cg_ch3_volk_jam",
+  "cg_ch4_longlong_pipe",
+  "cg_bond_sumi",
+  "cg_bond_naru",
+  "cg_bond_tsumugi",
+  "cg_bond_minto",
+  "cg_bond_rio",
+  "cg_bond_kumicho",
+  "cg_bond_kuraudo",
+  "cg_bond_samechan",
+  "cg_bond_ageha",
+  "cg_bond_ayatori",
+  "cg_bond_steve",
+  "cg_bond_sheikh",
 ]);
 
 /** 縦の絵の URL（無ければ null） */

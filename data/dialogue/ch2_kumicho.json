@@ -1209,6 +1209,11 @@
           "text": "神崎さんが吸い口を替えて、ホースをこちらへ向けた。前と同じ手つきだった。"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_bond_kumicho",
+          "portrait_only": true
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "一口吸って返すと、神崎さんも自分の吸い口で、長く吸った。煙が二筋、天井で混ざる。"
@@ -1222,6 +1227,10 @@
           "speaker": "hajime",
           "face": "surprise",
           "text": "仕舞い、ですか"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "speaker": "",
