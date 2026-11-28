@@ -5370,13 +5370,17 @@
     },
     {
       "id": "title-extra",
-      "title": "タイトルの EXTRA（あそびば）: 斧投げまでは「？？？」で開かない・遊んでいない遊びは鍵・一覧から遊んで戻る・前のセーブから拾う・縦画面のシート（EXT01）と「つづきから」の行の「セーブを選ぶ」（EXT02）",
+      "title": "タイトルの EXTRA（あそびば）: 斧投げまでは「？？？」で開かない・カード絵の全画面で遊んでいない遊びは鍵・段とセットと本棚はいちばん進んだセーブから・遊んで戻る・前のセーブから拾う・縦持ち（EXT01〜EXT04）と「つづきから」の行の「セーブを選ぶ」（EXT02）",
       "kind": "browser",
       "weight": 0.5,
       "timeout": 5,
       "paths": [
         "remake/js/scenes/extra.js",
+        "remake/js/scenes/extra-progress.js",
         "remake/js/core/extra-games.js",
+        "remake/js/trpg/trial.js",
+        "remake/css/extra.css",
+        "remake/img/ui/extra/**",
         "remake/js/scenes/title.js",
         "remake/js/looks/vertical/title.js",
         "remake/js/looks/retro/title.js",

@@ -112,8 +112,6 @@ function simpleDialog(modal) {
   if (!box || modal.children.length !== 2 || !modal.querySelector(":scope > .modal-backdrop")) return false;
   const body = box.querySelector(":scope > .modal-body"), actions = box.querySelectorAll(":scope > .modal-actions > button");
   if (!actions.length || actions.length > 6) return false;
-  // タイトルの EXTRA の一覧（scenes/extra.js）は、遊びの札を2列と鍵の印で見せるシートで出す（EXT01）
-  if (box.classList.contains("extra-box")) return false;
   // 読み物（規則の紙・一覧・表・見出しのある文）は選択肢の画面に縮めず、シート（retro/sheet.js）で出す
   if (body && body.querySelector("button, input, select, textarea, canvas, img, svg, video, iframe, [contenteditable], article, section, ul, ol, table, h1, h2, h3, h4, h5, h6")) return false;
   return [...box.children].every((node) => node.matches("h3, .modal-body, .modal-actions"));

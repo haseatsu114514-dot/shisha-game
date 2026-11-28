@@ -39,12 +39,16 @@ export function recordExtraPlay(id) {
 
 const count = (value) => Number.isFinite(value) && value > 0;
 
-/** セーブ（state の形）に残る記録から、遊んだ遊びを拾う。記録の形が分かる遊びだけ（ボドゲカフェ・ラクダ・砂丘は、次に遊んだ時から記録する）。 */
+/** セーブ（state の形）に残る記録から、遊んだ遊びを拾う（この部品より前に遊んだ分・端末の記録を消した後も開くように）。 */
 export function extraPlayedInSave(save) {
   const found = new Set();
   const flags = save?.flags || {};
   if (flags._axe_lesson_done || (flags._axe_bar_records && Object.keys(flags._axe_bar_records).length)) found.add("axe");
   if (Object.values(save?.dj?.sets || {}).some((set) => count(set?.plays))) found.add("dj");
+  // ボドゲカフェは、物語を1つ遊び終えた記録。ラクダは走った回数（chapters/ch4-camel-progress.js の CAMEL_FLAG）。砂丘は完走の数
+  if (Object.keys(save?.trpg?.cleared || {}).length) found.add("trpg");
+  if (count(flags._ch4_camel?.plays)) found.add("camel");
+  if (count(save?.desert?.runs)) found.add("desert");
   return found;
 }
 
