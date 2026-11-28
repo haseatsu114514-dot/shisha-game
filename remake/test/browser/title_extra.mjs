@@ -4,8 +4,9 @@
 // 「店番とてつこと一台勝負はミニゲーム扱いにしない　あとエクストラのミニゲームを選ぶ画面はビジュアルも凝りたい　生成してもいいかも
 //  あとミニゲームにも進行度が関係するのはセーブデータから」。
 //   1. 斧投げを遊ぶまでは「？？？／ひみつ」で開かない。押すと開き方を短く知らせ、↑↓のカーソルは乗らない。
-//   2. 選ぶ画面は全画面。カード5枚（絵つき）。遊んでいないカードは「？？？」と鍵で、選ぶと説明だけ（あそぶは押せない）。
-//      斧投げを開いて「やめる」で画面へ戻り、とじるとタイトルのまま（本編のセーブは変わらない）。
+//   2. 選ぶ画面は全画面で、ミニゲームを1つずつ横にスライドして選ぶ（2026-11-28「実際のミニゲームのスクショ使いたい　枠でイメージ画像
+//      何個か見せて　ミニゲームタイトルと　横スライド式でミニゲーム選択」）。各スライドは枠に実際の画面の写真3枚（小さな絵で選べる）と題。
+//      遊んでいない遊びは「？？？」と鍵で、説明だけ（あそぶは押せない）。斧投げを開いて「やめる」で画面へ戻り、とじるとタイトルのまま。
 //   3. 段（初級・中級・上級）は、セーブ枠のうちいちばん進んだものから開く。DJ のセットも同じ。
 //   4. ボドゲカフェは、セーブの本棚のまま開き、「EXTRAへ戻る」で画面へ戻る。
 //   5. この機能より前のセーブ（斧投げの体験済み）からも拾って開く。セーブがあれば「セーブを選ぶ」で枠選び。
@@ -21,7 +22,7 @@ const openExtra = async (page) => {
   await page.locator(t("title-extra")).click();
   await page.locator(`${t("extra-screen")}:not([hidden])`).waitFor();
 };
-const chips = (page) => page.locator(`${t("extra-chips")} .xs-chip`).evaluateAll((ns) => ns.map((n) =>
+const chips = (page, id) => page.locator(`${t(`extra-chips-${id}`)} .xs-chip`).evaluateAll((ns) => ns.map((n) =>
   [n.querySelector("b").textContent, n.classList.contains("is-locked") ? "lock" : n.classList.contains("is-on") ? "on" : n.classList.contains("is-pick") ? "pick" : "info"]));
 /** セーブ枠に state の形を書く（key は "auto" か手動の枠）。fill は value に中身を足す文。 */
 const seedSave = (page, key, fill) => page.evaluate(async ({ key, fill }) => {
@@ -59,30 +60,35 @@ await suite("title_extra", async (check) => {
       ["EXTRA", "あそびば", false]);
     await openExtra(page);
     assert.equal(await page.locator(`${t("extra-count")} b`).textContent(), "2");
-    const cards = await page.locator(".xs-card").evaluateAll((ns) => ns.map((n) => [n.dataset.test, n.querySelector(".xs-card-name").textContent, n.classList.contains("is-locked"),
-      n.querySelector(".xs-art").getAttribute("src")]));
-    assert.deepEqual(cards, GAMES.map((id) => ["axe", "dj"].includes(id)
-      ? [`extra-${id}`, { axe: "斧投げ", dj: "DJ" }[id], false, `img/ui/extra/card-${id}.webp`]
-      : [`extra-${id}`, "？？？", true, `img/ui/extra/card-${id}.webp`]));
-    // カードの絵が読めている
-    await page.waitForFunction(() => [...document.querySelectorAll(".xs-card .xs-art")].every((n) => n.complete && n.naturalWidth >= 640));
-    // 最初は遊んだ中の先頭（斧投げ）。セーブが無いので段は初級だけが開き、いちばん上の開いた段を選んでおく
-    assert.equal(await page.locator(t("extra-detail-name")).textContent(), "斧投げ");
-    assert.deepEqual(await chips(page), [["練習", "pick"], ["初級", "on"], ["中級", "lock"], ["上級", "lock"]]);
-    // 遊んでいないカードは説明だけで、あそぶは押せない
-    await page.locator(t("extra-camel")).click();
-    assert.equal(await page.locator(t("extra-detail-name")).textContent(), "？？？");
-    assert(await page.locator(t("extra-play")).isDisabled());
+    // スライドは5枚。遊んでいない遊びは「？？？」と鍵。下の並びも同じ数
+    const slides = await page.locator(".xs-slide").evaluateAll((ns) => ns.map((n) => [n.dataset.game, n.querySelector(".xs-name").textContent, n.classList.contains("is-locked"),
+      n.querySelectorAll(".xs-shot").length, n.querySelectorAll(".xs-thumb").length]));
+    assert.deepEqual(slides, GAMES.map((id) => ["axe", "dj"].includes(id) ? [id, { axe: "斧投げ", dj: "DJ" }[id], false, 3, 3] : [id, "？？？", true, 3, 0]));
+    assert.deepEqual(await page.locator(`${t("extra-pager")} .xs-dot`).evaluateAll((ns) => ns.map((n) => n.textContent)), ["斧投げ", "？？？", "DJ", "？？？", "？？？"]);
+    // 最初は遊んだ中の先頭（斧投げ）。枠の写真が読めていて、小さな絵で切り替わる
+    assert.equal(await page.locator(".xs-slide.is-current").getAttribute("data-game"), "axe");
+    await page.waitForFunction(() => [...document.querySelectorAll(".xs-slide.is-current .xs-shot")].every((n) => n.complete && n.naturalWidth >= 768));
+    await page.locator(t("extra-thumb-axe-2")).click();
+    assert.deepEqual(await page.locator(`${t("extra-frame-axe")} .xs-shot`).evaluateAll((ns) => ns.map((n) => n.classList.contains("on"))), [false, true, false]);
+    // セーブが無いので段は初級だけが開き、いちばん上の開いた段を選んでおく
+    assert.deepEqual(await chips(page, "axe"), [["練習", "pick"], ["初級", "on"], ["中級", "lock"], ["上級", "lock"]]);
+    // 次の矢印で、まだ遊んでいない遊び（ボドゲカフェ）のスライドへ。説明だけで、あそぶは押せない
+    await page.locator(t("extra-next")).click();
+    await page.waitForFunction(() => document.querySelector(".xs-slide.is-current")?.dataset.game === "trpg");
+    assert.equal(await page.locator(t("extra-name-trpg")).textContent(), "？？？");
+    assert(await page.locator(t("extra-play-trpg")).isDisabled());
     // 斧投げ（練習）を開いて、「やめる」で画面へ戻る
     await page.locator(t("extra-axe")).click();
-    await page.locator(t("extra-chip-practice")).click();
-    await page.locator(t("extra-play")).click();
+    await page.waitForFunction(() => document.querySelector(".xs-slide.is-current")?.dataset.game === "axe");
+    await page.locator(t("extra-chip-axe-practice")).click();
+    await page.locator(t("extra-play-axe")).click();
     await page.locator(t("extra-host-axe")).waitFor();
     assert(await page.locator(t("extra-screen")).isHidden());
     await page.locator(t("axe-cancel")).waitFor({ timeout: 20000 });
     await page.locator(t("axe-cancel")).click();
     await page.locator(t("extra-host-axe")).waitFor({ state: "detached" });
     await page.locator(`${t("extra-screen")}:not([hidden])`).waitFor();
+    assert.equal(await page.locator(".xs-slide.is-current").getAttribute("data-game"), "axe");
     await page.locator(t("extra-close")).click();
     await page.locator(t("extra-screen")).waitFor({ state: "detached" });
     assert.equal(await page.evaluate(() => document.body.dataset.screen), "title");
@@ -98,16 +104,16 @@ await suite("title_extra", async (check) => {
     await seedSave(page, "suien_remake_slot1", 'value.growth.playTiers = { axe: { cleared: ["easy", "normal"] } };');
     await page.reload(); await ready(page);
     await openExtra(page);
-    assert.deepEqual(await chips(page), [["練習", "pick"], ["初級", "pick"], ["中級", "pick"], ["上級", "on"]]);
-    // カードの印は、クリアした段の数
-    assert.equal(await page.locator(`${t("extra-axe")} .xs-pips i.on`).count(), 2);
+    assert.deepEqual(await chips(page, "axe"), [["練習", "pick"], ["初級", "pick"], ["中級", "pick"], ["上級", "on"]]);
+    // クリアした段には印
+    assert.equal(await page.locator(`${t("extra-chips-axe")} .xs-chip.is-cleared`).count(), 2);
     await page.locator(t("extra-dj")).click();
-    assert.deepEqual(await chips(page), [["SET 1", "pick"], ["SET 2", "on"], ["SET 3", "lock"]]);
+    assert.deepEqual(await chips(page, "dj"), [["SET 1", "pick"], ["SET 2", "on"], ["SET 3", "lock"]]);
     // キーでも選べる: ← で斧投げへ、↑ で段をひとつ下へ、Esc でとじる
     await page.keyboard.press("ArrowLeft"); await page.keyboard.press("ArrowLeft");
-    assert.equal(await page.locator(t("extra-detail-name")).textContent(), "斧投げ");
+    await page.waitForFunction(() => document.querySelector(".xs-slide.is-current")?.dataset.game === "axe");
     await page.keyboard.press("ArrowUp");
-    assert.deepEqual((await chips(page)).find(([, state]) => state === "on"), ["中級", "on"]);
+    assert.deepEqual((await chips(page, "axe")).find(([, state]) => state === "on"), ["中級", "on"]);
     await page.keyboard.press("Escape");
     await page.locator(t("extra-screen")).waitFor({ state: "detached" });
   });
@@ -128,9 +134,10 @@ await suite("title_extra", async (check) => {
     await page.reload(); await ready(page);
     await openExtra(page);
     await page.locator(t("extra-trpg")).click();
-    assert.deepEqual(await chips(page), [[`本 ${owned}冊`, "info"], ["物語 0", "info"]]);
+    await page.waitForFunction(() => document.querySelector(".xs-slide.is-current")?.dataset.game === "trpg");
+    assert.deepEqual(await chips(page, "trpg"), [[`本 ${owned}冊`, "info"], ["物語 0", "info"]]);
     const before = await storageSnapshot(page);
-    await page.locator(t("extra-play")).click();
+    await page.locator(t("extra-play-trpg")).click();
     await page.locator(t("extra-host-trpg")).waitFor();
     const close = page.locator(t("trpg-campaign-close")).first();
     await close.waitFor({ timeout: 30000 });
@@ -160,18 +167,20 @@ await suite("title_extra", async (check) => {
     await page.locator(`${t("vt-title-extra")}:not(.is-locked)`).waitFor({ timeout: 30000 });
     await page.locator(t("vt-title-extra")).tap();
     await page.locator(`${t("extra-screen")}:not([hidden])`).waitFor();
-    await page.waitForTimeout(700); // カードの出る動きが済んでから測る
+    await page.waitForTimeout(500);
     const m = await page.evaluate(() => {
       const box = (sel) => document.querySelector(sel).getBoundingClientRect();
-      return { cards: box(".xs-cards"), detail: box(".xs-detail"), play: box(".xs-play"), w: innerWidth, h: innerHeight,
-        scroll: getComputedStyle(document.querySelector(".xs-cards")).overflowX, card: box(".xs-card.is-current") };
+      return { frame: box(".xs-slide.is-current .xs-frame"), info: box(".xs-slide.is-current .xs-info"), play: box(".xs-slide.is-current .xs-play"),
+        pager: box(".xs-pager"), w: innerWidth, h: innerHeight };
     });
-    // 縦の並べ方: カードの列（横に流せる）の下に詳しい欄、「あそぶ」は下の方で横いっぱいに近い
-    assert(m.detail.top >= m.cards.bottom - 1 && m.play.bottom <= m.h && m.play.width >= m.w * 0.7, JSON.stringify(m));
-    assert.equal(m.scroll, "auto");
-    assert(m.card.left >= 0 && m.card.right <= m.w, `選んだカードは画面の中 ${JSON.stringify(m.card)}`);
-    await page.locator(t("extra-desert")).tap();
-    assert.equal(await page.locator(t("extra-detail-name")).textContent(), "？？？");
+    // 縦の並べ方: 枠を上、題と札を下に。「あそぶ」は横いっぱいに近く、下の並びより上
+    assert(m.frame.left >= 0 && m.frame.right <= m.w && m.info.top >= m.frame.bottom - 1, JSON.stringify(m));
+    assert(m.play.width >= m.w * 0.7 && m.play.bottom <= m.pager.top + 1 && m.pager.bottom <= m.h, JSON.stringify(m));
+    // 指で横に流すと、止まった所のスライドが今のスライドになる
+    await page.locator(t("extra-track")).evaluate((n) => n.scrollTo({ left: n.clientWidth * 4, behavior: "auto" }));
+    await page.waitForFunction(() => document.querySelector(".xs-slide.is-current")?.dataset.game === "desert");
+    assert.equal(await page.locator(t("extra-name-desert")).textContent(), "？？？");
+    assert.equal(await page.locator(".xs-dot.is-current").getAttribute("data-test"), "extra-desert");
     await page.locator(t("extra-close")).tap();
     await page.locator(t("extra-screen")).waitFor({ state: "detached" });
   }, { pageEntry: `${baseURL}?look=vertical`, pageReadySelector: '[data-test="vt-title"]', viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });

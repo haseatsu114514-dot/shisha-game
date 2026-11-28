@@ -1,7 +1,8 @@
 // タイトルの EXTRA（あそびば・要望台帳 EXT01〜）。本編で遊んだミニゲームを、タイトルからいつでも遊び直す。
-// 選ぶ画面は専用の全画面（EXT03。2026-11-27 オーナー「エクストラのミニゲームを選ぶ画面はビジュアルも凝りたい　生成してもいいかも」）。
-// 遊びごとに生成したカード絵（remake/img/ui/extra/。原画は asset_sources/ui/extra-cards-20261127/）を並べ、選んだカードの下に
-// 遊び方の一言と、段（初級・中級・上級）・大会・セット・本棚の進み具合を出す。まだ遊んでいない遊びは「？？？」に鍵の印（押せない）。
+// 選ぶ画面は専用の全画面で、ミニゲームを1つずつ横にスライドして選ぶ（EXT05。2026-11-28 オーナー「実際のミニゲームのスクショ使いたい
+// 枠でイメージ画像何個か見せて　ミニゲームタイトルと　横スライド式でミニゲーム選択」）。各スライドは、枠の中で実際の画面の写真3枚を
+// 切り替えて見せ（下の小さな絵で選べる）、ミニゲームのタイトル（題字のロゴがある遊びはロゴ）と一言・段などの札・「あそぶ」を添える。
+// まだ遊んでいない遊びは「？？？」に鍵の印（写真は暗くぼかし、あそぶは押せない）。下の並びで、全部の数と今どこかが分かる。
 // 進み具合はセーブから読む（EXT04・scenes/extra-progress.js）。斧投げの段と DJ のセットはここで選ぶ（本編では店の画面で選ぶもの）。
 // ラクダの大会と砂丘の段は、本編と同じくゲームの中の札で選ぶ（開いている札はセーブのとおり）。
 // 画面は #stage の外に画面いっぱいで重ねる（横の画面・縦画面・DS風のどれでも同じ。縦持ちは縦の並べ方）。遊んでいる間は隠す。
@@ -16,15 +17,29 @@ import { TIER_LABEL } from "../core/play-tiers.js";
 import { withMinigameStyles } from "../minigames/minigame-styles.js";
 import { extraSaves, loadExtraProgress } from "./extra-progress.js";
 
-/** カードの絵と、選んだ時に出す英字の見出し・一言（2行まで・VPL29）。 */
+/** 英字の見出し（題字のロゴが無い遊びの題）と一言（2行まで・VPL29）。 */
 const INFO = {
   axe: { kicker: "AXE THROWING", line: "的の真ん中を狙って、斧を投げる。" },
   trpg: { kicker: "BOARD GAME CAFE", line: "部員と卓を囲んで、物語を遊ぶ。" },
-  dj: { kicker: "DJ", line: "曲をつないで、フロアを沸かせる。" },
+  dj: { kicker: "DJ MIX", line: "曲をつないで、フロアを沸かせる。" },
   camel: { kicker: "CAMEL RACE", line: "ロボット騎手のラクダで、大会に挑む。" },
   desert: { kicker: "SANDBOARD", line: "夕日の砂丘を、ボードで滑り降りる。" },
 };
-const art = (id) => `img/ui/extra/card-${id}.webp`;
+/**
+ * 枠で見せる実際の画面（3枚ずつ）。斧投げと砂丘は遊び方の写真（実際の画面から撮ったもの）、ほかは EXTRA のために撮ったもの
+ * （img/ui/extra/shots/。撮り方は asset_sources/ui/extra-cards-20261127/shots/capture.mjs）。
+ */
+const SHOTS = {
+  axe: ["axe_throw/howto/how_aim", "axe_throw/howto/how_throw", "axe_throw/howto/how_score"],
+  trpg: ["extra/shots/trpg-1", "extra/shots/trpg-2", "extra/shots/trpg-3"],
+  dj: ["extra/shots/dj-1", "extra/shots/dj-2", "extra/shots/dj-3"],
+  camel: ["extra/shots/camel-1", "extra/shots/camel-2", "extra/shots/camel-3"],
+  desert: ["desert_ride_howto/how_boost", "desert_ride_howto/how_jump", "desert_ride_howto/how_spin"],
+};
+const shot = (path) => `img/ui/${path}.webp`;
+/** ゲームの題字のロゴ（あるものだけ。無い遊びは英字の見出しを題字の代わりに出す）。 */
+const LOGO = { camel: "img/ui/camel_race/ui/logo.webp", desert: "img/ui/desert_ride/logo.webp" };
+const SHOT_MS = 2800;
 const DIVISION_NAME = { easy: "レク", normal: "アマ", hard: "プロ" };
 const copy = (value) => JSON.parse(JSON.stringify(value));
 
@@ -133,36 +148,82 @@ async function play(id, pick, progress) {
 /** 選ぶ画面。choose() で遊びと札を選ぶまで待つ（とじるなら null）。 */
 function extraScreen(played, progress) {
   const count = EXTRA_GAMES.filter((game) => played.has(game.id)).length;
-  let current = Math.max(0, EXTRA_GAMES.findIndex((game) => played.has(game.id)));
-  const picks = {};
-  let resolve = null;
+  let current = -1, resolve = null, timer = 0, scrollTimer = 0;
+  const picks = {}, shotAt = {};
   const finish = (value) => { const done = resolve; resolve = null; done?.(value); };
+  const reduced = () => (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches) || !!config.reduceShake;
 
   const amb = el("img.xs-amb-img", { alt: "", "aria-hidden": "true" });
-  const cards = EXTRA_GAMES.map((game, index) => {
+  const slides = EXTRA_GAMES.map((game, index) => {
     const open = played.has(game.id);
-    const tiers = progress?.[game.id]?.tiers;
-    const node = el(`button.xs-card${open ? "" : ".is-locked"}`, { type: "button", role: "option", style: { "--i": String(index) },
-      "aria-label": open ? game.label : "まだ遊んでいないミニゲーム", dataset: { test: `extra-${game.id}` },
-      onclick: () => { if (index === current && open) start(); else select(index, { sound: true }); } }, [
-      el("img.xs-art", { src: art(game.id), alt: "", draggable: "false", loading: "eager" }),
-      el("span.xs-shade", { "aria-hidden": "true" }),
-      open ? null : el("span.xs-lock", { "aria-hidden": "true" }),
-      el("span.xs-card-foot", [
-        el("span.xs-card-name", { text: open ? game.label : "？？？" }),
-        open && tiers ? el("span.xs-pips", { title: "クリアした段", "aria-label": `クリアした段 ${tiers.filter((t) => t.cleared).length}/3` },
-          tiers.map((t) => el(`i${t.cleared ? ".on" : ""}`))) : null,
-        open && game.id === "trpg" && progress?.trpg ? el("span.xs-card-sub", { text: `物語 ${progress.trpg.cleared}` }) : null,
+    const shots = SHOTS[game.id].map((path, n) => el(`img.xs-shot${n ? "" : ".on"}`, { src: shot(path), alt: open ? `${game.label}の画面 ${n + 1}` : "", draggable: "false", loading: index < 2 ? "eager" : "lazy" }));
+    const frame = el("div.xs-frame", { dataset: { test: `extra-frame-${game.id}` } }, [
+      ...shots, el("span.xs-frame-glint", { "aria-hidden": "true" }),
+      ...(open ? [] : [el("span.xs-lock", { "aria-hidden": "true" }), el("span.xs-frame-q", { text: "？？？" })]),
+    ]);
+    const thumbs = open ? el("div.xs-thumbs", { role: "group", "aria-label": "画面を選ぶ" }, SHOTS[game.id].map((path, n) =>
+      el(`button.xs-thumb${n ? "" : ".on"}`, { type: "button", "aria-label": `画面 ${n + 1}`, dataset: { test: `extra-thumb-${game.id}-${n + 1}` },
+        onclick: () => { SE.click?.(); showShot(index, n); restartTimer(); } }, [el("img", { src: shot(path), alt: "", draggable: "false", loading: "lazy" })]))) : null;
+    const title = open
+      ? (LOGO[game.id] ? el("img.xs-logo", { src: LOGO[game.id], alt: INFO[game.id].kicker, draggable: "false" }) : el("b.xs-title-text", { text: INFO[game.id].kicker }))
+      : el("b.xs-title-text.is-locked", { text: "LOCKED" });
+    const chipRow = el("div.xs-chips", { dataset: { test: `extra-chips-${game.id}` } });
+    const play = el("button.xs-play", { type: "button", disabled: !open, dataset: { test: `extra-play-${game.id}` }, onclick: () => start(index) },
+      [el("span", { text: "あそぶ" }), el("i", { "aria-hidden": "true" })]);
+    const node = el(`section.xs-slide${open ? "" : ".is-locked"}`, { role: "group", "aria-roledescription": "スライド",
+      "aria-label": `${index + 1} / ${EXTRA_GAMES.length} ${open ? game.label : "まだ遊んでいないミニゲーム"}`, dataset: { test: `extra-slide-${game.id}`, game: game.id } }, [
+      el("div.xs-stage", [frame, thumbs]),
+      el("div.xs-info", [
+        el("div.xs-title", [title]),
+        el("h2.xs-name", { text: open ? game.label : "？？？", dataset: { test: `extra-name-${game.id}` } }),
+        el("p.xs-line", { text: open ? INFO[game.id].line : "本編で遊ぶと、ここでいつでも遊べるようになります。" }),
+        chipRow,
+        el("div.xs-info-foot", [el("p.xs-note", { text: open ? "進み具合はセーブから。遊んだ結果はセーブに残りません。" : "" }), play]),
       ]),
     ]);
-    return node;
+    shotAt[game.id] = 0;
+    renderChips(game, open, chipRow);
+    return { node, frame, shots, thumbs, game, open };
   });
-  const kicker = el("p.xs-kicker"), name = el("h2.xs-name", { dataset: { test: "extra-detail-name" } }), line = el("p.xs-line");
-  const chipRow = el("div.xs-chips", { dataset: { test: "extra-chips" } });
-  const playButton = el("button.xs-play", { type: "button", dataset: { test: "extra-play" }, onclick: () => start() }, [el("span", { text: "あそぶ" }), el("i", { "aria-hidden": "true" })]);
-  const note = el("p.xs-note", { text: "進み具合はセーブから。遊んだ結果はセーブに残りません。" });
-  const detail = el("section.xs-detail", { dataset: { test: "extra-detail" }, "aria-live": "polite" }, [
-    el("div.xs-detail-text", [kicker, name, line]), chipRow, el("div.xs-detail-foot", [note, playButton])]);
+
+  function renderChips(game, open, row) {
+    const chips = open ? chipsFor(game.id, progress) : [];
+    if (!(game.id in picks)) picks[game.id] = firstPick(chips);
+    row.replaceChildren(...chips.map((chip) => {
+      const selectable = chip.pick != null && chip.open;
+      const on = selectable && picks[game.id] === chip.pick;
+      return el(`${selectable ? "button" : "span"}.xs-chip${chip.open ? "" : ".is-locked"}${chip.cleared ? ".is-cleared" : ""}${on ? ".is-on" : ""}${selectable ? ".is-pick" : ""}`, {
+        ...(selectable ? { type: "button", "aria-pressed": String(on), onclick: () => { SE.click?.(); picks[game.id] = chip.pick; renderChips(game, open, row); } } : {}),
+        dataset: { test: `extra-chip-${game.id}-${chip.pick ?? chip.label}` } }, [
+        el("b", { text: chip.label }),
+        chip.open ? (chip.note ? el("small", { text: chip.note }) : null) : el("small", { text: chip.lock || "まだ" }),
+      ]);
+    }));
+    row.hidden = !chips.length;
+  }
+  function showShot(index, n) {
+    const slide = slides[index];
+    const at = (n + slide.shots.length) % slide.shots.length;
+    shotAt[slide.game.id] = at;
+    slide.shots.forEach((img, i) => img.classList.toggle("on", i === at));
+    slide.thumbs?.querySelectorAll(".xs-thumb").forEach((thumb, i) => { thumb.classList.toggle("on", i === at); thumb.setAttribute("aria-pressed", String(i === at)); });
+    if (index === current) amb.src = slide.shots[at].src;
+  }
+  function restartTimer() {
+    clearInterval(timer);
+    timer = 0;
+    const slide = slides[current];
+    if (!slide?.open || root.hidden || reduced()) return;
+    timer = setInterval(() => showShot(current, shotAt[slide.game.id] + 1), SHOT_MS);
+  }
+
+  const track = el("div.xs-track", { role: "region", "aria-roledescription": "カルーセル", "aria-label": "ミニゲーム", dataset: { test: "extra-track" } }, slides.map((s) => s.node));
+  const prev = el("button.xs-nav.xs-prev", { type: "button", "aria-label": "前のミニゲーム", dataset: { test: "extra-prev" }, onclick: () => go(current - 1, { sound: true }) }, [el("i", { "aria-hidden": "true" })]);
+  const next = el("button.xs-nav.xs-next", { type: "button", "aria-label": "次のミニゲーム", dataset: { test: "extra-next" }, onclick: () => go(current + 1, { sound: true }) }, [el("i", { "aria-hidden": "true" })]);
+  const pager = el("nav.xs-pager", { "aria-label": "ミニゲームの一覧", dataset: { test: "extra-pager" } }, EXTRA_GAMES.map((game, index) =>
+    el(`button.xs-dot${played.has(game.id) ? "" : ".is-locked"}`, { type: "button", dataset: { test: `extra-${game.id}` },
+      "aria-label": played.has(game.id) ? game.label : "まだ遊んでいないミニゲーム", onclick: () => go(index, { sound: true }) }, [
+      el("i", { "aria-hidden": "true" }), el("span", { text: played.has(game.id) ? game.label : "？？？" })])));
   const close = el("button.xs-close", { type: "button", dataset: { test: "extra-close" }, "aria-label": "とじる", onclick: () => { SE.cancel?.(); finish(null); } },
     [el("i", { "aria-hidden": "true" }), el("span", { text: "とじる" })]);
   const root = el("div.extra-screen", { role: "dialog", "aria-modal": "true", "aria-label": "EXTRA あそびば", dataset: { test: "extra-screen" } }, [
@@ -172,54 +233,60 @@ function extraScreen(played, progress) {
       el("p.xs-count", { dataset: { test: "extra-count" } }, [el("span", { text: "遊んだミニゲーム" }), el("b", { text: String(count) }), el("span", { text: `/ ${EXTRA_GAMES.length}` })]),
       close,
     ]),
-    el("div.xs-cards", { role: "listbox", "aria-label": "ミニゲーム", dataset: { test: "extra-cards" } }, cards),
-    detail,
+    el("div.xs-body", [prev, track, next]),
+    pager,
   ]);
 
-  function renderDetail() {
-    const game = EXTRA_GAMES[current], open = played.has(game.id);
-    for (const [index, card] of cards.entries()) { card.classList.toggle("is-current", index === current); card.setAttribute("aria-selected", String(index === current)); }
-    root.dataset.game = game.id;
-    root.classList.toggle("is-locked", !open);
-    amb.src = art(game.id);
-    kicker.textContent = open ? INFO[game.id].kicker : "LOCKED";
-    name.textContent = open ? game.label : "？？？";
-    line.textContent = open ? INFO[game.id].line : "本編で遊ぶと、ここでいつでも遊べるようになります。";
-    const chips = open ? chipsFor(game.id, progress) : [];
-    if (!(game.id in picks)) picks[game.id] = firstPick(chips);
-    chipRow.replaceChildren(...chips.map((chip) => {
-      const selectable = chip.pick != null && chip.open;
-      const on = selectable && picks[game.id] === chip.pick;
-      return el(`${selectable ? "button" : "span"}.xs-chip${chip.open ? "" : ".is-locked"}${chip.cleared ? ".is-cleared" : ""}${on ? ".is-on" : ""}${selectable ? ".is-pick" : ""}`, {
-        ...(selectable ? { type: "button", "aria-pressed": String(on), onclick: () => { SE.click?.(); picks[game.id] = chip.pick; renderDetail(); } } : {}),
-        dataset: { test: `extra-chip-${chip.pick ?? chip.label}` } }, [
-        el("b", { text: chip.label }),
-        chip.open ? (chip.note ? el("small", { text: chip.note }) : null) : el("small", { text: chip.lock || "まだ" }),
-      ]);
-    }));
-    chipRow.hidden = !chips.length;
-    playButton.disabled = !open;
+  /** 今のスライドを決める（スライドの位置・下の並び・背景・写真の切り替え）。 */
+  function setCurrent(index) {
+    if (index === current) return;
+    current = index;
+    slides.forEach((slide, i) => {
+      slide.node.classList.toggle("is-current", i === current);
+      slide.node.toggleAttribute("inert", i !== current);
+    });
+    pager.querySelectorAll(".xs-dot").forEach((dot, i) => { dot.classList.toggle("is-current", i === current); dot.setAttribute("aria-current", String(i === current)); });
+    prev.disabled = current === 0;
+    next.disabled = current === slides.length - 1;
+    root.dataset.game = slides[current].game.id;
+    root.classList.toggle("is-locked", !slides[current].open);
+    amb.src = slides[current].shots[shotAt[slides[current].game.id]].src;
+    restartTimer();
   }
-  function select(index, { sound = false, focus = false } = {}) {
-    const next = (index + cards.length) % cards.length;
-    if (next !== current && sound) SE.click?.();
-    current = next;
-    renderDetail();
-    cards[current].scrollIntoView?.({ block: "nearest", inline: "center", behavior: "smooth" });
-    if (focus) cards[current].focus({ preventScroll: true });
+  function go(index, { sound = false, smooth = true } = {}) {
+    const to = Math.max(0, Math.min(slides.length - 1, index));
+    if (sound && to !== current) SE.click?.();
+    trackWidth = track.clientWidth;
+    track.scrollTo({ left: to * trackWidth, behavior: smooth && !reduced() ? "smooth" : "auto" });
+    setCurrent(to);
   }
-  function start() {
-    const game = EXTRA_GAMES[current];
-    if (!played.has(game.id)) { SE.cancel?.(); toast("本編で遊ぶと開きます"); return; }
+  // 指で横に流した時は、止まった所のスライドを今のスライドにする
+  track.addEventListener("scroll", () => {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => { if (track.clientWidth) setCurrent(Math.round(track.scrollLeft / track.clientWidth)); }, 90);
+  }, { passive: true });
+  // 画面の幅が変わったら（回転など）、今のスライドの位置へ合わせ直す。幅が同じ時は何もしない（スマホは流すだけで resize が来ることがある）
+  let trackWidth = 0;
+  const onResize = () => {
+    const width = track.clientWidth;
+    if (current < 0 || !width || width === trackWidth) return;
+    trackWidth = width;
+    track.scrollTo({ left: current * width, behavior: "auto" });
+  };
+  globalThis.addEventListener?.("resize", onResize);
+
+  function start(index = current) {
+    const slide = slides[index];
+    if (!slide.open) { SE.cancel?.(); toast("本編で遊ぶと開きます"); return; }
     SE.select?.();
-    finish({ id: game.id, pick: picks[game.id] ?? null });
+    finish({ id: slide.game.id, pick: picks[slide.game.id] ?? null });
   }
   const onKey = (event) => {
     if (!resolve || root.hidden || event.altKey || event.ctrlKey || event.metaKey) return;
     if (event.key === "Escape") { event.preventDefault(); SE.cancel?.(); finish(null); return; }
     const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
-    if (step) { event.preventDefault(); select(current + step, { sound: true, focus: true }); return; }
-    const chips = [...chipRow.querySelectorAll(".xs-chip.is-pick")];
+    if (step) { event.preventDefault(); go(current + step, { sound: true }); return; }
+    const chips = [...slides[current].node.querySelectorAll(".xs-chip.is-pick")];
     const chipStep = { ArrowDown: 1, ArrowUp: -1 }[event.key];
     if (chipStep && chips.length) {
       event.preventDefault();
@@ -227,21 +294,21 @@ function extraScreen(played, progress) {
       chips[Math.max(0, Math.min(chips.length - 1, at + chipStep))].click();
       return;
     }
-    if ((event.key === "Enter" || event.key === " ") && !event.repeat && document.activeElement?.closest?.(".xs-chip, .xs-close")) return;
+    if ((event.key === "Enter" || event.key === " ") && !event.repeat && document.activeElement?.closest?.(".xs-chip, .xs-close, .xs-thumb, .xs-dot, .xs-nav")) return;
     if ((event.key === "Enter" || event.key === " ") && !event.repeat) { event.preventDefault(); start(); }
   };
   document.addEventListener("keydown", onKey, true);
-  renderDetail();
 
   return {
     root,
     choose() {
       root.hidden = false;
-      requestAnimationFrame(() => cards[current]?.focus({ preventScroll: true }));
+      const first = current < 0 ? Math.max(0, EXTRA_GAMES.findIndex((game) => played.has(game.id))) : current;
+      requestAnimationFrame(() => { go(first, { smooth: false }); restartTimer(); slides[first].node.querySelector(".xs-play:not(:disabled)")?.focus({ preventScroll: true }); });
       return new Promise((done) => { resolve = done; });
     },
-    hide() { root.hidden = true; },
-    destroy() { document.removeEventListener("keydown", onKey, true); root.remove(); },
+    hide() { root.hidden = true; clearInterval(timer); timer = 0; },
+    destroy() { clearInterval(timer); clearTimeout(scrollTimer); document.removeEventListener("keydown", onKey, true); globalThis.removeEventListener?.("resize", onResize); root.remove(); },
   };
 }
 
