@@ -128,5 +128,31 @@
   ],
   "result": "ch5_b.png",
   "prompt": "Recreate the attached chapter title illustration as a new SQUARE (1:1) illustration for a vertical smartphone screen. It will be shown on its own between a game logo above and the chapter name below, so it must be a pure picture: remove ALL text, titles, letters, numbers, logos, captions and lettering from the image — no writing of any kind anywhere. Keep the same characters (same faces, hairstyles, eye colors, outfits and accessories), the same art style and rendering, the same color palette, lighting, mood and setting as the attached image. Do not add any new people. Recompose for the square frame so the subject fills it: faces fully visible and not cut by the edges, nothing important touching the borders. The young man in the black cap and black hoodie wears NO necklace and NO pendant. No hookah, no shisha pipes or water pipes, no smoking equipment anywhere (soft drifting smoke in the air is fine). The enormous mechanical metal head with glowing blue and purple eyes seen slightly from below, looming and filling the square, with purple gears, cables and sparks around it and glowing purple smoke."
+ },
+ {
+  "chapter": 1,
+  "tag": "c",
+  "model": "gpt-image-2.6-sunburst",
+  "endpoint": "/v1/images/edits",
+  "size": "1024x1024",
+  "quality": "high",
+  "references": [
+   "remake/img/ui/chapters/ch1-title.webp"
+  ],
+  "result": "ch1_c.png",
+  "prompt": "Recreate the attached chapter title illustration as a new SQUARE (1:1) illustration for a vertical smartphone screen. It will be shown on its own between a game logo above and the chapter name below, so it must be a pure picture: remove ALL text, titles, letters, numbers, logos, captions and lettering from the image — no writing of any kind anywhere. Keep the same characters (same faces, hairstyles, eye colors, outfits and accessories), the same art style and rendering, the same color palette, lighting, mood and setting as the attached image. Do not add any new people. Recompose for the square frame so the subject fills it: faces fully visible and not cut by the edges, nothing important touching the borders. The young man in the black cap and black hoodie wears NO necklace and NO pendant. No hookah, no shisha pipes or water pipes, no smoking equipment anywhere (soft drifting smoke in the air is fine). Keep the clean white background and the exact same crisp pixel-art style. Show the same six pixel-art characters in the same order from left to right, all walking to the right in ONE single horizontal row, side by side at the same scale, evenly spaced with a clear gap between every two of them — nobody overlaps or touches anyone else. Their feet stand on one common baseline a little below the middle of the square, and the row spans almost the full width. Above them, only a few faint grey wisps of smoke drift on the white."
+ },
+ {
+  "chapter": 1,
+  "tag": "d",
+  "model": "gpt-image-2.6-sunburst",
+  "endpoint": "/v1/images/edits",
+  "size": "1024x1024",
+  "quality": "high",
+  "references": [
+   "remake/img/ui/chapters/ch1-title.webp"
+  ],
+  "result": "ch1_d.png",
+  "prompt": "Recreate the attached chapter title illustration as a new SQUARE (1:1) illustration for a vertical smartphone screen. It will be shown on its own between a game logo above and the chapter name below, so it must be a pure picture: remove ALL text, titles, letters, numbers, logos, captions and lettering from the image — no writing of any kind anywhere. Keep the same characters (same faces, hairstyles, eye colors, outfits and accessories), the same art style and rendering, the same color palette, lighting, mood and setting as the attached image. Do not add any new people. Recompose for the square frame so the subject fills it: faces fully visible and not cut by the edges, nothing important touching the borders. The young man in the black cap and black hoodie wears NO necklace and NO pendant. No hookah, no shisha pipes or water pipes, no smoking equipment anywhere (soft drifting smoke in the air is fine). Keep the clean white background and the exact same crisp pixel-art style. Show the same six pixel-art characters in the same order from left to right, all walking to the right in ONE single horizontal row, side by side at the same scale, evenly spaced with a clear gap between every two of them — nobody overlaps or touches anyone else. The row is vertically centered and spans almost the full width, each with a very soft pale grey shadow on the ground. A few faint grey wisps of smoke drift above and below them."
  }
 ]

@@ -29,6 +29,15 @@ CHAPTERS = {
         "b": "Keep the clean white background and the exact same crisp pixel-art style. Show the same six pixel-art characters in the same order, "
              "walking to the right in one line that recedes diagonally from the front-right to the back-left, the nearest one largest, so the line fills the square. "
              "Add only a few faint grey wisps of smoke drifting along the line.",
+        # オーナー「1章のだけちょっとキャラ重なったりしてるのと一列にしたい」（VPN29）
+        "c": "Keep the clean white background and the exact same crisp pixel-art style. Show the same six pixel-art characters in the same order from left to right, "
+             "all walking to the right in ONE single horizontal row, side by side at the same scale, evenly spaced with a clear gap between every two of them — "
+             "nobody overlaps or touches anyone else. Their feet stand on one common baseline a little below the middle of the square, and the row spans almost the full width. "
+             "Above them, only a few faint grey wisps of smoke drift on the white.",
+        "d": "Keep the clean white background and the exact same crisp pixel-art style. Show the same six pixel-art characters in the same order from left to right, "
+             "all walking to the right in ONE single horizontal row, side by side at the same scale, evenly spaced with a clear gap between every two of them — "
+             "nobody overlaps or touches anyone else. The row is vertically centered and spans almost the full width, each with a very soft pale grey shadow on the ground. "
+             "A few faint grey wisps of smoke drift above and below them.",
     },
     2: {
         "a": "Center the orange-haired girl (twin tails, small bear hair clip, leopard-print jacket, red top, choker) as the main subject from the chest up, slightly smiling, "
