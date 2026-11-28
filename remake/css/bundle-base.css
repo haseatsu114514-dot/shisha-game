@@ -867,9 +867,10 @@ small.dc-sub { font-size: 20px; color: #f1e7d6; }
 /* 縦持ちが基本（LK24・VPO01。2026-11-28 オーナー「基本は縦画面で遊ぶ仕様にしていって　今開くと横向きにしろとか出るけど」）。
    回転案内で全画面を覆うのは、旧版の画面を選んだ端末を縦に持った時だけ。縦画面では、まだ縦にしていない場面
    （シーシャ作り・大会・店番・ミニゲーム）でだけ look-vertical.css が出す。
-   様式が決まる前（起動直後。<html> に data-look がまだ無い間）は出さない（開いた瞬間に「横向きで」と出ていた）。 */
+   本編（index.html）の、様式が決まる前（起動直後。<html> の data-look-boot は js/core/look.js が様式を付けた時に外す）は出さない
+   （開いた瞬間に「横向きで」と出ていた）。様式を持たない単独のページ（ミニゲームの試遊ページなど）は今までどおり縦持ちで出す。 */
 @media (orientation: portrait) and (hover: none) and (pointer: coarse) {
-  :root[data-look]:not([data-look="vertical"]) #rotate-hint { display: grid; }
+  :root:not([data-look="vertical"]):not([data-look-boot]) #rotate-hint { display: grid; }
 }
 
 /* 選択済みで次の画面を待っている画面は触れない */
