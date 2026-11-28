@@ -3,6 +3,8 @@
 //   上＝工程の並び（絵記号の丸。今の工程が光る・名前の文字は出さない VPL31）と制作ランク、真ん中＝工程の絵と温度計、
 //   下＝スミさんの顔と一言・「？」、いちばん下＝工程ごとの操作。日付・体力・お金は出さない（VPL12）。外枠の十字キーと丸ボタンは使わず、
 //   画面いっぱいに組む（layout "full"。下画面の操作は工程ごとに形が違うため）。
+// 本編の「操作の説明」（工程の初回と「？」）は、説明の箱ではなくスミさんの説明のスポットライトで見せる（craft/tutorial.js・VPN32）:
+//   画面を暗くし、スミさんの一言と、その一言が指す所だけを明るく抜く。段は工程の画面の定義の tutorial（無ければ本編の文を「。」で区切る）。
 // 作り: 本編の作業台（craft/session.js の openBench・stepPanel と各工程の関数）は裏でそのまま動かし、その DOM（工程の並び・ランク・温度計・
 //   「?」の説明・工程の部品）を読んで描き、押した操作は本編の要素へ中継する（frame.js の relayTap）。規則・数値・採点・チュートリアル・
 //   自動の検査（craftTest）は本編のまま。試作の写しの計算は持ち込まない。
@@ -11,6 +13,7 @@
 import { el } from "../../core/util.js";
 import { relayTap, mirrorBackground, cssUrl, liveBackground, textOf } from "./frame.js";
 import { createThermo } from "./craft/thermo.js";
+import { createSpotlight, readGuide, tutorialSteps } from "./craft/tutorial.js";
 import { packView } from "./craft/pack.js";
 import { timerView } from "./craft/timer.js";
 
@@ -21,10 +24,13 @@ import { timerView } from "./craft/timer.js";
  *   match(panel) … 本編のその工程の部品が出ているか（同じ data-step の別の画面と見分ける。蒸らしは時間決めと雑念回避が同じ "steam"）
  *   intro  … true なら、工程の部品を出す前の初回の「操作の説明」（パネルが空で説明が開いている間）もこの画面で写す
  *            （同じ data-step の工程のうち、部品の前に説明を開くのは1つだけ。蒸らしでは時間決め。雑念回避は場を出してから説明する）
- *   create(kit)  … 画面を作る。{ pic, ctrl, coach(bench), thermo(bench), sync(panel, bench), leave() } を返す
+ *   create(kit)  … 画面を作る。{ pic, ctrl, coach(bench), thermo(bench), sync(panel, bench), leave(), spots } を返す
  *                  （pic＝真ん中の絵、ctrl＝いちばん下の操作、coach＝スミさんの一言、
  *                   thermo＝写す本編の温度計と見せ方 { node, mode: "bands"|"forecast"|"live", label, note }（無ければ null で温度計を出さない）。
- *                   押す操作は kit.relay(本編の要素) で中継する。長押しの工程は pointerdown／pointerup を本編の要素へ送る口を足す）
+ *                   押す操作は kit.relay(本編の要素) で中継する。長押しの工程は pointerdown／pointerup を本編の要素へ送る口を足す。
+ *                   spots＝説明のスポットライトが明るく抜ける所の名前と要素 { bowl: 要素, dial: [要素, 要素], … }（無くてよい））
+ *   tutorial     … 説明のスポットライトの段（無くてよい。書き方は craft/tutorial.js の冒頭）。
+ *                  例: tutorial: (guide) => [{ target: "pic", say: "…" }, { target: "cards", say: "…" }, { target: "ok", say: "…" }]
  */
 const VIEWS = [packView, timerView];
 
@@ -89,31 +95,32 @@ export function createCraftScene(frame) {
   const help = el("button.vtc-help", { type: "button", text: "?", "aria-label": "操作の説明", dataset: { test: "vt-craft-help" } });
   const ctrl = el("div.vtc-ctrl", { dataset: { test: "vt-craft-ctrl" } });
   const body = el("div.vtc-body", [el("div.vtc-telop", [coach, help]), ctrl]);
-  // 本編の「?」の説明（工程の初回の「操作の説明」も同じ箱）を写す。閉じるは本編の「説明を閉じて進む」へ中継
-  const guideTitle = el("b"), guideText = el("div.vtc-guide-text"), guideNote = el("small");
-  const guideClose = el("button.vtc-guide-close", { type: "button", dataset: { test: "vt-craft-guide-close" } });
-  const guide = el("div.vtc-guide", { hidden: true, role: "dialog", "aria-modal": "true", "aria-label": "操作の説明", dataset: { test: "vt-craft-guide" } }, [
-    el("div.vtc-guide-card", [guideTitle, guideText, guideNote, guideClose]),
-  ]);
-  const root = el("div.vtc", { dataset: { test: "vt-craft" } }, [pic, veil, steps, rank, thermo.root, body, guide]);
+  // 本編の「?」の説明（工程の初回の「操作の説明」も同じ）を、スミさんの説明のスポットライトで見せる。最後の段の「やってみる」は本編の
+  // 「説明を閉じて進む」へ中継する
+  const liveGuide = () => bench?.querySelector(".bench-guide");
+  const spotlight = createSpotlight({
+    face: SUMI_FACE,
+    pick: (target) => typeof target === "function" ? (view ? target(view) : null)
+      : target === "pic" ? view?.pic : target === "ctrl" ? view?.ctrl : target === "thermo" ? thermo.root : view?.spots?.[target],
+    onClose: () => {
+      const live = liveGuide();
+      const button = live?.querySelector('[data-test="bench-guide-close"]');
+      if (button) relayTap(button);
+      else if (live) live.open = false;
+    },
+  });
+  const root = el("div.vtc", { dataset: { test: "vt-craft" } }, [pic, veil, steps, rank, thermo.root, body, spotlight.root]);
 
   let bench = null, view = null, viewDef = null, panel = null, content = null;
-  let stepSig = "", rankSig = "", guideSig = "", coachText = null;
+  let stepSig = "", rankSig = "", coachText = null;
 
   const kit = { relay: relayTap, icon: craftIcon, img: IMG };
-  const liveGuide = () => bench?.querySelector(".bench-guide");
 
   help.addEventListener("click", () => {
     const summary = liveGuide()?.querySelector(":scope > summary");
     if (summary) relayTap(summary);
   });
   coach.addEventListener("click", () => coach.classList.toggle("quiet"));
-  guideClose.addEventListener("click", () => {
-    const live = liveGuide();
-    const button = live?.querySelector('[data-test="bench-guide-close"]');
-    if (button) relayTap(button);
-    else if (live) live.open = false;
-  });
 
   /** 工程の画面を差し替える（工程が替わった・本編の部品が作り直された時）。 */
   function mount(nextDef, nextPanel) {
@@ -162,30 +169,17 @@ export function createCraftScene(frame) {
     rank.style.setProperty("--p", progress.toFixed(3));
   }
 
-  /** 本編の「?」の説明を写す。開いている間は、上に重ねて閉じるまで工程の操作を止める（本編も同じ間は操作を止めている）。 */
+  /**
+   * 本編の「?」の説明（工程の初回の「操作の説明」も）を、スミさんの説明のスポットライトで見せる。開いている間は上に重ねて、
+   * 最後の段の「やってみる」まで工程の操作を止める（本編も同じ間は操作を止めている）。説明の文が替わったら、はじめの段から。
+   */
   function syncGuide() {
     const live = liveGuide();
     help.hidden = !live || live.hidden;
-    const open = !!live?.open && !live.hidden;
-    if (!open) {
-      if (!guide.hidden) { guide.hidden = true; guideSig = ""; }
-      return;
-    }
-    const tip = live.querySelector(".bench-guide-tip");
-    const title = tip?.querySelector(":scope > b"), note = tip?.querySelector(":scope > small");
-    const close = tip?.querySelector('[data-test="bench-guide-close"]');
-    // 段落と補足（詰め方の一覧など）だけ。お手本の入口と、一台の仕上がりの記録は写さない
-    const blocks = [...(tip?.children || [])].filter((node) => node !== title && node !== note && !node.hidden
-      && !node.matches("button, .bench-demo-link, .craft-record-review"));
-    const sig = JSON.stringify([textOf(title), blocks.map((node) => node.textContent), textOf(note), textOf(close)]);
-    guide.hidden = false;
-    if (sig === guideSig) return;
-    guideSig = sig;
-    guideTitle.textContent = textOf(title) || "操作の説明";
-    guideText.replaceChildren(...blocks.map(plainCopy).filter(Boolean));
-    guideNote.textContent = textOf(note);
-    guideNote.hidden = !guideNote.textContent;
-    guideClose.textContent = textOf(close) || "閉じる";
+    if (!live?.open || live.hidden || !viewDef) { spotlight.hide(); return; }
+    const guide = readGuide(live.querySelector(".bench-guide-tip"), bench.dataset.mode || "");
+    const key = JSON.stringify([viewDef.id, guide.text, guide.extras]);
+    spotlight.open(key, tutorialSteps(viewDef, guide));
   }
 
   function sync() {
@@ -216,28 +210,13 @@ export function createCraftScene(frame) {
       frame.over.hidden = false;
       frame.setHud("none");
       frame.setAccent("#ffc978");
-      stepSig = rankSig = guideSig = ""; coachText = null;
-      guide.hidden = true;
+      stepSig = rankSig = ""; coachText = null;
+      spotlight.hide();
       sync();
     },
-    leave() { mount(null, null); content = null; bench = null; delete bgHost.dataset.sig; },
+    leave() { spotlight.hide(); mount(null, null); content = null; bench = null; delete bgHost.dataset.sig; },
     sync,
-    relayout() {},
+    relayout() { spotlight.relayout(); },
     dir() {}, a() {}, chip() {}, tap() {},
   };
-}
-
-// 説明の文の写しに使う要素（本編のクラスや属性は持ち込まない。本編の CSS が外枠に効かないように）
-const PLAIN_TAGS = new Set(["P", "UL", "OL", "LI", "B", "STRONG", "SPAN", "SMALL", "EM", "BR", "DIV"]);
-/** 本編の説明の段落・箇条書きを、文と並びだけ写す。 */
-function plainCopy(node) {
-  if (node.nodeType === Node.TEXT_NODE) return document.createTextNode(node.textContent);
-  if (node.nodeType !== Node.ELEMENT_NODE || node.hidden || node.getAttribute("aria-hidden") === "true") return null;
-  const tag = PLAIN_TAGS.has(node.tagName) ? node.tagName.toLowerCase() : "span";
-  const copy = document.createElement(tag === "div" ? "div" : tag);
-  for (const child of node.childNodes) {
-    const part = plainCopy(child);
-    if (part) copy.append(part);
-  }
-  return copy.childNodes.length ? copy : null;
 }
