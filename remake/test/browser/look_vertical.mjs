@@ -1,7 +1,8 @@
 // 様式「縦画面」（煙の舞台・C案。js/looks/vertical.js・要望台帳 VPN）: 縦持ちで、本編を縦の外枠に写して遊ぶ（第1章から作り、VPN17 で全章へ）。
 // 確かめること: タイトル→会話（本編の会話の箱が縦のテロップと同じ比の幅になり、2行ずつ送れる）、返事の中継、
 // 地図（左右で隣の店・一覧・決定で店に入る）、tonari の行動選び、LIME・MENU のシート、心得の盤（縦の外枠へ移して十字キーと丸ボタンで灯す・決定）、
-// 登場カットインの縦のポスター、まだ縦にしていない場面（シーシャ作り）は回転案内、横持ちは旧版、様式を替えると何も残らない、
+// 登場カットインの縦のポスター、シーシャ作りの詰め方・蒸らし時間は縦の作る場面（外枠の札・ボタンを本編へ中継して工程が進む・VPN30）、
+// まだ縦にしていない場面（シーシャ作りのほかの工程）は回転案内、横持ちは旧版、様式を替えると何も残らない、
 // 第2〜5章の日常（朝の小窓・地図・駅から隣町・場面カード・東京の地図の小窓・第5章の地図）も縦の外枠のまま。
 // 自動操作のブラウザの既定は旧版なので ?look=vertical を付けて選ぶ。
 import assert from "node:assert/strict";
@@ -466,6 +467,108 @@ await suite("look_vertical", async (check) => {
     const hint = await page.evaluate(() => document.getElementById("rotate-hint").innerText.replace(/\s+/g, " "));
     assert(hint.includes("この場面は横向きで遊びます"), hint);
     await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("craft-pack-and-steam-timer-in-the-shell", async (page) => {
+    // シーシャ作りの詰め方と蒸らし時間は、縦の作る場面で遊ぶ（VPN30）。本編の作業台・工程の関数は裏でそのまま動き、
+    // 外枠の札・ボタンを押すと本編の要素へ中継する（自動の craftTest は使わない）。工程の初回の「操作の説明」も外枠に写る
+    await waitScene(page, "title");
+    await page.evaluate(async () => {
+      try { localStorage.removeItem("suien_step_intro"); } catch {}
+      const core = await import("./js/core/state.js");
+      const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 1, day: 2, slot: 0 });
+      (await import("./js/core/ui.js")).clearScreen();
+      const { newSession, openBench } = await import("./js/craft/session.js");
+      const { stepPack } = await import("./js/craft/steps.js");
+      const cs = newSession("tutorial"); window.vtCraft = cs; openBench(cs, {});
+      window.packRun = stepPack(cs).then(() => { window.packDone = true; }, (error) => { window.vtCraftError = String(error.stack || error); });
+    });
+    await waitScene(page, "craft");
+    const shell = await page.evaluate(() => ({
+      layout: document.querySelector(".vt-shell").dataset.layout, hint: getComputedStyle(document.getElementById("rotate-hint")).display,
+      guard: document.documentElement.dataset.rotateGuard || "", hud: document.querySelector(".vt-hud").childElementCount,
+    }));
+    assert.deepEqual(shell, { layout: "full", hint: "none", guard: "", hud: 0 }, "the craft scene fills the shell, without the rotate hint or the date and money");
+    // 初回の「操作の説明」: 本編の説明の文を写し、外枠の「説明を閉じて進む」で本編の説明を閉じる
+    await page.locator(t("vt-craft-guide")).waitFor();
+    const intro = await page.evaluate(() => ({
+      shell: document.querySelector('[data-test="vt-craft-guide"] .vtc-guide-text').textContent,
+      live: document.querySelector("#screen .bench .bench-guide-tip > p").textContent, open: document.querySelector("#screen .bench .bench-guide").open,
+    }));
+    assert(intro.open && intro.live && intro.shell.includes(intro.live), `the first-time explanation is mirrored ${JSON.stringify(intro)}`);
+    await page.locator(t("vt-craft-guide-close")).tap();
+    await page.waitForFunction(() => !document.querySelector("#screen .bench .bench-guide").open);
+    await page.locator(t("vt-pack-card-normal")).waitFor();
+    await page.locator(t("vt-craft-guide")).waitFor({ state: "hidden" });
+    // 工程の並び（本編の工程。今の工程が光る）・器の絵・3枚の札
+    const view = await page.evaluate(() => ({
+      now: document.querySelector('[data-test="vt-craft-steps"] li.now')?.dataset.step,
+      steps: document.querySelectorAll('[data-test="vt-craft-steps"] li').length, live: document.querySelectorAll("#screen .bench .bench-progress .bench-phase").length,
+      cards: [...document.querySelectorAll(".vtc-card")].map((card) => card.dataset.value), bowl: document.querySelector('[data-test="vt-pack-bowl"]').getAttribute("src"),
+      pressed: document.querySelector('.vtc-card[aria-pressed="true"]')?.dataset.value,
+    }));
+    assert.equal(view.now, "pack");
+    assert.equal(view.steps, view.live, "one circle per step of the bench");
+    assert.deepEqual(view.cards, ["fluffy", "normal", "firm"]);
+    assert.equal(view.pressed, "normal");
+    assert(view.bowl.endsWith("img/ui/vertical-craft/ui-bowl-normal.webp"), view.bowl);
+    // 札を押すと本編の選択肢が替わり、器の絵と説明も替わる
+    await page.locator(t("vt-pack-card-fluffy")).tap();
+    await page.waitForFunction(() => document.querySelector('#screen [data-test="opt-fluffy"]').getAttribute("aria-pressed") === "true");
+    await page.waitForFunction(() => document.querySelector('[data-test="vt-pack-card-fluffy"]').getAttribute("aria-pressed") === "true"
+      && document.querySelector('[data-test="vt-pack-bowl"]').getAttribute("src").endsWith("ui-bowl-airy.webp"));
+    const info = await page.evaluate(() => ({ shell: document.querySelector('[data-test="vt-pack-info"] b').textContent, live: document.querySelector("#screen .pack-caption b").textContent }));
+    assert.deepEqual(info, { shell: "ふんわり", live: "ふんわり" });
+    // 「？」で本編の説明を開いて写し、閉じる
+    await page.locator(t("vt-craft-help")).tap();
+    await page.waitForFunction(() => document.querySelector("#screen .bench .bench-guide").open);
+    await page.locator(t("vt-craft-guide")).waitFor();
+    await page.locator(t("vt-craft-guide-close")).tap();
+    await page.waitForFunction(() => !document.querySelector("#screen .bench .bench-guide").open);
+    await page.locator(t("vt-craft-guide")).waitFor({ state: "hidden" });
+    // 決定で本編の詰め方が決まり、工程が終わる
+    await page.locator(t("vt-pack-ok")).tap();
+    await page.waitForFunction(() => window.packDone === true || window.vtCraftError);
+    assert.equal(await page.evaluate(() => window.vtCraftError || window.vtCraft.pack), "fluffy");
+
+    // 蒸らし時間: 外枠の早見・分・秒・リセットで時間を決め、スタートで本編の工程が進む
+    await page.evaluate(async () => {
+      const { runSteamTimer } = await import("./js/craft/timer.js");
+      window.timerRun = runSteamTimer(window.vtCraft).then(() => { window.timerDone = true; }, (error) => { window.vtCraftError = String(error.stack || error); });
+    });
+    await page.locator(t("vt-craft-guide")).waitFor();
+    await page.locator(t("vt-craft-guide-close")).tap();
+    await page.locator(t("vt-timer-start")).waitFor();
+    await page.locator(t("vt-craft-guide")).waitFor({ state: "hidden" });
+    const clock = () => page.evaluate(() => ({
+      live: document.querySelector('#screen [data-test="timer-display"] .clock-value').textContent,
+      shell: document.querySelector('[data-test="vt-timer-lcd"]').getAttribute("aria-label"),
+      start: document.querySelector('[data-test="vt-timer-start"]').disabled, liveStart: document.querySelector('#screen [data-test="timer-start"]').disabled,
+    }));
+    assert.equal(await page.evaluate(() => document.querySelector('[data-test="vt-craft-steps"] li.now')?.dataset.step), "steam");
+    assert.deepEqual(await clock(), { live: "00:00", shell: "蒸らし時間 0分0秒", start: true, liveStart: true }, "start waits for a time");
+    await page.locator(t("vt-timer-preset-5")).tap();
+    await page.waitForFunction(() => document.querySelector('#screen [data-test="timer-display"] .clock-value').textContent === "05:00");
+    await page.waitForFunction(() => document.querySelector('[data-test="vt-timer-preset-5"]').getAttribute("aria-pressed") === "true");
+    await page.locator(t("vt-timer-min")).tap();
+    await page.waitForFunction(() => document.querySelector('#screen [data-test="timer-display"] .clock-value').textContent === "06:00");
+    await page.locator(t("vt-timer-sec")).tap();
+    await page.waitForFunction(() => document.querySelector('#screen [data-test="timer-display"] .clock-value').textContent === "06:10");
+    // 絵の物理ボタンも同じ（リセット）
+    await page.locator(t("vt-timer-key-reset")).tap();
+    await page.waitForFunction(() => document.querySelector('#screen [data-test="timer-display"] .clock-value').textContent === "00:00");
+    await page.locator(t("vt-timer-preset-3")).tap();
+    await page.locator(t("vt-timer-key-sec")).tap();
+    await page.waitForFunction(() => document.querySelector('#screen [data-test="timer-display"] .clock-value').textContent === "03:10");
+    await page.waitForFunction(() => document.querySelector('[data-test="vt-timer-lcd"]').getAttribute("aria-label") === "蒸らし時間 3分10秒");
+    assert.deepEqual(await clock(), { live: "03:10", shell: "蒸らし時間 3分10秒", start: false, liveStart: false });
+    // 温度計は本編の蒸らし後の目安（幅）を写す
+    const thermo = await page.evaluate(() => ({ mode: document.querySelector('[data-test="vt-craft-thermo"]').dataset.mode,
+      shown: !document.querySelector('[data-test="vt-craft-thermo"]').hidden, range: !document.querySelector(".vtc-th-range").hidden }));
+    assert.deepEqual(thermo, { mode: "forecast", shown: true, range: true });
+    await page.locator(t("vt-timer-start")).tap();
+    await page.waitForFunction(() => window.timerDone === true || window.vtCraftError);
+    assert.deepEqual(await page.evaluate(() => window.vtCraftError || { seconds: window.vtCraft.steamSeconds, min: window.vtCraft.steamMin }), { seconds: 190, min: 190 / 60 });
   }, { ...TALL, pageEntry: entry });
 
   await check("short-screen-fits", async (page) => {
