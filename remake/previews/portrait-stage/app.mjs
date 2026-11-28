@@ -1294,7 +1294,7 @@ class Phone {
       const i = Number(tile.dataset.i), on = i === st.mixSel, g = st.mix[i];
       tile.classList.toggle("on", on); tile.setAttribute("aria-selected", String(on));
       tile.classList.toggle("zero", g === 0);
-      tile.querySelector(".mt-g").textContent = g ? `${g}g` : "";
+      tile.querySelector(".mt-g").textContent = g ? String(g) : "";
       tile.querySelector(".mt-need")?.classList.toggle("met", g >= (MIX[i].need || 0));
       tile.setAttribute("aria-label", `${MIX[i].name} ${g}グラム`);
     });

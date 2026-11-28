@@ -36,10 +36,9 @@ export const mixView = {
     const pic = el("div.vtc-scale", [image("vtc-scale-base", "ui-scale"), ...layers, grams]);
     const shelf = el("div.vtc-leaves"), genres = el("div.vtc-genres");
     const selected = el("div.vtc-mix-selected");
-    const reg = el("span.vtc-mix-reg");
     const ok = el("button.vtc-mix-ok", { type: "button", text: "決定", disabled: true, dataset: { test: "vt-mix-ok" } });
-    const details = el("details.vtc-mix-notes", [el("summary", { text: "配合メモ" })]);
-    const ctrl = el("div.vtc-mix-controls", [genres, shelf, el("div.vtc-mix-footer", [selected, ok]), details]);
+    const tools = el("div.vtc-mix-tools", { hidden: true });
+    const ctrl = el("div.vtc-mix-controls", [genres, shelf, el("div.vtc-mix-footer", [tools, selected, ok])]);
     let panel, selection, rows = [], chosen, sort;
     const extras = [], holds = [];
     const available = source => source?.isConnected && !source.disabled && !source.closest("[inert]");
@@ -91,12 +90,21 @@ export const mixView = {
         const live = panel.querySelector(".mix");
         if (!live) return;
         if (!rows.length) {
-          for (const source of live.querySelectorAll(".mix-list-head button")) {
+          const option = source => {
             const button = proxy(source);
             extras.push({ source, button });
-            details.append(button);
+            return button;
+          };
+          for (const source of live.querySelectorAll(".mix-list-head > button")) tools.append(option(source));
+          const recall = live.querySelector(".mix-recall");
+          if (recall) {
+            const items = Array.from(recall.querySelectorAll("button"), option);
+            tools.append(el("details.vtc-mix-recall", [
+              el("summary", { text: recall.querySelector("summary").textContent }),
+              el("div", items),
+            ]));
           }
-          details.append(reg);
+          tools.hidden = !tools.childElementCount;
           rows = [...live.querySelectorAll(".flavor-row")].map(row => {
             const id = row.dataset.flavor, f = FLAVORS[id];
             const family = categoryFamily[DB.flavorById[id]?.category];
@@ -130,8 +138,9 @@ export const mixView = {
         for (const item of rows) {
           const amount = item.liveAmount.textContent;
           setText(item.amount, amount);
-          setText(item.badge, parseFloat(amount) ? amount : "");
-          if (redLeaves.has(item.id)) red += parseFloat(amount);
+          const weight = parseFloat(amount);
+          setText(item.badge, weight ? String(weight) : "");
+          if (redLeaves.has(item.id)) red += weight;
         }
         for (const { source, button } of extras) {
           button.disabled = source.disabled;
@@ -144,8 +153,6 @@ export const mixView = {
         const partial = alpha(fill / .26), full = alpha((fill - .5) / .5);
         [1, partial, partial * redRatio, full, full * redRatio].forEach((a, i) => { layers[i].style.opacity = a.toFixed(2); });
         setText(grams, `${total.toFixed(1)}g`);
-        const rule = live.querySelector(".reg-line").textContent;
-        setText(reg, lcd + "　" + rule);
         const source = live.querySelector('[data-test="mix-ok"]');
         ok.disabled = source.disabled;
         ok.title = source.textContent;
