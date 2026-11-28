@@ -5370,7 +5370,7 @@
     },
     {
       "id": "title-extra",
-      "title": "タイトルの EXTRA（あそびば）: 斧投げまでは「？？？」で開かない・実際の画面の写真の横スライドで遊んでいない遊びは鍵・段とセットと本棚はいちばん進んだセーブから・遊んで戻る・前のセーブから拾う・縦持ちと指で流す（EXT01〜EXT05）と「つづきから」の行の「セーブを選ぶ」（EXT02）",
+      "title": "タイトルの EXTRA（あそびば）: 斧投げまでは「？？？」で開かない・実際の画面の写真の横スライドで遊んでいない遊びは鍵・段とセットと本棚はいちばん進んだセーブから・遊んで戻る・前のセーブから拾う・縦持ちと指で流す・題字のロゴと生成した部品の読み込み（EXT01〜EXT07）と「つづきから」の行の「セーブを選ぶ」（EXT02）",
       "kind": "browser",
       "weight": 0.5,
       "timeout": 5,
@@ -5381,6 +5381,9 @@
         "remake/js/trpg/trial.js",
         "remake/css/extra.css",
         "remake/img/ui/extra/**",
+        "remake/img/ui/axe_throw/logo.webp",
+        "remake/img/ui/trpg/logo.webp",
+        "remake/img/ui/dj/logo.webp",
         "remake/js/scenes/title.js",
         "remake/js/looks/vertical/title.js",
         "remake/js/looks/retro/title.js",
@@ -5526,7 +5529,7 @@
       "timeout": 12,
       "paths": [
         "remake/js/looks/**",
-        "remake/css/look-retro.css",
+        "remake/css/look-neo-portrait.css",
         "remake/css/look-neo.css",
         "remake/js/core/look.js",
         "remake/js/core/rotate-guard.js",
@@ -5562,36 +5565,8 @@
       ]
     },
     {
-      "id": "look-retro",
-      "title": "DS風: 縦持ちの2画面・ドット絵の上画面・会話と地図の中継・場面転換と登場カットイン・第2〜5章の会話と地図とカードと小窓・未対応の場面では現行のまま",
-      "kind": "browser",
-      "weight": 2.8,
-      "timeout": 8,
-      "paths": [
-        "remake/css/look-retro.css",
-        "remake/js/looks/**",
-        "remake/js/core/look.js",
-        "remake/js/core/rotate-guard.js",
-        "remake/js/vn/engine.js",
-        "remake/js/daily/map.js",
-        "remake/js/scenes/title.js",
-        "remake/js/core/ui.js",
-        "remake/css/daily.css",
-        "remake/js/daily/station-travel.js",
-        "remake/js/core/chapter-card.js",
-        "remake/js/chapters/ch2.js",
-        "remake/js/chapters/ch3-scenes.js",
-        "remake/js/chapters/ch5-daily.js",
-        "remake/test/browser/look_chapter_seeds.mjs",
-        "remake/test/browser/look_retro.mjs"
-      ],
-      "run": [
-        "node remake/test/browser/look_retro.mjs"
-      ]
-    },
-    {
       "id": "look-vertical",
-      "title": "縦画面（煙の舞台・C案）: 会話を2行ずつ・返事・地図と店へ・tonari の行動選び・LIME と MENU のシート・心得の盤を十字キーで灯す・登場カットインの縦のポスター・シーシャ作りは回転案内・横持ちは旧版・第2〜5章の朝の小窓・駅から隣町・場面カード・東京の地図の小窓・第5章の地図・タイトルコール（上にロゴ・真ん中に横長の絵・下に章の情報）",
+      "title": "縦画面（煙の舞台・C案）: 会話を2行ずつ・返事・地図と店へ・tonari の行動選び・LIME と MENU のシート・心得の盤を十字キーで灯す・登場カットインの縦のポスター・シーシャ作りは回転案内・横持ちは旧版・第2〜5章の朝の小窓・駅から隣町・場面カード・東京の地図の小窓・第5章の地図・タイトルコール（上にロゴ・真ん中に正方形の章の絵・下に章の情報）",
       "kind": "browser",
       "weight": 3.6,
       "timeout": 10,

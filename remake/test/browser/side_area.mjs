@@ -266,11 +266,6 @@ await suite("side-area", async check => {
     assert.deepEqual(await mode(page), { side: "wide", pad: "on" });
   }, PHONE);
 
-  await check("retro-look-keeps-plain-margins", async page => {
-    assert.equal(await page.evaluate(() => document.documentElement.dataset.look), "retro");
-    assert.deepEqual(await mode(page), { side: "off", pad: "off" });
-  }, { ...PHONE, pageEntry: `${baseURL}?look=retro` });
-
   await check("neo-look-pads", async page => {
     // プレイヤーの既定の様式（新版）でも同じ
     assert.equal(await page.evaluate(() => document.documentElement.dataset.look), "neo");

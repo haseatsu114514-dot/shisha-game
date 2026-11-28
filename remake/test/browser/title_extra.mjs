@@ -1,4 +1,4 @@
-// タイトルの EXTRA（あそびば・要望台帳 EXT01〜EXT04）と、「つづきから」の行の「セーブを選ぶ」（EXT02）。
+// タイトルの EXTRA（あそびば・要望台帳 EXT01〜EXT07）と、「つづきから」の行の「セーブを選ぶ」（EXT02）。
 // 2026-11-27 オーナー「エクストラにしよう　斧投げを初めて体験したら解禁　それまでは？？？」
 // 「ミニゲームがいくつかあるのがわかるようにまだやってないのはロックしといたり」
 // 「店番とてつこと一台勝負はミニゲーム扱いにしない　あとエクストラのミニゲームを選ぶ画面はビジュアルも凝りたい　生成してもいいかも
@@ -65,6 +65,11 @@ await suite("title_extra", async (check) => {
       n.querySelectorAll(".xs-shot").length, n.querySelectorAll(".xs-thumb").length]));
     assert.deepEqual(slides, GAMES.map((id) => ["axe", "dj"].includes(id) ? [id, { axe: "斧投げ", dj: "DJ" }[id], false, 3, 3] : [id, "？？？", true, 3, 0]));
     assert.deepEqual(await page.locator(`${t("extra-pager")} .xs-dot`).evaluateAll((ns) => ns.map((n) => n.textContent)), ["斧投げ", "？？？", "DJ", "？？？", "？？？"]);
+    // 遊んだ遊びには題字のロゴ（EXT06）。題字・枠の絵などの部品（EXT07）とロゴの絵が読めている
+    assert.deepEqual(await page.locator(".xs-slide:not(.is-locked) .xs-logo").evaluateAll((ns) => ns.map((n) => n.getAttribute("src"))),
+      ["img/ui/axe_throw/logo.webp", "img/ui/dj/logo.webp"]);
+    await page.waitForFunction(() => [...document.querySelectorAll(".xs-slide:not(.is-locked) .xs-logo, .xs-frame-art, .xs-wordmark")]
+      .every((n) => n.complete && n.naturalWidth > 0));
     // 最初は遊んだ中の先頭（斧投げ）。枠の写真が読めていて、小さな絵で切り替わる
     assert.equal(await page.locator(".xs-slide.is-current").getAttribute("data-game"), "axe");
     await page.waitForFunction(() => [...document.querySelectorAll(".xs-slide.is-current .xs-shot")].every((n) => n.complete && n.naturalWidth >= 768));

@@ -21,8 +21,8 @@ export class Telop {
    * @param node 帯（.pt-telop）。中に .pt-name・.pt-text・.pt-more を置く
    * @param kit app.mjs の部品（esc・paginateForBox）
    */
-  constructor(node, kit, { instant = false } = {}) {
-    Object.assign(this, { node, kit, instant, waiting: null });
+  constructor(node, kit, { instant = false, names = null } = {}) {
+    Object.assign(this, { node, kit, instant, names, waiting: null }); // names: 帯の名前の表（無ければ下の NAMES。スチルの場面は data/characters.json から作って渡す）
     this.name = node.querySelector(".pt-name");
     this.text = node.querySelector(".pt-text");
   }
@@ -32,8 +32,9 @@ export class Telop {
     const who = line.speaker || "";
     this.node.dataset.who = who || "narr";
     this.node.classList.toggle("inner", who === "hajime" && /^（.*）$/.test(line.text));
-    this.name.textContent = NAMES[who] || "";
-    this.name.hidden = !NAMES[who];
+    const label = this.names?.[who] || NAMES[who] || "";
+    this.name.textContent = label;
+    this.name.hidden = !label;
     this.node.classList.remove("off");
     const pages = this.kit.paginateForBox(line.text, this.text);
     for (let i = 0; i < pages.length; i++) {

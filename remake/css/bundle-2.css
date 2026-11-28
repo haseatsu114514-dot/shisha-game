@@ -8646,17 +8646,13 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
   background-repeat: no-repeat;
 }
 
-/* ===== css/look-retro.css ===== */
-/* DS風（上下2画面・256×192 のレトロな様式・LK03）。すべての規則を :root[data-look="retro"] か、
-   DS風の部品（js/looks/retro.js）が body へ足す外枠（.retro-shell / .retro-note）の中に書き、現行の見た目を変えない。
-   寸法は 1ドット = --dpx（外枠の幅 ÷ 268。retro/shell.js が置く）の単位で組む。
-   角丸・ぼかし・半透明の影・グラデーションは使わない（影は 1〜3 ドットずらしたベタ）。 */
+/* ===== css/look-neo-portrait.css ===== */
+/* 新版の縦持ち（LK11）の外枠。neo/portrait-shell.js が追加する .retro-shell / .retro-note に適用する。
+   retro-* は既存の外枠 DOM のクラス名。寸法は --dpx（外枠の幅 ÷ 268）で組む。 */
 
 /* 外枠を出している間、現行の画面はレイアウトを生かしたまま見えなくする（会話の折り返しが .vn-text の実幅を測るため display は変えない）。
-   新版の縦持ち（LK11）も同じ外枠を使う。 */
-:root:is([data-look="retro"], [data-look="neo"])[data-retro-shell="on"] #viewport { opacity: 0; }
-/* DS風が使える向き・端末では、縦持ちの回転案内を出さない（未対応の場面は現行の画面を小さく見せる）。 */
-:root[data-look="retro"][data-retro="on"] #rotate-hint { display: none; }
+   この外枠は新版の縦持ち（LK11）で使う。 */
+:root[data-look="neo"][data-retro-shell="on"] #viewport { opacity: 0; }
 
 /* ---- 新版の縦持ち（LK11・data-retro-paint="hd"）: 上画面は新版と同じ高解像度の絵、下画面と本体のボタンはドット調のまま。
    外枠を出している間（と、未対応の場面になってから少し待つ間）は回転案内を隠す。待っても未対応なら案内を出す
@@ -8693,7 +8689,7 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
    見えない所の動きで、上画面を毎フレーム描き直さないため（見た目は変わらない）。 */
 :root[data-look="neo"][data-retro-shell="on"] body:not(:root) #stage #vn .vn-portraits { animation: none; }
 /* 外枠で隠れている間の現行画面（#viewport）側の常時アニメーションも停止する（見た目は変わらない） */
-:root:is([data-look="retro"], [data-look="neo"])[data-retro-shell="on"] #viewport :is(#weather *, .title-smoke i, .title-logo-smoke i, .title-ember, .spot-pin.guide .shield, .evt-badge, .evt-badge::after, .hud-stamina.low .hud-bar b, .vn-next.show) { animation: none !important; }
+:root[data-look="neo"][data-retro-shell="on"] #viewport :is(#weather *, .title-smoke i, .title-logo-smoke i, .title-ember, .spot-pin.guide .shield, .evt-badge, .evt-badge::after, .hud-stamina.low .hud-bar b, .vn-next.show) { animation: none !important; }
 /* 高解像度の絵は、拡大の補間をふつうに（ドット絵の pixelated にしない） */
 .retro-shell[data-paint="hd"] .retro-canvas,
 .retro-shell[data-paint="hd"] .retro-face canvas { image-rendering: auto; }
@@ -9358,7 +9354,6 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 .retro-sheet .rs-h1, .retro-sheet .rs-h2 { font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); }
 .retro-sheet .rs-h3, .retro-sheet .rs-h4 { font-size: calc(var(--d) * 12); line-height: calc(var(--d) * 15); }
 .retro-sheet img { display: block; max-width: 100%; height: auto; }
-.retro-shell[data-paint="dot"] .retro-sheet img { image-rendering: pixelated; }
 /* ボタン（元のボタン・タブ・行） */
 .retro-shell .retro-sheet .rs-btn,
 .retro-shell .retro-sheet .rs-check {
