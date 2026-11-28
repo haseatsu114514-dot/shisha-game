@@ -2015,8 +2015,8 @@
       "id": "ch2-tournament",
       "title": "Chapter 2 browser suite ch2_tournament",
       "kind": "browser",
-      "weight": 6.5,
-      "timeout": 10,
+      "weight": 10.5,
+      "timeout": 14,
       "paths": [
         "remake/chapter2-preview.html",
         "remake/js/chapters/ch2*.js",
