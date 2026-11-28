@@ -1,6 +1,6 @@
 // 縦画面「煙の舞台」: 日常の地図。本編の地図（daily/map.js の .map と .spot-pin）を読み、縦の絵に街を大きく映して、
 // 選んだ店が画面の真ん中へ来るように動かす（試作 VPL06・VPL10）。左右キー・点・札を払う＝地図の左から右の順に隣の店へ、
-// 上＝全体を見る／寄る、下＝行き先の一覧。丸ボタンは全体で拡大、寄った地図でその店へ行く。選ぶ・行くは本編のピンへの click として中継する
+// 上＝現在地より上の最寄りの店、下＝行き先の一覧。丸ボタンは全体で拡大、寄った地図でその店へ行く。
 // （本編は1回目で選び、選んでいるピンをもう一度押すと行く）。行けるかどうか・料金・体力の判定は本編のまま。
 import { el } from "../../core/util.js";
 import { state } from "../../core/state.js";
@@ -17,37 +17,28 @@ const liveMap = () => document.querySelector("#screen > .map:not(.done)");
 const livePins = () => [...(liveMap()?.querySelectorAll(".map-pins > .spot-pin") || [])].filter((pin) => pin.style.visibility !== "hidden");
 const livePin = (id) => livePins().find((pin) => pin.dataset.spot === id);
 
-/** 本編のステージの拡縮（1280×720 を画面に合わせる倍率）。見えないまま動いているので、レイアウトの大きさから測れる。 */
-function stageScale() {
-  const stage = document.getElementById("stage");
-  const rect = stage?.getBoundingClientRect();
-  return rect?.width && stage.offsetWidth ? rect.width / stage.offsetWidth : 1;
-}
-
 /**
  * ピンの看板の絵（VPN10: 元の横画面の地図と同じく、店のロゴ・施設の絵を地図の中に小さく出す）。
  * 本編のピンの絵（core/store-logos.js の店のロゴ・daily/facility-icons.js の施設の絵）を、ステージ上の見た目の大きさと一緒に読む。
  */
-function readArt(pin, k) {
+function readArt(pin) {
   const node = pin.querySelector(".ico > .store-logo, .ico > .facility-icon");
   if (!node) return null;
-  const rect = node.getBoundingClientRect();
   return {
     node, kind: node.classList.contains("store-logo") ? "logo" : "facility",
     key: node.dataset.storeLogo || node.dataset.facility || "",
     dark: node.classList.contains("on-dark"),
-    w: rect.width / k, h: rect.height / k, // ステージ（1280 幅）の上での大きさ
+    w: node.offsetWidth, h: node.offsetHeight, // 選択時の拡大アニメーションを含まない原寸
   };
 }
 
 function readPins() {
-  const k = stageScale();
   return livePins().map((pin) => {
     const name = textOf(pin.querySelector(".sub-label"));
     const def = spotDef(pin.dataset.spot);
     const badge = pin.querySelector(".evt-badge");
     return {
-      art: readArt(pin, k),
+      art: readArt(pin),
       lesson: textOf(pin.querySelector(".lesson-badge")),
       id: pin.dataset.spot || "",
       name,
@@ -118,13 +109,22 @@ export function createMapScene(frame) {
     select(next.id, { keepView: overview });
   }
 
+  function nearestAbove() {
+    const from = current();
+    if (!from) return null;
+    // ピンの位置は割合。元の街の縦横比で、地図上の距離に換算する。
+    const distance = pin => Math.hypot((pin.x - from.x) * 16 / 9, pin.y - from.y);
+    return list.filter(pin => pin.y < from.y).reduce((nearest, pin) =>
+      !nearest || distance(pin) < distance(nearest) ? pin : nearest, null);
+  }
+
   /** 選んだ店が見える位置へ地図を動かす（寄り）。全体表示では地図の幅を画面に合わせる。 */
   function camera(animate = true) {
     const w = view.clientWidth, h = view.clientHeight;
     if (!w || !h) return;
-    const mw = h * 1.12 * 16 / 9;
-    const mh = overview ? Math.min(h * 0.61, w * 0.86) * mw / w : h * 1.12;
-    pan.style.width = `${mw}px`; pan.style.height = `${mh}px`;
+    const focusedHeight = Math.max(w * 9 / 16, h * .86);
+    const mw = focusedHeight * 16 / 9;
+    const mh = overview ? Math.min(h * 0.61, w * 0.86) * mw / w : focusedHeight;
     const spot = current();
     let x, y, scale = 1;
     if (overview) {
@@ -132,16 +132,18 @@ export function createMapScene(frame) {
     } else if (cam) ({ x, y } = cam);
     else {
       x = w / 2 - mw * (spot?.x ?? 50) / 100;
-      y = h * 0.4 - mh * (spot?.y ?? 45) / 100;
+      y = h * 0.37 - mh * (spot?.y ?? 45) / 100;
     }
-    if (!overview) { x = Math.min(0, Math.max(w - mw, x)); y = Math.min(0, Math.max(h * 0.86 - mh, y)); }
+    if (!overview) { x = Math.min(0, Math.max(w - mw, x)); y = Math.min(0, Math.max(h * 0.72 - mh, y)); }
     const resized = !viewBox || viewBox.mw !== mw;
+    if (viewBox?.mw !== mw) pan.style.width = `${mw}px`;
+    if (viewBox?.mh !== mh) pan.style.height = `${mh}px`;
+    if (viewBox && viewBox.x === x && viewBox.y === y && viewBox.scale === scale && viewBox.mw === mw && viewBox.mh === mh && viewBox.w === w && viewBox.h === h) return;
     viewBox = { x, y, scale, w, h, mw, mh };
     if (resized) renderPins();
     pan.classList.toggle("no-anim", !animate);
     pan.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
     pan.style.setProperty("--inv", String(1 / scale));
-    if (!animate) { void pan.offsetWidth; pan.classList.remove("no-anim"); }
     view.classList.toggle("overview", overview);
     markUnder();
   }
@@ -170,9 +172,8 @@ export function createMapScene(frame) {
     const w = pin.art.w * mapK, h = pin.art.h * mapK;
     const plate = pin.art.kind === "logo" ? { width: `${(90 * mapK).toFixed(1)}px`, height: `${(58 * mapK).toFixed(1)}px` } : null;
     const copy = pin.art.node.cloneNode(true);
-    const layoutW = pin.art.node.offsetWidth || pin.art.w, layoutH = pin.art.node.offsetHeight || pin.art.h;
     copy.removeAttribute("role");
-    Object.assign(copy.style, { position: "absolute", left: "0", top: "0", transformOrigin: "0 0", transform: `scale(${(w / layoutW).toFixed(4)}, ${(h / layoutH).toFixed(4)})` });
+    Object.assign(copy.style, { position: "absolute", left: "0", top: "0", transformOrigin: "0 0", transform: `scale(${mapK})` });
     return el(`span.vt-pin-sign.${pin.art.kind}${pin.art.dark ? ".dark" : ""}`, { "aria-hidden": "true", style: plate || {} }, [
       el("span.vt-pin-art", { style: { width: `${w.toFixed(1)}px`, height: `${h.toFixed(1)}px` } }, [copy]),
     ]);
@@ -180,8 +181,16 @@ export function createMapScene(frame) {
 
   function renderPins() {
     const mapK = (viewBox?.mw || 0) / 1280 || 0.7;
-    const sig = JSON.stringify([mapK.toFixed(3), list.map((pin) => [pin.id, pin.x, pin.y, pin.badge, pin.off, pin.closed, pin.people.map((p) => p.src), pin.id === sel, pin.guide, pin.art?.key, pin.art?.w, pin.lesson])]);
-    if (sig === pinSig) return;
+    const sig = JSON.stringify([mapK.toFixed(3), list.map((pin) => [pin.id, pin.x, pin.y, pin.badge, pin.off, pin.closed, pin.people, pin.guide, pin.art?.key, pin.art?.w, pin.art?.h, pin.art?.dark, pin.hidane, pin.glyph, pin.speech, pin.lesson])]);
+    if (sig === pinSig) {
+      const previous = pins.querySelector('[aria-current="true"]');
+      if (previous?.dataset.spot !== sel) {
+        previous?.setAttribute("aria-current", "false");
+        [...pins.children].find(node => node.dataset.spot === sel)?.setAttribute("aria-current", "true");
+        markUnder();
+      }
+      return;
+    }
     pinSig = sig;
     pins.replaceChildren(...list.map((pin) => el(`div.vt-pin${pin.off ? ".off" : ""}${pin.closed ? ".closed" : ""}${pin.guide ? ".guide" : ""}${pin.art ? ".has-art" : ""}`, {
       style: { left: `${pin.x}%`, top: `${pin.y}%` }, dataset: { spot: pin.id }, "aria-current": String(pin.id === sel),
@@ -320,8 +329,8 @@ export function createMapScene(frame) {
       : choosing
       ? { dirs: ["up", "down", "left", "right"], a: { face: "ok", label: "決定" } } // 駅の行き先などを上下で選ぶ（左右は隣の店へ）
       : {
-        dirs: ["up", "down", "left", "right"],
-        marks: { up: overview ? ["near", "寄る"] : ["wide", "全体を見る"], down: ["list", "一覧"] },
+        dirs: nearestAbove() ? ["up", "down", "left", "right"] : ["down", "left", "right"],
+        marks: { down: ["list", "一覧"] },
         a: overview ? { face: "ok", text: "拡大", label: "地図を拡大" }
           : pin ? (canGo() ? { face: "go", text: "行く", label: `${pin.name}へ行く` } : { face: "rest", label: pin.status || "いまは行けない", disabled: true })
           : { face: "ok", disabled: true },
@@ -428,7 +437,7 @@ export function createMapScene(frame) {
       }
       if (dir === "left") step(-1);
       else if (dir === "right") step(1);
-      else if (dir === "up") { overview = !overview; cam = null; render(); camera(true); }
+      else if (dir === "up") { const next = nearestAbove(); if (next) select(next.id, { keepView: overview }); }
       else if (dir === "down") { listOpen = true; render(); }
     },
     a() {

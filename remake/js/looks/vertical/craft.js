@@ -10,12 +10,13 @@
 //   規則・数値・採点・チュートリアル・自動の検査（craftTest）は本編のまま。試作の写しの計算は持ち込まない。
 //   どの工程にも共通の、始まりの 3・2・1・GO!（core/ui.js の countdown）と工程の結果の札（craft/common.js の resultCard）もここで写す。
 // 工程ごとの画面は looks/vertical/craft/<工程>.js に分け、下の登録表（VIEWS）から呼ぶ。登録の無い工程（まだ縦にしていない工程）では
-//   この場面にせず、今までどおり回転案内を出す（vertical.js の evaluate）。途中の工程だけ縦、で構わない。
+//   live-stage.js が本編の要素を縦に配置する。
 import { imgFileUrl } from "../../core/img-file.js";
 import { el } from "../../core/util.js";
 import { relayTap, relayPress, mirrorBackground, cssUrl, liveBackground, textOf } from "./frame.js";
 import { createThermo } from "./craft/thermo.js";
 import { createSpotlight, readGuide, tutorialSteps } from "./craft/tutorial.js";
+import { dodgeView } from "./craft/dodge.js";
 import { waterView } from "./craft/water.js";
 import { mixView } from "./craft/mix.js";
 import { pullView } from "./craft/pull.js";
@@ -44,7 +45,7 @@ import { timerView } from "./craft/timer.js";
  *   tutorial     … 説明のスポットライトの段（無くてよい。書き方は craft/tutorial.js の冒頭）。
  *                  例: tutorial: (guide) => [{ target: "pic", say: "…" }, { target: "cards", say: "…" }, { target: "ok", say: "…" }]
  */
-const VIEWS = [waterView, mixView, packView, holesView, heatView, timerView, pullView, careView];
+const VIEWS = [waterView, mixView, packView, holesView, heatView, timerView, dodgeView, pullView, careView];
 
 const IMG = imgFileUrl("");
 const SUMI_FACE = `${IMG}ui/face_icons/new/face_sumi.webp`;
@@ -56,6 +57,7 @@ const CONTROLS = "button, input, select, textarea, a[href]";
 
 // 工程の並びの絵記号（試作の ICONS と同じ 24×24 の線画）。本編の工程（craft/progress.js の PHASES）ごと
 const STEP_ICONS = {
+  water: '<path d="M12 3.5C10 7 6.5 10.4 6.5 14.5a5.5 5.5 0 0 0 11 0c0-4.1-3.5-7.5-5.5-11Z"/><path d="M9 15a3 3 0 0 0 2 2.5"/>',
   pack: '<path d="M5 8h14l-1.5 5.5a4 4 0 0 1-3.9 3h-3.2a4 4 0 0 1-3.9-3zM9 20h6M12 16.5V20"/>',
   heat: '<path d="M12 3.5c1 3.5 5 5.2 5 9.7a5 5 0 0 1-10 0c0-2 1-3.3 2-4.6.3 1.6 1 2.5 2 2.9-.3-2.9.2-5.4 1-8z"/>',
   steam: '<path d="M7 20c-2-2.5 2-4.5 0-7s2-4.5 0-7M12 20c-2-2.5 2-4.5 0-7s2-4.5 0-7M17 20c-2-2.5 2-4.5 0-7s2-4.5 0-7"/>',
@@ -141,6 +143,11 @@ export function createCraftScene(frame) {
   const veil = el("i.vtc-veil", { "aria-hidden": "true" });
   const steps = el("ol.vtc-steps", { "aria-label": "工程", dataset: { test: "vt-craft-steps" } });
   const rankArt = el("img", { alt: "", draggable: "false" });
+  rankArt.addEventListener("load", () => {
+    if (document.body.classList.contains("reduce-shake") || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    rankArt.animate([{ opacity: 0, transform: "translateY(4px)" }, { opacity: 1, transform: "none" }],
+      { duration: 320, easing: "ease-out" });
+  });
   const rankBar = el("i");
   const rank = el("div.vtc-rank", { hidden: true, role: "img", dataset: { test: "vt-craft-rank" } }, [
     el("span.vtc-rank-box", [rankArt]), el("i.vtc-rank-meter", [rankBar]),
@@ -207,17 +214,28 @@ export function createCraftScene(frame) {
 
   /** 工程の並び（本編の .bench-phase。今の工程は .now、終えた工程は .seen）。 */
   function syncSteps() {
-    const phases = [...bench.querySelectorAll(".bench-progress .bench-phase")];
-    const state = (node) => node.classList.contains("now") ? "now" : node.classList.contains("seen") ? "done" : "";
-    const sig = phases.map((node) => `${node.dataset.step}:${state(node)}`).join(",");
+    const progress = bench.querySelector(".bench-progress");
+    if (!progress) return;
+    const phases = [...progress.querySelectorAll(".bench-phase")].map(source => ({
+      source, id: source.dataset.step,
+      state: source.classList.contains("now") ? "now" : source.classList.contains("seen") ? "done" : "",
+    }));
+    if (progress.dataset.water === "true") {
+      const packing = phases.find(phase => phase.id === "pack");
+      const waterNow = viewDef?.id === "water";
+      const waterDone = packing?.state === "done" || packing?.state === "now" && panel.dataset.step !== "setup";
+      phases.unshift({ id: "water", state: waterNow ? "now" : waterDone ? "done" : "" });
+      if (waterNow && packing) packing.state = "";
+    }
+    const sig = phases.map(({ id, state }) => `${id}:${state}`).join(",");
     if (sig === stepSig) return;
     stepSig = sig;
-    steps.replaceChildren(...phases.map((node) => {
-      const name = textOf(node.querySelector(".bench-phase-copy b")) || node.dataset.step;
-      const paths = STEP_ICONS[node.dataset.step];
-      const mark = paths ? craftIcon(paths) : craftIcon(node.querySelector("svg")?.innerHTML || "", "0 0 36 36");
-      return el(`li${state(node) ? `.${state(node)}` : ""}`, {
-        "aria-label": name, "aria-current": state(node) === "now" ? "step" : null, dataset: { step: node.dataset.step }, html: mark,
+    steps.replaceChildren(...phases.map(({ source, id, state }) => {
+      const name = source ? textOf(source.querySelector(".bench-phase-copy b")) || id : "水入れ";
+      const paths = STEP_ICONS[id];
+      const mark = paths ? craftIcon(paths) : craftIcon(source?.querySelector("svg")?.innerHTML || "", "0 0 36 36");
+      return el(`li${state ? `.${state}` : ""}`, {
+        "aria-label": name, "aria-current": state === "now" ? "step" : null, dataset: { step: id }, html: mark,
       });
     }));
   }

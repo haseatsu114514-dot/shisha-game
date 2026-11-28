@@ -140,9 +140,11 @@ let accepted = false;
 assert(core.loadFromSlot(invalidKey, { validate(candidate) { accepted = candidate.schema === core.SCHEMA; } }));
 assert(accepted, "valid migrated candidate may be accepted");
 
-// 設定が未保存なら既読のみを使い、保存済みの「全部」は保持する。
-assert.equal(core.loadConfig().skipSeenOnly, true);
-files.set(core.CONFIG_KEY, '{"textSpeed":4}');
+// 旧版の既定を移行し、新版で選び直した既読のみは保持する。
+assert.equal(core.loadConfig().skipSeenOnly, false);
+files.set(core.CONFIG_KEY, '{"skipSeenOnly":true,"textSpeed":4}');
+assert.equal(core.loadConfig().skipSeenOnly, false);
+files.set(core.CONFIG_KEY, '{"skipRangeVersion":1,"skipSeenOnly":true}');
 assert.equal(core.loadConfig().skipSeenOnly, true);
 files.set(core.CONFIG_KEY, '{"skipSeenOnly":false}');
 assert.equal(core.loadConfig().skipSeenOnly, false);

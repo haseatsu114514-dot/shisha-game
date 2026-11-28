@@ -28,8 +28,10 @@ export function buildCraftProgress(steps, { iconRail = false } = {}) {
     el("span.bench-phase-copy", [iconRail ? null : el("small", { text: String(i + 1).padStart(2, "0") }), el("b", { text: label })]),
     (SUB_STEP[phase] || (iconRail && ["heat", "steam"].includes(phase))) ? el("span.bench-phase-step", { "aria-hidden": "true", dataset: { test: "bench-phase-step" } }) : null,
   ]));
-  const root = el("nav.bench-progress", { "aria-label": "制作の工程" }, [count, el(iconRail ? "ol.craft-route-track" : "div.bench-progress-track", cells)]);
+  const root = el("nav.bench-progress", { "aria-label": "制作の工程", dataset: { water: String(available.has("setup")) } },
+    [count, el(iconRail ? "ol.craft-route-track" : "div.bench-progress-track", cells)]);
   return { root, count, update(id, title, lessonStep) {
+    if (lessonStep === "water") root.dataset.water = "true";
     const active = phases.findIndex(([, , ids]) => ids.includes(id));
     cells.forEach((cell, i) => {
       cell.classList.toggle("now", i === active);

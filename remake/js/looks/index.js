@@ -18,7 +18,7 @@ async function apply(look) {
   if (!loaded.has(look)) {
     try { loaded.set(look, await loaders[look]()); }
     catch (error) {
-      if (mine === revision) document.documentElement.removeAttribute("data-vt-pending");
+      if (mine === revision && look === "vertical") throw error;
       console.error(`[look] ${look} を読み込めませんでした`, error);
       return;
     }

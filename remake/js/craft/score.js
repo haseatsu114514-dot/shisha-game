@@ -3,7 +3,7 @@ import { naruFinishBonus } from "../core/naru-finish.js";
 import { mixMasteryProfile } from "../core/flavor-mastery.js";
 // 完成品の性能と総合評価。
 //   穴あけ・炭焼き・配合・蒸らし・吸い出し・熱管理 → 完成品ステータス（shishaStats）
-//   通常の総合スコア = 穴あけ20% + 炭焼き20% + 完成品20% + 調整1回目20% + 調整2回目20%
+//   総合には各工程の重み付き平均を使う。採点した水入れには小さな重みを加える。
 import { clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { state } from "../core/state.js";
@@ -162,6 +162,7 @@ export function scoreWeights(cs) {
   // アルミ穴あけを飛ばした一台は穴あけの重みを外す。第1章大会だけ完成品を40%にする。
   const foilSkipped = !!cs.holes?.skipped;
   const weights = { ...WEIGHTS };
+  if (Number.isFinite(cs.waterResult?.score)) weights.water = .05;
   if (foilSkipped) {
     delete weights.holes;
     if ((cs?.chapter ?? state?.chapter) === 1 && cs.mode === "tournament") {
@@ -174,6 +175,7 @@ export function scoreWeights(cs) {
 /** 確定した項目だけの暫定平均。未実施項目と完成時のボーナスは含めない。状態は変更しない。 */
 export function provisionalCraftScore(cs) {
   const parts = {
+    water: cs.waterResult?.score,
     holes: cs.holes?.skipped ? undefined : cs.holes?.score,
     heat: cs.heat?.score,
     shisha: cs.pullDone ? (cs.stats || computeShisha(cs)).craftQuality : undefined,
@@ -187,14 +189,15 @@ export function provisionalCraftScore(cs) {
 
 /**
  * 制作中のランク（CRN01・CRN12）。作業台を開いた時はDで、工程を終えるたびに1段ずつ上がっていく。
- * 表示の点 = min(採点に入る工程の平均, 進み具合の上限)。進み具合は 穴・炭・蒸らし・提供・調整1・調整2 の6つ（その台で行う分だけ）。
- * 上限は進み具合に合わせて D→C→B→A→S→SS と1段ずつ開き、全部終えると外れて最終の総合（ボーナス前）と一致する（最後に SSS へ届く）。
+ * 表示の点 = min(採点に入る工程の平均, 進み具合の上限)。水・穴・炭・蒸らし・提供・調整1・調整2のうち、その台で行う分を数える。
+ * 短い台でも、6段分よりも早く上限を開かない。制作が終われば、作業台は確定した総合を表示する。
  * 蒸らし（雑念よけ）は採点の平均には入らないが、進み具合には入る。蒸らしの最中は、雑念に当たっていない時間の分だけ
  * 進み具合がじわじわ増える（cs.steamLive.progress、0〜1）。出来の悪い工程があれば平均の方で抑えられる。
  * steps はその作業台で行う工程（openBench の steps の id）。調整なしの台は、その分を数えない。
  */
 export function climbingCraftScore(cs, steps = null, thresholds = [0, 50, 65, 80, 90, 93, 96]) {
   const parts = {
+    water: cs.waterResult?.score,
     holes: cs.holes?.skipped ? undefined : cs.holes?.score,
     heat: cs.heat?.score,
     shisha: cs.pullDone ? (cs.stats || computeShisha(cs)).craftQuality : undefined,
@@ -202,11 +205,12 @@ export function climbingCraftScore(cs, steps = null, thresholds = [0, 50, 65, 80
     care2: cs.careHistory?.[1]?.score,
   };
   const planned = Array.isArray(steps) && steps.length ? new Set(steps) : null;
-  const stepOf = { holes: "holes", heat: "heat", shisha: "pull", care1: "care1", care2: "care2" };
-  const entries = Object.entries(scoreWeights(cs)).filter(([key]) => !planned || planned.has(stepOf[key]));
+  const stepOf = { water: "setup", holes: "holes", heat: "heat", shisha: "pull", care1: "care1", care2: "care2" };
+  const entries = Object.entries(scoreWeights(cs)).filter(([key]) => !planned || planned.has(stepOf[key]) || (key === "water" && planned.has("water")));
   const steamPlanned = !planned || planned.has("steam");
-  const units = entries.length + (steamPlanned ? 1 : 0);
-  if (!entries.length) return null;
+  const top = thresholds.length - 1;
+  const units = Math.max(top, entries.length + (steamPlanned ? 1 : 0));
+  if (!entries.length) return planned?.has("setup") || planned?.has("water") ? 0 : null;
   const done = entries.filter(([key]) => Number.isFinite(parts[key]));
   const steamDone = !steamPlanned ? 0 : cs.steam ? 1 : clamp(Number(cs.steamLive?.progress) || 0, 0, 1);
   if (!done.length) return 0;
@@ -215,7 +219,7 @@ export function climbingCraftScore(cs, steps = null, thresholds = [0, 50, 65, 80
   const fraction = (done.length + steamDone) / units;
   if (fraction >= 1) return average;
   // 進み具合 → 上限の点。ランクの境目の間を、進み具合に比例して1段ずつ開ける
-  const top = thresholds.length - 1, g = fraction * top, i = Math.floor(g);
+  const g = fraction * top, i = Math.floor(g);
   const cap = thresholds[i] + (g - i) * ((thresholds[i + 1] ?? 100) - thresholds[i]);
   return Math.min(average, cap);
 }
@@ -224,6 +228,7 @@ export function finalize(cs) {
   cs.stats = cs.stats || computeShisha(cs);
   const { bonus, notes } = bonusOf(cs);
   const parts = {
+    ...(Number.isFinite(cs.waterResult?.score) ? { water: cs.waterResult.score } : {}),
     ...(cs.holes?.skipped ? {} : { holes: cs.holes?.score ?? 0 }),
     heat: cs.heat?.score ?? 0,
     shisha: cs.stats.craftQuality,

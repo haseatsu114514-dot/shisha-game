@@ -26,6 +26,75 @@ async function rotate(page, name) {
 }
 
 await suite("portrait_live_scenes", async check => {
+  await check("steam-tutorial-help-fits-and-closes", async page => {
+    await start(page);
+    await page.evaluate(async () => {
+      localStorage.removeItem("suien_step_intro");
+      const { openBench, newSession } = await import("./js/craft/session.js");
+      const { runSteamDodge } = await import("./js/craft/steam.js");
+      const cs = newSession("tutorial");
+      cs.onboarding = true;
+      openBench(cs, {});
+      window.dodgeDone = runSteamDodge(cs).then(() => cs.steam);
+    });
+    const field = page.locator(".vtc-dodge-arena .dodge");
+    await field.waitFor();
+    const guide = button(page, "vt-craft-tut");
+    await guide.waitFor();
+    const box = await guide.boundingBox();
+    assert(box.width >= tall.width * .95 && box.x >= 0 && box.x + box.width <= tall.width + 1);
+    const count = Number(await guide.getAttribute("data-count"));
+    for (let index = 1; index < count; index++) {
+      await guide.tap({ position: { x: 24, y: 24 } });
+      await page.waitForFunction(i => document.querySelector(".vtc-tut").dataset.index === String(i + 1), index);
+    }
+    await button(page, "vt-craft-tut-go").tap();
+    await guide.waitFor({ state: "hidden" });
+    const pad = button(page, "dodge-pad");
+    const arena = await field.boundingBox(), stick = await pad.boundingBox();
+    assert(arena.width >= tall.width * .98 && arena.height > arena.width * .8);
+    assert(stick.y >= arena.y + arena.height && stick.width > tall.width * .45);
+    const warmup = button(page, "steam-warmup-start");
+    await warmup.waitFor();
+    await page.setViewportSize(wide);
+    await page.locator("#screen .steam-play .dodge .steam-warmup").waitFor();
+    await page.setViewportSize(tall);
+    await field.waitFor();
+    await warmup.tap();
+    await button(page, "steam-clock").waitFor();
+    const clock = await button(page, "steam-clock").boundingBox();
+    assert(Math.abs((clock.y + clock.height / 2) - (arena.y + arena.height / 2)) < 4);
+    await button(page, "dodge-precision").tap();
+    assert.equal(await button(page, "dodge-precision").getAttribute("aria-pressed"), "true");
+    await button(page, "dodge-refresh").tap();
+    assert.equal(await button(page, "dodge-refresh").getAttribute("data-remaining"), "0");
+    const result = button(page, "vt-craft-result-next");
+    await result.waitFor({ timeout: 30000 });
+    await result.tap();
+    assert.equal(await page.evaluate(async () => (await window.dodgeDone).refreshesUsed), 1);
+  }, options);
+
+  await check("short-screen-learned-dodge-actions", async page => {
+    await start(page);
+    await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      const { newSession, openBench } = await import("./js/craft/session.js");
+      const { runSteamDodge } = await import("./js/craft/steam.js");
+      state.flags._sumi_attack_learned = true;
+      const cs = newSession("practice");
+      openBench(cs, {});
+      void runSteamDodge(cs);
+    });
+    const attack = button(page, "dodge-slash"), swap = page.locator(".vtc-dodge-swap");
+    await attack.tap();
+    assert.equal(await attack.getAttribute("data-uses"), "1");
+    await swap.tap();
+    await button(page, "dodge-precision").tap();
+    assert.equal(await button(page, "dodge-precision").getAttribute("aria-pressed"), "true");
+    await swap.tap();
+    assert(await attack.isVisible());
+  }, { ...options, viewport: { width: 320, height: 568 } });
+
   await check("vent-and-charcoal-commit-the-tapped-choices", async page => {
     await start(page);
     await page.evaluate(async () => {

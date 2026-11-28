@@ -742,3 +742,20 @@ Draw one object on a fully transparent background: a realistic, believable digit
 詰めたあと、本体の外枠で切り抜き、幅720にした（`remake/previews/portrait-stage/img/ui-ktimer-tall.webp`・720×982）。液晶とボタンの位置は、縮めた分だけずらして `app.mjs` の `KTIMER` に割合で書いた。
 案2・案3（`ui-ktimer-tall-std.webp`・`ui-ktimer-tall-bumper.webp`）と、詰める前の `ui-ktimer-tall-slim.webp` は、試作の `img/` から外した（原画は v4/ にそのまま残す）。
 
+
+### ハガルに入った刻み葉の描き直し
+
+縦画面の配合と詰め方に反映。オーナーの濡れた葉の写真と、日本の店で縁の高さに合わせた葉を見比べた。器ごとの案と葉だけの初案を生成し、照りと平たい葉の折れ方を調整して、葉だけの再生成案を詰め方に採用。少量の状態には葉だけの初案から、すき間のある葉を採用した。参照写真は制作資料のまま、本編に入れたのは生成した葉と既存の絵の合成のみ。[YELLOWの作業写真](https://media.cloud-shisha.com/brotalkstudio-yellow/) [B-Side Shisha Bar監修の記事](https://www.japanshishatimes.jp/feature/howtoshisha-b-side-parameter)
+
+```text
+人物      なし
+場面      配合・詰め方。ハガルだけを作業台に置く段階
+台の型    台本体は描かない。既存の黒い5穴ハガルを原寸で使用
+HMD       なし
+炭        なし
+ホース    なし
+吸い口    なし
+構図      既存の斜め俯瞰で、上から見える葉の面だけを更新
+```
+
+原画は `v4/packed-leaves-original.webp`（左上ふんわり、右上ノーマル、左下デンス、右下赤寄りノーマル）と `v4/partial-leaves-original.webp`（配合途中）。葉は薄い不均一な刻み葉を重ね、少量の時は底の穴を見せる。ふんわりは小さなすき間、デンスは詰まった低い面。茶色と赤茶を同じ器に合成し、縁と脚が動かず葉が縁からはみ出さないことを原寸で確認した。

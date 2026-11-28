@@ -7,7 +7,7 @@ import { attackRange, inAttackRange } from "./attack-band.js";
 // 一番上の焦げる帯に炎、熱管理の冷え切り帯に雪の結晶（TH32〜TH35）。
 import { el } from "../core/util.js";
 import { setAttr, setData, setFlag } from "../core/dom-write.js";
-import { DANGER_TEMP, temperatureBands, isIdealTemperature, isOptimalTemperature, isRainbowTemperature, visualTemperature } from "./temperature-model.js";
+import { DANGER_TEMP, temperatureBands, isIdealTemperature, isRainbowTemperature, visualTemperature } from "./temperature-model.js";
 import { DB, makingUrl } from "../core/data.js";
 import { artImg } from "./art.js";
 
@@ -17,8 +17,8 @@ const POINTER = `<svg viewBox="0 0 30 30"><path d="M2.5 15 27 3.5 21.5 15 27 26.
 const pct = (f) => `${f * 100}%`;
 const fullExpression = bands => (bands.expressionWeight || 0) >= .999;
 const bandDescription = bands => fullExpression(bands)
-  ? "配合の温度帯：虹がおいしく作れる範囲。低めと高めで香りが変わる"
-  : "配合の温度帯：緑が適温の目安、中央の虹色が合わせやすい範囲";
+  ? "配合の温度帯。緑は適温、虹は最適温。低めと高めで香りが変わる"
+  : "配合の温度帯。緑は適温、虹は最適温";
 const SCALE_COLORS = [[0, "#fff4d2"], [.13, "#ffedb0"], [.26, "#ffe270"], [.37, "#ffd12a"], [.40, "#f6d559"], [.42, "#67d2a3"],
   [.44, "#4fcf98"], [.54, "#74e0b0"], [.64, "#4fcf98"], [.66, "#79d9a9"], [.71, "#ffb247"], [.76, "#ff8a2a"],
   [.83, "#ff3f17"], [.89, "#eb210d"], [.94, "#b0140a"], [1, "#650609"]];
@@ -148,7 +148,7 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
     setData(root, "naruFinish", inNaruFinishRange(temp, finishTarget));
     setAttr(root, "aria-valuenow", temp.toFixed(4));
     setAttr(root, "aria-valuetext", temp >= DANGER_TEMP ? "焦げる寸前" : temp > bands.ideal[1] ? "熱い"
-      : isIdealTemperature(temp, bands) ? fullExpression(bands) ? "おいしく作れる範囲" : isOptimalTemperature(temp, bands) ? "最適温" : "適温" : "ぬるい");
+      : isRainbowTemperature(temp, bands) ? "最適温" : isIdealTemperature(temp, bands) ? "適温" : "ぬるい");
   },
   /** 吸った直後、今の温度の横に ▲／＝／▼ の印を浮かべる（判定の文字の代わり TH36）。 */
   pop(text, dir = "keep") {

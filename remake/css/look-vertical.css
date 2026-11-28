@@ -4,6 +4,8 @@
    本編の画面（#viewport）はレイアウトを生かしたまま見えなくし（会話の折り返しが .vn-text の実幅を測るため display は変えない）、
    外枠のクラスはすべて vt- で始めて、本編の CSS とぶつからないようにする。 */
 
+:root[data-vt="on"] { --vt-dialogue-weight: 600; }
+
 /* ───────── 本編側の調整（縦画面を使っている間だけ） ───────── */
 :root[data-look="vertical"][data-vt-shell="on"] #viewport { opacity: 0; }
 /* 従来の舞台と外枠の両方より前に読み込み画面を置く。ゲートが薄れても横の舞台は見せない。 */
@@ -12,11 +14,8 @@
 :root[data-vt="on"] body > :is(.loading-gate, .loading-exit-haze).is-viewport { z-index: 1002; }
 :root[data-vt-loading] #viewport { opacity: 0; }
 :root[data-vt-loading] :is(.vt-shell, .vt-motion) { visibility: hidden; }
-/* 縦画面の回転案内は、js/looks/vertical.js が横専用と判定した場面で出す。 */
-@media (orientation: portrait) and (hover: none) and (pointer: coarse) {
-  :root[data-look="vertical"][data-vt="on"][data-vt-hint="wide"] #rotate-hint { display: grid; }
-}
-:root[data-look="vertical"][data-vt="on"] #rotate-hint > :not(.vt-hint) { display: none; }
+/* 専用の縦配置へ移している途中の画面。既存の操作座標の幅を保ち、縦は表示領域を使い切る。 */
+:root[data-vt-native] #stage { height: calc(100dvh / var(--k, 1)); }
 /* 本編の会話の箱を、縦のテロップと同じ比（全角約16字×2行）にする。本編の会話エンジンがこの幅で2行ずつページを分ける（VPL29）。
    テロップ: 幅 33 単位・字 1.94 単位・字間 0.03em → 本編: 字 32px なら幅 544px（エンジンは幅 −4 で測るので 548px） */
 html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box .vn-text,
@@ -24,38 +23,26 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
   width: 548px !important;
   font-family: var(--font) !important;
   font-size: 32px !important;
-  font-weight: 500 !important;
+  font-weight: var(--vt-dialogue-weight) !important;
   letter-spacing: 0.03em !important;
 }
-
-#rotate-hint > .vt-hint { display: grid; justify-items: center; gap: 10px; color: #f1ecf9; font-family: var(--font); }
-.vt-hint p { margin: 0; }
-.vt-hint-main { font-size: 18px; font-weight: 700; letter-spacing: 0.06em; }
-.vt-hint-sub { max-width: 18em; color: #c3b0ff; font-size: 13px; line-height: 1.6; }
-.vt-hint-device { position: relative; width: 28px; height: 46px; margin-bottom: 8px; border: 2.5px solid #c3b0ff; border-radius: 6px; box-sizing: border-box; animation: vt-turn 2.4s ease-in-out infinite; }
-.vt-hint-device::after { content: ""; position: absolute; left: 50%; bottom: 3px; width: 8px; height: 2px; margin-left: -4px; border-radius: 2px; background: #c3b0ff; }
-@keyframes vt-turn { 0%, 40% { transform: none; } 55%, 95% { transform: rotate(-90deg); } 100% { transform: none; } }
 
 /* ───────── 外枠（スマホ1台ぶん） ───────── */
 .vt-shell {
   --u: min(calc(100vw / 39), calc(100dvh / 66));
   --acc: #c3b0ff;
   --deep: #0b0812;
-  /* 土台の配置（VPN09・VPN16）: 上画面（絵・テロップ・札・返事）と下画面（補助ボタンの段・輪の十字キー・丸ボタン）。
-     下画面の部品は共通の位置に置く。会話と返事では、絵の場所を広げた専用の配置を使う。
-     下画面の高さと部品の大きさ・位置は、オーナーが合格を出した試作の会話画面（previews/portrait-stage/style.css の .ctrl・案1の補助ボタン）と同じ:
-     幅 39 に対して下画面 30.2（844 の画面で約36%。上画面にゆとりを残す）、補助ボタンの段のすぐ下に十字キー。
-     はじめの 6:4 では下画面が広く、板も敷いていたので圧迫して見えた（VPN16・オーナー「圧迫しすぎ」）。
-     背の低い画面は、試作と同じ段階（外枠の高さが幅の 80/39・71/39 以下）で縮める（下の @container vtshell） */
+  /* 会話・地図・選択肢など、同じパッドを使う場面では指の位置を揃える。 */
+  --ring-scale: .73;
+  --pad-gap: max(calc(.4 * var(--u)), calc(var(--safe-b) * .5));
   --shell-h: min(100dvh, calc(92 * var(--u)));
-  --ctrl-h: calc(30.2 * var(--u));
   --chips-h: calc(6.4 * var(--u));
   --chip-h: calc(5.4 * var(--u));
   --ring: calc(20.4 * var(--u) * var(--ring-scale, 1));
   --a: calc(14.6 * var(--u));
-  --pad-top: calc(8.2 * var(--u));
+  --pad-top: calc(var(--chips-h) + var(--pad-gap));
   --safe-b: env(safe-area-inset-bottom, 0px);
-  --bottom-h: calc(var(--ctrl-h) + var(--safe-b));
+  --bottom-h: calc(var(--pad-top) + var(--ring) + var(--pad-gap));
   --top-h: calc(var(--shell-h) - var(--bottom-h));
   container: vtshell / size;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -205,6 +192,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-glass[data-kind="narration"] { border-color: #ffffff1f; background: linear-gradient(180deg, #0e0a18b3, #0b0812d9); }
 .vt-glass.ask { min-height: 0; padding: calc(1.2 * var(--u)) calc(1.8 * var(--u)) calc(1.3 * var(--u)); }
 .vt-text { margin: 0; font-size: calc(1.94 * var(--u)); line-height: 1.74; font-weight: 500; letter-spacing: 0.03em; white-space: nowrap; text-shadow: 0 calc(0.1 * var(--u)) calc(0.4 * var(--u)) #000a; }
+.vt-shell[data-scene="vn"] :is(.vt-text, .vt-inner, .tx-voice) { font-weight: var(--vt-dialogue-weight); }
 .vt-glass.ask .vt-text { font-size: calc(1.8 * var(--u)); white-space: normal; }
 .vt-shell[data-scene="menu"] .vt-text { white-space: normal; }
 .vt-glass[data-kind="thought"] .vt-text { color: #d9cdf5; }
@@ -232,17 +220,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-choice[aria-disabled="true"] small { color: #ff9a8f; }
 .vt-choice[data-hint="fortune"] b::after, .vt-choice[data-hint="growth"] b::after { content: "　✦"; color: #ffe2a6; }
 
-/* 会話・返事は輪を少し小さくし、補助ボタン列と画面下端の間で両方のパッドを中央に置く。 */
-.vt-shell[data-scene="vn"] {
-  --ring-scale: .87;
-  --pad-gap: max(calc(.6 * var(--u)), calc(var(--safe-b) * 2 / 3));
-}
-.vt-shell[data-scene="vn"] > * {
-  --pad-top: calc(var(--chips-h) + var(--pad-gap));
-  --bottom-h: calc(var(--pad-top) + var(--ring) + var(--pad-gap));
-  --top-h: calc(var(--shell-h) - var(--bottom-h));
-}
-.vt-shell[data-scene="vn"] .vt-a-t:has(.vt-glyph) { display: flex; margin: 0; }
+.vt-shell .vt-a-t:has(.vt-glyph) { display: flex; margin: 0; transform: translateY(calc(.15 * var(--u))); }
 
 /* 下画面に板は敷かない（試作どおり）。ぼかした背景と暗い幕（.vt-veil）が上画面から続き、絵の裾が溶けて見える */
 .vt-ctrl { position: relative; height: var(--bottom-h); pointer-events: auto; }
@@ -313,9 +291,10 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 /* ───────── 地図 ───────── */
 .vt-map { position: absolute; inset: 0; touch-action: none; cursor: grab; overflow: hidden; overflow: clip; }
 .vt-pic[data-kind="map"] { -webkit-mask-image: linear-gradient(180deg, #000 0, #000 74%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 74%, transparent 100%); }
-.vt-map-pan { position: absolute; left: 0; top: 0; transform-origin: 0 0; transition: transform 0.65s var(--ease-out); will-change: transform; }
+.vt-map-pan { position: absolute; left: 0; top: 0; transform-origin: 0 0; transition: transform 0.30s var(--ease-out); will-change: transform; }
 .vt-map-pan.no-anim { transition: none; }
 .vt-map-img { width: 100%; height: 100%; }
+.vt-map:not(.overview) .vt-map-img { mask-image: linear-gradient(#000 86%, transparent); }
 .vt-map-pins { position: absolute; inset: 0; }
 .vt-map.overview .vt-map-pan { box-shadow: 0 0 0 4px #ffffff59, 0 30px 60px #000c; }
 .vt-pin { position: absolute; width: 0; height: 0; transform: scale(var(--inv, 1)); transition: opacity 0.3s; }
@@ -625,12 +604,12 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 /* 背の低い画面（試作の @container phone (max-height: 80rem)・(max-height: 71rem) と同じ段階。外枠の幅は 39u なので、高さ 80u 以下 ＝ 縦横比 39/80 以上）。
    上と下の高さは外枠の直下の層ごとに計算し直す（外枠に書いた式は外枠の値で決まってしまうため） */
 @container vtshell (min-aspect-ratio: 39 / 80) {
-  .vt-shell > * { --ctrl-h: calc(27.2 * var(--u)); --chips-h: calc(5.8 * var(--u)); --chip-h: calc(4.8 * var(--u)); --ring: calc(18.2 * var(--u) * var(--ring-scale, 1)); --a: calc(13.2 * var(--u)); --pad-top: calc(7.4 * var(--u));
-    --bottom-h: calc(var(--ctrl-h) + var(--safe-b)); --top-h: calc(var(--shell-h) - var(--bottom-h)); }
+  .vt-shell > * { --chips-h: calc(5.8 * var(--u)); --chip-h: calc(4.8 * var(--u)); --ring: calc(18.2 * var(--u) * var(--ring-scale, 1)); --a: calc(13.2 * var(--u)); --pad-top: calc(var(--chips-h) + var(--pad-gap));
+    --bottom-h: calc(var(--pad-top) + var(--ring) + var(--pad-gap)); --top-h: calc(var(--shell-h) - var(--bottom-h)); }
 }
 @container vtshell (min-aspect-ratio: 39 / 71) {
-  .vt-shell > * { --ctrl-h: calc(23.6 * var(--u)); --chips-h: calc(5.1 * var(--u)); --chip-h: calc(4.3 * var(--u)); --ring: calc(15.4 * var(--u) * var(--ring-scale, 1)); --a: calc(11.2 * var(--u)); --pad-top: calc(6.5 * var(--u));
-    --bottom-h: calc(var(--ctrl-h) + var(--safe-b)); --top-h: calc(var(--shell-h) - var(--bottom-h)); }
+  .vt-shell > * { --chips-h: calc(5.1 * var(--u)); --chip-h: calc(4.3 * var(--u)); --ring: calc(15.4 * var(--u) * var(--ring-scale, 1)); --a: calc(11.2 * var(--u)); --pad-top: calc(var(--chips-h) + var(--pad-gap));
+    --bottom-h: calc(var(--pad-top) + var(--ring) + var(--pad-gap)); --top-h: calc(var(--shell-h) - var(--bottom-h)); }
   .vt-glass { min-height: calc(9.8 * var(--u)); padding: calc(1.2 * var(--u)) calc(1.6 * var(--u)) calc(1.3 * var(--u)); }
   .vt-name { min-height: calc(2.6 * var(--u)); margin-bottom: calc(0.6 * var(--u)); } .vt-name b { font-size: calc(2.2 * var(--u)); }
   .vt-choice { min-height: calc(4.3 * var(--u)); font-size: calc(1.6 * var(--u)); } .vt-choices { gap: calc(0.6 * var(--u)); margin-top: calc(0.7 * var(--u)); }

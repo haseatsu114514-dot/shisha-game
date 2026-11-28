@@ -99,7 +99,9 @@ export async function runSteamDodge(cs) {
     : "";
   const panel = stepPanel("steam", "蒸らし", dodgeHelp + attackHelp, { brief: "" });
   const isCurrent = () => state === owner && benchRoot(cs) === root && panel.dataset.step === "steam";
-  const W = 784, H = 414;
+  // 縦は同じ面積の正方形を基準にする。描画・出現位置・接触判定・指の座標がこの寸法を共用する。
+  const portrait = root.ownerDocument?.documentElement.dataset.vt === "on";
+  const W = portrait ? 570 : 784, H = portrait ? 570 : 414;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius), stage, table: table.id } });
   const heart = el(`div.dodge-heart${effectVisible("guts") ? ".guts-visible" : ""}`, { role: "img", "aria-label": "心。中央の白丸が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core"), effectBadge("guts", "根")]);
   const clock = buildDigitalClock("dodge-timer", { label: "蒸らしの残り時間", test: "steam-clock" });
@@ -507,6 +509,7 @@ export async function runSteamDodge(cs) {
           }
           if (b.x + b.w < -60 || b.x > W + 60 || b.y + b.h < -60 || b.y > H + 60) { b.node.remove(); bullets.splice(i, 1); }
         }
+        if (portrait) box.style.setProperty("--steam-left", Math.max(0, 1 - time / dur).toFixed(3));
         clock.update(Math.max(0, Math.ceil((dur - time) * seconds / dur)));
         const level = mental.update(time, hits);
         setPlayerMental(cs, level); setData(box, "mental", level);
@@ -566,7 +569,7 @@ export async function runSteamDodge(cs) {
       effectLine("insight", "察", "洞察で雑念が少し減っていた"),
       hits === 0 ? "呼吸が整った。吸い出しも落ち着いて取りかかれそう" : "気が少し急いている。吸い出しは手元をよく見よう",
       clearSeconds >= 2 ? "途中から雑念が遠のいて、無心で待てた" : peakMind === "shaken" && STEAM_STAGES[stage].pressure >= .15 ? "舞台の大きさに、心が呑まれかけた" : "",
-      "蒸らしで入った熱を、吸い出しで適温へ整える",
+      "吸い出しで熱を整える。温度計は緑で合格、虹が理想",
       min >= 8 ? "じっくり待った分、熱が入り、吸い出しに余裕ができる" : min <= 3 ? "早めの立ち上げ。温度合わせは忙しくなる" : "香りの輪郭を残した。吸い出しでしっかり熱を入れよう",
     ],
   });

@@ -41,7 +41,7 @@ import { applyCoalTraining } from "./coals.js";
 import { attachBenchAppearance } from "../appearance/bench.js";
 import { mountCraftRank, craftRankProgress } from "./rank-hud.js";
 import { craftRankThresholds } from "./common.js";
-import { climbingCraftScore, provisionalCraftScore } from "./score.js";
+import { climbingCraftScore } from "./score.js";
 import { buildRigRecord } from "./rig-record.js";
 import { buildRivalWindows } from "./rival-windows.js";
 import { demoFor, openDemoSheet } from "./demo.js";
@@ -187,7 +187,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   bench = { cs, owner:state, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf,
     sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
   // レッスンも大会と同じ暫定ランクを表示。配合だけの接客と、前工程を補う単工程ドリルは総合を捏造しない。
-  const rankedLesson = steps.some(([id]) => ["holes", "heat", "pull", "care1", "care2"].includes(id));
+  const rankedLesson = steps.some(([id]) => ["setup", "water", "holes", "heat", "pull", "care1", "care2"].includes(id));
   if (cs.mode !== "drill" && (cs.mode !== "tutorial" || rankedLesson)) {
     bench.rankHud = mountCraftRank(root.querySelector(".bench-top"), null, { preserveMode: true });
     const b = bench;
@@ -587,10 +587,8 @@ function updateBenchRank() {
   if (!bench?.rankHud) return;
   const cs = bench.cs;
   const final = !!cs.parts && Number.isFinite(cs.total);
-  // リニューアル: 制作中は最初がDで、工程を終えるたびに1段ずつ上がっていく（CRN01）。最後は最終の総合へ届く。
-  // 桜井版（CRN16）: リニューアル前のとおり、終えた工程の平均（はじめは「—」）
-  const renewal = renewalCraft(cs), thresholds = craftRankThresholds(cs);
-  const score = final ? cs.total : renewal ? climbingCraftScore(cs, bench.sequence, thresholds) : provisionalCraftScore(cs);
+  const thresholds = craftRankThresholds(cs);
+  const score = final ? cs.total : climbingCraftScore(cs, bench.sequence, thresholds);
   const progress = score === null ? null : craftRankProgress(score, thresholds);
   const before = bench.rankGrade ?? null;
   bench.rankHud.update(progress && { ...progress, artwork: { wide: rankArt(progress.grade), compact: rankArt(progress.grade) } });
@@ -599,11 +597,8 @@ function updateBenchRank() {
   const order = ["D", "C", "B", "A", "S", "SS", "SSS"]; // rank-hud.js の CRAFT_GRADES と同じ並び
   // 雑念よけの最中は大きく出さない（雑念の場を隠すと避けられない）。帯の札だけが上がる（CRN12）
   const dodging = !!cs.steamLive && !cs.steam;
-  if (renewal ? progress?.grade && before && !dodging && order.indexOf(progress.grade) > order.indexOf(before) : progress?.grade && progress.grade !== before) burstRank(bench, progress.grade);
+  if (progress?.grade && before && !dodging && order.indexOf(progress.grade) - order.indexOf(before) === 1) burstRank(bench, progress.grade);
   bench.rankHud.root.dataset.provisional = String(!final);
-  bench.rankHud.root.setAttribute("aria-label", final ? "制作ランク" : "制作ランク（暫定）");
-  // 「（暫定）」は分けておく（スマホの上のレールは幅が要るので「RANK」だけを出す・css/craft-phone.css）。文は今までと同じ
-  bench.rankHud.root.querySelector(".craft-rank-caption").replaceChildren("RANK", ...(final ? [] : [el("span.craft-rank-provisional", { text: "（暫定）" })]));
 }
 
 /** 左側の工程キャプションを更新。今後の作業アニメーションもここで同期する。 */

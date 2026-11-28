@@ -27,9 +27,8 @@ export function buildSteamTemperature(cs) {
   return { ...thermometer, update(temp) {
     thermometer.update(temp);
     const bands = temperatureBands(cs);
-    const expressive = bands.expressionWeight >= .999;
     // 毎フレーム呼ばれるので、変わった時だけ書く（同じ文字でも書くとページ全体の再計算が走って重い・CRN）
-    const text = expressive && isIdealTemperature(temp, bands) ? "適温" : thermometer.root.getAttribute("aria-valuetext");
+    const text = thermometer.root.getAttribute("aria-valuetext");
     if (state.textContent !== text) state.textContent = text;
     const tone = temp >= DANGER_TEMP ? "danger" : isRainbowTemperature(temp, bands) ? "optimal" : isIdealTemperature(temp, bands) ? "ok" : temp > bands.ideal[1] ? "hot" : "cool";
     if (read.dataset.tone !== tone) read.dataset.tone = tone;
@@ -37,7 +36,7 @@ export function buildSteamTemperature(cs) {
 }
 
 const temperatureName = (temp, bands) => isIdealTemperature(temp, bands)
-  ? bands.expressionWeight >= .999 ? "適温" : isRainbowTemperature(temp, bands) ? "最適温" : "適温"
+  ? isRainbowTemperature(temp, bands) ? "最適温" : "適温"
   : temp > bands.ideal[1] ? "熱い" : temp < .2 * bands.t ? "低温" : "ぬるい";
 
 export function buildSteamForecast(cs, thermometer, { canZero = false } = {}) {

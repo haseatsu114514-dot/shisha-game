@@ -1,3 +1,4 @@
+import { GENRES, portraitTools, meterHtml } from "../../js/looks/vertical/craft/art.js";
 // 縦画面C案「煙の舞台」の試作（2026-11-27・#4134・要望台帳 VPL03〜）。
 // 第1章の場面（橙須の地図→入店→会話→返事／tonari の2人会話／シーシャ作り3工程）で、配置と動きを確かめる。
 // 方針: その場面で要るものだけを出す。説明は文字より、顔・絵記号・光で伝える（VPL12・VPL13）。
@@ -8,7 +9,8 @@
 // テロップの文は本編と同じ組版で、表示する箱の実際の幅と書体で測って2行ずつに分ける（VPL29）
 import { paginateForBox } from "../../js/vn/layout.js";
 // 吸い出しで吐く煙は、本編の共通の煙（KMR14「繊細ドット」・KMR15「煙が成績表」）をそのまま使う（VPL88）
-import { smokeLayer, workerBreath, ringBreath, smokeTint, smokeAllowed } from "../../js/core/smoke.js";
+import { portraitBreath } from "../../js/craft/portrait-breath.js";
+import { smokeLayer, smokeAllowed } from "../../js/core/smoke.js";
 // タイトル画面と店番（フロア営業）は、場面ごとの別ファイルに置く（VPM01・VPM02）。店番は本編のルール（状態を持たない関数）を呼ぶが、本編の進行・保存には触れない
 import { TitleScene } from "./title.mjs";
 import { FloorScene } from "./floor.mjs";
@@ -172,40 +174,8 @@ const lcdSvg = (sec) => { const d = clockTime(sec).replace(":", ""); return `<sv
 // 温度ゲージを出す場面（VPL61）。穴あけ・炭焼き・雑念よけの間は消し、吸い出しで戻す
 // 吐く時のはじめの口元（img/craft-pull-hajime-exhale.webp の中の、開いた唇の前。横・縦の割合）。絵には煙を描かず、吐いた時だけ動く煙を出す（VPL96・VPL100）
 const PULL_MOUTH = [0.55, 0.287];
-// 吸い出しで吐く煙を、温度から連続して決める（VPL93・VPL94・VPL95）。本編 workerBreath の「適温」の吐き方を元に、項目ごとに温度で動かす。
-// 煙の「量」と「濃さ・白さ」を分けて決める:
-//   量……温度そのもので増える（熱いほど葉から多く出る）。低い＝少し、最適温＝たっぷり、高すぎ＝爆煙
-//   濃さ・白さ……最適温に近いほど白く濃い。外れるとどちらへも薄くなる（低い＝薄くて少ない／高すぎ＝薄くて大きすぎる）
-// 熱に強い葉（ミントなど）の配合は帯が上にずれ、最適温が高いぶん、白く濃いまま量も多くなる（VPL95）
-const SMOKE_GRAY = [0.74, 0.72, 0.7];
-const lerp = (a, b, k) => a + (b - a) * Math.max(0, Math.min(1, k));
-function smokeByTemp(t, b, { x, y, color }) {
-  const [lo, hi] = b.zone, mid = (b.best[0] + b.best[1]) / 2, base = workerBreath("good", { x, y })[0];
-  // 帯の位置で決まる量の倍率（基準の配合＝1.04。ミント多め≒1.25。スイカ・ストロベリー多めでも 0.9 まで）
-  const heat = lerp(0.9, 1.3, (mid - 0.47) / 0.2);
-  if (t < lo) { // 低い: 薄くて少ない。帯の下端へ近づくほど増える
-    const k = (t - 0.12) / (lo - 0.12);
-    return { quality: "thin", nice: 0, heat, breaths: [{ ...base, colors: [smokeTint(color, 0.3)], rate: lerp(6, 12, k), size: lerp(0.022, 0.03, k), dur: lerp(0.65, 1.05, k), life: lerp(1.3, 1.9, k),
-      alpha: lerp(0.42, 0.6, k), hold: lerp(0.26, 0.36, k), speed: lerp(0.24, 0.36, k), spread: lerp(0.32, 0.42, k) }] };
-  }
-  if (t <= hi) { // 帯の中: 最適温に近いほど白く濃く、量も増える。帯の上の方ほど量は多め
-    const q = 1 - Math.abs(t - mid) / Math.max(mid - lo, hi - mid), up = (t - lo) / (hi - lo);
-    const best = t >= b.best[0] && t <= b.best[1], more = heat * lerp(0.88, 1.15, up);
-    return { quality: best ? "best" : "good", nice: q, heat, breaths: [{ ...base, colors: [smokeTint(color, lerp(0.28, 0.07, q))], rate: lerp(12, 27, q) * more, size: lerp(0.03, 0.05, q) * Math.sqrt(more),
-      dur: lerp(1.1, 1.95, q), life: lerp(2, 3.4, q), alpha: lerp(0.6, 1, q), hold: lerp(0.36, 0.54, q), speed: lerp(0.38, 0.46, q), turb: lerp(0.1, 0.05, q), spread: lerp(0.42, 0.34, q) }] };
-  }
-  // 高すぎ: 量は爆煙だが、薄くて大きすぎる（濃さは5段で塗るので、0.64〜0.8 で最適温の 1 より2段ほど薄い）。荒れてちぎれて横に散り、白さも抜けて早く崩れる（いい煙ではない）。熱いほどむせた短い煙も混ざる
-  const h = (t - hi) / (TEMP_DANGER - hi), pale = smokeTint(color, 0.2).map((v, i) => lerp(v, SMOKE_GRAY[i], 0.15 + 0.3 * h));
-  const plume = { ...base, colors: [pale], rate: lerp(26, 64, h) * heat, size: lerp(0.055, 0.115, h), dur: lerp(1.7, 2.4, h), life: lerp(2.3, 1.8, h), alpha: lerp(0.8, 0.64, h), hold: lerp(0.34, 0.24, h),
-    speed: lerp(0.6, 0.86, h), spread: lerp(0.55, 0.85, h), turb: lerp(0.12, 0.2, h), drag: lerp(1.5, 1.8, h), sway: 0, flat: true, lean: true };
-  const breaths = [plume];
-  if (h > 0.35) breaths.push({ ...plume, dur: 0.22, rate: 30, size: 0.03, life: 0.9, speed: 0.7, spread: 1.2, delay: 0.15 }, { ...plume, dur: 0.22, rate: 30, size: 0.03, life: 0.9, speed: 0.58, spread: 1.2, angle: plume.angle - 0.25, delay: 0.65 });
-  return { quality: "harsh", nice: 0, heat, breaths };
-}
 // 煙のおおよその量（房の数×大きさ²×寿命の和）。確かめ用に煙の層へ書き残す
 const smokeAmount = (breaths) => breaths.reduce((n, s) => n + (s.rate || 0) * (s.dur || 0) * (s.size || 0) ** 2 * (s.life || 0) * 1e4, 0);
-// 煙の輪（本編 craft/fx.js の RING と同じ: 口元から右へ吹いた縦長の輪）
-const SMOKE_RING = { radius: .03, size: .012, squash: [.55, 1], grow: .03, drift: .085, rise: .05, life: 1.7 };
 const THERMO_ON = new Set(["mix", "pack", "timer", "pull"]); // 配合は帯だけ（VPL78）。タイマーは蒸らし後の目安（VPL105）
 // スミさんの一言は、どの場面も1行に収める（VPL114。2行になっていた詰め方・穴あけ・タイマー・吸い出しを短くした）
 const COACH = {
@@ -309,12 +279,7 @@ const BOTTLE_WALL = (() => {
 const FAUCET = (() => { const [mx, my] = tiltPoint(...BOTTLE.mouth, BOTTLE.rest); return { nx: mx, ny: my - 60 }; })();
 // 配合（VPL36）。本編 steps.js の stepMix: 葉を1gずつ器へ。器（シリコン）は12g、第1章の課題はレモン2g以上
 // 葉のジャンルは店番ゲーム（remake/js/daily/tonari-floor-data.js の WISHES・tonari-floor-art.js の印）と同じ（VPL47）
-const GENRES = {
-  fruit: { name: "フルーティ", color: "#ff8f6b", icon: '<path d="M12 8.2c-1.7-1.3-4.7-1.1-6.1 1.1-1.6 2.5-.6 6.8 1.7 9.3 1.3 1.5 2.9 1.6 4.4.7 1.5.9 3.1.8 4.4-.7 2.3-2.5 3.3-6.8 1.7-9.3-1.4-2.2-4.4-2.4-6.1-1.1z" fill="currentColor"/><path d="M12 8.2c0-2.2 1-3.9 3.2-4.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' },
-  sweet: { name: "スイート", color: "#f7a8d8", icon: '<circle cx="12" cy="12" r="4.6" fill="currentColor"/><path d="M7.6 12 3 8.2v7.6zM16.4 12 21 8.2v7.6z" fill="currentColor"/>' },
-  fresh: { name: "刺激", color: "#7fd8e8", icon: '<path d="M10.5 3H19l-5.6 7.1H18L4.7 21l4.4-8H4.6z" fill="currentColor"/>' },
-  deep: { name: "リラックス", color: "#b9a6ff", icon: '<path d="M19.6 14.9A8.2 8.2 0 1 1 9.1 4.4a6.6 6.6 0 0 0 10.5 10.5z" fill="currentColor"/>' },
-};
+
 // 第1章の葉（本編の ID）。ジャンルは店番の表（ダブルアップル＝刺激系＋フルーティ、ミント＝刺激系、レモン＝フルーティ＋刺激系）。
 // パッケージの切り出しは本編 remake/js/daily/shop-art.js の box（512×512 の絵）
 // 熱への強さ（tol）は本編 data/flavors.json の heat_tolerance（配合の温度帯に使う・VPL78）
@@ -545,10 +510,7 @@ const TOOL_SVG = {
   // 刺す（VPL58）: ドライバーのような穴あけの道具を少し斜めに置くだけ。押すと、道具の向き（先の方）へ突き出て、離すと戻る
   needle: `<svg class="tool-svg tool-needle" viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(32 50 50)"><g class="gl-needle">
     <path d="M39.5 22C39.5 13.5 44 8 50 8S60.500 13.5 60.500 22V35C60.500 39.5 58 42 55.500 43H44.500C42 42 39.500 39.500 39.500 35Z"/><rect x="43" y="45.500" width="14" height="6" rx="1.500"/><path d="M46.800 53.500H53.200L52.300 82 50 92 47.700 82Z"/></g></g></svg>`,
-  mouthpiece: `<svg class="tool-svg tool-mouthpiece" viewBox="0 0 100 100" aria-hidden="true"><g class="gl-mp"><g transform="translate(0 -5) rotate(-45 50 50) translate(50 50) scale(0.74) translate(-50 -50)">
-    <rect x="-4" y="45" width="16" height="10" rx="4"/><rect x="13.5" y="43.3" width="7.5" height="13.4" rx="1.6"/>
-    <path d="M22.5 42.8L78 45Q82 45.3 82 48.2V51.8Q82 54.7 78 55L22.5 57.2Z"/><path class="gl-ring" d="M31 43.6V56.4M72 45V55"/>
-    <rect class="gl-tip" x="84" y="46.4" width="20" height="7.2" rx="2.6"/></g></g></svg>`,
+  mouthpiece: portraitTools.mouthpiece,
   // 注ぐ（VPL84・VPL85）: 小さな蛇口から、水の入ったシーシャのボトルの口へ水が落ちる（注いでいる間は粒が流れる）
   pour: `<svg class="tool-svg tool-pour" viewBox="0 0 100 100" aria-hidden="true">
     <path class="gl-pipe" d="M18 8H40Q50 8 50 17V18"/><rect x="43.5" y="17" width="13" height="7" rx="2"/>
@@ -558,17 +520,13 @@ const TOOL_SVG = {
     <rect x="0" y="60" width="100" height="40" clip-path="url(#drain-in)"/><g transform="translate(58 56) rotate(-40) translate(-50 -75)">${BOTTLE_ICON}</g>
     <g class="gl-drop"><path d="M25 46C25 46 19.5 53.5 19.5 56.5A5.5 5.5 0 0 0 30.5 56.5C30.5 53.5 25 46 25 46Z"/><path d="M22 66C22 66 17.5 71.5 17.5 74A4.5 4.5 0 0 0 26.5 74C26.5 71.5 22 66 22 66Z"/></g></g></svg>`,
   // 提供（VPL86）: 料理を出す時の蓋（クロッシュ）。吸い出しの右下の丸いボタン
-  serve: `<svg class="tool-svg tool-serve" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="27" r="6"/><path d="M17 72A33 33 0 0 1 83 72Z"/><rect x="8" y="77" width="84" height="8" rx="4"/></svg>`,
+  serve: portraitTools.serve,
   // リフレッシュ（VPL62）: 真ん中の心と、そこから広がる波で雑念の粒を外へ払う形。効果（心の周りを払う）がそのまま見える
-  bomb: `<svg class="tool-svg tool-bomb" viewBox="0 0 100 100" aria-hidden="true">
-    <path class="gl-heart" d="M50 60C42.500 54.500 37 50 37 44.500A6.500 6.500 0 0 1 50 41.500 6.500 6.500 0 0 1 63 44.500C63 50 57.500 54.500 50 60Z"/>
-    <circle class="gl-wave" cx="50" cy="50" r="23"/><circle class="gl-wave2" cx="50" cy="50" r="34"/>
-    <g class="gl-out"><circle cx="13" cy="17" r="4"/><circle cx="88" cy="16" r="3.400"/><circle cx="10" cy="84" r="3.400"/><circle cx="89" cy="85" r="4"/>
-    <path d="M19 23l5 5M82 22l-5 5M16 78l5-5M83 79l-5-5"/></g></svg>`,
+  bomb: portraitTools.bomb,
   // 精密（VPL62）: 照準。遅く細かく動く切り替え
-  slow: `<svg class="tool-svg tool-slow" viewBox="0 0 100 100" aria-hidden="true"><circle class="gl-ring" cx="50" cy="50" r="22"/><circle cx="50" cy="50" r="6"/><path class="gl-ticks" d="M50 14v14M50 72v14M14 50h14M72 50h14"/></svg>`,
+  slow: portraitTools.slow,
   // アタック（VPL62）: 上へ振る斬撃の弧。習得すると精密と入れ替えられる
-  attack: `<svg class="tool-svg tool-attack" viewBox="0 0 100 100" aria-hidden="true"><path class="gl-arc" d="M18 70C26 38 52 20 84 18"/><path d="M84 18L70 14 76 28Z"/><path class="gl-arc2" d="M30 80C38 58 54 44 76 38"/></svg>`,
+  attack: portraitTools.attack,
 };
 const btnFace = (kind) => {
   const b = BTN[kind];
@@ -590,20 +548,7 @@ const AUX2 = { map: { l: "lime", r: "menu", more: [] }, talk: { l: "log", r: "mo
 // 別ファイルの場面へ渡す部品
 const KIT = { icon, esc, plain, dpadHtml, aHtml, btnFace, BTN, TOOL_SVG, ICONS, REMAKE_IMG, paginateForBox };
 
-function meterHtml() {
-  const C = 100, RO = 92, RI = 60;
-  const pt = (t, r) => { const a = Math.PI * (1 - t); return [C + r * Math.cos(a), C - r * Math.sin(a)]; };
-  const band = (t0, t1, cls, style = "") => {
-    const [x0, y0] = pt(t0, RO), [x1, y1] = pt(t1, RO), [x2, y2] = pt(t1, RI), [x3, y3] = pt(t0, RI);
-    return `<path class="${cls}" ${style ? `style="${style}"` : ""} d="M${x0.toFixed(2)} ${y0.toFixed(2)}A${RO} ${RO} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}L${x2.toFixed(2)} ${y2.toFixed(2)}A${RI} ${RI} 0 0 0 ${x3.toFixed(2)} ${y3.toFixed(2)}Z"/>`;
-  };
-  const steps = (t0, t1, cls, n, from, to) => Array.from({ length: n }, (_, i) => band(t0 + (t1 - t0) * i / n, t0 + (t1 - t0) * (i + 1) / n + 0.002, cls, `--mix:${Math.round(from + (to - from) * i / (n - 1))}%`)).join("");
-  return `<svg class="meter" viewBox="-6 -2 212 112" role="img" aria-label="吸い出しのメーター">
-    ${band(0, 0.13, "z z-cold")}${band(0.13, 0.2, "z z-keep")}${steps(0.2, 0.44, "z z-cool", 6, 100, 0)}
-    ${band(0.44, 0.56, "z z-just")}${steps(0.56, 0.8, "z z-warm", 6, 0, 100)}${band(0.8, 0.87, "z z-keep")}${band(0.87, 1, "z z-hot")}
-    <g class="needle"><path d="M100 10L103.2 96L96.8 96Z"/></g>
-  </svg>`;
-}
+
 
 /* ───────── 1台ぶん ───────── */
 
@@ -1338,7 +1283,7 @@ class Phone {
     if (bowl) {
       // 赤寄りの葉の割合で、茶色の層の上に赤の層を重ねる
       const red = total ? MIX.reduce((n, f, i) => n + (f.leaf === "red" ? st.mix[i] : 0), 0) / total : 1;
-      const part = Math.max(0, Math.min(1, (t - 0.05) / 0.35)), full = Math.max(0, Math.min(1, (t - 0.5) / 0.5));
+      const part = Math.max(0, Math.min(1, t / 0.26)), full = Math.max(0, Math.min(1, (t - 0.5) / 0.5));
       bowl.querySelector(".b-airy.brown").style.opacity = part.toFixed(2); bowl.querySelector(".b-airy.red").style.opacity = (part * red).toFixed(2);
       bowl.querySelector(".b-full.brown").style.opacity = full.toFixed(2); bowl.querySelector(".b-full.red").style.opacity = (full * red).toFixed(2);
     }
@@ -1349,7 +1294,7 @@ class Phone {
       const i = Number(tile.dataset.i), on = i === st.mixSel, g = st.mix[i];
       tile.classList.toggle("on", on); tile.setAttribute("aria-selected", String(on));
       tile.classList.toggle("zero", g === 0);
-      tile.querySelector(".mt-g").textContent = g ? `${g}g` : "";
+      tile.querySelector(".mt-g").textContent = g ? String(g) : "";
       tile.querySelector(".mt-need")?.classList.toggle("met", g >= (MIX[i].need || 0));
       tile.setAttribute("aria-label", `${MIX[i].name} ${g}グラム`);
     });
@@ -2192,11 +2137,7 @@ class Phone {
     const bw = pr.width * 1.5, bh = bw * 9 / 16, bx = mx - bw * 0.34, by = my - bh * 0.62;
     Object.assign(box.style, { left: `${bx}px`, top: `${by}px`, width: `${bw}px`, height: `${bh}px` });
     const b = bandsOf(st.mix), t = st.temp, x = (mx - bx) / bw, y = (my - by) / bh;
-    const { quality, nice, heat, breaths: raw } = smokeByTemp(t, b, { x, y, color: this.mixColor() });
-    // 本編のはじめは横向き（煙は顔の前へ出る）。縦の絵は正面向きなので、口元から少し右下へ吐き、顔の外へ出てから昇らせる（目元にかけない）。
-    // 横への広がりは、いい煙ほど細くまとめ、熱すぎる煙は荒れたまま散らす
-    const breaths = raw.map((s) => ({ ...s, angle: s.angle + 0.34, buoy: s.buoy * 0.35, speed: s.speed * 1.3, spread: quality === "harsh" ? s.spread : Math.min(s.spread, 0.34) }));
-    if (last && quality === "best") breaths.push(...ringBreath({ ...SMOKE_RING, x: x + .035, y: y - .012, colors: [smokeTint(this.mixColor(), .08)], delay: 1.9 }));
+    const { quality, nice, heat, breaths } = portraitBreath(t, b, { x, y, color: this.mixColor(), last, danger: TEMP_DANGER });
     // 吸い口を口から離した絵に替えて吐き、吐き終わって少ししたら吸い口を口へ戻す（VPL100。次に「吸う」を押せば、すぐ戻す）
     this.exhalePose(Math.max(1600, Math.max(...breaths.map((s) => ((s.delay || 0) + s.dur) * 1000)) + 1100));
     const layer = smokeLayer(box, { zIndex: 1, className: "pull-smoke", gridScale: .5 });

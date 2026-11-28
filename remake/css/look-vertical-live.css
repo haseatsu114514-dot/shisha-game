@@ -64,12 +64,22 @@
 #stage[data-portrait-scene] .bench .bench-panel > * { flex-shrink: 0; max-width: 100%; }
 #stage[data-portrait-scene] .bench .opt-grid { position: static; width: 100%; grid-template-columns: repeat(2,minmax(0,1fr)); }
 #stage[data-portrait-scene] .bench .opt-grid .opt { min-width: 0; min-height: 76px; white-space: normal; }
-#stage[data-portrait-scene] .bench .bench-guide-tip { max-width: 570px; max-height: 65vh; overflow: auto; }
-#stage[data-portrait-scene="steam"] .bench .steam { display: flex; flex-flow: column; align-items: center; width: 100%; height: auto; gap: 14px; }
-#stage[data-portrait-scene="steam"] .bench .steam-play { width: 100%; display: flex; flex-direction: column; gap: 9px; }
-#stage[data-portrait-scene="steam"] .bench .dodge { flex: none; zoom: .73; }
-#stage[data-portrait-scene="steam"] .bench .dodge-controls { position: static; display: flex; width: 100%; flex-wrap: wrap; justify-content: space-around; gap: 8px; }
-#stage[data-portrait-scene="steam"] .bench .steam > .thermo { position: static; width: 100%; }
+/* 横長の作業台は左側を観客に空ける。縦長では説明が操作欄の中央に収まる。 */
+html body #viewport #stage[data-portrait-scene] #screen .bench .bench-guide[open] .bench-guide-tip {
+  position: fixed !important; inset: 24px 24px !important; margin: auto !important;
+  width: auto !important; height: fit-content !important; max-width: 570px !important;
+  max-height: calc(100% - 48px) !important; overflow-y: auto !important; box-sizing: border-box;
+}
+html body #viewport #stage[data-portrait-scene] #screen .bench .bench-top {
+  padding-top: max(6px, calc(env(safe-area-inset-top, 0px) / var(--k, 1))) !important;
+  height: auto !important;
+}
+#stage[data-portrait-scene="steam"] #screen .bench .bench-worker-stage {
+  inset: 0; width: 100%; height: 100%; transform: none; mask-image: none;
+}
+html body #viewport #stage[data-portrait-scene="steam"] #screen .bench .bench-worker .worker-actor {
+  width: 100%; height: auto; max-width: none; left: -16%; top: -30%; bottom: auto; transform: none;
+}
 
 /* 横の作業台には工程別の優先指定がある。縦の三段だけ、その幾何を一か所で決める。 */
 @layer portrait-bench {

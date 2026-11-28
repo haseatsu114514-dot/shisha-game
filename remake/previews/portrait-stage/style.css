@@ -258,8 +258,6 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .meter { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 1rem 1.6rem #0009); }
 .meter .needle { transform-origin: 100px 100px; transform: rotate(var(--needle, 4deg)); }
 .meter .z { stroke: #0b0812; stroke-width: 1.3; }
-.meter .z-cold { fill: #4aa3ff; } .meter .z-hot { fill: #ff5a3c; } .meter .z-keep { fill: #ffffffe6; } .meter .z-just { fill: #fff; filter: drop-shadow(0 0 4px #fff); }
-.meter .z-cool { fill: color-mix(in oklab, #4aa3ff var(--mix), #ffffff3d); } .meter .z-warm { fill: color-mix(in oklab, #ff9a4a var(--mix), #ffffff3d); }
 .meter .needle path { fill: #fff; filter: drop-shadow(0 0 3px var(--acc)); }
 .btn-a.center { left: 50%; right: auto; top: calc(15.7rem + var(--aux-g, 0rem)); width: 13rem; height: 13rem; margin-left: -6.5rem; }
 .serve { position: absolute; right: 1.2rem; top: 1.2rem; height: 3.5rem; padding: 0 1.4rem; display: flex; align-items: center; gap: 0.7rem; border: 0.1rem solid color-mix(in srgb, var(--acc) 70%, transparent); border-radius: 2rem; background: color-mix(in srgb, var(--acc) 18%, #120c1d99); }
@@ -352,7 +350,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 /* 熱ゲージ: 右に大きく。本編（remake/css/craft.css の .thermo-*）と同じ色の意味。緑の帯＝適温の目安（両端に白い刻み）、
    真ん中の虹＝合わせやすい範囲（中央に白線）、一番上＝焦げる帯（炎の印）。今の温度は外から指す矢印と管を横切る線。今より上は少し暗い */
 .thermo { position: absolute; z-index: 5; right: 1.1rem; top: 10.8rem; bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 10.2rem); width: 5.4rem; display: grid; grid-template-rows: auto 1fr; justify-items: center; gap: 0.6rem; pointer-events: none; }
-.th-icon { width: 3.6rem; height: 3.6rem; display: grid; place-items: center; border-radius: 50%; font-size: 2.3rem; color: #fff; background: #120c1dcc; box-shadow: 0 0 0 0.12rem #ffffff40, 0 0.4rem 1rem #0009; transition: color 0.3s, background 0.3s, box-shadow 0.3s; }
+.th-icon { transform: translateY(-0.35rem); width: 3.6rem; height: 3.6rem; display: grid; place-items: center; border-radius: 50%; font-size: 2.3rem; color: #fff; background: #120c1dcc; box-shadow: 0 0 0 0.12rem #ffffff40, 0 0.4rem 1rem #0009; transition: color 0.3s, background 0.3s, box-shadow 0.3s; }
 .th-bar { position: relative; width: 3rem; height: 100%; border-radius: 1.6rem; overflow: hidden; box-shadow: 0 0 0 0.25rem #120c1dd9, 0 0 0 0.38rem #ffffff59, 0 1rem 2rem #000b; }
 .th-bar::before { content: ""; position: absolute; inset: 0; z-index: 4; pointer-events: none; background: repeating-linear-gradient(0deg, transparent 0 calc(10% - 0.1rem), #0b081233 calc(10% - 0.1rem) 10%), linear-gradient(90deg, transparent 14%, #ffffff40 22%, transparent 34%); }
 .th-zone { position: absolute; left: 0; right: 0; z-index: 3; }
@@ -689,7 +687,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .mixtile .pkg { zoom: var(--pkz, 1); }
 .mt-name { max-width: 100%; font-size: 0.95rem; line-height: 1.3; white-space: nowrap; letter-spacing: -0.03em; }
 .mixtile .mr-tags { gap: 0.2rem; } .mixtile .mr-tags .genre, .mixtile .mr-tags .genre + .genre { width: 1.7rem; height: 1.7rem; opacity: 1; } .mixtile .mr-tags .genre svg, .mixtile .mr-tags .genre + .genre svg { width: 1.05rem; height: 1.05rem; }
-.mt-g { position: absolute; right: -0.2rem; top: -0.55rem; min-width: 2.8rem; padding: 0.05rem 0.5rem; border-radius: 1.2rem; font-size: 1.45rem; line-height: 1.35; font-weight: 800; font-variant-numeric: tabular-nums; text-align: center; color: #24160a; background: #ffe2a6; box-shadow: 0 0 0.8rem #ffcf6b99, 0 0.2rem 0.5rem #000a; }
+.mt-g { position: absolute; right: 0.2rem; top: 0.2rem; min-width: 1.6rem; padding: 0.05rem 0.5rem; border-radius: 1.2rem; font-size: 1.45rem; line-height: 1.35; font-weight: 800; font-variant-numeric: tabular-nums; text-align: center; color: #24160a; background: #ffe2a6; box-shadow: 0 0 0.8rem #ffcf6b99, 0 0.2rem 0.5rem #000a; }
 .mt-g:empty { display: none; }
 .mt-need { position: absolute; left: -0.1rem; top: -0.55rem; padding: 0.05rem 0.35rem; border-radius: 1rem; font-style: normal; font-size: 1rem; line-height: 1.4; font-weight: 700; color: #ffd35a; background: #120c1d; box-shadow: inset 0 0 0 0.1rem #ffd35a; }
 .mt-need.met { color: #5fe39a; box-shadow: inset 0 0 0 0.1rem #5fe39a; }

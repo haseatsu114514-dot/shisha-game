@@ -5,7 +5,7 @@
 // 本編の操作の説明はスミさんの説明のスポットライトで、段ごとに指す所を明るく抜く・VPN32）、
 // 水入れ・穴あけ・炭焼きも縦の作る場面（外枠の長押しを本編のボタンへ pointerdown／pointerup で中継し、炭は押した瞬間に本編の炭を取る。
 // 工程の結果の札も外枠で閉じる・VPN31。初回の説明のスポットライトは工程の部品を順に指す・VPN32）、
-// まだ縦にしていない場面（シーシャ作りのほかの工程）は回転案内、横持ちは旧版、様式を替えると何も残らない、
+// 専用の縦配置がない場面も縦持ちで操作でき、横持ちは縦への回転案内、様式を替えると何も残らない、
 // 第2〜5章の日常（朝の小窓・地図・駅から隣町・場面カード・東京の地図の小窓・第5章の地図）も縦の外枠のまま。
 // 自動操作のブラウザの既定は旧版なので ?look=vertical を付けて選ぶ。
 import assert from "node:assert/strict";
@@ -68,8 +68,9 @@ async function expectSpot(page, { index, count, target, say, live = "", last = f
   if (live) assert(live.includes(say), `${label}: the line comes from the bench's explanation ${JSON.stringify(live)}`);
   assert(["left", "top", "right", "bottom"].every((k) => Math.abs(spot.cover[k] - spot.shell[k]) <= 1), `${label}: the dark cover spans the whole scene`);
   assert(/rgba\(11, 8, 18, 0\.[6-9]/.test(spot.shade), `${label}: everything but the hole is darkened ${spot.shade}`);
-  const apart = spot.coach.bottom <= spot.hole.top + 1 || spot.coach.top >= spot.hole.bottom - 1;
-  assert(apart, `${label}: Sumi's bubble stays off the lit hole ${JSON.stringify({ hole: spot.hole, coach: spot.coach })}`);
+  const coachGap = Math.max(spot.hole.top - spot.coach.bottom, spot.coach.top - spot.hole.bottom);
+  assert(coachGap >= (spot.shell.right - spot.shell.left) / 55,
+    `${label}: Sumi's bubble leaves a gap around the lit hole ${JSON.stringify({ hole: spot.hole, coach: spot.coach })}`);
   assert(spot.face.endsWith("face_sumi.webp"), spot.face);
   assert.equal(spot.telop, "hidden", `${label}: the usual line under the picture steps aside (no second face)`);
   assert.deepEqual([spot.dots, spot.on], [count, index], `${label}: one dot per step, the current one lit`);
@@ -108,8 +109,7 @@ async function assertFits(page, label) {
 }
 
 /**
- * 土台の配置（VPN09・VPN16）: 下画面の高さと十字キー・丸ボタンの大きさと位置は、試作の会話画面と同じ（幅 39 に対して下画面 30.2・
- * 補助ボタンの段の下 8.2 から十字キー 20.4・丸ボタン 14.6。背の低い画面は試作と同じ段階で縮む）。
+ * 会話・地図で共通の、下げたパッド配置。背の低い画面は同じ段階で縮む。
  * 十字キーと丸ボタンは同じ配置の場面で同じ位置（指を置いたまま遊べる）。最初に測った位置を覚え、以後の場面で同じ位置か確かめる。
  */
 async function assertPadHome(page, label, home = null) {
@@ -117,15 +117,12 @@ async function assertPadHome(page, label, home = null) {
     const r = (selector) => { const b = document.querySelector(selector).getBoundingClientRect(); return [b.left, b.top, b.width, b.height].map((v) => Math.round(v)); };
     const shell = document.querySelector(".vt-shell").getBoundingClientRect(), ctrl = document.querySelector(".vt-ctrl").getBoundingClientRect();
     const u = shell.width / 39, tall = shell.height / u;
-    let size = tall > 80 ? [30.2, 8.2, 20.4, 14.6] : tall > 71 ? [27.2, 7.4, 18.2, 13.2] : [23.6, 6.5, 15.4, 11.2];
-    if (document.querySelector(".vt-shell").dataset.scene === "vn") {
-      const chips = document.querySelector(".vt-chips").getBoundingClientRect();
-      const safe = parseFloat(getComputedStyle(document.querySelector(".vt-shell")).getPropertyValue("--safe-b"));
-      const gap = Math.max(.6, safe * 2 / (3 * u));
-      const padTop = chips.height / u + gap;
-      const ring = size[2] * .87;
-      size = [padTop + ring + gap, padTop, ring, size[3]];
-    }
+    const [ringBase, a] = tall > 80 ? [20.4, 14.6] : tall > 71 ? [18.2, 13.2] : [15.4, 11.2];
+    const chips = document.querySelector(".vt-chips").getBoundingClientRect();
+    const safe = parseFloat(getComputedStyle(document.querySelector(".vt-shell")).getPropertyValue("--safe-b"));
+    const gap = Math.max(.4, safe / (2 * u));
+    const padTop = chips.height / u + gap, ring = ringBase * .73;
+    const size = [padTop + ring + gap, padTop, ring, a];
     return { u, size, ctrlH: ctrl.height, ctrlBottom: shell.bottom - ctrl.bottom, padTop: document.querySelector(".vt-dpad").getBoundingClientRect().top - ctrl.top,
       panel: getComputedStyle(document.querySelector(".vt-ctrl")).backgroundImage, dpad: r(".vt-dpad"), a: r(".vt-a"),
       aShown: getComputedStyle(document.querySelector(".vt-a")).display !== "none", dpadShown: getComputedStyle(document.querySelector(".vt-dpad")).display !== "none" };
@@ -304,6 +301,21 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "title");
   }, { ...TALL, pageEntry: entry });
 
+  for (const resource of ["js/looks/vertical.js", "css/look-vertical.css"]) {
+    const url = new URL(resource, entry).href;
+    await check(`portrait-boot-retries-${resource.split(".").pop()}`, async page => {
+      await page.route(url, route => route.fulfill({ status: 503, body: "" }), { times: 1 });
+      await page.reload();
+      await page.locator("#boot.is-failed .boot-retry").waitFor();
+      assert.equal(await page.locator("#viewport").evaluate(node => getComputedStyle(node).opacity), "0");
+      assert.equal(await page.locator("#screen > .title").count(), 0);
+      await page.locator("#boot .boot-retry").tap();
+      await waitScene(page, "title");
+      await page.locator(t("vt-title-config")).tap();
+      await waitScene(page, "sheet");
+    }, { ...TALL, pageEntry: entry, ignoreFailedResource: failure => failure.endsWith(url) });
+  }
+
   await check("loading-keeps-landscape-covered", async page => {
     await waitScene(page, "title");
     await page.evaluate(async () => {
@@ -438,7 +450,7 @@ await suite("look_vertical", async (check) => {
       mine: [...document.querySelectorAll(".vt-pin")].map((pin) => pin.dataset.spot).sort(),
     }));
     assert.deepEqual(pins.mine, pins.live, "one pin per destination");
-    await assertPadHome(page, "map");
+    const mapHome = await assertPadHome(page, "map");
     // 看板（VPN10）: 元の地図と同じ店のロゴ・施設の絵を、地図の中に小さく出す
     const signs = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll(".vt-pin")].map((pin) => {
       const art = pin.querySelector(".vt-pin-art > *"), live = document.querySelector(`#screen > .map:not(.done) .spot-pin[data-spot="${pin.dataset.spot}"] .ico > :is(.store-logo, .facility-icon)`);
@@ -459,14 +471,29 @@ await suite("look_vertical", async (check) => {
     const after = await selected();
     assert.equal(after.mine, order[(order.indexOf(before.mine) + 1) % order.length]);
     assert.equal(after.live, after.mine, "the landscape map selects the same pin");
+    // 地図のいちばん下の看板から、上にある最寄りの看板へ。最上段ではその場に留まる。
+    const byY = await page.locator(".vt-pin").evaluateAll(nodes => nodes.map(node => ({
+      id:node.dataset.spot, x:parseFloat(node.style.left) * 16 / 9, y:parseFloat(node.style.top),
+    })).sort((a, b) => b.y - a.y));
+    const selectRow = async id => { await pad(page, "down"); await page.locator(t("vt-row-" + id)).tap(); };
+    await selectRow(byY[0].id);
+    const nearest = byY.filter(pin => pin.y < byY[0].y).sort((a,b) =>
+      Math.hypot(a.x-byY[0].x, a.y-byY[0].y) - Math.hypot(b.x-byY[0].x, b.y-byY[0].y))[0];
+    const samePin = await page.locator(t("vt-pin-" + nearest.id)).elementHandle();
     await pad(page, "up");
+    assert.deepEqual(await selected(), { mine: nearest.id, live: nearest.id });
+    assert(await samePin.evaluate(node => node.isConnected), "moving the camera keeps the signs mounted");
+    await selectRow(byY.at(-1).id);
+    await pad(page, "up");
+    assert.equal((await selected()).mine, byY.at(-1).id);
+    await page.locator(t("vt-chip-wide")).tap();
     await page.waitForFunction(() => document.querySelector(".vt-map.overview"));
-    await pad(page, "up");
+    await page.locator(t("vt-chip-wide")).tap();
     await page.waitForFunction(() => !document.querySelector(".vt-map.overview"));
     // 家が選択された時も、全体表示の tonari の中央を押せば tonari に寄る。
     await pad(page, "down");
     await page.locator(t("vt-row-rest")).tap();
-    await pad(page, "up");
+    await page.locator(t("vt-chip-wide")).tap();
     await page.waitForFunction(() => document.querySelector(".vt-map.overview"));
     await page.locator(t("vt-pin-tonari")).tap();
     await page.waitForFunction(() => !document.querySelector(".vt-map.overview"));
@@ -476,7 +503,7 @@ await suite("look_vertical", async (check) => {
     await page.locator(t("vt-row-minto")).tap();
     await page.waitForFunction(() => document.querySelector('.vt-pin[aria-current="true"]')?.dataset.spot === "minto");
     assert.match(await page.locator(t("vt-dest")).textContent(), /みんと/);
-    await pad(page, "up");
+    await page.locator(t("vt-chip-wide")).tap();
     await page.waitForFunction(() => document.querySelector(".vt-map.overview"));
     const action = page.locator(t("vt-a"));
     assert.equal(await action.textContent(), "拡大");
@@ -492,7 +519,7 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "vn", 30000);
     await page.locator(".vt-actor").first().waitFor({ state: "attached", timeout: 20000 });
     assert.match(await page.locator(".vt-where b").textContent(), /PEPPERMINT/);
-    const talkHome = await assertPadHome(page, "conversation in the shop");
+    const talkHome = await assertPadHome(page, "conversation in the shop", mapHome);
     // 返事まで送る → 十字キーの下で次の札へ、決定で本編の選択肢を押す
     for (let i = 0; i < 30 && !(await page.locator(".vt-choice").count()); i++) {
       await typed(page);
@@ -947,24 +974,24 @@ await suite("look_vertical", async (check) => {
     assert.deepEqual(await page.evaluate(() => window.rotateFlashes), []);
   }, { ...TALL, pageEntry: entry });
 
-  await check("unsupported-scenes-show-the-rotate-hint", async (page) => {
+  await check("card-game-remains-playable-in-portrait", async (page) => {
     await waitScene(page, "title");
     await page.evaluate(async () => {
       const { runIchidai } = await import("./js/minigames/ichidai.js");
       window.stopCards = new AbortController();
       void runIchidai({ signal: window.stopCards.signal });
     });
-    await page.waitForFunction(() => getComputedStyle(document.getElementById("rotate-hint")).display !== "none", null, { timeout: 10000 });
-    assert.equal(await scene(page), "");
-    const hint = await page.evaluate(() => document.getElementById("rotate-hint").innerText.replace(/\s+/g, " "));
-    assert(hint.includes("この場面は横向きで遊びます"), hint);
-    await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true");
+    await page.waitForSelector("html[data-vt-native]");
+    const stage = await page.locator("#stage").boundingBox();
+    assert(stage.height > stage.width);
     await page.setViewportSize(WIDE.viewport);
+    await page.locator("#rotate-hint .portrait-required").waitFor();
+    await page.setViewportSize(TALL.viewport);
     await page.locator("#rotate-hint").waitFor({ state: "hidden" });
     await page.locator(t("ichi-help")).tap();
     await page.locator(t("ichi-help-close")).tap();
     await page.evaluate(() => window.stopCards.abort());
-    await page.locator("#rotate-hint .portrait-required").waitFor();
+    await waitScene(page, "title");
   }, { ...TALL, pageEntry: entry });
 
   await check("craft-pack-and-steam-timer-in-the-shell", async (page) => {
@@ -1148,7 +1175,8 @@ await suite("look_vertical", async (check) => {
     });
     await finishSpots(page);
     await page.locator(t("vt-craft-tut")).waitFor({ state: "hidden" });
-    await page.locator(t("vt-mix-plus-mint")).waitFor();
+    await page.locator(t("vt-mix-select-mint")).waitFor();
+    assert.equal(await page.locator(".vtc-steps > [data-step=water].done").count(), 1);
     await page.evaluate(() => document.fonts.ready);
 
     const leaves = page.locator(".vtc-leaves");
@@ -1156,11 +1184,10 @@ await suite("look_vertical", async (check) => {
       const footer = list.nextElementSibling.getBoundingClientRect();
       const shelf = list.getBoundingClientRect();
       const rows = [...list.querySelectorAll(".vtc-leaf")].map(row => {
-        const plus = row.querySelector('[data-test^="vt-mix-plus-"]');
-        const box = plus.getBoundingClientRect();
+        const box = row.getBoundingClientRect();
         return {
-          id: plus.dataset.test.replace("vt-mix-plus-", ""), bottom: row.getBoundingClientRect().bottom,
-          hit: plus.contains(document.elementFromPoint(box.x + box.width / 2, box.bottom - 2)),
+          id: row.dataset.test.replace("vt-mix-select-", ""), bottom: box.bottom,
+          hit: row.contains(document.elementFromPoint(box.x + box.width / 2, box.bottom - 2)),
         };
       });
       return { scrollTop: list.scrollTop, shelfBottom: shelf.bottom, footerTop: footer.top, rows };
@@ -1176,9 +1203,10 @@ await suite("look_vertical", async (check) => {
       }
       if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/4422-first-mix-${viewport.height}.png` });
     }
+    await page.locator(t("vt-mix-select-mint")).tap();
     const plus = page.locator(t("vt-mix-plus-mint"));
     for (let i = 0; i < 12; i++) await plus.tap();
-    await page.locator(".vtc-mix-footer button").tap();
+    await page.locator(t("vt-mix-ok")).tap();
     await page.evaluate(() => window.firstMix);
     assert.equal(await page.evaluate(() => window.firstMixSession.mix.mint), 12);
 
@@ -1186,12 +1214,15 @@ await suite("look_vertical", async (check) => {
     await page.evaluate(async () => {
       const { addFlavorStock } = await import("./js/daily/shop.js");
       const { newSession, openBench } = await import("./js/craft/session.js");
-      for (const id of ["orange", "blueberry", "vanilla", "grape", "peach"]) addFlavorStock(id, 50);
+      for (const id of ["orange", "blueberry", "strawberry", "grape", "watermelon", "pineapple", "cinnamon", "peach"]) addFlavorStock(id, 50);
       const cs = newSession("rehearsal");
+      cs.preparation = { previous: { mix: { mint: 9, lemon: 3 } } };
       openBench(cs, { steps: [["mix", "配合"]] });
       window.practiceMix = (await import("./js/craft/steps.js")).stepMix(cs);
     });
-    await page.locator(t("vt-mix-plus-peach")).waitFor();
+    await page.locator(t("vt-mix-select-peach")).waitFor({ state: "attached" });
+    await page.locator(t("vt-mix-reuse")).tap();
+    await page.locator(".vtc-scale-digits").filter({ hasText: "12.0g" }).waitFor();
     const before = await readLayout();
     assert(before.rows.at(-1).bottom > before.shelfBottom, "the practice list starts with more rows below its scrollport");
     await leaves.evaluate(list => { list.scrollTop = list.scrollHeight; });
@@ -1200,6 +1231,8 @@ await suite("look_vertical", async (check) => {
     assert(after.scrollTop > 0 && last.hit && last.bottom < after.shelfBottom,
       `the last practice row is fully tappable at the end of the list ${JSON.stringify(after)}`);
     assert.equal(after.footerTop, before.footerTop, "scrolling the leaves keeps the footer in place");
+    await page.locator(t("vt-mix-select-" + last.id)).tap();
+    await page.locator(t("vt-mix-plus-" + last.id)).tap();
   }, { ...TALL, pageEntry: entry });
 
   await check("craft-mix-and-pull-actions", async page => {
@@ -1207,34 +1240,153 @@ await suite("look_vertical", async (check) => {
     await runCraftStep(page, { module: "./js/craft/steps.js", fn: "stepMix" });
     await finishSpots(page);
     const plus = id => page.locator(t("vt-mix-plus-" + id));
-    const confirm = page.locator(".vtc-mix-footer button");
+    const confirm = page.locator(t("vt-mix-ok"));
+    await page.locator(t("vt-mix-select-double_apple")).waitFor();
+    const shelf = await page.locator(".vtc-leaves").evaluate(node => {
+      const cards = [...node.querySelectorAll(".vtc-leaf")];
+      const genresTop = document.querySelector(".vtc-genres").getBoundingClientRect().top;
+      const coachBottom = document.querySelector(".vtc-telop").getBoundingClientRect().bottom;
+      return { count: cards.length, share: cards[0].offsetWidth / node.clientWidth,
+        packetHeight: cards[0].querySelector(".vtc-packet").offsetHeight, commentGap: genresTop - coachBottom };
+    });
+    assert.equal(shelf.count, 2);
+    assert(shelf.share > .45 && shelf.packetHeight > 75, JSON.stringify(shelf));
+    assert(shelf.commentGap >= 10, JSON.stringify(shelf));
     assert(await confirm.isDisabled());
+    await page.locator(t("vt-mix-select-double_apple")).tap();
     await plus("double_apple").press("Enter");
     assert.equal(await page.evaluate(() => window.vtCraft.mix.double_apple), 1);
-    for (let i = 1; i < 9; i++) await plus("double_apple").tap();
+    await plus("double_apple").tap();
+    await page.waitForFunction(() => document.querySelector(".vtc-scale-digits").textContent === "2.0g");
+    assert.equal(await page.getByText("配合メモ", { exact: true }).count(), 0);
+    const tile = page.locator(t("vt-mix-select-double_apple"));
+    assert.equal(await tile.locator(".vtc-leaf-grams").textContent(), "2");
+    const inTile = await tile.evaluate(node => {
+      const tile = node.getBoundingClientRect(), badge = node.querySelector(".vtc-leaf-grams").getBoundingClientRect();
+      return badge.top > tile.top && badge.right < tile.right && badge.left > tile.left && badge.bottom < tile.bottom;
+    });
+    assert(inTile, "the quantity is fully within the flavor card");
+    for (let i = 2; i < 9; i++) await plus("double_apple").tap();
+    await page.getByRole("button", { name: "刺激", exact: true }).tap();
+    await page.locator(t("vt-mix-select-mint")).tap();
     for (let i = 0; i < 3; i++) await plus("mint").tap();
-    await page.waitForFunction(() => !document.querySelector(".vtc-mix-footer button").disabled);
+    await page.waitForFunction(() => !document.querySelector(".vtc-mix-ok").disabled);
     await rotateBench(page);
+    assert.equal(await page.locator(t("vt-mix-select-mint")).getAttribute("aria-pressed"), "true");
     await confirm.tap();
     await page.waitForFunction(() => window.vtStepDone);
     assert.equal(await page.evaluate(() => window.vtCraft.mix.double_apple), 9);
     await runCraftStep(page, { module: "./js/craft/pull.js", fn: "runPull", setup: { mix: { mint: 3, double_apple: 9 } } });
+    await page.setViewportSize(SHORT.viewport);
+    await expectSpot(page, { index: 1, count: 2, target: ".vtc-pull-legend, .vtc-pull-dial", say: "吸い出しは提供前の温度合わせだ" });
     await finishSpots(page);
+    await page.setViewportSize(TALL.viewport);
     const stop = page.locator(t("vt-pull-stop"));
     const serve = page.locator(t("vt-pull-serve"));
     await page.locator(t("vt-pull-stop") + ":enabled").waitFor();
+    assert.deepEqual(await page.locator(".vtc-pull-legend span").allTextContents(), ["下げ吸い", "キープ", "上げ吸い"]);
+    const regions = await page.locator(".vtc-pull-bands .meter").evaluate(svg => {
+      const { downEnd, keepEnd } = document.querySelector(".pull-dial").dataset;
+      const points = [.1, +downEnd - .015, +downEnd + .015, .5, +keepEnd - .015, +keepEnd + .015, .92];
+      return points.map(pos => {
+        const angle = Math.PI * (1 - pos), x = 100 + Math.cos(angle) * 76, y = 100 - Math.sin(angle) * 76;
+        return [...svg.querySelectorAll("path.z")].find(path => path.isPointInFill(new DOMPoint(x, y)))?.parentElement.dataset.zone;
+      });
+    });
+    assert.deepEqual(regions, ["down", "down", "keep", "keep", "keep", "up", "up"]);
+    const clearances = await page.evaluate(() => {
+      const box = selector => document.querySelector(selector).getBoundingClientRect();
+      const telop = box(".vtc-telop"), legend = box(".vtc-pull-legend"), stop = box('[data-test="vt-pull-stop"]');
+      const leaves = box(".vtc-pull-life"), serve = box('[data-test="vt-pull-serve"]');
+      const centerX = stop.left + stop.width / 2, centerY = stop.top + stop.height / 2;
+      const gapToStop = box => Math.hypot(Math.max(box.left - centerX, centerX - box.right, 0),
+        Math.max(box.top - centerY, centerY - box.bottom, 0)) - stop.width / 2;
+      return { comment: legend.top - telop.bottom, stopDrop: stop.bottom - leaves.top,
+        stopGap: Math.min(gapToStop(leaves), gapToStop(serve)),
+        thermoIconGap: box(".vtc-th-tube").top - box(".vtc-th-icon").bottom,
+        leaves: [...document.querySelectorAll(".vtc-pull-life img")].map(img => {
+          const p = img.getBoundingClientRect();
+          return p.left > leaves.left + 2 && p.right < leaves.right - 2 && p.top >= leaves.top + 2 && p.bottom <= leaves.bottom - 2;
+        }) };
+    });
+    assert(clearances.comment >= 9 && clearances.stopDrop >= 5 && clearances.stopGap >= 8, JSON.stringify(clearances));
+    assert(clearances.thermoIconGap >= 8, JSON.stringify(clearances));
+    assert.deepEqual(clearances.leaves, [true, true, true, true, true], JSON.stringify(clearances));
+    assert.equal(await page.locator(t("vt-craft-rank")).textContent(), "");
     assert(await serve.isDisabled());
-    await rotateBench(page);
+    await page.setViewportSize({ width: 844, height: 390 });
+    await page.waitForFunction(() => !document.querySelector(".bench[data-portrait-pull]")
+      && getComputedStyle(document.querySelector(".pull-play")).contentVisibility !== "hidden");
+    await page.setViewportSize(TALL.viewport);
+    await page.waitForFunction(() => {
+      const pointer = document.querySelector(".vtc-pull-pointer");
+      if (!pointer || getComputedStyle(document.querySelector(".pull-play")).contentVisibility !== "hidden") return false;
+      const pos = Number(document.querySelector("#screen .pg-needle").dataset.pos);
+      // 縦の針は描画を分けても本編の採点位置（半円の-90°〜90°）と一致する。
+      const rot = new DOMMatrixReadOnly(getComputedStyle(pointer).transform);
+      return Math.abs(Math.atan2(rot.b, rot.a) * 180 / Math.PI - (pos * 1.8 - 90)) < .1;
+    });
     for (let i = 0; i < 2; i++) {
       await page.waitForFunction(() => {
         const pos = Number(document.querySelector("#screen .pg-needle")?.dataset.pos);
         return pos > 45 && pos < 55 && !document.querySelector('[data-test="vt-pull-stop"]').disabled;
       });
       await stop.tap();
+      await page.locator(".vtc-pull-art.exhaling canvas.pull-smoke").waitFor();
     }
     await serve.tap();
     await page.locator(t("vt-craft-result-next")).tap();
     await page.waitForFunction(() => window.vtStepDone);
+  }, { ...TALL, pageEntry: entry });
+
+  await check("pull-rainbow-guide-indicates-the-next-real-pull", async page => {
+    await waitScene(page, "title");
+    const start = (temp, rainy = false) => runCraftStep(page, {
+      module: "./js/craft/pull.js", fn: "runPull", mode: "rehearsal",
+      setup: { mix: { vanilla: 12 }, steam: { temp, score: 100 }, environment: { rainy } },
+    });
+    const ready = page.locator(t("vt-pull-stop") + ":enabled");
+    const aim = page.locator(".vtc-pull-rainbow").first();
+    await start(.12);
+    await ready.waitFor();
+    assert.equal(await aim.count(), 0, "a cold mix outside one pull's reach has no rainbow guide");
+    assert.doesNotMatch(await page.locator(".vtc-say-text").textContent(), /光ったところ/);
+
+    for (const [temp, side, rainy] of [[.352, "up", true], [.54, "down", false]]) {
+      await start(temp, rainy);
+      await ready.waitFor();
+      await aim.waitFor();
+      assert.match(await page.locator(".vtc-say-text").textContent(), /虹を狙え/);
+      const ranges = await page.evaluate(() => {
+        const dial = document.querySelector(".pull-dial");
+        return { keepEnd: +dial.dataset.keepEnd, downEnd: +dial.dataset.downEnd, stops: JSON.parse(dial.dataset.rainbowStops) };
+      });
+      assert.equal(ranges.stops.length, 2, "the normal pull regions are separated by the stronger center of the zone");
+      assert(ranges.stops.every(([from, to]) => side === "up" ? from > ranges.keepEnd : to < ranges.downEnd), JSON.stringify(ranges));
+      assert.equal(await page.locator(".vtc-pull-rainbow").count(), ranges.stops.length);
+
+      await page.locator(".bench-guide").evaluate(guide => { guide.open = true; });
+      await aim.waitFor({ state: "detached" });
+      await page.locator(".bench-guide").evaluate(guide => { guide.open = false; });
+      await aim.waitFor();
+      await page.waitForFunction(() => {
+        const dial = document.querySelector(".pull-dial");
+        const stop = document.querySelector('[data-test="vt-pull-stop"]');
+        if (!dial?.dataset.rainbowStops || !stop || stop.disabled) return false;
+        const position = Number(dial.querySelector(".pg-needle").dataset.pos) / 100;
+        const within = JSON.parse(dial.dataset.rainbowStops).some(([from, to]) =>
+          position > from + .01 && position < to - .01);
+        if (within) stop.click();
+        return within;
+      });
+      await aim.waitFor({ state: "detached" });
+      await ready.waitFor();
+      await aim.waitFor();
+      assert.equal(await page.locator(t("vt-craft-thermo")).getAttribute("data-state"), "best");
+      assert.match(await page.locator(".vtc-say-text").textContent(), /虹をキープ/);
+      assert(await page.locator(".pull-dial").evaluate(dial =>
+        JSON.parse(dial.dataset.rainbowStops).some(([from, to]) => from < .5 && to > .5)), "keeping the current temperature stays in the rainbow");
+    }
   }, { ...TALL, pageEntry: entry });
 
   await check("drill-hole-help", async page => {
@@ -1288,7 +1440,7 @@ await suite("look_vertical", async (check) => {
       { target: ".vtc-bottle", say: "煙は水をくぐって冷える", live: waterLive },
       { target: ".vtc-w-band, .vtc-w-mark", say: "量で吸い心地が変わるから、まずは目安に合わせろ", live: waterLive },
       { target: `${t("vt-water-drain")}, ${t("vt-water-pour")}`, say: "注ぐときは長押し。こぼして戻してもいい" },
-      { target: t("vt-water-ok"), say: "線のあいだに収めたら、決定だ", last: true },
+      { target: t("vt-water-ok"), say: "細い帯が理想だ。水位を合わせて決定", last: true },
     ];
     const waterButtons = () => page.evaluate(() => ["drain", "pour", "ok"].map((key) => document.querySelector(`[data-test="vt-water-${key}"]`).disabled));
     for (const [i, spot] of waterSpots.entries()) {
@@ -1316,11 +1468,20 @@ await suite("look_vertical", async (check) => {
       sink: document.querySelector(".vtc-sink").getAttribute("src"), glass: document.querySelector(".vtc-glass").getAttribute("src"),
       buttons: ["drain", "pour", "ok"].map((key) => !!document.querySelector(`[data-test="vt-water-${key}"]`)),
     }));
-    assert.equal(first.now, "pack", "water is part of the packing step");
+    assert.equal(first.now, "water", "water lights its own progress icon");
+    assert.equal(await page.locator('.vtc-steps [data-step="water"]').getAttribute("aria-current"), "step");
     assert.equal(first.zone, "empty", "the bottle starts empty like the game");
     assert(first.sink.endsWith("img/ui/vertical-craft/ui-sink-faucet.webp") && first.glass.endsWith("img/ui/vertical-craft/ui-bottle-open.webp"), JSON.stringify(first));
     assert.deepEqual(first.buttons, [true, true, true]);
     assert.equal(await level(), 0);
+    const iconReach = await page.locator(".vtc-water-ctrl .vtc-tool").evaluateAll(icons => icons.map(icon => {
+      const button = icon.closest("button").getBoundingClientRect(), art = icon.getBoundingClientRect();
+      const x = button.x + button.width / 2, y = button.y + button.height / 2;
+      return Math.max(...[art.left, art.right].flatMap(px =>
+        [art.top, art.bottom].map(py => Math.hypot(px - x, py - y)))) / button.width;
+    }));
+    assert.equal(iconReach.length, 2);
+    assert(iconReach.every(reach => reach < .48), JSON.stringify(iconReach));
     // 「注ぐ」の長押し: 押している間だけ本編が注ぎ、離すと止まる
     await holdShell(page, "vt-water-pour", 2700, async () => {
       await page.waitForFunction(() => document.querySelector('#screen [data-test="water-step"]').dataset.flow === "pour"
@@ -1333,6 +1494,9 @@ await suite("look_vertical", async (check) => {
     assert.equal(await level(), poured, "the water stops when the button is let go");
     await page.waitForFunction(() => document.querySelector('[data-test="vt-water-pic"]').dataset.zone
       === document.querySelector('#screen [data-test="water-status"]').dataset.band);
+    assert.deepEqual(await page.locator(".vtc-w-mark").evaluate(mark => [
+      getComputedStyle(mark.querySelector("text")).fill, getComputedStyle(mark.querySelector("rect")).stroke,
+    ]), ["rgb(255, 255, 255)", "rgb(255, 255, 255)"]);
     // 「こぼす」の長押し: 本編の水量が減る
     await holdShell(page, "vt-water-drain", 500, async () => {
       await page.waitForFunction(() => document.querySelector('#screen [data-test="water-step"]').dataset.flow === "drain");
@@ -1347,6 +1511,14 @@ await suite("look_vertical", async (check) => {
     const water = await page.evaluate(() => window.vtCraftError || window.vtCraft.water);
     assert.equal(typeof water, "number", String(water));
     assert(Math.abs(water * 100 - drained) < 0.01, `cs.water is the game's level: ${water} / ${drained}`);
+    const evaluation = await page.evaluate(async () => {
+      const { evaluateWater } = await import("./js/craft/water.js");
+      const { water, waterResult } = window.vtCraft;
+      return { actual: waterResult, expected: evaluateWater(water, waterResult.seconds) };
+    });
+    assert(evaluation.actual.seconds >= 3, "time includes pouring and draining");
+    assert.deepEqual(evaluation.actual, evaluation.expected);
+    assert.doesNotMatch(await page.locator(".toast.water-level").textContent(), /\d+点|\d+(\.\d+)?秒/);
   }, { ...TALL, pageEntry: entry });
 
   await check("craft-holes-in-the-shell", async (page) => {

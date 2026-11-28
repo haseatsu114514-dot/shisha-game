@@ -21,7 +21,7 @@ const COAL_AT = {
   4: [[0.35, 0.33], [0.65, 0.33], [0.35, 0.63], [0.65, 0.63]],
 };
 // 取った炭の置き場所（はじめの絵 1024×1536 に対する割合）: 左手に持った炭壺の口の中。取った順に置く
-const POT_SLOTS = [[0.735, 0.8], [0.835, 0.8], [0.785, 0.84], [0.785, 0.765]];
+const POT_SLOTS = [[0.75, 0.79], [0.82, 0.79], [0.78, 0.82], [0.785, 0.755]];
 const PHASES = ["raw", "early", "pre", "just", "hot", "over"];
 // 本編が炭を出す前（初回の説明の間）に見せる炭の数（チュートリアルは三つ置き。craft/coals.js の coalCount）
 const PREVIEW_COALS = 3;
@@ -31,7 +31,7 @@ const HEAT_HELP = speech(TUTORIAL_STEP_HELP.heat.detail);
 export const heatView = {
   id: "heat",
   step: "heat",
-  match: (panel) => !!panel.querySelector(".heat .stove .coal"),
+  match: (panel) => !panel.firstElementChild || !!panel.querySelector(".heat .stove .coal"),
   intro: true, // チュートリアルは炭を出す前に初回の説明を開く
   // 説明のスポットライトの段（craft/tutorial.js）。本編の説明の文を段に分け、はじめの絵・コンロの炭ひとつ・コンロの炭全部を順に指す
   // （コンロの絵は画面の幅より広いので、抜くのは炭）。ほかの文（チュートリアル以外の「？」の炭の取り方など）は、コンロの炭を指す
@@ -48,7 +48,11 @@ export const heatView = {
     const up = el("div.vtc-coal-up", [glow, hero, judges]);
     const pic = el("div.vtc-heat-pic", { dataset: { test: "vt-heat-pic" } }, [up]);
     const stove = el("div.vtc-stove", { dataset: { test: "vt-heat-stove" } }, [el("img", { src: `${ART}ui-stove-zoom.webp`, alt: "", draggable: "false" })]);
-    const ctrl = el("div.vtc-heat-ctrl", [stove]);
+    // 炭の明暗を赤い熾火の色域へ写し、元絵の透明な輪郭を保つ。
+    const emberFilter = el("span", { "aria-hidden": "true", html:
+      '<svg width="0" height="0" style="position:absolute"><defs><filter id="vt-ember-red" color-interpolation-filters="sRGB">' +
+      '<feColorMatrix type="matrix" values=".32 1 .12 0 .10  .09 .35 .03 0 .01  .02 .065 .01 0 .005  0 0 0 1 0"/></filter></defs></svg>' });
+    const ctrl = el("div.vtc-heat-ctrl", [emberFilter, stove]);
     let panel = null, coals = [], raf = 0, stampSig = "";
 
     const liveCoals = () => [...(panel?.querySelectorAll(".heat .stove .coal") || [])];
@@ -120,6 +124,7 @@ export const heatView = {
           const value = live.style.getPropertyValue(name);
           if (button.style.getPropertyValue(name) !== value) button.style.setProperty(name, value);
         }
+        if (button.dataset.phase !== live.dataset.phase) button.dataset.phase = live.dataset.phase;
         button.classList.toggle("pikan", live.classList.contains("pikan"));
         button.classList.toggle("soon", live.classList.contains("soon"));
         if (!coal.blinked && live.classList.contains("ready-cue")) {
