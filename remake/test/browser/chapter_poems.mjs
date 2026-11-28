@@ -2,7 +2,7 @@
 // 第1章の詩は序詩を兼ね、コールドオープンの後に出る（序詩は独立させない）。
 // 台本・文書との一致と接続点の静的な検査は ../chapter_poems.mjs。ここでは実際の表示順・操作・再開を見る。
 import assert from "node:assert/strict";
-import { suite } from "./support.mjs";
+import { suite, baseURL } from "./support.mjs";
 
 const POEM = '[data-test="chapter-poem"]';
 
@@ -43,6 +43,24 @@ const timeline = async page => (await page.evaluate(() => window.TL.slice().sort
 const tokens = async page => (await timeline(page)).map(entry => entry.token).filter((token, i, all) => token !== all[i - 1]);
 
 await suite("chapter-poems", async check => {
+  await check("portrait-poem-rotates-with-the-same-stanza", async page => {
+    await page.evaluate(async () => {
+      const poem = await import("./js/scenes/chapter-poem.js");
+      window.reading = poem.playChapterPoem(1);
+    });
+    await page.locator(POEM + ":popover-open .cp-page.now").waitFor();
+    await page.waitForFunction(() => document.querySelector(".chapter-poem")?.dataset.phase === "holding");
+    const before = await page.locator(POEM).getAttribute("data-page");
+    await page.setViewportSize({ width: 844, height: 390 });
+    await page.locator(POEM + ":not([popover])").waitFor();
+    assert.equal(await page.locator(POEM).getAttribute("data-page"), before);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator(POEM + ":popover-open").tap();
+    await page.waitForFunction(() => document.querySelector(".chapter-poem")?.dataset.page === "1");
+    await page.keyboard.press("Control");
+    assert(await page.evaluate(() => window.reading));
+  }, { viewport: { width: 390, height: 844 }, hasTouch: true, reducedMotion: "reduce", pageEntry: baseURL + "?look=vertical" });
+
   await check("new-game-cold-open-then-ch1-poem-then-title", async page => {
     page.setDefaultTimeout(60000);
     await page.evaluate(async () => { (await import("./js/core/state.js")).newGame(); });
@@ -179,7 +197,7 @@ await suite("chapter-poems", async check => {
     await page.waitForTimeout(120);
     assert.equal(await cardPage(), "0", "切り替え直後のタップは無視する");
     await page.waitForTimeout(300);
-    await page.mouse.click(640, 360);
+    await page.locator(POEM).click({ timeout: 2000 });
     await page.waitForFunction(() => document.querySelector('[data-test="chapter-poem"]')?.dataset.page === "1");
     assert.equal(await page.locator(`${POEM} .cp-page.now`).count(), 1);
     assert.equal(await page.locator(`${POEM} .cp-page.now .cp-line`).count(), 2, "2場面目は2行");

@@ -231,8 +231,11 @@ for (const c of ALL_MINTO_CHEKIS) {
 }
 // MELTY PUFF のプリクラ（PFC18）。第2章・プリクラの札で、撮影の記録に絵があれば解放（絵のある記録は撮影ごとの項目に重ねない）。
 const { PURIKURA_PHOTOS } = modules.get(new URL("purikura-data.js", root).href).namespace;
-assert.equal(PURIKURA_PHOTOS.length, 32); // 13枚（PFC18）＋ソロ5・あげは友達4・恋人版10（PFC20）
-const purikuraChar = { ageha: "ageha", tsumugi: "tsumugi", rio: "rio" };
+assert.equal(PURIKURA_PHOTOS.length, 38); // PFC18・20 の32枚と私服のみんとの6枚。
+for (const lover of [false, true]) {
+  assert.equal(PURIKURA_PHOTOS.filter(p => p.with === "minto" && !!p.lover === lover).length, 3);
+}
+const purikuraChar = { minto: "minto", ageha: "ageha", tsumugi: "tsumugi", rio: "rio" };
 for (const p of PURIKURA_PHOTOS) {
   const entry = actualEntries.find(item => item.id === p.cg);
   assert(entry, p.cg);
@@ -249,6 +252,12 @@ for (const p of PURIKURA_PHOTOS) {
   const mixed = galleryEntries(actualManifest, actualCatalog, g.normalizeGalleryProgress({ purikura: [legacy, { ...legacy, day: 19, cg: "cg_not_in_manifest" }] }), new Set());
   assert.equal(mixed.filter(item => item.photo).length, 2, "shots without a manifest picture stay as face photos");
   assert.equal(g.normalizeGalleryProgress({ purikura: [{ ...legacy, cg: "../evil" }] }).purikura[0].cg, undefined, "an unsafe picture id is dropped");
+}
+{
+  const shot = { ...photo, cg: PURIKURA_PHOTOS[0].cg, design: JSON.stringify({ v: 1, theme: "mint", marks: [] }) };
+  const progress = g.normalizeGalleryProgress({ purikura: ["0123456789abcdef", "1111222233334444"].map(printId => ({ ...shot, printId })) });
+  const entries = galleryEntries(actualManifest, actualCatalog, progress, new Set());
+  assert.equal(entries.filter(e => e.photo?.design === shot.design).length, 2, "two edited prints on the same day survive collection merge");
 }
 const adoptedChekis = ALL_MINTO_CHEKIS.length + PURIKURA_PHOTOS.length; // チェキとプリクラ（どちらも manifest の写真）
 assert.equal(actualManifest.cgs.length, 34 + adoptedStills.length + adoptedChekis);

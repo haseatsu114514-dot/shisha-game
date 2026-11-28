@@ -5,13 +5,14 @@
 // 始まったか（.heat の aria-busy）。炭を押すと本編のその炭へ中継する（本編と同じく押した瞬間に取る）。焼ける速さ・取り頃・採点は本編のまま。
 // チュートリアルの初回の説明（本編は炭を出す前に開く）の間は、説明が指すコンロの上に、まだ焼いていない炭を見せる（押しても何も起きない）。
 // 説明のスポットライト（craft/tutorial.js・VPN32）は、炭壺を持つはじめの絵→コンロの炭（ひとつ）→コンロの炭（全部）の順に明るく抜く。
+import { imgFileUrl } from "../../../core/img-file.js";
 import { el } from "../../../core/util.js";
 import { relayTap, textOf, cssUrl } from "../frame.js";
 import { TUTORIAL_STEP_HELP } from "../../../craft/bench-ui.js";
 import { speech } from "./tutorial.js";
 
-const ART = new URL("../../../../img/ui/vertical-craft/", import.meta.url).href;
-const MAKING = new URL("../../../../img/ui/making/", import.meta.url).href;
+const ART = imgFileUrl("ui/vertical-craft/");
+const MAKING = imgFileUrl("ui/making/");
 // コンロの上の炭の中心（寄りのコンロの絵 1536×1024 に対する割合。コイルの上）。本編の炭の数ごと（並びは本編の炭の順: 3個＝奥・手前左・手前右）
 const COAL_AT = {
   1: [[0.5, 0.47]],
