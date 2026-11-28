@@ -7,6 +7,7 @@ import { SE } from "../core/audio.js";
 import { W, H, svg, stageSvg, move } from "../core/transition-kit.js";
 import { MG_EASE as E, pick, burst, ring, twinkle } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
+import { frameOf } from "../core/motion-frame.js";
 import { graphicIntro } from "../vn/intro-graphic.js";
 
 // ---------------------------------------------------------------- 共通: 印画紙・落書きの書き順・マーカー
@@ -686,6 +687,27 @@ const SET_IN = [{ clipPath: "polygon(0 0, 0 0, -30% 100%, -30% 100%)" }, { clipP
 const BIG = 1.3; // 書いている間の写真の大きさ（会話のCGに対する倍率）。画面の高さいっぱい近く
 const BIG_CY = 360; // 書いている間の写真の中心の高さ
 
+/**
+ * 縦画面の縦の舞台（720×H・VPO06）での写真の置き方。書いている間は画面の幅の8割ほどの大きさで真ん中より少し上に置き、
+ * 仕上げは縦の外枠の会話の一枚絵の位置（.vt-pic の中に contain で、上下の位置は 42%・looks/vertical/talk.js と同じ）へ縮める。
+ */
+function portraitCheki(node, img, { W: FW, H: FH }) {
+  const aspect = img.naturalWidth / img.naturalHeight || CW / CH;
+  const width = Math.round(FW * 0.8), height = Math.round(width / aspect);
+  const box = { left: (FW - width) / 2, top: Math.round(FH * 0.44 - height / 2), width, height };
+  // 外枠の絵の場所（画面の座標）を舞台の座標へ。見つからなければ上の方へ少し縮めて置く
+  const layer = node.closest("#vt-motion")?.getBoundingClientRect(), pic = document.querySelector(".vt-shell .vt-pic")?.getBoundingClientRect();
+  let end = `translate(0px, ${-Math.round(FH * 0.12)}px) scale(0.72)`;
+  if (layer?.width && pic?.width && pic.height) {
+    const k = layer.width / FW;
+    const pw = pic.width / k, ph = pic.height / k, pl = (pic.left - layer.left) / k, pt = (pic.top - layer.top) / k;
+    const h = Math.min(ph, pw / aspect), w = h * aspect;
+    const cx = pl + (pw - w) / 2 + w / 2, cy = pt + (ph - h) * 0.42 + h / 2;
+    end = `translate(${cx - FW / 2}px, ${cy - (box.top + height / 2)}px) scale(${h / height})`;
+  }
+  return { box, end };
+}
+
 /** placeCg(): 縮み終えた瞬間に会話のCGを同じ位置へ置く（重ねたフィルムを外す前に呼ぶ） */
 export async function c(url, placeCg = null) {
   const img = await loadImage(url);
@@ -693,7 +715,9 @@ export async function c(url, placeCg = null) {
   if (stageUrl) await Promise.race([loadImage(stageUrl), sleep(1500)]);
   await stagePlay("cheki", async (node) => {
     node.classList.add("at-c");
-    const box = chekiBox(img);
+    const frame = frameOf(node);
+    const tall = frame.portrait ? portraitCheki(node, img, frame) : null;
+    const box = tall ? tall.box : chekiBox(img);
     const dim = el("i.mo-ck-c-dim");
     const art = el("i.mo-ck-c-art", { style: stageUrl ? { backgroundImage: `url("${stageUrl}")` } : { backgroundColor: "#f6c9d8" } });
     const set = el("div.mo-ck-c-set", [art, el("i.mo-ck-c-shade")]);
@@ -708,10 +732,13 @@ export async function c(url, placeCg = null) {
     const fxArt = stageSvg();
     const flash = el("div.mo-ck-flash");
     node.append(dim, set, dark, fly, fxArt, flash);
-    const fill = (x) => `polygon(-420px 0, ${x}px 0, ${x - 160}px 720px, -420px 720px)`;
+    const fill = (x) => `polygon(-420px 0, ${x}px 0, ${x - 160}px ${frame.H}px, -420px ${frame.H}px)`;
     dark.style.clipPath = fill(-40);
-    const dy = BIG_CY - (box.top + box.height / 2);
-    const big = `translate(0px, ${dy}px) scale(${BIG})`;
+    // 縦の舞台では、置いた大きさ・位置がそのまま書いている間の写真（縮めない）
+    const scale = tall ? 1 : BIG;
+    const dy = tall ? 0 : BIG_CY - (box.top + box.height / 2);
+    const rise = tall ? Math.round(frame.H * 0.62) : 460;
+    const big = `translate(0px, ${dy}px) scale(${scale})`;
     // 1. 元の場面が沈み、みんとの絵柄が斜めに差し込む
     move(dim, [{ opacity: 0 }, { opacity: 0.45 }], 380, { easing: "ease" });
     move(set, SET_IN, 500, { easing: E.inOut });
@@ -722,8 +749,8 @@ export async function c(url, placeCg = null) {
     move(flash, [{ opacity: 0.7 }, { opacity: 0 }], 320, { easing: E.out });
     SE.pour();
     move(fly, [
-      { transform: `translate(0px, ${dy + 460}px) rotate(-7deg) scale(${BIG * 0.9})`, easing: Q_OUT2 },
-      { transform: `translate(0px, ${dy - 12}px) rotate(1.5deg) scale(${BIG * 1.01})`, offset: 0.7, easing: SINE },
+      { transform: `translate(0px, ${dy + rise}px) rotate(-7deg) scale(${scale * 0.9})`, easing: Q_OUT2 },
+      { transform: `translate(0px, ${dy - 12}px) rotate(1.5deg) scale(${scale * 1.01})`, offset: 0.7, easing: SINE },
       { transform: big },
     ], 560, { easing: "linear" });
     await sleep(220);
@@ -767,8 +794,8 @@ export async function c(url, placeCg = null) {
     sweep(print, 380);
     await sleep(260);
     move(print.shadow, [{ opacity: 1 }, { opacity: 0 }], 340, { delay: 200 });
-    move(dark, [{ clipPath: fill(-40) }, { clipPath: fill(W + 440) }], 460, { easing: E.inOut });
-    await move(fly, [{ transform: big }, { transform: "translate(0px, 0px) scale(1)" }], 520, { easing: CAM });
+    move(dark, [{ clipPath: fill(-40) }, { clipPath: fill(frame.W + 440) }], 460, { easing: E.inOut });
+    await move(fly, [{ transform: big }, { transform: tall ? tall.end : "translate(0px, 0px) scale(1)" }], 520, { easing: CAM });
     placeCg?.();
-  });
+  }, { portrait: true });
 }

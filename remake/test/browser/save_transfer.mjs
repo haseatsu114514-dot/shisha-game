@@ -324,10 +324,11 @@ await suite("save-transfer", async check => {
     assert.equal(await page.evaluate(() => !!document.fullscreenElement), false);
   });
 
-  await check("manifest-is-linked-and-landscape", async page => {
+  await check("manifest-is-linked-and-any-orientation", async page => {
     const href = await page.locator('link[rel="manifest"]').getAttribute("href");
     const m = await page.evaluate(async (h) => (await fetch(h)).json(), href);
-    assert.equal(m.display, "fullscreen"); assert.equal(m.orientation, "landscape");
+    // 縦持ちが基本（VPO01・2026-11-28 オーナー「基本は縦画面で遊ぶ仕様にしていって」）。ホーム画面版も向きを横に固定しない
+    assert.equal(m.display, "fullscreen"); assert.equal(m.orientation, "any");
     assert(m.icons.length >= 2);
     assert.equal(await page.locator('meta[name="apple-mobile-web-app-capable"]').getAttribute("content"), "yes");
     assert.equal(await page.locator('meta[name="apple-mobile-web-app-status-bar-style"]').getAttribute("content"), "black-translucent");

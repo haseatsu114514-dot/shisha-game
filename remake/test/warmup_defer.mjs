@@ -87,6 +87,8 @@ async function loadUi({ loadImage = image => image.onload?.(), imageSize = 0, no
     "weather.js": { rainScene: () => {}, weatherSkyTone: () => "", weatherViewKind: () => "", renderWeatherLayer: () => {} },
     "shop-haze.js": { syncShopHaze: () => {} },
     "transitions.js": { createSceneCurtain: () => {}, nightToMorning: () => {}, isCovering: () => false, takeSceneArrival: () => null, takeParkedCover: () => null, smokeArt: () => ({}), smokeIn: async () => {}, smokeOut: async () => {}, dateTypeReady: async () => true, plainDateType: () => {} },
+    // 演出の置き先（VPO02・VPO18）。この検査は横の本編なので #fx に置くだけ
+    "motion-frame.js": { mountMotion: (node, { host } = {}) => { host?.append?.(node); return { frame: { W: 1280, H: 720, portrait: false }, remove: () => node.remove?.() }; } },
     "store-logos.js": { allStoreLogoUrls: () => STORE_URLS },
     "chapter-title-art.js": { chapterTitleArt: () => "img/ui/chapter_title_ch1.webp" },
     "ui-theme.js": { uiThemeFrame: () => "img/ui/frame.webp" },
