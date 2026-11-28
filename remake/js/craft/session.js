@@ -170,7 +170,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   const leaf = buildLeafIcon();
   worker.footer.append(leaf.root);
   // 版（リニューアル／桜井版・CRN16）は CSS とカウントダウン（core/ui.js）が見る
-  const root = el("div.bench", { dataset: { mode: cs.mode, chapter: cs.chapter, craftVersion: renewalCraft(cs) ? "renewal" : "sakurai" } }, [
+  const root = el("div.bench", { dataset: { mode: cs.mode, chapter: cs.chapter, ...(cs.practiceKind ? { practiceKind: cs.practiceKind } : {}), craftVersion: renewalCraft(cs) ? "renewal" : "sakurai" } }, [
     el("div.bench-top", [el("span.bench-mode", [craftMode(cs, MODE_LABEL), el(cs.retryAssist ? "small.retry-assist" : "small", { text: cs.retryAssist ? assistBenchNote(cs) : craftModeNote(cs, MODE_NOTE) })]), progress]),
     el("div.bench-left", [
       worker.root,

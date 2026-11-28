@@ -146,10 +146,12 @@ export const isStandalone = () => navigator.standalone === true || matchMedia("(
 export const canFullscreen = () => !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen) && !isIPhone();
 export const isFullscreen = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
 
-/** 全画面にして横向き固定を試みる。失敗は無視する */
+/** 全画面にする。旧版の画面（横画面だけ）を選んでいる時だけ、横向き固定も試みる。失敗は無視する。
+ * 縦画面（既定・LK24）では向きを固定しない（縦持ちが基本で、まだ縦にしていない場面だけ横にして遊ぶ・VPO01） */
 export async function enterFullscreen() {
   const root = document.documentElement;
   try { await (root.requestFullscreen || root.webkitRequestFullscreen).call(root); } catch { /* 拒否されても遊べる */ }
+  if (root.dataset.look === "vertical") return;
   try { await screen.orientation?.lock?.("landscape"); } catch { /* 非対応は無視 */ }
 }
 

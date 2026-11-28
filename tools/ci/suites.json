@@ -5621,6 +5621,27 @@
       ]
     },
     {
+      "id": "look-vertical-motion",
+      "title": "縦持ちが基本（VPO01）: 縦画面を縦持ちで開くと起動からタイトルまで回転案内が出ない・旧版の縦持ちは回転案内・ホーム画面版の向きを固定しない。演出の縦の舞台（VPO02〜）: LIME・タロットは縦の構図で画面に収まり、縦の構図の無い演出は横長のまま真ん中、シーシャくじは縦で引けて札が画面に収まり、夜明けの日付の札は画面の下の方、横持ちは今までどおり #fx",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 4,
+      "paths": [
+        "remake/css/look-vertical.css",
+        "remake/manifest.webmanifest",
+        "remake/js/core/motion-frame.js",
+        "remake/js/looks/vertical.js",
+        "remake/js/looks/vertical/motion-layer.js",
+        "remake/js/daily/kuji-reveal.js",
+        "remake/js/motions/**",
+        "remake/css/motions/**",
+        "remake/test/browser/look_vertical_motion.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/look_vertical_motion.mjs"
+      ]
+    },
+    {
       "id": "romance-hesitation",
       "title": "New romance hesitation model and VN controller: eight heroines, cancel, apology, LOAD and duplicate clicks",
       "kind": "quick",

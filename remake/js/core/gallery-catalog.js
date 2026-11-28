@@ -120,7 +120,7 @@ export function galleryEntries(manifest, catalog, progress, seen) {
   }));
   // 絵のある撮影は、上の絵の項目に出す（同じ写真を立ち絵の写真として重ねない）。絵の無い撮影・旧セーブだけ撮影ごとに出す
   const pictured = new Set(entries.map(e => e.id));
-  progress.purikura.filter(p => !(p.cg && pictured.has(p.cg))).forEach(p => entries.push({
+  progress.purikura.filter(p => p.design || !(p.cg && pictured.has(p.cg))).forEach(p => entries.push({
     id: purikuraId(p), kind: "purikura", photo: p, unlocked: true,
     title: "第" + p.chapter + "章・DAY" + (p.chapterDay ?? p.day) + (p.slot === 0 ? " 昼" : " 夜") + "のプリクラ",
   }));

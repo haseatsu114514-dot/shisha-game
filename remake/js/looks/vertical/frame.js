@@ -246,6 +246,23 @@ export function liveBackground() {
 /** 背景の層を、縦の絵の場所へ写す（絵を覆う大きさに置き直す。店の台を重ねた SVG もそのまま写す）。 */
 export function mirrorBackground(host, { focusX = 50, focusY = 40 } = {}) {
   const node = liveBackground();
+  // 冒頭の2場面は背景画像ではなく、手元・煙・店内を重ねた舞台。
+  if (node?.matches(".cold-open, .tonari-opening")) {
+    const kind = node.matches(".cold-open") ? "cold-open" : "tonari-opening";
+    if (host.dataset.sig !== kind) {
+      const copy = node.cloneNode(true);
+      copy.removeAttribute("data-test");
+      copy.classList.remove("bg-img");
+      copy.classList.add("vt-opening");
+      host.replaceChildren(copy);
+      host.dataset.sig = kind;
+    }
+    const copy = host.firstElementChild;
+    if (copy.dataset.shot !== node.dataset.shot) copy.dataset.shot = node.dataset.shot;
+    copy.classList.toggle("out", node.classList.contains("out"));
+    copy.style.setProperty("--opening-scale", Math.max(host.clientWidth / 1280, host.clientHeight / 720));
+    return "";
+  }
   const cs = node ? getComputedStyle(node) : null;
   const url = cs ? cssUrl(cs.backgroundImage) : "";
   const art = node?.querySelector(":scope > svg.scene-art");

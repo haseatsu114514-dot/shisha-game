@@ -1,0 +1,9 @@
+## cg_outing_rio_beans
+
+参照画像（添付順） `remake/img/sprites/character_variants/new/rio/chr_rio_normal.webp`、`remake/img/cgs/portrait/cg_outing_rio_beans.webp`
+
+```text
+Use case: illustration-story. Create one new 1024×1536 (2:3) vertical game CG, cg_outing_rio_beans. Image 1 is Rio's current sprite for identity and clothes only. Image 2 is the existing CG for the coffee-shop story beat and props only. Invent a new frame, distinctly from the side.
+At noon in a little Japanese specialty coffee-bean shop, Rio, 27, is absorbed in assessing the smell of newly opened roasted coffee beans with the same delicate concentration as testing a fragrance. Her long layered near-black hair and side bangs, white shirt with sleeves rolled to the elbow, and small silver hoops match the current sprite. She lifts a clear, wide-mouth glass jar of roasted whole coffee beans just below her nose; the lid is already removed and may be held lower in her other hand, mostly outside the crop. Her eye is softly closed or fully lowered, her expression quiet and focused.
+Genuine side-profile CLOSE-UP with the camera square to the side of her head: one eye and the profile of the nose and lips, cheek, neck and near shoulder; her head and the open jar fill the central frame. The jar rim stays below the nose so her profile remains clear. No second person, viewer hand or sleeve. In the soft midground, retain a small row of recognizable glass bean jars on the shop's back counter and soft noon window light. Let the back counter sit well behind the subject, with no counter edge across the foreground. Natural coffee-brown, cream and soft neutral daylight, precise anime lines and flat matte cel coloring, controlled reflections on the glass, no text or logos.
+```

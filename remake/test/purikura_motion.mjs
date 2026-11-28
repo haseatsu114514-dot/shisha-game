@@ -7,7 +7,7 @@ import vm from "node:vm";
 const read = (path) => fs.readFileSync(new URL(path, import.meta.url), "utf8");
 const source = read("../js/motions/purikura.js");
 
-async function fixture({ variant = "a", width = 1280, height = 720, cg = null, loadDuring = false, interruptMusic = false, throwDuring = false, random = 0, imageFails = false, loadBeforePrint = false } = {}) {
+async function fixture({ variant = "a", width = 1280, height = 720, portrait = false, cg = null, loadDuring = false, interruptMusic = false, throwDuring = false, random = 0, imageFails = false, loadBeforePrint = false } = {}) {
   const context = vm.createContext({ console, Math: Object.assign(Object.create(Math), { random: () => random }) });
   const made = [], anims = [], sounds = {}, music = [], queried = [], images = [], recorded = [], portraitCalls = [];
   let elapsed = 0;
@@ -35,6 +35,8 @@ async function fixture({ variant = "a", width = 1280, height = 720, cg = null, l
     "audio.js": { preloadBgm: async () => true, currentBgm: () => musicNow, playBgm: (key) => { music.push(key); musicNow = key; during = key?.startsWith("bgm_purikura"); }, SE: new Proxy({}, { get: (_, name) => () => { sounds[name] = (sounds[name] || 0) + 1; } }) },
     "transition-kit.js": { svg: el, move: async (node, frames, ms, opt = {}) => { anims.push({ node, frames, ms, ...opt }); } },
     "mg-kit.js": { MG_EASE: { out: "out", in: "in", inOut: "inOut", back: "back" } },
+    // 縦画面の縦の舞台（VPO16）では 720×H。横の本編は 1280×720
+    "motion-frame.js": { frameOf: () => (portrait ? { W: 720, H: height, portrait: true } : { W: 1280, H: 720, portrait: false }) },
     "stage.js": {
       backdrop: () => el("backdrop"),
       stagePlay: async (name, run) => {
@@ -223,5 +225,21 @@ assert.deepEqual(await wrapperCase(), { imported: 1, played: 1 });
 assert.deepEqual(await wrapperCase({ skip: true }), { imported: 1, played: 1 }, "SKIP plays the purikura to the end (#1081 H05)");
 assert.deepEqual(await wrapperCase({ reduce: true }), { imported: 0, played: 0 }, "reduced motion skips the purikura");
 assert.deepEqual(await wrapperCase({ loadDuringImport: true }), { imported: 1, played: 0 }, "LOAD during the lazy import does not start the old purikura");
+
+// 縦画面の縦の舞台（VPO16）: 縦の試作と同じ 720×840 の場面。写真の窓を上、撮った写真・盛り・道具は下の一段に横並び。シールは場面の真ん中
+{
+  const f = await fixture({ variant: "a", width: 720, height: 1558, portrait: true, cg: { cg_ch2_ageha_purikura_strip: "strip.webp" } });
+  const scene = f.find("div.mo-pk-scene")[0];
+  assert.deepEqual([scene.style.width, scene.style.height], ["720px", "840px"], "portrait scene is the prototype's 720x840");
+  assert.equal(scene.style.transform, "translate(-50%, -50%) scale(1)", "fits the portrait stage by its width");
+  const thumbs = f.find("div.mo-pk-mini.mo-pk-thumb");
+  assert.deepEqual(thumbs.map((t) => [t.style.left, t.style.top]), [["10px", "610px"], ["230px", "610px"], ["450px", "610px"]], "shots line up under the window");
+  const menu = f.made.filter((n) => n.selector.startsWith("div.mo-pk-mori-btn"));
+  assert.deepEqual(menu.map((b) => b.style.top), ["640px", "640px", "640px"], "mori buttons sit in the lower row");
+  const sheet = f.made.find((n) => n.selector.startsWith("div.mo-pk-sheet"));
+  assert.deepEqual([sheet.style.left, sheet.style.width], ["30px", "660px"], "the strip sheet is centred and large");
+  const pick = f.find("div.mo-pk-pick")[0];
+  assert(f.anims.some((a) => a.node === pick && a.frames.at(-1).transform === "translateX(440px)"), "Ageha's tool ring slides sideways to the stamp");
+}
 
 console.log("[purikura] PASS: fit, cleanup, sounds, a/b, sprites/CG, doodle words, tremor stop then stamp, LOAD guard (image wait and lazy import), SKIP plays / reduced motion skips, dialogue hook");

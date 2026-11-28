@@ -1110,17 +1110,22 @@ class Phone {
         <g clip-path="url(#${id})"><path class="w-body" fill="url(#${id}g)" d=""/><path class="w-deep" d=""/>
           <g class="w-bubbles">${`<circle r="0"/>`.repeat(12)}</g>
           <path class="w-stream in" fill="url(#${id}s)" d=""/>
-          <path class="w-surf" d=""/><path class="w-line" d=""/></g>
+          <path class="w-surf" d=""/></g>
       </svg>`;
   }
 
   /** ガラスの手前に重ねる分: 蛇口の水流と、水面で跳ねるしぶき（ガラスの白に埋もれないように）。 */
   bottleFxSvg() {
     const id = `bw${this.uid}`, { w, h } = BOTTLE;
+    const lowY = waterY(WATER.low), highY = waterY(WATER.high), midY = (lowY + highY) / 2;
     // 水流は、受け口の穴の手前の縁より上だけ手前に描く（その下は受け口の陰。胴の中の分は奥の SVG の .w-stream.in がガラス越しに見せる）
     return `<svg class="bottle-svg fx" viewBox="0 0 ${w} ${h}" aria-hidden="true"><defs><clipPath id="${id}f"><rect class="w-fxclip" x="-400" y="-900" width="${w + 800}" height="0"/></clipPath></defs>
       <g clip-path="url(#${id}f)"><path class="w-stream" fill="url(#${id}s)" d=""/></g><path class="w-spill" d=""/>
-      <g clip-path="url(#${id})"><path class="w-band" d=""/><path class="w-line2" d=""/></g><g class="w-mark"><rect x="0" y="-26" width="92" height="52" rx="26"/><text x="46" y="12">目安</text></g><g clip-path="url(#${id})"><g class="w-drops">${`<circle r="0"/>`.repeat(7)}</g></g></svg>`;
+      <defs><clipPath id="${id}guide"><path d="${BOTTLE.inner}"/></clipPath></defs>
+        <g class="w-guide"><g clip-path="url(#${id}guide)">
+          <path class="w-band" d="M0 ${highY}H${w}V${lowY}H0Z"/>
+          <path class="w-line2" d="M-40 ${lowY}H${w + 40}M-40 ${highY}H${w + 40}"/></g>
+          <g class="w-mark" transform="translate(${BOTTLE_WALL(midY)[1] + 34} ${midY})"><rect x="0" y="-26" width="92" height="52" rx="26"/><text x="46" y="12">目安</text></g></g><g clip-path="url(#${id})"><g class="w-drops">${`<circle r="0"/>`.repeat(7)}</g></g></svg>`;
   }
 
   /** 水入れ（VPL46・VPL81）: 蛇口の下で、口の開いたボトルを少し傾けて満たす。水位計は出さない。二本の線が目安 */
@@ -1144,7 +1149,7 @@ class Phone {
     if (!S || S.svg !== svg) {
       const q = (c) => root.querySelector(c);
       S = this.wsim = { svg, h: new Float32Array(N), v: new Float32Array(N), ang: BOTTLE.rest, angV: 0, slope: 0, slopeV: 0, head: null, tail: null, bub: [], drops: [], spawn: 0, was: false,
-        glass: root.querySelector(".b-glass"), clip: q(".w-clip"), body: q(".w-body"), deep: q(".w-deep"), surf: q(".w-surf"), line: q(".w-line"), stream: q(".fx .w-stream"), spill: q(".w-spill"), streamIn: q(".w-stream.in"), fxClip: q(".w-fxclip"),
+        glass: root.querySelector(".b-glass"), clip: q(".w-clip"), body: q(".w-body"), deep: q(".w-deep"), surf: q(".w-surf"), guide: q(".w-guide"), stream: q(".fx .w-stream"), spill: q(".w-spill"), streamIn: q(".w-stream.in"), fxClip: q(".w-fxclip"),
         bubEls: [...root.querySelectorAll(".w-bubbles circle")], dropEls: [...root.querySelectorAll(".w-drops circle")] };
     }
     const w = this.st.water, still = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1192,7 +1197,9 @@ class Phone {
     S.slope = Math.max(-0.16, Math.min(0.16, S.slope));
     // 描く: 傾けたボトルの絵と切り抜き、水面、目安の線
     S.glass.style.transform = `rotate(${ang.toFixed(2)}deg)`;
-    S.clip.setAttribute("transform", `rotate(${ang.toFixed(2)} ${BOTTLE.pivot[0]} ${BOTTLE.pivot[1]})`);
+    const rotation = `rotate(${ang.toFixed(2)} ${BOTTLE.pivot[0]} ${BOTTLE.pivot[1]})`;
+    S.clip.setAttribute("transform", rotation);
+    S.guide.setAttribute("transform", rotation);
     const y = (i) => level + S.slope * (i * DX - axisX) + S.h[i];
     let top = `M${-DX} ${y(0).toFixed(1)} L0 ${y(0).toFixed(1)}`;
     for (let i = 1; i < N; i++) { const xm = (i - 0.5) * DX, ym = (y(i - 1) + y(i)) / 2; top += ` Q${((i - 1) * DX).toFixed(1)} ${y(i - 1).toFixed(1)} ${xm.toFixed(1)} ${ym.toFixed(1)}`; }
@@ -1202,16 +1209,6 @@ class Phone {
     S.deep.setAttribute("d", shown ? `${top} V${BOTTLE.h + 260} H${-DX} Z` : "");
     S.deep.setAttribute("transform", "translate(0 18)");
     S.surf.setAttribute("d", shown ? top : "");
-    const [, yl] = tiltPoint(BOTTLE.cx, waterY(WATER.low), ang), [, yh] = tiltPoint(BOTTLE.cx, waterY(WATER.high), ang);
-    S.line.setAttribute("d", `M-40 ${yl.toFixed(1)}H${BOTTLE.w + 40}M-40 ${yh.toFixed(1)}H${BOTTLE.w + 40}`);
-    // 目安の線は、ガラスの手前にも太く描き、2本のあいだを薄く塗る。ボトルの右に「目安」の札（VPL119）
-    S.band ??= S.svg.parentElement.querySelector(".w-band"); S.line2 ??= S.svg.parentElement.querySelector(".w-line2"); S.mark ??= S.svg.parentElement.querySelector(".w-mark");
-    if (S.band) {
-      S.band.setAttribute("d", `M-40 ${yh.toFixed(1)}H${BOTTLE.w + 40}V${yl.toFixed(1)}H-40Z`);
-      S.line2.setAttribute("d", `M-40 ${yl.toFixed(1)}H${BOTTLE.w + 40}M-40 ${yh.toFixed(1)}H${BOTTLE.w + 40}`);
-      const ym = (waterY(WATER.low) + waterY(WATER.high)) / 2, [mx, my] = tiltPoint(BOTTLE_WALL(ym)[1] + 34, ym, ang);
-      S.mark.setAttribute("transform", `translate(${mx.toFixed(1)} ${((yl + yh) / 2).toFixed(1)})`);
-    }
     // 水流（上が少し太く、下へ細る。わずかに揺れる）
     if (S.head != null && S.head - S.tail > 4) {
       const t = now / 1000, wob = (yy) => Math.sin(t * 19 + yy * 0.045) * 1.6 + Math.sin(t * 31 + yy * 0.09) * 0.8, y0 = S.tail, y1 = S.head, seg = 6;
@@ -1372,7 +1369,9 @@ class Phone {
       const zone = thermo.querySelector(".th-zone"), best = thermo.querySelector(".th-best");
       zone.style.bottom = pc(b.zone[0]); zone.style.height = pc(b.zone[1] - b.zone[0]);
       best.style.bottom = pc(b.best[0]); best.style.height = pc(b.best[1] - b.best[0]);
-      thermo.querySelector(".th-note").innerHTML = b.selected ? "この配合の<br>適温" : "葉を入れると<br>出る";
+      const note = thermo.querySelector(".th-note");
+      if (b.selected && !note) thermo.insertAdjacentHTML("beforeend", '<small class="th-note">この配合の<br>適温</small>');
+      if (!b.selected) note?.remove();
     }
     const ok = el.querySelector(".btn-a.mix-ok");
     if (ok) { ok.disabled = !this.mixOk(); ok.classList.toggle("hot", this.mixOk()); }
@@ -1927,7 +1926,7 @@ class Phone {
         <i class="th-danger" style="bottom:${pc(TEMP_DANGER)}">${icon("coal")}</i>
         <i class="th-dim"></i>
         <i class="th-now"></i>${timing ? `<i class="th-range" style="--spread:${STEAM_SPREAD}"></i>` : ""}
-      </span><i class="th-pointer"></i></span>${mixing ? `<small class="th-note"></small>` : timing ? `<small class="th-note">目安</small>` : ""}</div>`;
+      </span><i class="th-pointer"></i></span>${timing ? `<small class="th-note">目安</small>` : ""}</div>`;
   }
 
   /** スミさんの一言は小さな吹き出しで出し、少しすると顔だけになる（顔を押すとまた出る）。 */

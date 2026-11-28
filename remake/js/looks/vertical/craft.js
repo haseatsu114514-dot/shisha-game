@@ -11,14 +11,18 @@
 //   どの工程にも共通の、始まりの 3・2・1・GO!（core/ui.js の countdown）と工程の結果の札（craft/common.js の resultCard）もここで写す。
 // 工程ごとの画面は looks/vertical/craft/<工程>.js に分け、下の登録表（VIEWS）から呼ぶ。登録の無い工程（まだ縦にしていない工程）では
 //   この場面にせず、今までどおり回転案内を出す（vertical.js の evaluate）。途中の工程だけ縦、で構わない。
+import { imgFileUrl } from "../../core/img-file.js";
 import { el } from "../../core/util.js";
 import { relayTap, relayPress, mirrorBackground, cssUrl, liveBackground, textOf } from "./frame.js";
 import { createThermo } from "./craft/thermo.js";
 import { createSpotlight, readGuide, tutorialSteps } from "./craft/tutorial.js";
 import { waterView } from "./craft/water.js";
+import { mixView } from "./craft/mix.js";
+import { pullView } from "./craft/pull.js";
 import { packView } from "./craft/pack.js";
 import { holesView } from "./craft/holes.js";
 import { heatView } from "./craft/heat.js";
+import { careView } from "./craft/care.js";
 import { timerView } from "./craft/timer.js";
 
 /**
@@ -40,9 +44,9 @@ import { timerView } from "./craft/timer.js";
  *   tutorial     … 説明のスポットライトの段（無くてよい。書き方は craft/tutorial.js の冒頭）。
  *                  例: tutorial: (guide) => [{ target: "pic", say: "…" }, { target: "cards", say: "…" }, { target: "ok", say: "…" }]
  */
-const VIEWS = [waterView, packView, holesView, heatView, timerView];
+const VIEWS = [waterView, mixView, packView, holesView, heatView, timerView, pullView, careView];
 
-const IMG = new URL("../../../img/", import.meta.url).href;
+const IMG = imgFileUrl("");
 const SUMI_FACE = `${IMG}ui/face_icons/new/face_sumi.webp`;
 const GRADES = ["D", "C", "B", "A", "S", "SS", "SSS"]; // 本編の制作ランク（craft/rank-hud.js の CRAFT_GRADES）。絵は img/ui/craft-rank/
 // 演出の層に出ていると、作る場面を写さない物（自分で操作する画面・ボタンのある覆い。結果の札など）。
@@ -75,7 +79,7 @@ function liveBench() {
 function viewFor(bench) {
   const panel = bench?.querySelector(".bench-panel");
   if (!panel) return null;
-  const mine = VIEWS.filter((view) => view.step === bench.dataset.step);
+  const mine = VIEWS.filter((view) => view.step === panel.dataset.step);
   const shown = mine.find((view) => view.match(panel));
   if (shown) return shown;
   // 工程の初回の「操作の説明」（craft/session.js の explainStepOnce）は、工程の部品を出す前に開く。読む間も作る場面に写す
@@ -87,7 +91,7 @@ function viewFor(bench) {
  * 外枠のボタンを長押しのボタンにする（試作の「注ぐ」「こぼす」「刺す」）。押している間 .pressing を付け、本編の要素へ
  * pointerdown を送り、離した（指が外れた・キーを離した）時に pointerup を送る。live() は押した時の本編の要素（押せなければ null）。
  */
-function holdButton(button, live) {
+function holdButton(button, live, keyClick) {
   let release = null, pointer = null;
   const start = (who) => {
     if (release) return;
@@ -117,7 +121,11 @@ function holdButton(button, live) {
     if ((event.key === " " || event.key === "Enter") && !event.repeat) { event.preventDefault(); start("key"); }
   });
   button.addEventListener("keyup", (event) => {
-    if ((event.key === " " || event.key === "Enter") && pointer === "key") { event.preventDefault(); end(); }
+    if ((event.key === " " || event.key === "Enter") && pointer === "key") {
+      event.preventDefault();
+      end();
+      keyClick?.(); // 配合の±は本編の click が短押しを1回に数える
+    }
   });
   button.addEventListener("blur", end);
   button.addEventListener("contextmenu", (event) => event.preventDefault());

@@ -129,7 +129,7 @@ const MOOD = { S: [1, 0.6, 1], LAST: [1, 0.6, 1], A: [0.8, 0.34, 0.8], B: [0.42,
  * 動きを減らす設定では、止まった抽選器と玉だけを短く見せる。
  * look はそのくじの抽選器の見た目（kuji-art.js の KUJI_LOOKS。上の店ほど豪華）、title は黒板に書くくじの名前。
  */
-export async function garagara(host, rankOrRanks = "C", { onHandoff, look, title } = {}) {
+export async function garagara(host, rankOrRanks = "C", { onHandoff, look, title, narrow = false } = {}) {
   const ranks = (Array.isArray(rankOrRanks) ? rankOrRanks : [rankOrRanks]).map((r) => (BALL[r] ? r : "C"));
   const multi = ranks.length > 1;
   const reduced = reducedMotion();
@@ -139,7 +139,7 @@ export async function garagara(host, rankOrRanks = "C", { onHandoff, look, title
   const top = !multi && isTop(rank);
   const set = stageParts({ last, look, title });
   const balls = ranks.map((r) => ballPart(r));
-  const rail = multi ? railPart(ranks.length) : null;
+  const rail = multi ? railPart(ranks.length, narrow ? { span: 540, center: 690 } : {}) : null; // narrow: 縦画面（見える x 340〜1040 の中に玉を並べる）
   const bell = artPart("bell", "kj-bell", bellSketch);
   // 抽選器の置き方: 1回引きは大きく、連続は手前の玉置きのぶん少し上へ小さく
   const ZOOM = multi ? 0.9 : 1.04, ZX = AX, ZY = 600, DX = multi ? 60 : 30, DY = multi ? -42 : -6;

@@ -19,6 +19,7 @@ async function fixture(width, height, fail = false) {
     'ui.js':{imageReady:async()=>true}, 'audio.js':{SE:{phone(){phones++;}}},
     'transition-kit.js':{svg:el,move:async()=>{ transforms.push(scene?.style.transform); }},
     'mg-kit.js':{MG_EASE:{out:'out',in:'in',inOut:'inOut',back:'back'},motionVariant:()=> 'a'},
+    'motion-frame.js':{frameOf:()=>({W:1280,H:720,portrait:false})}, // 横の本編の舞台（縦の舞台は look_vertical_motion.mjs）
     'stage.js':{backdrop:()=>el('backdrop'),stagePlay:async(name,run)=>{
       root = el(name); root.clientWidth=width;root.clientHeight=height;
       await run(root);scene=root.children.find(n=>n.selector==='div.mo-lime-scene');
