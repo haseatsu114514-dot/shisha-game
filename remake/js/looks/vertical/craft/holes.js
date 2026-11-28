@@ -8,6 +8,7 @@
 // 絵の穴を押す）、チュートリアルの試し刺しの「穴あけを始める」（hole-warmup-start）、桜井版の「次のリングへ」「結果へ」（hole-next・hole-done）。
 // チュートリアルの初回の説明（本編は配置の札の前に開く）の間は、穴あけの形（「刺す」と、既定の配置の数の点）を見せる。説明の間は「刺す」・
 // 「決定」を押せる形で見せる（押しても本編へは届かない）。説明のスポットライト（craft/tutorial.js・VPN32）は、アルミ→刺す→開けた穴の数の順に明るく抜く。
+import { imgFileUrl } from "../../../core/img-file.js";
 import { el } from "../../../core/util.js";
 import { textOf } from "../frame.js";
 import { PRESS } from "../../../craft/holes_logic.js";
@@ -15,7 +16,7 @@ import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, ringsForTemplate } from "../../.
 import { TUTORIAL_STEP_HELP } from "../../../craft/bench-ui.js";
 import { sayLines, speech } from "./tutorial.js";
 
-const FOIL = new URL("../../../../img/ui/making/foil_interactive_top.webp", import.meta.url).href;
+const FOIL = imgFileUrl("ui/making/foil_interactive_top.webp");
 // 箔の上の穴の半径（箔の幅を200とした値。試作の HOLE_R）。本編の穴の深さ（.foil-hole の shallow・small・wide・large）ごと
 const HOLE_R = { shallow: 1.3, small: 3, wide: 4, large: 5 };
 const DEPTHS = Object.keys(HOLE_R);

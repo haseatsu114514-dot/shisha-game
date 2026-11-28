@@ -435,3 +435,13 @@
 @media (prefers-reduced-motion: reduce) {
   .vtc *, .vtc *::before, .vtc *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
+
+.vtc-care-pic { position: absolute; inset: 16% 17% 8% 5%; display: grid; align-content: center; gap: 1em; }
+.vtc-care-pic p { margin: 0; padding: .8em; background: #171021df; border-radius: 12px; line-height: 1.6; }
+.vtc-care-dial svg { width: 100%; }
+.vtc-care-controls { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); align-content: center; gap: 8px; padding-inline: 12px; }
+.vtc-care-controls button { grid-column: span 3; min-height: 48px; border-radius: 12px; border: 1px solid #ffffff59; background: #33273c; }
+.vtc-care-controls button[aria-pressed="true"] { color: #271908; background: #ffd495; }
+.vtc-care-controls button:disabled { opacity: .5; }
+.vtc-care-controls button[aria-pressed] { grid-column: span 4; }
+.vtc-care-controls[data-phase="draw"] button { grid-column: span 6; }

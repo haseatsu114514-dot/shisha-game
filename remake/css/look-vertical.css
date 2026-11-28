@@ -91,6 +91,8 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-bgimg { background-size: cover; background-repeat: no-repeat; }
 .vt-bgimg.black { background: #000; }
 .vt-bgimg > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.vt-opening { position: absolute; inset: auto; left: 50%; top: 50%; width: 1280px; height: 720px; transform: translate(-50%, -50%) scale(var(--opening-scale)); }
+.vt-opening .to-room > svg { width: 100%; height: 100%; }
 .vt-shell[data-scene="cover"] .vt-bg { filter: brightness(0.38) saturate(0.85); transition: filter 0.4s; }
 .vt-shell[data-scene="cover"][data-cover="gap"] .vt-bg { filter: none; }
 .vt-shell[data-scene="sheet"] .vt-pic { filter: brightness(0.4) blur(calc(0.3 * var(--u))); }
@@ -274,6 +276,8 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-pin.has-art .vt-pin-hit { left: calc(-3.6 * var(--u)); top: calc(-5.6 * var(--u)); width: calc(7.2 * var(--u)); height: calc(6.4 * var(--u)); border-radius: calc(1 * var(--u)); }
 /* 全体を見る時は、看板を地図と一緒に少し縮める（重なりすぎないように） */
 .vt-map.overview .vt-pin { transform: scale(calc(var(--inv, 1) * 0.62)); }
+.vt-map.overview .vt-pin[data-spot="tonari"] { margin-left: calc(-2.8 * var(--u) * var(--inv)); }
+.vt-map.overview .vt-pin[data-spot="rest"] { margin-top: calc(1.4 * var(--u) * var(--inv)); }
 .vt-pin[aria-current="true"] { z-index: 3; }
 .vt-pin[aria-current="true"] .vt-pin-dot { width: calc(4.6 * var(--u)); height: calc(4.6 * var(--u)); background: var(--acc); box-shadow: 0 0 0 calc(0.25 * var(--u)) #0b0812cc, 0 0 0 calc(0.45 * var(--u)) var(--acc), 0 0 calc(2 * var(--u)) var(--acc); }
 .vt-pin-hit { position: absolute; left: calc(-2.6 * var(--u)); top: calc(-2.6 * var(--u)); width: calc(5.2 * var(--u)); height: calc(5.2 * var(--u)); border-radius: 50%; }
@@ -367,6 +371,11 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 /* 「つづきから」の行の「セーブを選ぶ」（EXT02）。日本語の名前の段の代わりに、小さな札で出す */
 .vt-tt-sub { padding: calc(0.25 * var(--u)) calc(1 * var(--u)) calc(0.3 * var(--u)); border: calc(0.1 * var(--u)) solid color-mix(in srgb, var(--acc) 60%, transparent); border-radius: 999px; font-size: calc(1.25 * var(--u)); font-weight: 600; letter-spacing: 0.06em; color: var(--acc); background: #0b081299; white-space: nowrap; }
 .vt-tt-sub:active { background: color-mix(in srgb, var(--acc) 26%, #0b0812); color: #fff3cf; }
+.vt-tt-resume { display: grid; grid-template-columns: 1fr auto; gap: 4px; }
+.vt-tt-resume .vt-tt-sub { display: grid; align-content: center; justify-items: center; gap: 3px; min-height: 44px; min-width: calc(14 * var(--u)); border-radius: calc(1.6 * var(--u)); }
+.vt-tt-resume .vt-tt-item { display: grid; grid-template: auto auto / auto 1fr; align-content: center; row-gap: 3px; }
+.vt-tt-resume .vt-tt-item > i { grid-row: span 2; }
+.vt-tt-resume .vt-tt-note { grid-column: 2; }
 .vt-tt-item[aria-current="true"] .vt-tt-en { color: #fff3cf; }
 .vt-tt-item[disabled], .vt-tt-item.is-locked { opacity: 0.4; cursor: default; }
 .vt-tt-item.is-picked { animation: vt-tt-pick 0.32s ease-out; }
@@ -390,6 +399,10 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-cover-art[hidden] { display: none; }
 .vt-cover-art img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 var(--u) calc(2 * var(--u)) #000c); }
 .vt-cover-art:not([hidden]) + .vt-cover-lines { top: auto; bottom: 14%; transform: none; }
+.vt-shell[data-cover="poem"] .vt-over { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(2 * var(--u)); }
+.vt-shell[data-cover="poem"] .vt-cover-art { position: static; width: 100%; height: min(40%, 46vw); }
+.vt-shell[data-cover="poem"] .vt-cover-art img { width: 100%; height: 100%; min-height: 0; object-fit: cover; }
+.vt-shell[data-cover="poem"] .vt-cover-lines { position: static; transform: none; padding-inline: var(--u); }
 .vt-wait { position: absolute; left: 50%; bottom: 18%; display: flex; gap: calc(0.8 * var(--u)); transform: translateX(-50%); pointer-events: none; }
 .vt-wait[hidden] { display: none; }
 .vt-wait i { width: calc(0.8 * var(--u)); height: calc(0.8 * var(--u)); border-radius: 50%; background: var(--acc); opacity: 0.3; animation: vt-wait 1.2s ease-in-out infinite; }
@@ -532,6 +545,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 
 .vt-shell[data-scene="sheet"] .vt-over { inset: 0 0 var(--bottom-h) 0; }
 .vt-shell[data-scene="sheet"][data-layout="full"] .vt-over { inset: 0; }
+.vt-shell[data-layout="full"][data-sheet="modal"] .vt-sheet-host { inset: max(var(--u), env(safe-area-inset-top)) var(--u) max(var(--u), env(safe-area-inset-bottom)); }
 
 /* 背の低い画面（試作の @container phone (max-height: 80rem)・(max-height: 71rem) と同じ段階。外枠の幅は 39u なので、高さ 80u 以下 ＝ 縦横比 39/80 以上）。
    上と下の高さは外枠の直下の層ごとに計算し直す（外枠に書いた式は外枠の値で決まってしまうため） */
@@ -728,6 +742,9 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
   box-shadow: 0 0 calc(3.6 * var(--u)) #000c; }
 .vt-ct[data-shape="square"] .vt-ct-pic { width: min(100%, 50dvh); aspect-ratio: 1 / 1; }
 .vt-ct[data-tone="light"] .vt-ct-pic { background: #fff; }
+.vt-ct[data-chapter="1"] { grid-template-rows: minmax(0, .8fr) auto minmax(0, 1.2fr); }
+.vt-ct[data-chapter="1"] .vt-ct-head { align-self: stretch; align-items: center; padding-block: var(--u); }
+.vt-ct[data-chapter="1"] .vt-ct-logo { width: min(88%, 38vh); }
 /* 絵の上下の端に、細い金の線 */
 .vt-ct-pic::before, .vt-ct-pic::after { content: ""; position: absolute; left: 0; right: 0; z-index: 1; height: 1px; background: linear-gradient(90deg, transparent, #e9c98acc 18%, #e9c98acc 82%, transparent); }
 .vt-ct-pic::before { top: 0; }

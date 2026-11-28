@@ -2,6 +2,7 @@
 // 人物のキービジュアル（縦長の絵）を画面いっぱいに置き、裾を煙でぼかしてロゴを重ね、下に5行のメニュー（押すとそのまま選べる）。
 // 十字キーと丸ボタンは置かない（試作の決まり VPM07。下画面の統一はあとで行う・VPN13）。
 // 絵・ロゴ・メニューの中身（つづきからの章と日付・押せるか）は本編のタイトル（scenes/title.js）が出した物をそのまま読み、押したら本編へ中継する。
+import { imgFileUrl } from "../../core/img-file.js";
 import { el } from "../../core/util.js";
 import { textOf, cssUrl } from "./frame.js";
 
@@ -12,10 +13,9 @@ const FACE = {
   title_art_samechan_04_throne_pose: 0.2, title_art_rio_04_rainy_neon_umbrella: 0.2, title_art_ageha_04_gummy_light: 0.22,
   title_art_mashiro_05_rooftop_dusk_yawn: 0.22,
 };
-const IMG = new URL("../../../img/", import.meta.url).href;
 
 export function createTitleScene(frame) {
-  const bg = el("img.vt-tt-bg", { alt: "", draggable: "false", src: `${IMG}backgrounds/bg_title.webp` });
+  const bg = el("img.vt-tt-bg", { alt: "", draggable: "false", src: imgFileUrl("backgrounds/bg_title.webp") });
   const art = el("img.vt-tt-art", { alt: "", draggable: "false" });
   const ember = el("i.vt-tt-ember", { "aria-hidden": "true" });
   const pic = el("div.vt-tt-pic", [bg, art, ember]);
@@ -31,14 +31,14 @@ export function createTitleScene(frame) {
   const usable = (node) => !!node && !node.disabled && !node.classList.contains("is-locked");
 
   function renderPick() {
-    for (const node of items.children) node.setAttribute("aria-current", String(Number(node.dataset.index) === pick));
+    for (const node of items.querySelectorAll(".vt-tt-item")) node.setAttribute("aria-current", String(Number(node.dataset.index) === pick));
   }
   items.addEventListener("click", (event) => {
     // 「つづきから」の行の「セーブを選ぶ」（本編の行の右下の押し所と同じ・EXT02）。押しても行（つづきから）にはしない
     const sub = event.target.closest(".vt-tt-sub");
     if (sub) {
       event.stopPropagation();
-      const live = liveItems()[Number(sub.closest(".vt-tt-item")?.dataset.index)]?.querySelector('.ti-sub:not([aria-disabled="true"])');
+      const live = liveItems()[Number(sub.dataset.index)]?.querySelector('.ti-sub:not([aria-disabled="true"])');
       if (live && !live.hidden) live.click();
       return;
     }
@@ -79,14 +79,21 @@ export function createTitleScene(frame) {
       if (!usable(list[pick])) pick = Math.max(0, list.findIndex(usable));
       items.replaceChildren(...list.map((node, index) => {
         const note = textOf(node.querySelector(".ti-note"));
-        // 「つづきから」の行は、日本語の名前の段を「セーブを選ぶ」の札に置き換える（縦の行の右側には札を足す幅が無い。英字の CONTINUE で意味は通じる）
+        // CONTINUE と枠選択は独立したボタン。章・日付は最新データを開く側に添える。
         const subNode = node.querySelector(".ti-sub:not([hidden])");
-        const sub = subNode ? el("span.vt-tt-sub", { text: textOf(subNode), dataset: { test: "vt-title-load" } }) : null;
-        return el(`button.vt-tt-item${node.classList.contains("is-locked") ? ".is-locked" : ""}`, { type: "button", disabled: node.disabled, style: { "--i": String(index) },
+        const noteLabel = note ? el("small.vt-tt-note", { text: note }) : null;
+        const side = subNode ? noteLabel : el("span.vt-tt-side", [
+          el("span.vt-tt-ja", { text: textOf(node.querySelector(".ti-ja")) }), noteLabel,
+        ]);
+        const item = el(`button.vt-tt-item${node.classList.contains("is-locked") ? ".is-locked" : ""}`, { type: "button", disabled: node.disabled, style: { "--i": String(index) },
           dataset: { index: String(index), test: `vt-${node.dataset.test}` } }, [
           el("i"), el("span.vt-tt-en", { text: textOf(node.querySelector(".ti-en")) || textOf(node) }),
-          el("span.vt-tt-side", [sub || el("span.vt-tt-ja", { text: textOf(node.querySelector(".ti-ja")) }), note ? el("span.vt-tt-note", { text: note }) : null]),
+          side,
         ]);
+        if (!subNode) return item;
+        return el("div.vt-tt-resume", [item, el("button.vt-tt-sub", {
+          type: "button", dataset: { index: String(index), test: "vt-title-load" },
+        }, [textOf(subNode)])]);
       }));
       renderPick();
     }

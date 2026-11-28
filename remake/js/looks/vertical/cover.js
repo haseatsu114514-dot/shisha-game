@@ -4,6 +4,7 @@
 // 名前・二つ名・一言・好きなフレーバー・色・絵は、本編が出したカットイン（vn/intro-art.js の .cutin.art-intro）からそのまま読む。
 // 章タイトル（タイトルコール）は VPN27 の形: 上にゲームタイトル（本編のタイトルのロゴ）、真ん中に章タイトルの横長の絵をそのまま、下の空きに章の情報。
 // どの章かは本編の章タイトル（core/ui.js chapterTitle の .chapter-card）から読み、章名・英題は core/chapter-title-art.js の登録から（「〇〇編」は出さない・VPN23）。
+import { imgFileUrl } from "../../core/img-file.js";
 import { el } from "../../core/util.js";
 import { CHAPTER_TITLE_ART } from "../../core/chapter-title-art.js";
 import { textOf, mirrorBackground, relayTap } from "./frame.js";
@@ -62,7 +63,7 @@ function readCutin(host) {
 }
 
 /** ゲームタイトルのロゴ（本編のタイトル画面と同じ絵）。 */
-const TITLE_LOGO = new URL("../../../img/ui/ui_title_logo_rich.webp", import.meta.url).href;
+const TITLE_LOGO = imgFileUrl("ui/ui_title_logo_rich.webp");
 /**
  * 章タイトルの絵の置き方（VPN27・VPN28）: 上の空きにゲームタイトル、縦の真ん中に章タイトルの絵、下の空きに章の情報の3段。
  * 絵は、縦画面用に作り直した文字の無い正方形の絵（core/chapter-title-art.js の square。2026-11-28 オーナー「今の横長画像をベースに縦画面用のを再生成してみて
@@ -179,7 +180,7 @@ export function createCoverScene(frame, own) {
     const roots = [...(document.getElementById("fx")?.children || [])].filter((node) => !node.matches(HARMLESS));
     const cutin = roots.find((node) => node.matches(".cutin.art-intro"));
     const title = cutin ? null : readChapterTitle(roots);
-    frame.root.dataset.cover = cutin ? "cutin" : title ? "title" : gap ? "gap" : "cover";
+    frame.root.dataset.cover = cutin ? "cutin" : title ? "title" : gap ? "gap" : roots.some((node) => node.matches(".chapter-poem.has-panel")) ? "poem" : "cover";
     if (title) {
       const next = JSON.stringify([title.chapter, title.art]);
       if (next !== callSig) { callSig = next; renderCall(title); }

@@ -4,6 +4,7 @@
 // 説明 .pack-caption・決める .pack-confirm を読んで描き、札は本編の選択肢へ、決定は .pack-confirm へ中継する。
 // 工程の初回の説明（本編は札を出す前に開く）の間は、説明が指す3枚の札を決める前の形で見せる（押しても何も起きない）。
 // 説明のスポットライト（craft/tutorial.js・VPN32）は、器の絵→3枚の札→決定の順に明るく抜く。
+import { imgFileUrl } from "../../../core/img-file.js";
 import { el } from "../../../core/util.js";
 import { state } from "../../../core/state.js";
 import { densePackAvailable } from "../../../core/growth-effects.js";
@@ -11,7 +12,7 @@ import { TUTORIAL_STEP_HELP } from "../../../craft/bench-ui.js";
 import { textOf } from "../frame.js";
 import { speech } from "./tutorial.js";
 
-const ART = new URL("../../../../img/ui/vertical-craft/", import.meta.url).href;
+const ART = imgFileUrl("ui/vertical-craft/");
 // 本編の詰め方の値 → 器の絵（試作の ui-bowl-*.webp）
 const BOWL = { fluffy: "ui-bowl-airy.webp", normal: "ui-bowl-normal.webp", firm: "ui-bowl-firm.webp" };
 // 札の印（試作の PACKS の dens・speed）: 詰まり具合の点と、熱の入りの速さの矢印。本編の詰め方の注記（熱が早い／標準／遅い）を絵にしたもの
