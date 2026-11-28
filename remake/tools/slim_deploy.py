@@ -121,6 +121,14 @@ def slim(site: Path) -> dict:
         size += original.stat().st_size
         original.unlink()
         removed.append(rel)
+    # 台本・目録の正本は編集しやすい形で保ち、公開用の写しだけ余白を省く。
+    for folder in (site / "data", site / "remake/data"):
+        for path in folder.rglob("*.json"):
+            source = path.read_bytes()
+            compact = json.dumps(json.loads(source), ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+            if len(compact) < len(source):
+                path.write_bytes(compact)
+                size += len(source) - len(compact)
     return {"removed": removed, "kept": kept, "bytes": size}
 
 
@@ -145,7 +153,7 @@ def main() -> None:
         return
     result = slim(args.site)
     total = sum(p.stat().st_size for p in args.site.rglob("*") if p.is_file())
-    print(f"slim_deploy: 元PNG {len(result['removed'])} 件と開発用フォルダを外した（{result['bytes'] / 1e6:.0f} MB）。"
+    print(f"slim_deploy: 元PNG {len(result['removed'])} 件と開発用フォルダを外し、公開用JSONを圧縮した（計 {result['bytes'] / 1e6:.0f} MB）。"
           f"直接参照があり残した元PNG {len(result['kept'])} 件。公開物 {total / 1e6:.0f} MB")
 
 

@@ -201,7 +201,7 @@ function curveSignsFor(course) {
 // ---- 砂の地面（2026-11-02 オーナー「砂漠をリアルに。今なんか見た目安っぽい」）--------------------------
 // 風紋のある砂の模様を一度だけ作り、1行ずつ遠近をつけて貼る（奥ほど細かく流れ、速さが足元から伝わる）。
 // 模様は周期的に作ってあるので継ぎ目が出ない。遠いほど縮小した模様（ミップ）を使い、ちらつきを抑える。
-const SAND = { tile: 512, meters: 8 }; // 512px の模様が 8m 四方
+const SAND = { tile: 256, meters: 8 }; // 256px の模様が 8m 四方
 const SAND_IS_LE = new Uint8Array(new Uint32Array([1]).buffer)[0] === 1;
 // 砂の行の面の高さは、いちばん高い路面の消失線（横の下り坂）から画面の外の余白まで
 const SAND_BUF_W = 640, SAND_ROW_H = 4, SAND_BUF_H = Math.ceil((H + GROUND_BLEED - Math.min(HORIZON, DOWNHILL.portrait.ground, DOWNHILL.landscape.ground)) / SAND_ROW_H) + 2;
@@ -245,7 +245,7 @@ function sandTexture() {
       px[i] = Math.min(255, 232 * k); px[i + 1] = Math.min(255, 192 * k); px[i + 2] = Math.min(255, 138 * k); px[i + 3] = 255;
     }
   }
-  // ミップ: 64 → 2 px/m。各段を Uint32Array（RGBA）で保持し、1行ごとの drawImage 100回超を単一バッファ転送にまとめる。
+  // ミップ: 32 → 2 px/m。各段を Uint32Array（RGBA）で保持し、1行ごとの drawImage 100回超を単一バッファ転送にまとめる。
   // 起伏の粒模様（sandPattern）で使う 128px の段だけ canvas を1枚持つ。
   let cur = px;
   for (let size = N; size >= 16; size >>= 1) {
@@ -2720,7 +2720,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     }
     let grainPattern;
     const sandPattern = () => {
-      if (grainPattern === undefined) { const level = sandTexture()[2]; grainPattern = level ? ctx.createPattern(level.canvas, "repeat") : null; }
+      if (grainPattern === undefined) { const level = sandTexture().find(mip => mip.canvas); grainPattern = level ? ctx.createPattern(level.canvas, "repeat") : null; }
       return grainPattern;
     };
     /** ぼかした楕円の影（中心が濃く、縁は砂に溶ける）。毎回グラデーションを作らず、焼いた影スプライトを使い回す（2026-11-14 軽量化）。 */

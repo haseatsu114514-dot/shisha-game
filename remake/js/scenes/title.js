@@ -5,11 +5,10 @@ import { imgFileUrl } from "../core/img-file.js";
 import { DB, bgUrl } from "../core/data.js";
 import { readGalleryProgress } from "../core/gallery-progress.js";
 import { galleryEntries, galleryStats } from "../core/gallery-catalog.js";
-import { layers, showScreen, setBg, smokeWipe, modal, toast } from "../core/ui.js";
+import { layers, showScreen, setBg, smokeWipe, modal, toast, withScenePreparation } from "../core/ui.js";
 import { peekSave, peekLatestSaveEntry, newGame, wipeSave, config, saveConfig, readSlot, SAVE_SLOTS } from "../core/state.js";
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
 import { playBgm, stopBgm, SE, applyVolumes } from "../core/audio.js";
-import { startNewGame, resumeGame } from "../chapters/ch1.js";
 import { clearLog } from "../vn/engine.js";
 import { openGallery } from "./gallery.js";
 import { openExtra, extraPlayedNow } from "./extra.js";
@@ -22,6 +21,15 @@ import { CRAFT_VERSIONS, normalizeCraftVersion } from "../core/craft-version.js"
 import { refreshSideArea } from "../core/side-area.js";
 import { comicLoadingRequired, setLoadingComicsMode } from "../core/loading.js";
 import { fullscreenButton, saveTransferRow } from "./save-transfer.js";
+
+async function loadFirstChapter() {
+  try {
+    return await withScenePreparation(import("../chapters/ch1.js"));
+  } catch {
+    toast("本編を読み込めませんでした。通信を確認して、もう一度お試しください。");
+    return null;
+  }
+}
 
 let titleRevision = 0;
 
@@ -322,10 +330,12 @@ export function showTitle(preparedArt = null) {
   };
   const loadGame = async (initialSlot = null) => {
     if (!current()) return;
+    const chapter = await loadFirstChapter();
+    if (!chapter || !current()) return;
     if (!await loadWithRecovery({ initialSlot })) { refresh(); return; }
     if (!current()) return;
     leaving = true;
-    smokeWipe(() => { stopBgm(0); resumeGame(); }, { color: "dark", resume: true });
+    smokeWipe(() => { stopBgm(0); chapter.resumeGame(); }, { color: "dark", resume: true });
   };
 
   // 行は表示の順に作る（rows の順＝カーソルの戻り先。先頭は NEW GAME）
@@ -339,6 +349,8 @@ export function showTitle(preparedArt = null) {
         options: [{ label: "はじめから遊ぶ", value: true, primary: true, test: "confirm-new" }, { label: "やめる", value: false, test: "cancel-new" }],
       }))) { refresh(); return; }
       if (!current()) return;
+      const chapter = await loadFirstChapter();
+      if (!chapter || !current()) return;
       if (saved && JSON.stringify(peekSave()) !== JSON.stringify(saved)) {
         toast("別のタブでオートセーブが更新されました。内容を確認してから、もう一度選んでください。", { kind: "warn" });
         refresh();
@@ -348,15 +360,17 @@ export function showTitle(preparedArt = null) {
       wipeSave();
       newGame();
       clearLog(); // 前の周・別セーブの会話LOGを持ち込まない（#1912）
-      smokeWipe(() => { stopBgm(0); startNewGame(); }, { color: "dark" }); // 煙で覆った瞬間に開始（ゲーム本体の完了は待たない）
+      smokeWipe(() => { stopBgm(0); chapter.startNewGame(); }, { color: "dark" }); // 煙で覆った瞬間に開始（ゲーム本体の完了は待たない）
     }, "title-new");
   const cycleItems = (cycleMetaSeen?.unlocked === true ? [item("NEXT CYCLE", cyclePkg ? `${cyclePkg.fromCycle + 1}周目をはじめる` : "次の周目をはじめる", async () => {
+      const chapter = await loadFirstChapter();
+      if (!chapter || !current()) return;
       const result = await openNextCycleOptions(cycleMetaSeen);
       if (!current()) return;
       if (!result.started) { refresh(); return; }
       leaving = true;
       // 周回開始では wipeSave()/newGame() を呼ばず、startNextCycle が作った state のまま opening へ。
-      smokeWipe(() => { stopBgm(0); startNewGame(); }, { color: "dark" });
+      smokeWipe(() => { stopBgm(0); chapter.startNewGame(); }, { color: "dark" });
     }, "title-next-cycle")] : []);
   // つづきからとロードは中身が重なるので、ロードは「つづきから」の行の右下の小さな押し所「セーブを選ぶ」にした（EXT02。
   // 空いた1行は EXTRA）。行の中の押し所なので、押した時は行（つづきから）へ伝えない。検査の目印 title-load は引き継ぐ。

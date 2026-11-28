@@ -1,3 +1,4 @@
+import { withMinigameStyles } from "../minigames/minigame-styles.js";
 import { recordPlayMastery, syncPlayMastery, masteryLine } from "../core/play-mastery.js";
 // 自由来店のソロ斧投げ。正式なひよりイベントの読了・関係には触れない。
 import { state, save } from "../core/state.js";
@@ -37,7 +38,11 @@ export const careerLine = career => !career?.throws ? "" : `通算 ${career.game
  * メニューの前に、店主マキとのやり取りを読む（VAR01。daily/venue-arrivals.js）: 初めての来店は名乗るまで → 登場カットイン →
  * 決まりと案内、二度目からは来店のたびに一本（同じ夜に入り直した時は読まない）。投げ終えた後は、結果に合った締めの会話。
  */
-export async function visitAxeBar({ staminaGuard = async () => true, signal } = {}) {
+export function visitAxeBar(options = {}) {
+  return withMinigameStyles("axe", options.signal, () => openAxeBar(options));
+}
+
+async function openAxeBar({ staminaGuard = async () => true, signal } = {}) {
   if (active || !state || !axeBarDiscovered(state) || state.chapter < 1 || state.phase !== "daily" || state.slot !== 1 || signal?.aborted) return false;
   active = true;
   const owner = state, day = state.day, slot = state.slot, chapter = state.chapter;

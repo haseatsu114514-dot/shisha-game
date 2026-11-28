@@ -14,7 +14,7 @@ async function load(code, values, globals = {}) {
     ...[...code.matchAll(/(?:const|let|var)\s*\{([^}]+)\}\s*=\s*await\s+import\s*\(\s*["']([^"']+)["']\s*\)/g)].filter(m => m[2] === spec),
   ].flatMap(m => m[1].split(",").map(n => n.trim())))];
   const synthetic = spec => {
-    const names = namesFor(spec);
+    const names = spec === "../chapters/ch1.js" ? ["startNewGame", "resumeGame"] : namesFor(spec);
     return new vm.SyntheticModule(names, function () {
       for (const name of names) this.setExport(name, values[name] ?? (() => {}));
     }, { context });
@@ -176,7 +176,7 @@ const title = await load(await read("../js/scenes/title.js"), {
   showScreen: name => { body.dataset.screen = name; renders++; }, peekSave: () => ({}),
   peekLatestSaveEntry: () => latest, saveHeadline: data => data ? `DAY ${data.day}` : "",
   playBgm: k => events.push(k), stopBgm: fade => events.push(`stop:${fade}`),
-  SE: { select() {} }, smokeWipe: fn => fn(), toast: () => {},
+  SE: { select() {} }, withScenePreparation: task => task, smokeWipe: fn => fn(), toast: () => {},
   modal: options => options.title === "設定" ? new Promise(resolve => configCloses.push(resolve)) : Promise.resolve(confirm),
   loadWithRecovery: async ({ initialSlot }) => { loadRequests.push(initialSlot); return !!selectedSlot; },
   wipeSave: () => wipes++,
@@ -190,7 +190,7 @@ const title = await load(await read("../js/scenes/title.js"), {
 }, { document: { body }, performance: { now: () => 0 }, window: {} });
 const art = { ready: true, file: "test", character: "test", url: "test" };
 const show = () => { buttons = new Map(); title.showTitle(art); };
-const click = async id => { buttons.get(id).onclick(); await flush(); };
+const click = async id => { buttons.get(id).onclick(); await new Promise(resolve => setImmediate(resolve)); };
 show(); assert.equal(body.dataset.screen, "title"); assert.equal(hudClasses.has("show"), false);
 // ロードは「つづきから」の行の中の押し所「セーブを選ぶ」（EXT02）、空いた1行は EXTRA（EXT01）
 assert.deepEqual([...buttons.keys()], ["title-new", "title-continue", "title-load", "title-extra", "title-gallery", "title-config"]);
