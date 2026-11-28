@@ -25,9 +25,24 @@ export function stickerPhoto(people, mode, nameFor) {
   ]);
 }
 
-const themes = { original: "おまかせ", petal: "桜ミルク", pakki: "パッキーランド", mint: "ミントラウンジ", orbit: "宇宙たこ焼き" };
+const themes = {
+  original: "おまかせ",
+  "flavor-double-apple": "ダブルアップルランド",
+  "flavor-mint-glacier": "ミント氷河鉄道",
+  "flavor-grape-aquarium": "巨峰クラゲ水族館",
+  "flavor-chai-desert": "チャイの砂時計砂漠",
+  "flavor-lemon-launch": "レモンソーダ発射場",
+  "flavor-peach-onsen": "桃のお月見温泉",
+  "nagoya-osu-kannon": "大須観音",
+  "nagoya-osu-cat": "大須の招き猫広場",
+  "nagoya-meieki-towers": "名駅ツインタワーズ",
+  "nagoya-meieki-clock": "名駅の金時計",
+  "nagoya-sakae-oasis": "栄・オアシス21",
+  "nagoya-sakae-wheel": "栄の観覧車",
+  petal: "桜ミルク", pakki: "パッキーランド", mint: "ミントラウンジ", orbit: "宇宙たこ焼き",
+};
 const stamps = {
-  heart: ["ハート", "💗"], star: ["きらきら", "✨"], apple: ["ダブルアップル", "🍎🍏"],
+  heart: ["ハート", "💗"], star: ["きらきら", "✨"], apple: ["ダブルアップル", "🍏🍎"],
   mint: ["ミント", "🌿"], coal: ["キューブ炭", "cube_charcoal"], bowl: ["ハガル", "lotos_hagal"],
   hms: ["HMS", "amaburst_hms"], rings: ["煙の輪", "◎"],
 };

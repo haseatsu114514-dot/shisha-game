@@ -299,6 +299,56 @@ await suite("look_vertical", async (check) => {
     assert.equal(await page.evaluate(() => window.dailyError || ""), "");
   }, { ...TALL, pageEntry: entry });
 
+  await check("chapter-one-fullscreen-interludes-return-to-map", async (page) => {
+    await setupDaily(page);
+    const padBox = await page.locator(t("vt-dpad")).boundingBox();
+    const oldSpot = { x: padBox.x + padBox.width / 2, y: padBox.y + padBox.height / 2 };
+    await page.evaluate(async () => {
+      const ui = await import("./js/core/ui.js");
+      const { playEntrance } = await import("./js/chapters/tournament-entrance.js");
+      window.sequence = (async () => {
+        await ui.dayCard("DAY 14", "大会当日", { ms: 3200 });
+        await playEntrance(1, { auto: false });
+        await ui.roundCut("ROUND 1", "準備");
+      })();
+    });
+    const date = page.locator(".day-card.show");
+    await date.waitFor();
+    await waitScene(page, "interlude");
+    assert.equal(await page.locator(t("vt-dpad")).boundingBox(), null);
+    assert.equal(await page.locator(t("vt-a")).boundingBox(), null);
+    assert(await page.evaluate(({ x, y }) => !!document.elementFromPoint(x, y)?.closest("#fx, #vt-motion"), oldSpot));
+    await page.touchscreen.tap(oldSpot.x, oldSpot.y);
+    assert(await date.isVisible());
+    const originalDate = await date.elementHandle();
+    await page.setViewportSize(WIDE.viewport);
+    await page.locator("#fx > .day-card").waitFor();
+    await page.setViewportSize(SHORT.viewport);
+    await waitScene(page, "interlude");
+    assert(await originalDate.evaluate(node => node === document.querySelector(".day-card")));
+    for (const [i, name] of ["なる", "アダム", "みんと", "はじめ"].entries()) {
+      const card = page.locator(".ent-card.in").filter({ has: page.locator(".ent-name", { hasText: name }) });
+      await card.waitFor();
+      assert.equal(await card.locator(".ent-tag").textContent(), `エントリーナンバー${i + 1}`);
+      assert.equal(await card.locator(".ent-name").textContent(), name);
+      assert.equal(await card.locator(".ent-speaker").textContent(), "スミ");
+      const ordered = await card.evaluate(node => {
+        const box = selector => node.querySelector(selector).getBoundingClientRect();
+        return box(".ent-ring").bottom <= box(".ent-name").top + 1 &&
+          box(".ent-name").bottom <= box(".ent-speaker").top &&
+          box(".ent-speaker").bottom <= box(".ent-note span").top + 1;
+      });
+      assert(ordered, `${name}: ring name, entrant and speaker occupy separate lines`);
+    }
+    await page.locator(".round-cut.show").waitFor();
+    assert.equal(await scene(page), "interlude");
+    await page.evaluate(() => window.sequence);
+    await waitScene(page, "map");
+    assert.deepEqual(await page.locator(t("vt-dpad")).boundingBox(), padBox);
+    await pad(page, "down");
+    await page.locator(t("vt-row-minto")).waitFor();
+  }, { ...SHORT, pageEntry: entry });
+
   await check("tonari-menu-lime-and-menu-sheets", async (page) => {
     await setupDaily(page, { talk: true });
     const home = await assertPadHome(page, "map");
