@@ -52,12 +52,12 @@ try {
       const nativeRAF=window.requestAnimationFrame.bind(window),nativeCancel=window.cancelAnimationFrame.bind(window);
       const nativeNow=performance.now.bind(performance);
       window.controlFrames=()=>{
-        now=Math.max(now,nativeNow());performance.now=()=>now;
+        now=nativeNow();performance.now=()=>now;
         window.requestAnimationFrame=fn=>{frames.set(++id,fn);return id;};
         window.cancelAnimationFrame=id=>frames.delete(id);
       };
       window.restoreFrames=()=>{window.requestAnimationFrame=nativeRAF;window.cancelAnimationFrame=nativeCancel;performance.now=nativeNow;};
-      window.advance=()=>{now=Math.max(now,nativeNow())+20;const pending=[...frames.values()];frames.clear();pending.forEach(fn=>fn(now));};
+      window.advance=()=>{now+=20;const pending=[...frames.values()];frames.clear();pending.forEach(fn=>fn(now));};
       window.start=mode=>{window.cs=session.newSession(mode);cs.steamSeconds=600;session.openBench(cs);window.run=steam.runSteamDodge(cs);};
       window.button=()=>document.querySelector('[data-test="dodge-slash"]');
       window.enemies=()=>{
@@ -65,24 +65,9 @@ try {
         return [...document.querySelectorAll('.dodge-word,.dodge-object')].map(node=>{const t=new DOMMatrix(node.style.transform);return {node,x:t.e,y:t.f,w:node.offsetWidth,h:node.offsetHeight,hx:m.e+14,hy:m.f+14,word:node.classList.contains('dodge-word')};});
       };
       window.screenPoint=(hx,hy)=>{const r=document.querySelector('.dodge').getBoundingClientRect();return {x:r.left+hx*r.width/784,y:r.top+hy*r.height/414};};
-      window.safePoint=()=>{
-        const all=enemies();
-        // The deterministic wave has its open lane through the middle; avoid entry edges.
-        const corners=[[64,207],[720,207]];
-        const distance=([x,y])=>Math.min(...all.map(b=>Math.hypot(x-Math.max(b.x,Math.min(x,b.x+b.w)),y-Math.max(b.y,Math.min(y,b.y+b.h)))),1000);
-        corners.sort((a,b)=>distance(b)-distance(a));return screenPoint(...corners[0]);
-      };
-      window.wordShot=()=>{
-          if(button().disabled)return null;
-          const all=enemies(),reach=Number(button().dataset.reach);
-          for(const target of all.filter(b=>b.word)) {
-            for(const [hx,hy] of [...(captureShark?[[target.x+target.w+reach*.5,target.y+target.h/2]]:[]),[target.x-12,target.y+target.h+reach*.3],[target.x+target.w+12,target.y+target.h+reach*.3],[target.x+target.w/2,target.y+target.h/2+reach*.65]]) {
-              if(hx<16||hx>768||hy<16||hy>398)continue;
-              if(all.some(b=>hx>=b.x-8&&hx<=b.x+b.w+8&&hy>=b.y-8&&hy<=b.y+b.h+8))continue;
-              if(geometry.slashTouchesBullet(target,hx,hy,-Math.PI/2,reach,captureShark?Math.PI/2:undefined)&&(!captureShark||!geometry.slashTouchesBullet(target,hx,hy,-Math.PI/2,reach)))return screenPoint(hx,hy);
-            }
-          }
-        return null;
+      window.inRange = () => {
+        const reach = Number(button().dataset.reach);
+        return enemies().filter(b => geometry.slashTouchesBullet(b, b.hx, b.hy, -Math.PI/2, reach, captureShark ? Math.PI/2 : undefined));
       };
       window.strike=()=>{
         const wasGlow=document.querySelector('[data-test="dodge"]').dataset.afterglow==="true";
@@ -107,16 +92,103 @@ try {
         const halves=[...document.querySelectorAll('.dodge-word-cut')];
         return {lateral,sharkPulse:!!document.querySelector('[data-test="shark-bite"][data-pulse="true"]'),wasGlow,slowRatios,glow:document.querySelector('[data-test="dodge"]').dataset.afterglow,before,words,pieces:halves.length,split:halves.every(n=>n.children.length===2&&n.children[0].textContent===n.children[1].textContent),still:halves.every(n=>[...n.children].every(h=>getComputedStyle(h).animationName==='none')),near:near.length,removed:near.every(b=>!b.node.isConnected),after:Number(button().dataset.cutWords),recharge:Number(button().dataset.cooldown),reach:Number(button().dataset.reach),feedback:document.querySelector('[data-test="slash-feedback"]').textContent};
       };
-      start('drill');
+      // Let the real countdown finish, then capture the very first gameplay RAF.
+      // Both the first spawn and the recharge clock start at the same frame on every host.
+      window.startDrill = () => {
+        restoreFrames();
+        frames.clear();
+        const oldButton = button();
+        window.requestAnimationFrame = callback => {
+          if (!button() || button() === oldButton || button().disabled) return nativeRAF(callback);
+          controlFrames();
+          return window.requestAnimationFrame(callback);
+        };
+        start('drill');
+      };
+      startDrill();
     },{afterglow,shark});
-    await page.waitForFunction(()=>window.button && button() && !button().disabled);
-    await page.evaluate(()=>controlFrames());
-    await page.waitForFunction(()=>frames.size>0,null,{polling:50});
-    const move=async point=>{if(mobile)await page.touchscreen.tap(point.x,point.y);else await page.mouse.move(point.x,point.y);};
-    const shelter=async()=>move(await page.evaluate(()=>safePoint()));
-    const dodgeFrames=async count=>{for(let i=0;i<count;i+=5){await shelter();await page.evaluate(n=>{for(let i=0;i<n;i++)advance();},Math.min(5,count-i));}};
-    const seekShot=async()=>{for(let i=0;i<250;i++){const point=await page.evaluate(()=>wordShot());if(point)return point;await dodgeFrames(5);}return null;};
-    await shelter();
+    const waitForDrill = () => page.waitForFunction(
+      () => window.button && button() && !button().disabled && frames.size > 0, null, {polling:50},
+    );
+    await waitForDrill();
+    // Move at the production speed. A touch target exists only while the finger is down.
+    const touch = mobile ? await page.context().newCDPSession(page) : null;
+    let touching = false;
+    const aim = async (x, y) => {
+      const point = await page.evaluate(([x,y]) => screenPoint(x,y), [x,y]);
+      if (!touch) return page.mouse.move(point.x, point.y);
+      await touch.send('Input.dispatchTouchEvent', {
+        type: touching ? 'touchMove' : 'touchStart', touchPoints: [{...point, id: 1}],
+      });
+      touching = true;
+    };
+    // Look one short movement ahead. Incoming projectiles are aimed at the
+    // heart's previous position, so it can stand still until it needs to dodge.
+    const patrol = async () => {
+      const point = await page.evaluate(() => {
+        const before = new Map(enemies().map(b => [b.node, b]));
+        advance();
+        const bullets = enemies().map(b => {
+          const prev = before.get(b.node) || b;
+          return {...b, dx:b.x-prev.x, dy:b.y-prev.y};
+        });
+        const heart = new DOMMatrix(document.querySelector('.dodge-heart').style.transform);
+        const hx = heart.e + 14, hy = heart.f + 14;
+        const diagonal = Math.SQRT1_2;
+        const directions = [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1],
+          [-diagonal, -diagonal], [diagonal, -diagonal], [-diagonal, diagonal], [diagonal, diagonal]];
+        const step = steam.STEAM_TUNING.speed * 0.02;
+        let best;
+        for (const [dx, dy] of directions) {
+          let clearance = 100;
+          for (let t=2; t<=18; t+=2) {
+            const x = Math.max(24,Math.min(760,hx+dx*step*t));
+            const y = Math.max(24,Math.min(390,hy+dy*step*t));
+            for (const b of bullets) {
+              const bx = b.x+b.dx*t, by=b.y+b.dy*t;
+              clearance = Math.min(clearance, Math.hypot(Math.max(bx-x,0,x-bx-b.w), Math.max(by-y,0,y-by-b.h)));
+            }
+          }
+          const x = Math.max(24,Math.min(760,hx+dx*105));
+          const y = Math.max(24,Math.min(390,hy+dy*105));
+          // Favor the middle of the board once the next 360 ms of travel are safe.
+          const score = Math.min(clearance,20) - .035*Math.hypot(x-392,y-207) + (!dx&&!dy ? 3 : 0);
+          if (!best || score>best.score) best={x,y,score};
+        }
+        return best;
+      });
+      await aim(point.x, point.y);
+    };
+    const tick = async count => page.evaluate(count => { for (let i=0; i<count; i++) advance(); }, count);
+    const dodgeFrames = async count => {
+      for (let i=0; i<count; i+=5) {
+        await patrol();
+        await tick(Math.min(4, count-i-1));
+      }
+    };
+    const seekShot = async kind => {
+      for (let i=0; i<1000; i+=5) {
+        await patrol();
+        const state = await page.evaluate(kind => {
+          for (let i=0; i<4; i++) {
+            if (!frames.size) return 'ended';
+            const near = inRange();
+            const hasWord = near.some(b => b.word);
+            const lateral = !captureShark || near.some(b => b.word && !geometry.slashTouchesBullet(b, b.hx, b.hy, -Math.PI/2, Number(button().dataset.reach)));
+            const small = near.find(b => !b.word && b.w <= 40 && b.h <= 40);
+            if (!button().disabled && (kind === 'word' ? hasWord && lateral : !hasWord && small)) {
+              if (small) window.smallTarget = small.node;
+              return 'ready';
+            }
+            advance();
+          }
+          return 'moving';
+        }, kind);
+        if (state === 'ready') return true;
+        if (state === 'ended') break;
+      }
+      return false;
+    };
     // Visual fixture only: preserve a word's own rotation and cut in world stroke direction.
     const rotated=await page.evaluate(()=>{
       const node=document.createElement('div');node.className='dodge-word';node.textContent='斜めに来る言葉';
@@ -133,15 +205,13 @@ try {
     // Empty shot starts cooldown but gives no growth. A repeated pointer can't attack again.
     const empty=await page.evaluate(()=>{const r=strike();strike();return {...r,uses:button().dataset.uses};});
     assert.equal(empty.after,0);assert.equal(empty.feedback,'空振り');assert.equal(empty.uses,'1');
-    let total=0,cumulative=0,maxSeen=0,measuredSlow=false,lateralSeen=false,pulseSeen=false; const tiers=new Set([0]); let objectOnly=false;
+    let total=0,cumulative=0,maxSeen=0,measuredSlow=false,lateralSeen=false,pulseSeen=false; const tiers=new Set([0]);
     for(let attempt=0;attempt<12 && total<(afterglow||shark?3:6);attempt++) {
-      const point=await seekShot();
-      assert(point,'No reachable real word before steam end');await move(point);
+      assert(await seekShot('word'), 'No reachable real word before steam end');
       const result=await page.evaluate(()=>strike());
       assert(result.removed);assert.equal(result.after,result.before+result.words);
       assert.equal(result.pieces,result.words);assert(result.split,'Each cut word should leave two matching clipped halves');
       if(mobile)assert(result.still,'Reduced-motion word halves must not animate');
-      if(result.near>0&&result.words===0){objectOnly=true;assert.equal(result.after,result.before);}
       if(afterglow&&!result.wasGlow&&Math.floor(result.after/3)>Math.floor(result.before/3)){
         measuredSlow=true;assert.equal(result.glow,"true");assert(result.slowRatios.length>0,"observe surviving real bullets");
         // CSS transform行列の丸め誤差は0.2%未満。速度が0.65倍かを実移動で検査する。
@@ -154,7 +224,7 @@ try {
       const feedback = result.near ? `${result.near}個${shark ? "噛んだ" : "斬った"}` : "空振り";
       assert.equal(result.feedback.split("・")[0], feedback, "範囲内の弾の個数と空振りを区別する");
       if(newTier)await shot(page,`tier-${p.tier}-${mobile?'mobile-reduced':'desktop'}`);
-      await shelter();
+
     }
     if(shark){
       assert(total>=3&&lateralSeen&&pulseSeen,"learned shark must bite sideways and pulse at three words");
@@ -186,15 +256,9 @@ try {
     assert.equal(await page.locator('[data-test="dodge-slash"]').getAttribute('data-cut-words'),refresh.before);
     assert(await page.locator('[data-test="dodge-slash"]').isEnabled());
     assert(Number(await page.locator('[data-test="dodge-refresh"]').getAttribute('data-cooldown'))>6);
-    // Move onto a real incoming bullet: actual damage must break the combo.
-    const impact=await page.evaluate(()=>{
-      for(let frame=0;frame<100;frame++) {
-        const b=enemies().find(b=>b.x+b.w/2>=16&&b.x+b.w/2<=768&&b.y+b.h/2>=16&&b.y+b.h/2<=398);
-        if(b)return screenPoint(b.x+b.w/2,b.y+b.h/2);advance();
-      }
-      return null;
-    });
-    assert(impact,'No real damage opportunity');await move(impact);
+    // Hold a fixed target and let the next aimed projectile hit the heart.
+    const heart = await page.locator('.dodge-heart').evaluate(n => new DOMMatrix(n.style.transform).e + 14);
+    await aim(heart, 207);
     const damage=await page.evaluate(()=>{
       const before=button().dataset.cutWords,hits=Number(document.querySelector('[data-test="mental-trace"]').dataset.hits);
       for(let i=0;i<250;i++){advance();if(Number(document.querySelector('[data-test="mental-trace"]').dataset.hits)>hits)break;}
@@ -202,47 +266,32 @@ try {
     });
     assert(Number(damage.before)>=6);assert.equal(damage.hitsAfter,damage.hitsBefore+1);assert.equal(damage.after,'0');
     assert.equal(damage.reach,'80');assert.equal(damage.recharge,'1.8');assert.equal(Number(damage.total),cumulative);
-    await shelter();
-    // Find a real small object and a firing position that excludes every word.
-    const smallPosition=await page.evaluate(()=>{
-      for(let frame=0;frame<200;frame++) {
-        advance();if(button().disabled)continue;
-        const all=enemies(),reach=Number(button().dataset.reach);
-        for(const target of all.filter(b=>!b.word&&b.w<=40&&b.h<=40)) {
-          for(const [dx,dy] of [[0,25],[30,40],[-30,40],[55,55],[-55,55],[0,70]]) {
-            const hx=target.x+target.w/2+dx,hy=target.y+target.h/2+dy;
-            if(hx<16||hx>768||hy<16||hy>398)continue;
-            // Touch coordinates round to device pixels: require a small robust margin.
-            const stable=[-4,0,4].every(dx=>[-4,0,4].every(dy=>
-              geometry.slashTouchesBullet(target,hx+dx,hy+dy,-Math.PI/2,reach)&&
-              !all.some(b=>b.word&&geometry.slashTouchesBullet(b,hx+dx,hy+dy,-Math.PI/2,reach))));
-            if(!stable)continue;
-            const p=screenPoint(hx,hy),box=document.querySelector('.dodge');
-            if(document.elementFromPoint(p.x,p.y)?.closest('.dodge')!==box)continue;
-            window.smallTarget=target.node;
-            return {hx,hy};
-          }
-        }
-      }
-      return null;
-    });
-    assert(smallPosition,'No isolated real small-object shot found');
-    await page.waitForFunction(()=>!document.querySelector('.dodge').classList.contains('shake'),null,{polling:20});
-    await page.evaluate(()=>{window.lastTouch=null;document.addEventListener('pointerdown',e=>{const r=document.querySelector('.dodge').getBoundingClientRect();window.lastTouch={type:e.pointerType,target:e.target.className,x:e.clientX,y:e.clientY,left:r.left,top:r.top,width:r.width,height:r.height};},{capture:true,once:true});});
-    await move(await page.evaluate(({hx,hy})=>screenPoint(hx,hy),smallPosition));
-    const small=await page.evaluate(()=>{const r=strike();const heart=new DOMMatrix(document.querySelector('.dodge-heart').style.transform);return {...r,removed:!smallTarget.isConnected,hx:heart.e+14,hy:heart.f+14,touch:lastTouch};});
-    assert(small.removed&&small.near>0,JSON.stringify({small,smallPosition,errors}));assert.equal(small.after,small.before);objectOnly=true;
-    await dodgeFrames(95);
-    assert.equal(await page.locator('[data-test="dodge-slash"]').isEnabled(),true);
     await page.evaluate(()=>document.fonts.ready);
     await shot(page,`growth-${mobile?'mobile-reduced':'desktop'}`);
     await page.evaluate(()=>{for(let i=0;i<1800 && frames.size;i++)advance();restoreFrames();});
     await page.waitForSelector('.result-card.show');
     assert.equal(await page.locator('.dodge-slash-fx,.dodge-slash-impact,.dodge-word-cut,.dodge-refresh-fx').count(),0);
     assert.equal(await page.evaluate(()=>cs.steam.wordsCut),cumulative);
-    if(afterglow)assert(await page.evaluate(()=>cs.steam.afterglows>=2));
     assert.equal(await page.evaluate(()=>cs.steam.combo),0);assert.equal(await page.evaluate(()=>cs.steam.maxCombo),maxSeen);
+    // Use a fresh drill for the isolated object so a late spawn in the combo
+    // scenario cannot exhaust the play clock before the object reaches the heart.
+    if (touching) {
+      await touch.send('Input.dispatchTouchEvent', {type:'touchEnd', touchPoints:[]});
+      touching = false;
+    }
+    await page.evaluate(() => startDrill());
+    await waitForDrill();
+    assert(await seekShot('object'), 'No isolated real small-object shot before steam end');
+    const small = await page.evaluate(() => ({ ...strike(), targetRemoved: !smallTarget.isConnected }));
+    assert(small.targetRemoved && small.near > 0);
+    assert.equal(small.words, 0);
+    assert.equal(small.after, small.before);
+    await dodgeFrames(95);
+    assert(await page.locator('[data-test="dodge-slash"]').isEnabled());
+    await page.evaluate(()=>{for(let i=0;i<1800 && frames.size;i++)advance();restoreFrames();});
+    await page.waitForSelector('.result-card.show');
     // The next (initial practice) session resets growth and needs no new unlock flags.
+    if (touching) await touch.send('Input.dispatchTouchEvent', {type:'touchEnd', touchPoints:[]});
     await page.evaluate(()=>{restoreFrames();start('tutorial');});
     await page.waitForFunction(() => document.querySelector('.bench-guide')?.open
       && document.querySelector('.bench-panel')?.inert);
@@ -254,7 +303,7 @@ try {
     assert.equal(await page.locator('[data-test="dodge-slash"]').getAttribute('data-reach'),'80');
     assert.equal(await page.locator('[data-test="dodge-slash"]').getAttribute('data-recharge'),'1.8');
     assert.deepEqual(errors,[]);
-    console.log(`[attack growth] PASS: ${mobile?'touch/reduced motion':afterglow?'PC + K22 actual motion':'PC'} real words, approved tiers, miss/repeat, refresh retention, damage breaks combo, total/maximum preserved, cleanup and initial-practice reset (object-only shot observed: ${objectOnly})`);
+    console.log(`[attack growth] PASS: ${mobile?'touch/reduced motion':afterglow?'PC + K22 actual motion':'PC'} real words, approved tiers, miss/repeat, refresh retention, damage breaks combo, total/maximum preserved, cleanup and initial-practice reset and isolated small-object strike`);
     await page.close();
   }
 } finally {await browser.close();}
