@@ -228,7 +228,9 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "tournament");
     const next = page.locator(t("standings-next"));
     assert(await next.isDisabled());
-    await page.locator(".standings .sd-row").first().tap();
+    // 入場中の行へ自動スクロールすると舞台が横へずれる。画面に見えている順位行を指で押す。
+    const row = await page.locator(".standings .sd-row").first().boundingBox();
+    await page.touchscreen.tap(row.x + row.width / 2, row.y + row.height / 2);
     await next.and(page.locator(":enabled")).waitFor();
     assert.equal(await page.locator(".sd-row").count(), 4);
     const board = page.locator(".standings");
@@ -488,7 +490,7 @@ await suite("look_vertical", async (check) => {
         assert((await image.getAttribute("src")).includes(`/character_intros/graphic/${stem}.webp`));
         assert(await image.evaluate(img => img.complete && img.naturalWidth > 0));
       }
-      assert.equal(await card.locator(".ent-speaker").textContent(), "スミ");
+      assert.equal(await card.locator(".ent-speaker").textContent(), "はじめ");
       const ordered = await card.evaluate(node => {
         const box = selector => node.querySelector(selector).getBoundingClientRect();
         return box(".ent-ring").bottom <= box(".ent-name").top + 1 &&
