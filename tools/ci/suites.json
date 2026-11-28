@@ -5456,7 +5456,7 @@
         "remake/js/looks/vertical/stills.js",
         "remake/js/looks/vertical/talk.js",
         "remake/js/vn/engine.js",
-        "data/dialogue/**",
+        "data/dialogue/ch1_bonds.json",
         "remake/test/browser/portrait_bond_still.mjs"
       ],
       "run": [
