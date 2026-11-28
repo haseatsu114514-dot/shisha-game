@@ -2,8 +2,8 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
-import { slashProfile, slashTouchesBullet, slashAngle, sharkPulseTouchesBullet } from '../js/craft/steam-slash.js';
-import { installLoadingComicReader } from './browser/loading_reader.mjs';
+import { slashProfile, slashTouchesBullet, slashAngle, sharkPulseTouchesBullet } from '../../js/craft/steam-slash.js';
+import { installLoadingComicReader } from './loading_reader.mjs';
 const { chromium } = createRequire(import.meta.url)('playwright');
 for (const [count, reach, recharge] of [[0,80,1.8],[2,80,1.8],[3,90,1.5],[5,90,1.5],[6,100,1.2],[50,100,1.2]]) {
   const p = slashProfile(count);

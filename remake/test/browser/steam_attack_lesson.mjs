@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { suite, assertFits } from './browser/support.mjs';
+import { suite, assertFits } from './support.mjs';
 const shots = process.env.SHOTS || '.codex/artifacts/remake-browser/steam';
 fs.mkdirSync(shots, {recursive:true});
 await suite('attack-lesson', async check => {
