@@ -122,10 +122,18 @@ export const dubaiEveDay = (value = state) => chapterFourProgress(value).startDa
 
 // ---- 行き先 -----------------------------------------------------------------------------
 const spot = fields => Object.freeze({ region: DUBAI, kind: "ch4_dubai", ...fields });
+/** 初めて太陽に会う場面（ch4_festa）を読んだ後か。FESTA はその後から定休日を取る（第4章の記録が無い保存では休まない）。 */
+function festaMet(value) {
+  try { return chapterFourProgress(value).read?.ch4_festa === true; } catch { return false; }
+}
 export const CH4_DUBAI_SPOTS = Object.freeze([
   spot({ id: "ch4_dubai_souq", place: "souq", label: "スーク", area: "旧市街の市場", x: 22, y: 58, theme: "shop", glyph: "市",
     preview: CH4_PLACE_BG.souq, stamina: -10, stat: "insight", desc: "スパイスの匂いが立つ市場。歩くたびに、違うものが目に入る。屋台で軽いものも買える。" }),
+  // ドバイのライバルの店の定休日（day % 7。2026-11-28 オーナー「東京やドバイの店にも定休日を作って」）。
+  // FESTA は初めて太陽に会う場面（期限の夜にもここで読む ch4_festa）の後から、龍龍水煙所は王煙楼に会った後から休む。
+  // 中心地のカフェ（昼のシフト）・路地裏のカフェ（約束の場面）は休まない
   spot({ id: "ch4_dubai_festa", place: "festa", label: "FESTA", area: "大会会場の出張ブース", x: 56, y: 28, theme: "rival", glyph: "煙",
+    closedOn: 3, closedFrom: festaMet,
     face: "da_silva", teacher: "da_silva", preview: CH4_PLACE_BG.festa, cost: 6000, stamina: -12, stat: "charm", desc: "手拍子と炭の匂いのする、太陽の店。一台6,000円（約140ディルハム）。夜がにぎわう。" }),
   spot({ id: "ch4_dubai_cafe", place: "center_cafe", label: "中心地のカフェ", area: "街の中心", x: 70, y: 52, theme: "store", glyph: "茶",
     preview: CH4_PLACE_BG.center_cafe, cost: 3000, stamina: -10, stat: "sense", desc: "立派なカフェ。現地のメニューから一台頼んで、給仕と客の作法も見る。一台3,000円（約70ディルハム）。夜がにぎわう。" }),
@@ -134,6 +142,7 @@ export const CH4_DUBAI_SPOTS = Object.freeze([
   // 龍龍水煙所（王煙楼の店）は最初から出す。王煙楼に会うまでは店主の顔は「？」（daily/spot-people.js）。背景は仮置き。
   spot({ id: "ch4_dubai_longlong", place: "longlong", label: "龍龍水煙所", area: "世界大会のあいだの店", x: 58, y: 50, theme: "rival", glyph: "龍",
     face: LONGLONG_CHAR, freshnessKey: LONGLONG_CHAR, preview: LONGLONG_BG, cost: 6000, stamina: -12, stat: "insight",
+    closedOn: 5, closedFrom: value => !!value?.met?.[LONGLONG_CHAR],
     desc: "中国の水煙の老舗が、世界大会に合わせて出した店。一台6,000円（約140ディルハム）。夜がにぎわう。" }),
   spot({ id: "ch4_dubai_naru", place: "naru", label: "なると会う", area: "宿のロビー", x: 20, y: 36, theme: "rival", glyph: "友",
     face: "naru", preview: CH4_PLACE_BG.inn, stamina: -8, stat: "guts", desc: "同じ街にいる日本の第二代表。少し話す。" }),

@@ -503,10 +503,14 @@ export function isClosed(spot) {
 }
 /** 営業時間・臨時休業・定休日だけで見た閉店（早じまいを除く）。居合わせる人の抽選（daily/roamers.js）が使う。 */
 export function isClosedBase(spot) {
-  return !openingStatus(spot, state).ok || isTemporaryClosed(spot) || spot.closedOn !== undefined && state.day % 7 === spot.closedOn;
+  return !openingStatus(spot, state).ok || isTemporaryClosed(spot) || isClosedDay(spot);
 }
-/** 定休日（day % 7 が closedOn の日）か。 */
-export const isClosedDay = (spot, save = state) => spot?.closedOn !== undefined && (save?.day ?? 0) % 7 === spot.closedOn;
+/**
+ * 定休日（day % 7 が closedOn の日）か。closedFrom（保存を受け取る関数）がある店は、それが true になってから定休日を取る
+ * （ドバイの FESTA は初めて太陽に会う場面の後から。期限の夜の場面と重ねない）。
+ */
+export const isClosedDay = (spot, save = state) => spot?.closedOn !== undefined && (save?.day ?? 0) % 7 === spot.closedOn
+  && (typeof spot.closedFrom !== "function" || !!spot.closedFrom(save));
 // 早じまい（2026-11-28 オーナー「ライバルは定休日とか早じまいした日に、よその店で居合わせる」）。
 // 店主がよその店へ居合わせに出た夜だけ閉める。判定は daily/roamers.js が登録する（循環importを避ける）。
 let earlyClosure = () => false;

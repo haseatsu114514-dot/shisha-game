@@ -223,21 +223,59 @@ await suite("roamers", async check => {
       for (const who of ["ayatori", "steve", "volk", "mashiro", "mukai_master"]) value.met[who] = true;
       const places = Object.fromEntries(tokyo.CH3_TOKYO_SPOTS.map(entry => [entry.id, entry.place]));
       const counts = {}, bad = [];
-      for (let day = 3; day < 16; day++) for (let slot = 0; slot <= 1; slot++) for (let seed = 1; seed < 40; seed++) {
+      for (let day = 3; day < 16; day++) for (let slot = 0; slot <= 1; slot++) for (let seed = 1; seed < 120; seed++) {
         Object.assign(value, { day, slot, seed });
         const plan = roamers.roamerPlan();
         if (!plan) continue;
         counts[plan.id] = (counts[plan.id] || 0) + 1;
         const place = places[plan.spotId];
         if (!["mukai", "enmaku", "steve", "volk"].includes(place)) bad.push(["not-a-tokyo-shop", plan]);
-        if (plan.id === "volk" && place === "volk") bad.push(["own-shop", plan]);
+        const own = { volk: "volk", ayatori: "enmaku", steve: "steve" }[plan.id];
+        if (own && place === own) bad.push(["own-shop", plan]);
         if (plan.id === "mashiro" && place === "mukai") bad.push(["workplace", plan]);
-        if (!["volk", "mashiro", "emil"].includes(plan.id)) bad.push(["home-person-in-tokyo", plan]);
+        if (!["volk", "ayatori", "steve", "mashiro", "emil"].includes(plan.id)) bad.push(["home-person-in-tokyo", plan]);
+        // 東京のライバルも、自分の店の定休日か早じまいの夜だけ（2026-11-28 オーナー「東京やドバイの店にも定休日を作って」）
+        if (own) {
+          const shop = tokyo.CH3_TOKYO_SPOTS.find(entry => entry.place === own);
+          if (plan.reason === "closed" && day % 7 !== shop.closedOn) bad.push(["not-day-off", plan, day]);
+          if (plan.reason === "early" && (slot !== 1 || plan.shopId !== shop.id)) bad.push(["early", plan, day, slot]);
+          if (!["closed", "early"].includes(plan.reason)) bad.push(["no-reason", plan]);
+          counts[`${plan.id}:${plan.reason}`] = (counts[`${plan.id}:${plan.reason}`] || 0) + 1;
+        }
       }
       return { counts, bad };
     });
     assert.deepEqual(result.bad, []);
-    for (const id of ["volk", "mashiro", "emil"]) assert(result.counts[id] > 0, `${id} が東京で一度も出ない`);
+    for (const id of ["volk", "ayatori", "steve", "mashiro", "emil"]) assert(result.counts[id] > 0, `${id} が東京で一度も出ない`);
+    for (const id of ["volk", "ayatori", "steve"]) for (const reason of ["closed", "early"]) assert(result.counts[`${id}:${reason}`] > 0, `${id}:${reason} が一度も出ない`);
+  });
+
+  // 2026-11-28 オーナー「東京やドバイの店にも定休日を作って」。働いている店（mukai）・シフトと約束のあるドバイのカフェは休まない
+  await check("tokyo-and-dubai-rival-shops-take-a-day-off", async page => {
+    const result = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), spots = await import("./js/daily/spots.js");
+      const tokyo = await import("./js/chapters/ch3-tokyo-daily.js"), dubai = await import("./js/chapters/ch4-dubai-daily.js");
+      const progress = await import("./js/chapters/ch4-progress.js");
+      const value = core.newGame();
+      const offDays = list => Object.fromEntries(list.map(entry => [entry.place,
+        Array.from({ length: 7 }, (_, day) => day).filter(day => spots.isClosedDay(entry, { ...value, day }))]));
+      const tokyoDays = offDays(tokyo.CH3_TOKYO_SPOTS);
+      const before = offDays(dubai.CH4_DUBAI_SPOTS); // 第4章の記録の無い保存（初めて会う前）
+      Object.assign(value, { chapter: 4, day: 30 });
+      value.flags._ch4 = { startDay: 30, day: 1, stage: 0, part: "prologue", titleSeen: false,
+        read: { ch4_festa: true }, firstDay: null, resolution: 0, attempts: 0, routeVersion: 2 };
+      if (!progress.chapterFourProgress(value).read.ch4_festa) throw new Error("第4章の記録を作れない");
+      value.met.master_hookah = true;
+      const after = offDays(dubai.CH4_DUBAI_SPOTS);
+      return { tokyoDays, before, after };
+    });
+    for (const place of ["enmaku", "steve", "volk"]) assert.equal(result.tokyoDays[place].length, 1, `${place} は週に一日休む`);
+    assert.equal(new Set(["enmaku", "steve", "volk"].map(place => result.tokyoDays[place][0])).size, 3, "東京の店の休みは別々の日");
+    assert.deepEqual(result.tokyoDays.mukai, [], "mukai は休まない");
+    assert.deepEqual([result.before.festa, result.before.longlong], [[], []], "初めて会う前は休まない（FESTA は期限の夜の場面がある）");
+    assert.equal(result.after.festa.length, 1); assert.equal(result.after.longlong.length, 1);
+    assert.notEqual(result.after.festa[0], result.after.longlong[0]);
+    assert.deepEqual([result.after.center_cafe, result.after.alley_cafe], [[], []], "シフトと約束のあるカフェは休まない");
   });
 
   await check("emil-is-a-stranger-until-the-national-tournament", async page => {

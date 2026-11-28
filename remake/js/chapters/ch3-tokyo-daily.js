@@ -39,7 +39,7 @@ import { mashiroTimeOpen, spendMashiroTime } from "./mashiro-time.js";
 import { petitAfterDate } from "../daily/petit-shuraba.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { runMukaiShift, loadMukaiShift, mukaiShiftPayText, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
-import { addRoamerSpots } from "../daily/roamers.js";
+import { addRoamerSpots, addRoamerShops } from "../daily/roamers.js";
 import { openTetsukoTime, settleTetsukoTime, tetsukoVisitKey, tetsukoPlayedToday } from "../minigames/tetsuko-time.js";
 import { chainStageAt } from "./visit-chains.js";
 import { chainVisitDue, playChainStage } from "./visit-chain-play.js";
@@ -96,11 +96,12 @@ const visitBg = { mukai: "bg_mukai_shop", enmaku: "bg_yohaku_shop", steve: "bg_s
 export const CH3_TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch3_tokyo_mukai", place: "mukai", label: "mukai", area: "高架下の商店街", x: 29.6, y: 62.7, theme: "baito", glyph: "店",
     face: "mukai_master", teacher: "mashiro", preview: "bg_mukai_shop", desc: "働かせてもらっている店。手伝い、ましろちゃんとの時間、作業台。帰りに裏口のてつこにも会える。" }),
-  spot({ id: "ch3_tokyo_enmaku", place: "enmaku", label: "煙幕", area: "綾取の店", x: 45.3, y: 49.7, theme: "rival", glyph: "煙",
+  // 東京のライバルの店の定休日（day % 7。2026-11-28 オーナー「東京やドバイの店にも定休日を作って」）。mukai は働いている店なので休まない
+  spot({ id: "ch3_tokyo_enmaku", place: "enmaku", label: "煙幕", area: "綾取の店", x: 45.3, y: 49.7, theme: "rival", glyph: "煙", closedOn: 2,
     face: "ayatori", teacher: "ayatori", freshnessKey: "ayatori", preview: "bg_yohaku_shop", fee: TOKYO_VISIT_COST, desc: "綾取の店。お茶と、ノートの続き。", met: "ayatori" }),
-  spot({ id: "ch3_tokyo_steve", place: "steve", label: "Smoke & Glory", area: "スティーブの店", x: 23.3, y: 36.1, theme: "rival", glyph: "煙",
+  spot({ id: "ch3_tokyo_steve", place: "steve", label: "Smoke & Glory", area: "スティーブの店", x: 23.3, y: 36.1, theme: "rival", glyph: "煙", closedOn: 4,
     face: "steve", teacher: "steve", freshnessKey: "steve", preview: "bg_steve_shop", fee: TOKYO_VISIT_COST, desc: "タイマーの並ぶ店。", met: "steve" }),
-  spot({ id: "ch3_tokyo_volk", place: "volk", label: "鉄の煙", area: "ヴォルクの店", x: 55.9, y: 40.4, theme: "rival", glyph: "煙",
+  spot({ id: "ch3_tokyo_volk", place: "volk", label: "鉄の煙", area: "ヴォルクの店", x: 55.9, y: 40.4, theme: "rival", glyph: "煙", closedOn: 1,
     face: "volk", teacher: "volk", freshnessKey: "volk", preview: "bg_volk_shop", fee: TOKYO_VISIT_COST, desc: "熱と部屋を測る店。", met: "volk" }),
   spot({ id: "ch3_tokyo_park", place: "park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園",
     preview: "bg_tokyo_park", stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
@@ -139,6 +140,7 @@ const mukaiBondDue = () => mashiroMilestoneDue() || questionVisitDue("mashiro") 
 const bondAfterStoryAt = place => bondAfterNext(state, CH3_TOKYO_SPOTS.find(entry => entry.place === place)?.teacher)?.kind === "story";
 
 const ROAMER_TOKYO_SPOTS = () => state.chapter === 3 ? chapterThreeTokyoSpots() : [];
+const ROAMER_TOKYO_SHOPS = () => state.chapter === 3 ? CH3_TOKYO_SPOTS : [];
 
 /** 今の時間・物語の時点で地図に出す行き先。 */
 export function chapterThreeTokyoSpots() {
@@ -183,6 +185,7 @@ async function readPlain(id, bg, owner) {
 export function chapterThreeTokyoDefinition(io) {
   // よその店に居合わせる人（daily/roamers.js）。東京の日常ループでは、東京の店にいる
   addRoamerSpots(ROAMER_TOKYO_SPOTS);
+  addRoamerShops(ROAMER_TOKYO_SHOPS); // ライバルの店は、地図に出ていない日でも定休日・早じまいを判定する
   return {
     get untilDay() { return tokyoTournamentDay(state); },
     tournamentName: "HAZE: NATIONAL TOKYO",
