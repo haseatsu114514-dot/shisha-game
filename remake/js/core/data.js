@@ -4,7 +4,7 @@
 // ページは remake/index.html なので、リポジトリ直下は "../"。
 
 import { portraitStyle } from "./portrait-style.js";
-import { characterArtStem, resolvePortrait } from "./portrait-resolver.js";
+import { characterArtStem, characterPortraitStyle, resolvePortrait } from "./portrait-resolver.js";
 import { registerFortuneReadings } from "./fortune-effects.js";
 
 const ROOT = "../";
@@ -396,7 +396,7 @@ export function cgThumbUrl(id) {
 export function faceIconUrl(id, state = null, { context = null, style = portraitStyle() } = {}) {
   const privateMinto = id === "oneesan" || (id === "minto" && context === "private" && state?.flags?._minto_name_known);
   const folder = SPEAKER_ALIAS[id] || id;
-  const rel = faceIconRel(privateMinto ? "face_minto_private.png" : `face_${characterArtStem(folder)}.png`, style);
+  const rel = faceIconRel(privateMinto ? "minto_private" : characterArtStem(folder), style);
   return rel ? img(rel) : null;
 }
 
@@ -405,7 +405,9 @@ export function faceIconUrl(id, state = null, { context = null, style = portrait
  * 新バージョンを選んでいて、その人の新バージョンの顔アイコンがあればそれ（立ち絵と同じ絵から作ったもの）。
  * 無い人（新バージョンの立ち絵が無い人）は、会話でも現行の絵になるので現行の顔アイコン（2026-11-06）
  */
-function faceIconRel(name, style) {
+function faceIconRel(stem, style) {
+  const name = `face_${stem}.png`;
+  style = characterPortraitStyle(stem, style);
   if (style !== "classic" && (DB.manifest.faceIconVariants?.[style] || []).includes(name)) return `ui/face_icons/${style}/${name}`;
   return (DB.manifest.faceIcons || []).includes(name) ? `ui/face_icons/${name}` : null;
 }
@@ -420,7 +422,7 @@ export function faceFrame(folder, style = "classic") {
 
 /** 顔アイコンの全URL（起動時の先読み用）。今の画風で出すものを読む */
 export function allFaceIconUrls(style = portraitStyle()) {
-  return (DB.manifest.faceIcons || []).map((f) => img(faceIconRel(f, style)));
+  return (DB.manifest.faceIcons || []).map((f) => img(faceIconRel(f.slice("face_".length, -".png".length), style)));
 }
 
 export function makingUrl(name) {

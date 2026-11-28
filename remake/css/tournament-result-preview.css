@@ -1,0 +1,188 @@
+/* 第1章・結果画面の採用判断用。本編の resultTable / resultSplash の DOM に適用する。 */
+#stage { width: min(100vw, 430px); height: min(100dvh, 920px); --stage-gutter: 0px; }
+#preview-status { padding: 20px; color: #fff0cb; }
+#stage .ts-splash.win {
+  background: linear-gradient(0deg, #081121 16%, #0e192b 42%, transparent 66%),
+    radial-gradient(ellipse at 46% 35%, #a28a5a45, transparent 60%),
+    url('../img/ui/character_intros/graphic/bg_hajime.webp') 69% 45% / auto 110%;
+}
+#stage .ts-splash::after {
+  content: ""; position: absolute; inset: 12px; border: 1px solid #e7c78177;
+  outline: 1px solid #ad8c492e; outline-offset: -4px; pointer-events: none; z-index: 5;
+}
+#stage .ts-splash .ts-halo { opacity: .26; width: 780px; height: 780px; left: 50%; top: 34%; margin: -390px; }
+#stage .ts-splash .ts-lights { opacity: .5; }
+#stage .ts-splash .ts-confetti { z-index: 0; opacity: .65; }
+#stage .ts-splash .ts-splash-bust {
+  left: 0; top: 8%; width: 100%; height: 62%; bottom: auto; margin: 0; overflow: hidden;
+  mask: linear-gradient(#000 69%,transparent 100%); filter: drop-shadow(0 3px 14px #090d17b3);
+}
+#stage .ts-splash .ts-splash-bust img {
+  width: 100%!important; height: 100%!important; object-fit: cover; object-position: 50% 0%;
+  inset: 0!important; transform: none!important; max-width: none;
+}
+#stage .ts-splash-floor { height: 43%; background: linear-gradient(0deg,#081121 15%,#10192bee 66%,transparent); }
+#stage .ts-splash-copy { inset: 0; width: auto; margin: 0; transform: none; display: block; z-index: 4; }
+#stage .ts-splash-eyebrow {
+  display: block; position: absolute; text-align: center; font: 700 10px/1.4 var(--font);
+  letter-spacing: .22em; text-shadow: 0 2px 5px #05101d; top: 27px; left: 12%; right: 12%;
+  padding: 7px 0; background: linear-gradient(90deg,transparent,#101725ed 12% 88%,transparent);
+  color: #fff1c8;
+}
+#stage .winner-lockup {
+  position: absolute; bottom: 9%; left: 18px; right: 18px; display: flex; flex-direction: column;
+  align-items: center; text-align: center;
+}
+#stage .ts-splash-copy .ts-crest { width: 104px; height: 104px; flex: none; display: grid; place-items: center; }
+#stage .ts-splash .ts-crest img { position: absolute; inset: 0; width: 100%; height: 100%; }
+#stage .ts-splash-copy h2 {
+  position: relative; margin: 4px 0 0; padding: 0; letter-spacing: .015em; line-height: 1.17;
+  font-family: Georgia,'Suien Name',serif; font-size: clamp(44px,13.5vw,54px); font-weight: bold;
+  font-style: normal; filter: drop-shadow(0 2px 0 #553618);
+  background: linear-gradient(180deg,#fff4d3 20%,#e5bd77 55%,#d6a25a 75%,#ffe5a5);
+  background-clip: text; color: transparent;
+}
+#stage .ts-splash-copy p {
+  display: flex; width: 80%; align-items: center; justify-content: center; gap: 13px;
+  font: 700 23px/1.6 'Suien Name',serif; letter-spacing: .18em; padding: 0; color: #fff2d4;
+  margin: 6px 0 0;
+}
+#stage .ts-splash-copy p::before,#stage .ts-splash-copy p::after { content: ""; width: 38px; height: 1px; background: #ba9d63; }
+#stage .ts-splash-tap {
+  inset: auto 0 26px; text-align: center; color: #d6c7ac; font: 500 13px/1.4 var(--font);
+  letter-spacing: .12em;
+}
+#stage .result-table {
+  display: flex; flex-direction: column; align-items: stretch; gap: 0; padding: 24px 19px 15px;
+  color: #f4eddd; background: linear-gradient(0deg,#09101d 0%,#101c2d 77%,#16253b 100%); border: none;
+  overflow: hidden;
+}
+#stage .result-table > :is(.ts-lights,.rt-confetti,.rt-rays) { display: none; }
+#stage .rt-hero {
+  flex: none; display: block; border: 0; margin: -24px -19px 16px; padding: 24px 19px 18px;
+  isolation: isolate; border-bottom: 1px solid #d7b46b99;
+}
+#stage .rt-hero .rt-emblem { display: none; }
+#stage .rt-hero .tournament-heading { border: 0; padding: 0; display: block; background: none; }
+#stage .rt-hero .tournament-eyebrow { display: block; color: #d5b875; font: 700 10px/1.4 var(--font); letter-spacing: .18em; }
+#stage .rt-hero h1 {
+  font: 700 33px/1.3 'Suien Name',serif; color: #fff0cb; background: none; filter: none;
+  letter-spacing: .05em; margin: 4px 0 0;
+}
+#stage .rt-layout {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto; display: block; scrollbar-width: thin; margin: 0;
+  overscroll-behavior: contain;
+}
+#stage .rt-ranking,#stage .rt-detail {
+  margin: 0; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: none; height: auto;
+  overflow: visible;
+}
+#stage .rt-ranking-head {
+  display: flex; margin: 0 0 4px; justify-content: space-between; align-items: center;
+}
+#stage .rt-rows { width: 100%; height: auto; display: grid; margin: 0; gap: 7px; }
+#stage .rt-row {
+  display: grid; grid-template-columns: 30px 40px minmax(0,1fr) auto; gap: 8px;
+  padding: 5px 12px 5px 8px; border: 0; border-bottom: 1px solid #62728955; border-radius: 0;
+  background: #ffffff04; filter: none; box-shadow: none; min-height: 72px;
+  grid-template-areas: "rank face name pt" "rank face bar pt"; grid-template-rows: auto 6px;
+  align-content: center; row-gap: 5px;
+}
+#stage .rt-row.me {
+  background: linear-gradient(110deg,#84632c66,#463a2588 70%,#343034); border: 1px solid #c6a15b9e;
+  border-left: 3px solid #eed299; padding-left: 5px;
+}
+#stage .rt-row .rt-rank {
+  width: auto; height: auto; background: none; border: 0; box-shadow: none; color: #cfbd9f;
+  line-height: 1; font: italic 700 15px Georgia,serif; white-space: nowrap; text-shadow: none;
+}
+#stage .rt-row .rt-face { border-radius: 50%; box-shadow: 0 0 0 1px #8f836a88; height: 40px; width: 40px; }
+#stage .rt-name { font: 700 18px/1.35 'Suien Name',serif; color: #f7eddf; white-space: nowrap; }
+#stage .rt-pt {
+  font: italic 700 23px Georgia,serif; color: #ffe4ac; background: none; filter: none;
+  letter-spacing: .01em; -webkit-text-fill-color: currentColor;
+}
+#stage .rt-row .rt-votes { display: none; }
+#stage .rt-detail {
+  margin: 18px 0 0; padding: 17px 15px 0; background: linear-gradient(130deg,#203047,#152436 71%);
+  border-top: 1px solid #c3a063; border-bottom: 1px solid #677383;
+}
+#stage .rt-detail-scroll {
+  display: grid; grid-template-columns: 1fr auto; align-content: start; align-items: center; gap: 0;
+  height: auto; padding: 0; overflow: visible; background: none;
+}
+#stage .rt-detail h4 { grid-column: 1; grid-row: 1; font: 700 23px/1.25 'Suien Name',serif; color: #fff0d2; }
+#stage .rt-detail .rt-part.total {
+  display: flex; align-items: center; gap: 8px; grid-area: 1/2; border: 0; padding: 0; background: none;
+}
+#stage .rt-detail .rt-part.total span { font: 700 13px var(--font); color: #d7cbaf; }
+#stage .rt-detail .rt-part.total b.craft-evaluation { display: none; }
+#stage .rt-detail .rt-part.total b[data-test] { font: italic 700 40px/.95 Georgia,serif; color: #f6d58e; min-width: 26px; }
+#stage .rt-detail .review-line {
+  grid-column: 1/-1; display: block; color: #f5eddf!important; font: 500 16px/1.55 var(--font);
+  margin: 14px 0 12px; width: auto; text-wrap: pretty;
+}
+#stage .review-more {
+  grid-column: 1/-1; display: flex; align-items: center; justify-content: space-between; width: 100%;
+  min-height: 46px; border: 0; border-top: 1px solid #77839566; background: none; color: #ebd9b2;
+  text-align: left; font: 600 15px var(--font); padding: 0;
+}
+#stage .review-more::after { content: '›'; font: 400 24px Georgia; }
+#stage .result-actions { margin-top: 12px; display: flex; align-items: stretch; gap: 10px; }
+#stage .result-actions button {
+  position: static; min-width: 0; min-height: 48px; height: auto; border-radius: 3px; padding: 6px 12px;
+  font: 700 16px/1.2 var(--font); box-shadow: none;
+}
+#stage .result-actions [data-test=result-next] { flex: 1; background: #edd39b; color: #241e14; border: 1px solid #f3dfa9; }
+#stage .result-actions .rt-save { width: 40%; display: flex; margin: 0; }
+#stage .result-actions .rt-save button { flex: 1; color: #ebdbba; background: #1a2738; border: 1px solid #766c57; }
+dialog.review {
+  width: min(360px,94vw); max-height: 78dvh; padding: 18px; overflow: auto; border: 1px solid #d3b878;
+  border-radius: 7px; background: #152032; color: #f8efdf; font: 500 16px/1.55 var(--font);
+}
+dialog.review::backdrop { background: #050b15d9; }
+dialog.review h2 { font: 700 24px/1.35 'Suien Name',serif; color: #ffe3a9; margin: 0 0 15px; }
+#stage dialog.review :is(small,p) {
+  display: block; color: #f4ead9!important; font: 500 16px/1.55 var(--font); width: auto; margin: 4px 0;
+}
+#stage dialog.review .rt-part {
+  display: grid; grid-template-columns: minmax(0,1fr) 32px auto; align-items: center; gap: 8px;
+  padding: 8px 0; border: 0; border-bottom: 1px solid #5c6b7f; background: transparent;
+  border-radius: 0; font-size: 16px;
+}
+#stage dialog.review .rt-part b { grid-area: auto; font-size: 22px; }
+dialog.review button {
+  background: #eddaae; color: #201a11; border: 0; width: 100%; height: 46px;
+  font: bold 16px var(--font); margin-top: 12px;
+}
+#stage .ts-splash-bust { background: none; }
+#stage .ts-splash.show .ts-splash-tap { transition-delay: .6s; animation: none; opacity: .9; }
+#stage .rt-hero::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(90deg,#101a2a 20%,#101a2acc 55%,transparent 100%),url('../img/ui/character_intros/graphic/bg_hajime.webp') right 39% / cover;
+  opacity: .88;
+}
+#stage .rt-ranking-head h2 { display: none; }
+#stage .judge-legend { font: 600 12px/1.5 var(--font); gap: 13px; color: #dbd8cf; }
+#stage .rt-row .rt-bar { display: flex; height: 5px; }
+dialog.review .rt-deductions { display: block; }
+#stage .winner-rank {
+  position: absolute; inset: 29% 0 13%; display: flex; align-items: baseline; justify-content: center;
+  align-self: center; gap: 2px;
+}
+#stage .ts-crest .winner-rank b { position: static; font-size: 39px; line-height: 1; letter-spacing: -.06em; }
+#stage .ts-crest .winner-rank small { position: static; font: 700 13px/1 'Suien Name',serif; letter-spacing: 0; }
+#stage .vote-breakdown {
+  background: none; border: 0; padding: 0; min-height: 44px; color: #e0c48b; font: 600 14px var(--font);
+}
+#stage dialog.review small.rt-votes { display: inline; white-space: normal; font: inherit; }
+#stage .result-actions .rt-save small:empty { display: none; }
+#stage .result-actions .rt-save { position: relative; }
+#stage .result-actions .rt-save [role="status"]:not(:empty) { position: absolute; bottom: 100%; background: #152032; color: #fff2d4; }
+dialog.review .tournament-result-reason { margin-top: 16px; color: #f5ead7; font-size: 16px; }
+@media (max-width: 359px) {
+  #stage .result-table { padding-inline: 12px; }
+  #stage .rt-hero { margin-inline: -12px; }
+  #stage .rt-row { gap: 4px; padding-right: 6px; }
+  #stage .rt-name { font-size: 16px; }
+}

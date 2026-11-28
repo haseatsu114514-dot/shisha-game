@@ -16,7 +16,7 @@ import { playTournamentEvent } from "./tournament-story.js";
 import { voteStyleFrom } from "../core/vote-style.js";
 
 /** 見本の一台（実際の工程の記録と同じ形）。lose は出来を落として順位を下げる。 */
-function sampleCraft(lose) {
+export function sampleCraft(lose) {
   const q = lose ? 0.8 : 1;
   const cs = newSession("tournament");
   return Object.assign(cs, {
