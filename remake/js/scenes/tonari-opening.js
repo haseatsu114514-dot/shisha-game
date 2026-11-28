@@ -43,6 +43,7 @@ export async function playTonariOpening({ signal, dialogue = DB.dialogues.ch1_op
   const previous = hooks.onLine;
   const onLine = (id, line) => {
     previous?.(id, line);
+    scene.dataset.portraitShot = id === "ch1_opening" ? line.portrait_shot || "" : "";
     if (id !== "ch1_opening") { scene.dataset.shot = "room"; return; }
     if (!SHOTS.has(line.shot)) return;
     const required = { coal: ["coal"], bowl: ["bowl"], customer: ["customer"], hose: ["customer"] }[line.shot] || [];

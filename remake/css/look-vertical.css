@@ -102,8 +102,40 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-bgimg { background-size: cover; background-repeat: no-repeat; }
 .vt-bgimg.black { background: #000; }
 .vt-bgimg > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* 開会の引き絵は台と会場を同じ縮尺で見せ、上下は同じ背景のぼかしでつなぐ。 */
+.vt-bgimg.wide-stage::before { content: ""; position: absolute; inset: 0; background: inherit; filter: blur(calc(2 * var(--u))) brightness(.55); transform: scale(1.08); }
+.vt-bgimg.wide-stage > :is(svg, img) {
+  position: absolute; inset: 46% 0 auto; width: 100%; height: auto; aspect-ratio: 16 / 9; translate: 0 -50%;
+  mask-image: linear-gradient(transparent, #000 14%, #000 89%, transparent);
+}
+.vt-bgimg.kemuriya { bottom: 8%; mask-image: linear-gradient(#000 89%, transparent); }
 .vt-opening { position: absolute; inset: auto; left: 50%; top: 50%; width: 1280px; height: 720px; transform: translate(-50%, -50%) scale(var(--opening-scale)); }
+.vt-opening.tonari-opening[data-shot="counter"] {
+  left: 100%; top: 43%; transform-origin: right center;
+  transform: translate(-100%, -50%) scale(var(--opening-scale));
+}
 .vt-opening .to-room > svg { width: 100%; height: 100%; }
+/* 横に伸びるトングは、手から先端までが縦の絵の幅に入る倍率にする。 */
+.vt-opening.tonari-opening[data-shot="coal"] .to-coal {
+  inset: calc(11 * var(--u) / var(--opening-scale)) auto auto 50%;
+  width: calc(44 * var(--u) / var(--opening-scale));
+  height: auto;
+  transform: translateX(-50%);
+  mask-image: linear-gradient(180deg, transparent, #000 12%, #000 86%, transparent);
+}
+.vt-opening.cold-open[data-shot="hand"] .co-hand-close {
+  left: 50%;
+  top: calc(10 * var(--u) / var(--opening-scale));
+  width: calc(39 * var(--u) / var(--opening-scale));
+  height: calc(24 * var(--u) / var(--opening-scale));
+  margin-left: calc(-19.5 * var(--u) / var(--opening-scale));
+  mask-image: radial-gradient(ellipse 90% 76% at 50% 54%, #000 45%, transparent 86%);
+}
+.vt-opening.cold-open[data-shot="hand"] .co-hand-close img {
+  left: calc(-20.6 * var(--u) / var(--opening-scale));
+  top: calc(-21 * var(--u) / var(--opening-scale));
+  width: calc(60 * var(--u) / var(--opening-scale));
+}
 .vt-shell[data-scene="cover"] .vt-bg { filter: brightness(0.38) saturate(0.85); transition: filter 0.4s; }
 .vt-shell[data-scene="cover"][data-cover="gap"] .vt-bg { filter: none; }
 .vt-shell[data-scene="sheet"] .vt-pic { filter: brightness(0.4) blur(calc(0.3 * var(--u))); }
@@ -142,6 +174,11 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-cg > i { position: absolute; inset: 0; background-repeat: no-repeat; }
 .vt-cg-fill { background-size: cover; background-position: center; filter: blur(calc(2.4 * var(--u))) brightness(0.55); transform: scale(1.1); }
 .vt-cg-art { background-size: contain; background-position: 50% 42%; }
+/* 下描きは猫の顔と右端の色見本・小さなスケッチをまとめて読めるよう、左の余白を切って上に寄せる。 */
+.vt-cg[data-cg="cg_ch1_tsumugi_sketch_wip"] .vt-cg-art {
+  background-size: clamp(100%, calc((var(--top-h) - 27 * var(--u)) * 16 / 9), 130%) auto;
+  background-position: 90% max(calc(4.8 * var(--u)), 13%);
+}
 /* 縦に作り直したスチル（2:3・js/looks/vertical/stills.js）: 幅いっぱいに、上をそろえて置く。下は帯の下へ溶かす（VPT12） */
 .vt-cg.tall .vt-cg-art { background-size: cover; background-position: 50% 0%; -webkit-mask-image: linear-gradient(180deg, #000 0, #000 82%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 82%, transparent 100%); }
 /* 会話カットイン（VPT13）: 本編の帯の写しを、縦の絵の場所の大きさに縮めて置く（js/looks/vertical/talk.js の syncCutin） */
@@ -428,6 +465,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 /* ───────── 覆い（場面転換・日付の札・章タイトル・詩） ───────── */
 .vt-cover-lines { position: absolute; left: calc(2.4 * var(--u)); right: calc(2.4 * var(--u)); top: 38%; transform: translateY(-50%); display: grid; justify-items: center; gap: calc(0.8 * var(--u)); text-align: center; pointer-events: none; text-shadow: 0 calc(0.3 * var(--u)) calc(1.6 * var(--u)) #000, 0 0 calc(0.6 * var(--u)) #000; }
 .vt-cover-lines[hidden] { display: none; }
+.vt-shell[data-cover="title-loading"] .vt-cover-lines { top: 27%; }
 .vt-cover-line { font-size: calc(1.8 * var(--u)); font-weight: 700; line-height: 1.6; letter-spacing: 0.06em; color: #f1ecf9; animation: vt-fade 0.5s ease-out backwards; }
 .vt-cover-line.big { font-family: var(--mincho); font-size: calc(3.4 * var(--u)); letter-spacing: 0.14em; }
 @keyframes vt-fade { from { opacity: 0; transform: translateY(calc(0.8 * var(--u))); } }

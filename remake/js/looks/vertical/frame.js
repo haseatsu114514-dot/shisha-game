@@ -244,7 +244,7 @@ export function liveBackground() {
 }
 
 /** 背景の層を、縦の絵の場所へ写す（絵を覆う大きさに置き直す。店の台を重ねた SVG もそのまま写す）。 */
-export function mirrorBackground(host, { focusX = 50, focusY = 40 } = {}) {
+export function mirrorBackground(host, { focusX = 50, focusY = 40, dialogueId = "" } = {}) {
   const node = liveBackground();
   // 冒頭の2場面は背景画像ではなく、手元・煙・店内を重ねた舞台。
   if (node?.matches(".cold-open, .tonari-opening")) {
@@ -258,28 +258,35 @@ export function mirrorBackground(host, { focusX = 50, focusY = 40 } = {}) {
       host.dataset.sig = kind;
     }
     const copy = host.firstElementChild;
-    if (copy.dataset.shot !== node.dataset.shot) copy.dataset.shot = node.dataset.shot;
+    const shot = node.dataset.portraitShot || node.dataset.shot;
+    if (copy.dataset.shot !== shot) copy.dataset.shot = shot;
     copy.classList.toggle("out", node.classList.contains("out"));
     copy.style.setProperty("--opening-scale", Math.max(host.clientWidth / 1280, host.clientHeight / 720));
     return "";
   }
   const cs = node ? getComputedStyle(node) : null;
-  const url = cs ? cssUrl(cs.backgroundImage) : "";
   const art = node?.querySelector(":scope > svg.scene-art");
+  const wideStage = node?.dataset.sceneBg === "bg_tournament_stage.png" && dialogueId === "ch1_tournament_opening";
+  const kemuriya = node?.dataset.sceneBg === "kemurikusa.png" && (dialogueId === "ch1_naru_first" || dialogueId === "ch1_naru_promise");
+  const url = cssUrl(cs?.backgroundImage) || (wideStage ? art?.querySelector("image")?.getAttribute("href") || "" : "");
   const black = !node || node.classList.contains("black");
-  const sig = `${url}|${art ? art.outerHTML.length : 0}|${cs?.filter || ""}|${black}|${focusX},${focusY}`;
+  const sig = `${url}|${art ? art.outerHTML.length : 0}|${cs?.filter || ""}|${black}|${focusX},${focusY}|${wideStage},${kemuriya}`;
   if (host.dataset.sig === sig) return url;
   host.dataset.sig = sig;
   const layer = el("div.vt-bgimg");
+  layer.classList.toggle("wide-stage", wideStage);
+  layer.classList.toggle("kemuriya", kemuriya);
   if (url) {
     layer.style.backgroundImage = `url("${url}")`;
-    layer.style.backgroundPosition = `${focusX}% ${focusY}%`;
+    layer.style.backgroundPosition = `${kemuriya ? 79 : focusX}% ${focusY}%`;
   }
   if (art) {
     const copy = art.cloneNode(true);
-    copy.setAttribute("preserveAspectRatio", `xMidYMid slice`);
+    copy.setAttribute("preserveAspectRatio", wideStage ? "xMidYMid meet" : "xMidYMid slice");
     copy.removeAttribute("width"); copy.removeAttribute("height");
     layer.append(copy);
+  } else if (wideStage && url) {
+    layer.append(el("img", { src: url, alt: "", draggable: "false" }));
   }
   if (cs?.filter && cs.filter !== "none") layer.style.filter = cs.filter;
   if (black) layer.classList.add("black");
