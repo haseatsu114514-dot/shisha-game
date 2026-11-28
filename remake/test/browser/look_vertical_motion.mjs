@@ -1,7 +1,7 @@
 // 縦持ちが基本（VPO01）と、モーショングラフィックスの縦の舞台（VPO02〜）。2026-11-28 オーナー「モーショングラフィックスも縦画面に最適化して
 // あと基本は縦画面で遊ぶ仕様にしていって　今開くと横向きにしろとか出るけど」。
 // 確かめること:
-//   起動: 縦画面を縦持ちで開くと、起動画面からタイトルまで回転案内（「スマホは横向きで…」）が一度も出ない。ホーム画面版の向きは固定しない（manifest）。
+//   起動: 縦画面を縦持ちで開くと、起動画面からタイトルまで回転案内（「スマホは横向きで…」）が一度も出ない。ホーム画面版は縦向き（manifest）。
 //         旧版を選んだ端末を縦に持った時だけ、今までどおり回転案内が出る。
 //   演出: 縦持ちの縦画面では、演出は本編の見えない画面（#fx）ではなく、画面いっぱいの縦の舞台（#vt-motion・論理の幅 720）に出る。
 //         縦の構図を持つ演出（LIME の連絡先交換・タロット）は縦の舞台の大きさで組まれ、画面の中に収まる。縦の構図がまだ無い演出は、
@@ -46,7 +46,7 @@ await suite("look-vertical-motion", async (check) => {
     assert.deepEqual(await page.evaluate(() => window.__hintSeen), [], "縦画面を縦持ちで開いた時、起動画面からタイトルまで回転案内が出ない");
     assert.equal(await hintShown(page), false);
     const manifest = await page.evaluate(() => fetch("manifest.webmanifest").then((r) => r.json()));
-    assert.equal(manifest.orientation, "any", "ホーム画面版の向きは横に固定しない");
+    assert.equal(manifest.orientation, "portrait", "ホーム画面版の向きは横に固定しない");
   }, { ...TALL, pageEntry: withLook("vertical") });
 
   await check("classic-look-in-portrait-keeps-the-guard", async (page) => {
