@@ -233,6 +233,13 @@ export function createTalkScene(frame) {
       ? { dirs: list.length > 1 ? ["up", "down"] : [], a: { face: "ok", disabled: !usable(list[pick]) } }
       : { dirs: [], a: { face: "next" } });
 
+    // 中継の光・帯は liveFrame の実物を使う。連続する会話での更新・撤去は本編が行う。
+    const vn = box.parentElement;
+    const back = vn.querySelector(":scope > .ts-live-back");
+    const front = vn.querySelector(":scope > .ts-live-front");
+    if (back) actors.before(back);
+    if (front) cutin.before(front);
+    frame.picture.classList.toggle("vt-live-hidden", vn.matches(".flashback, .sepia") || !cg.hidden);
     // 上の表示: 場所の名前だけ（VPL12）
     frame.setHud("place", { place: placeOf(url) });
   }
@@ -257,6 +264,12 @@ export function createTalkScene(frame) {
       bg.dataset.sig = "";
     },
     leave() {
+      const vn = document.getElementById("vn");
+      const back = frame.picture.querySelector(".ts-live-back");
+      const front = frame.picture.querySelector(".ts-live-front");
+      if (back) vn.prepend(back);
+      if (front) vn.append(front);
+      frame.picture.classList.remove("vt-live-hidden");
       actors.replaceChildren();
       cg.hidden = true; delete cg.dataset.url;
       cutin.replaceChildren(); cutin.hidden = true; cutinSig = "";

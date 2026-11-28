@@ -42,10 +42,17 @@ await suite("portrait_live_scenes", async check => {
       })();
     });
     await native(page, "equipment");
+    await page.evaluate(async () => {
+      const { eyecatch } = await import("./js/craft/tournament-show.js");
+      void eyecatch(document.getElementById("fx"), { title: "ROUND 1", ms: 30000 });
+    });
+    await page.waitForFunction(() => window.__verticalLook.scene() === "tournament");
+    await page.locator(".ts-eyecatch.in").tap();
+    await native(page, "equipment");
     await button(page, "opt-closed").tap();
     await button(page, "opt-four").tap();
     assert.deepEqual(await page.evaluate(() => window.craftChoices), ["closed", "four"]);
-  }, options);
+  }, { ...options, reducedMotion: "no-preference" });
 
   for (const venue of ["tonari", "mukai", "dubai"]) await check(`floor-${venue}-settles-shift`, async page => {
     await start(page);

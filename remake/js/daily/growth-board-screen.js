@@ -1,4 +1,4 @@
-import { characterArtStem } from "../core/portrait-resolver.js";
+import { characterArtStem, characterPortraitStyle } from "../core/portrait-resolver.js";
 // 心得の盤の画面（SPEC 第2版 6.2、ADDENDUM-BOARD-LAYOUT）。盤の最終デザインは #2129（ネオンのラウンジ・SBD79〜90。2026-11-02 オーナー確定）。
 // 盤の面・札・台座・結界・顔は #2129 を正とし、作り直さない。外枠（見出し・タブ・凡例）の紙の色は DUI17。画像が読めない時だけ図形で描く。
 // 盤は能力ごとに3枚（上の札で入れ替え）。道は SVG、マスは HTML のボタン（キーボード・タッチで押せる）。
@@ -74,6 +74,7 @@ function portraitEyes(who, style) {
 /** 札の顔の画像。今の画風で測った人はその画風の顔、ほかは現行の顔 */
 function boardFaceUrl(who, style = portraitStyle()) {
   if (!BOARD_FACES.has(who)) return null;
+  style = characterPortraitStyle(who, style);
   const stem = characterArtStem(who);
   return style !== "classic" && portraitEyes(who, style) ? `${ART_DIR}faces/${style}/${stem}.webp` : `${ART_DIR}faces/${stem}.webp`;
 }

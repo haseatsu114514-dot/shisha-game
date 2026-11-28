@@ -5,7 +5,8 @@
 // 写す場面: タイトル・会話と返事・登場カットイン（縦のポスター）・地図・tonari の行動選びなどのボタンの画面・確かめの小窓・
 //   MENU・LIME・設定・セーブ／ロード・LOG・店・章のクリア（シート）・場面転換や日付の札などの覆い・
 //   シーシャ作りのうち縦の画面がある工程（作る場面。いまは水入れ・詰め方・穴あけ・炭焼き・蒸らし時間・VPN30・VPN31。vertical/craft.js の登録表）。
-// まだ縦にしていない場面（シーシャ作りのほかの工程・大会・店番・ミニゲームなど。別の作業で縦の画面を作っている）は、回転案内を出して横で遊ぶ。
+// 大会の会場会話・投票・幕間・表彰は本編の演出で進める。
+// まだ縦にしていない場面（シーシャ作りのほかの工程・店番・ミニゲームなど。別の作業で縦の画面を作っている）は、回転案内を出して横で遊ぶ。
 // 縦持ちの間だけ動く。横持ちにすると外枠を引っ込め、本編の今の画面（旧版）で遊べる。setActive(false) で足した物をすべて片付ける。
 import { state } from "../core/state.js";
 import { el } from "../core/util.js";
@@ -22,6 +23,8 @@ import { createBoardScene, boardOpen } from "./vertical/board.js";
 import { createCraftScene, craftOpen } from "./vertical/craft.js";
 import { livePortraitScene, setLivePortraitScene } from "./vertical/live-stage.js";
 import { createMotionLayer } from "./vertical/motion-layer.js";
+
+import { createTournamentResultScene } from "./vertical/tournament-result.js";
 
 const PORTRAIT = "(orientation: portrait)";
 const DETECT_MS = 110;      // 場面の確認は 1 秒に 9 回ほど
@@ -88,7 +91,7 @@ function start() {
   const own = [frame.root, resumeSmoke, motionLayer.root];
   const scenes = {
     // CONTINUE は本編の文字・ボタン・アニメーションを直接表示する。
-    continue: { native: true },
+    continue: { native: true }, tournament: { native: true }, tournamentResult: createTournamentResultScene(),
     interlude: { native: true },
     title: createTitleScene(frame), vn: createTalkScene(frame), map: createMapScene(frame), menu: createMenuScene(frame),
     sheet: createSheetScene(frame), cover: createCoverScene(frame, own), board: createBoardScene(frame), craft: createCraftScene(frame),
@@ -121,6 +124,8 @@ function start() {
     frame.root.dataset.layout = scene?.layout || ""; // "full": 下画面を出さない場面（試作どおりのタイトルなど）
     frame.root.hidden = !scene || !!scene.native;
     root.toggleAttribute("data-vt-continue", next === "continue");
+    root.toggleAttribute("data-vt-tournament", next === "tournament");
+    root.toggleAttribute("data-vt-result", next === "tournamentResult");
     root.toggleAttribute("data-vt-interlude", next === "interlude");
     if (next !== "cover") holdSince = 0; // 覆いを待つ時間は、覆いに入るたびに数え直す（前の転換から数えると、すぐ待ちすぎと判断してしまう）
     if (scene && !scene.native) {
@@ -144,7 +149,10 @@ function start() {
     const interlude = state?.chapter === 1 && !isLoading() && !topDialogOpen() && !document.querySelector("#modal.show") &&
       (frontMotion ? frontMotion.matches(".day-card, .tr-dawn") :
         frontFx?.matches('.beat, .round-cut, .entrance, .day-card, .tr-dawn, .chapter-poem[data-poem="poem_ch1"]'));
-    const live = !interlude && livePortraitScene();
+    let found = interlude ? { kind: "scene", name: "interlude" } : boardOpen() ? { kind: "scene", name: "board" } : detectState(wipe ? [...own, wipe] : own);
+    // 作業台に重なった大会中継・投票は、前面の大会用レイアウトで操作する。
+    const tournament = found.name === "tournament" || found.name === "tournamentResult";
+    const live = !interlude && !tournament && livePortraitScene();
     if (live) {
       root.dataset.vtHint = "hold";
       setScene(null);
@@ -153,7 +161,6 @@ function start() {
       return;
     }
     setLivePortraitScene("");
-    let found = interlude ? { kind: "scene", name: "interlude" } : boardOpen() ? { kind: "scene", name: "board" } : detectState(wipe ? [...own, wipe] : own);
     if (found.variant === "end" && document.querySelector('#screen > .gameover[data-layout="manga"]:not(.done)')) {
       found = { kind: "scene", name: "continue" };
     }

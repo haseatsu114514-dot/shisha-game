@@ -57,7 +57,8 @@ import { playTsumugiStory, playTsumugiSketch } from "./tsumugi-story.js";
 import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { outcomeOf, showStandings, resultCountdown, sensuCutin, resultTable, ch1LiveStandings } from "../craft/result.js";
-import { beginCh1Votes, castCh1Votes, isSakuraiVotes } from "../craft/ch1-votes.js";
+import { drawRivalForm } from "./tournament-ballot.js";
+import { CH1_RIVALS, beginCh1Votes, castCh1Votes, isSakuraiVotes } from "../craft/ch1-votes.js";
 import { craftRecognition } from "../craft/recognition.js";
 import { playCh1Title } from "./ch1-title-motion.js";
 import { giveSumiRig, giveEarlyHomeRig } from "../daily/home-rig.js";
@@ -666,9 +667,14 @@ function prepareTournamentAttempt(newTournament) {
   const t = state.tournament;
   const resumedSameAttempt = !newTournament && t.attempts > 0 && t.lastLossAttempt !== undefined && t.lastLossAttempt !== t.attempts;
   if (!resumedSameAttempt) t.attempts++;
-  state.tournament.voteAttempt = state.tournament.rulesVersion >= 2 ? null : undefined;
+  const savedVote = resumedSameAttempt ? t.voteAttempt : null;
+  t.voteAttempt = t.rulesVersion >= 2 ? null : undefined;
   // 審査の方式（いままで／桜井式・SKR04）は、この試合を始める時の設定で決め、試合の途中では変えない。
-  if (state.tournament.rulesVersion >= 2) beginCh1Votes(state.tournament, { style: voteStyleFrom(config) });
+  if (t.rulesVersion >= 2) beginCh1Votes(t, {
+    style: savedVote ? savedVote.style : voteStyleFrom(config),
+    comparisonBallot: savedVote ? !!savedVote.comparisonBallot : true,
+    rivalForm: savedVote ? savedVote.rivalForm : drawRivalForm(Object.keys(CH1_RIVALS), state.weatherSeed, 1, t.attempts),
+  });
   save();
 }
 

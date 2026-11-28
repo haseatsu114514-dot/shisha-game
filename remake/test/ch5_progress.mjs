@@ -336,7 +336,7 @@ assert.equal(recordChapterFiveSecondCup(value, { total: 90, category: "steady" }
 rejects(value, v => recordChapterFiveSecondCup(v, { total: 10, category: "offband" }));
 assert.equal(chapterFiveMatchOutcome(value), "win");
 assert.deepEqual(chapterFiveVoteTally(value), { first: { hajime: 19, machine: 21 },
-  second: { hajime: 24, machine: 16 }, total: { hajime: 43, machine: 37 } });
+  second: { hajime: 23, machine: 17 }, total: { hajime: 42, machine: 38 } });
 roundTrip(value);
 assert.equal(value.flags._ch5.secondCup.review, undefined, "Old-style records without review lines stay valid");
 {
@@ -365,6 +365,14 @@ for (let total = 0; total <= 100; total += 1) {
   assert(chapterFiveSecondCupVotes(total) >= chapterFiveSecondCupVotes(Math.max(0, total - 1)), `monotonic at ${total}`);
   assert(chapterFiveSecondCupVotes(total) < CH5_AUDIENCE * 0.7, `not one-sided at ${total}`);
 }
+for (let tenths = 0; tenths <= 1000; tenths++) {
+  const total = tenths / 10;
+  const tie = CH5_FIRST_CUP_VOTES.machine;
+  const before = chapterFiveSecondCupVotes(total, false, false) - tie;
+  const after = chapterFiveSecondCupVotes(total) - tie;
+  assert.equal(Math.sign(after), Math.sign(before), `same match outcome at ${total}`);
+  assert(Math.abs(after) <= Math.abs(before), `same or closer finish at ${total}`);
+}
 assert.equal(chapterFiveSecondCupVotes(100, true), chapterFiveSecondCupVotes(0));
 
 // U5: 入場後の制作途中は章別 SAVE に残らない。読込後も未制作で、二本目を記録できる。
@@ -375,16 +383,20 @@ assert.equal(chapterFiveSecondCupVotes(100, true), chapterFiveSecondCupVotes(0))
   assert.equal(chapterFiveProgress(resumed).secondCup, null);
   assert.equal(chapterFiveVoteTally(resumed), null);
   assert.equal(chapterFiveMatchOutcome(resumed), null);
+  const oldMatch = JSON.parse(JSON.stringify(resumed));
+  delete oldMatch.flags._ch5.closeAudienceVote;
+  assert(recordChapterFiveSecondCup(oldMatch, { total: 90, category: "steady" }));
+  assert.deepEqual(chapterFiveVoteTally(oldMatch).second, { hajime: 24, machine: 16 });
   assert.equal(recordChapterFiveSecondCup(resumed, { total: 90, category: "steady" }), true);
   assert.equal(chapterFiveMatchOutcome(resumed), "win");
 }
 
 // 二本目の完成後は票・結果を保存から読む。同数は勝ちにならず、敗北と同じ後日談へ進む。
 for (const [total, category, expected, reason] of [
-  [90, "steady", "win", "二台目の挙手で8票差をつけ、合計6票差で逆転した。"],
+  [90, "steady", "win", "二台目の挙手で6票差をつけ、合計4票差で逆転した。"],
   [84, "recovered", "tie", "二台目で2票差を返し、合計で並んだ。"],
   [81, "offband", "loss", "二台目は同票。一台目の2票差が残った。"],
-  [63, "offband", "loss", "二台目で18票差がつき、合計で20票届かなかった。"],
+  [63, "offband", "loss", "二台目で12票差がつき、合計で14票届かなかった。"],
 ]) {
   const match = toBeforeSecond();
   assert.equal(recordChapterFiveSecondCup(match, { total, category }), true);

@@ -150,11 +150,16 @@ export function detectState(own = []) {
   const modal = byId("modal");
   const rect = stage.getBoundingClientRect();
   if (!rect.width || !rect.height) return NONE;
+  const vertical = document.documentElement.dataset.vt === "on";
   if (modal?.classList.contains("show")) {
     // 演出の層の操作する画面（心得の盤など）が上に出ていれば、そちらを現行の画面で見せる
     if (byId("fx")?.querySelector(FX_INTERACTIVE)) return NONE;
+    if (vertical && modal.querySelector(":scope > .ts-splash") && !topDialogOpen()) return { kind: "scene", name: "tournamentResult" };
     const layer = topLayer(stage, rect, 0.5, 0.5, own);
     if (layer && !EXPECTED_LAYERS.dialog.includes(layer)) return NONE;
+    if (vertical && modal.querySelector(':scope > .ts-contest-modal .ch4-standings') && !topDialogOpen()) {
+      return { kind: "scene", name: "tournament" };
+    }
     // 文と選択肢だけの小窓は、下画面の選択肢に（上画面はその場の絵のまま）
     if (simpleDialog(modal)) return { kind: "scene", name: "menu", variant: "dialog" };
     const kind = sheetKind(modal);
@@ -169,6 +174,19 @@ export function detectState(own = []) {
 
   // 覆い: 演出の層に何か出ている・煙や暗転で覆っている・読み込みの一言が出ている
   const overlays = [...(byId("fx")?.children || [])].filter((node) => !node.matches(FX_HARMLESS));
+  if (vertical) {
+    const screen = byId("screen");
+    const active = !body.classList.contains("in-vn") && overlays.every(node => node.matches(".ts-sting"));
+    const table = screen?.querySelector(":scope > .result-table:not(.done)");
+    const dialog = topDialogOpen();
+    if ((!dialog && overlays.some(node => node.matches(".ts-splash"))) ||
+        (active && table && (!dialog || table.querySelector("dialog.review[open]")))) {
+      return { kind: "scene", name: "tournamentResult" };
+    }
+    const show = overlays.some(node => node.matches(".ts-eyecatch, .round-cut, .entrance, .standings.tournament-board, .sui-cut.ts-final"));
+    const board = screen?.querySelector(":scope > :is(.count-screen.ts-count, .ch2-contest:has(> .ch2-contest-board)):not(.done)");
+    if (!dialog && (show || (active && board))) return { kind: "scene", name: "tournament" };
+  }
   if (overlays.some((node) => node.matches(FX_INTERACTIVE) || node.querySelector(CONTROLS))) return NONE;
   const wipe = byId("wipe");
   if (overlays.length || (wipe && !own.includes(wipe) && (wipe.classList.contains("black") || wipe.classList.contains("cover")))) {
@@ -186,7 +204,7 @@ export function detectState(own = []) {
       const layer = topLayer(stage, rect, 0.5, 0.5, own);
       return !layer || EXPECTED_LAYERS.log.includes(layer) ? { kind: "scene", name: "sheet", variant: "log" } : NONE;
     }
-    for (const child of vn.children) if (!child.matches(VN_PARTS)) return NONE;
+    for (const child of vn.children) if (!child.matches(VN_PARTS) && !(vertical && child.matches(".ts-live"))) return NONE;
     scene = "vn";
   } else if (inVn || vnOpen) {
     return GAP; // 会話の素材待ちの間

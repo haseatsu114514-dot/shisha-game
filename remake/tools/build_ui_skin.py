@@ -186,6 +186,8 @@ TOURNAMENT_SHOW_PARTS = {
     "backdrop": {"source_size": (1536, 1024), "width": 1280, "alpha": False},
     "vote-token": {"source_size": (1254, 1254), "width": 128, "alpha": True},
     "crest-gold": {"source_size": (1254, 1254), "width": 512, "alpha": True},
+    "champion-seal": {"source_size": (1254, 1254), "width": 512, "alpha": True},
+    "result-foil": {"source_size": (2172, 724), "width": 960, "alpha": False},
     "curtain": {"source_size": (1024, 1536), "width": 640, "alpha": True},
 }
 

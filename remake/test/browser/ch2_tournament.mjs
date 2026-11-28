@@ -73,7 +73,7 @@ async function playAttempt(page,touch=false,reloadCare=false) {
     // #909: 票が動いた理由。実際の「この回の票」と同じ点数・人を言う。
     const reason=await page.locator(t('vote-reason')).innerText();
     const last=s.flags._ch2_tournament.lastVotes,got=Object.values(last).reduce((a,v)=>a+(v.points.hajime||0),0);
-    if(got)assert.match(reason,new RegExp(`今回 \\+${got}点`));else assert.match(reason,/上位2人にも入らなかった/);
+    if(got)assert.match(reason,new RegExp(`今回 \\+${got}点`));else assert.match(reason, s.flags._ch2_tournament.comparisonBallot ? /本命票も比較票も入らなかった/ : /上位2人にも入らなかった/);
     assert.match(reason,/(アルミ穴あけ|炭の温度|蒸らしと吸い出し|一度目の調整)：[◎○△].*「.+」/);
     await assertFits(page,'.ch2-contest-reason p');
     if(reloadCare && round===3) {

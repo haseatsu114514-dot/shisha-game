@@ -246,15 +246,18 @@ export async function showStandings(round, mine, cs = null, attempt = null, carr
 function sakuraiBoard(p, index) {
   const info = SAKURAI.rounds[index], next = SAKURAI.rounds[index + 1];
   const points = ch1RoundPoints("uezono", index);
+  const allocation = p.comparisonBallot ? `本命に${points - 1}票・比較票1票`
+    : points === 2 ? "1位も2位も1票" : "1位に2票・2位に1票";
   const views = p.views?.[index] || {}, picks = p.picks?.[index] || {};
   // 速報の行は凡例と同じ短い呼び名（上園・博士・千須）にそろえる。
   const short = (id) => JUDGE_LOOK[id]?.short || judgeName(id);
   const mine = JUDGES.map(({ id }) => `${short(id)} ${Number(views[id]?.hajime ?? 0).toFixed(1)}`).join(" ／ ");
   const nextNote = index === 0 ? `次は提供の一台。${Object.entries(SAKURAI.focus).map(([id, f]) => `${short(id)}は${f.label}`).join("・")}を見る`
     : index === 1 ? "次は1回目の調整。温度計の攻めの帯で整え終えると、審査が伸びる"
-      : "次は2回目の調整。なるは崩れず、最後はみんとが攻めてくる";
+      : p.rivalForm ? "次は2回目の調整。台の温度と攻めの帯が最後の審査に効く"
+    : "次は2回目の調整。なるは崩れず、最後はみんとが攻めてくる";
   return {
-    sub: `この回は${info.parts}だけで決まる · ${points === 2 ? "1位も2位も1票" : "1位に2票・2位に1票"} · 全員に基礎票1点`,
+    sub: `この回は${info.parts}だけで決まる · ${allocation} · 全員に基礎票1点`,
     feed: [`はじめの評価（この回）: ${mine}${p.attacks?.[index] ? `（攻めの帯 +${SAKURAI.attackBonus}）` : ""}`, next ? nextNote : ""].filter(Boolean),
     extra: (judge) => {
       const pick = picks[judge];
