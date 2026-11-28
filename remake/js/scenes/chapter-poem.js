@@ -3,7 +3,7 @@
 // 置き場所: 各章の詩＝その章の章タイトルの直前（第1章の詩は序詩を兼ねる。コールドオープンの後）。
 // 見せ方: 詩の上に、横長の漫画風のコマ絵（metadata.panel。img/ui/poems/）を細い枠つきで出す（必ず出す。届くまで待つ）。
 //        絵の指定が無い・壊れていて読めない詩だけは、詩だけを全面に出す。
-//        縦書きの全文を一画面で浮かべ、連の区切りは列の余白で示す。
+//        縦書きの各行を右から順に浮かべ、連の区切りは列の余白で示す。
 //        全文が出たら、タップ／Enter／Space または時間経過で章タイトルへ進む。
 import { silenceBgm } from "../core/audio.js";
 import { DB } from "../core/data.js";
@@ -79,7 +79,8 @@ export function poemLineNodes(text = "") {
 const FADE_IN = 700;
 const FADE_OUT = 900;
 const PANEL_BEAT = 1200;
-const TEXT_FADE = 1300;
+const LINE_BEAT = 1050;
+const STANZA_BEAT = 450;
 const HOLD_BASE = 6000;
 const HOLD_PER_CHAR = 135;
 const GUARD = 280;
@@ -147,11 +148,12 @@ async function showChapterPoem(key, { owner = null, current = () => true } = {})
   poemTest.shown.push({ id, lines: lines.map((line) => plainPoemLine(line.text)), panel: !!panel, at: Date.now() });
 
   let shownAt = 0;
-  let finishReading, fastNow;
+  let finishReading, fastNow, nextLine;
   const finished = new Promise((resolve) => { finishReading = resolve; });
   const fastSignal = new Promise((resolve) => { fastNow = resolve; });
   let fast = false;
   const advance = () => {
+    if (nextLine && performance.now() - shownAt >= GUARD) nextLine();
     if (card.dataset.phase === "holding" && performance.now() - shownAt >= GUARD) finishReading();
   };
   const onKey = (event) => {
@@ -198,7 +200,7 @@ async function showChapterPoem(key, { owner = null, current = () => true } = {})
     if (vnTest.turbo) {
       card.classList.add("show", "turbo");
       panel?.classList.add("on");
-      body.classList.add("on");
+      for (const line of body.children) line.classList.add("on");
       await nextFrame();
     } else {
       await nextFrame();
@@ -208,9 +210,18 @@ async function showChapterPoem(key, { owner = null, current = () => true } = {})
         panel.classList.add("on");
         await wait(PANEL_BEAT);
       }
-      if (!signal.aborted && !fast) {
-        body.classList.add("on");
-        await wait(reducedMotion() ? 300 : TEXT_FADE);
+      const fade = reducedMotion() ? 300 : 800;
+      for (const [index, line] of Array.from(body.children).entries()) {
+        if (signal.aborted || fast) break;
+        line.classList.add("on");
+        shownAt = performance.now();
+        if (index === lines.length - 1) {
+          await wait(fade);
+        } else {
+          const advanced = new Promise((resolve) => { nextLine = resolve; });
+          await wait(LINE_BEAT + (lines[index + 1].gap ? STANZA_BEAT : 0), advanced);
+          nextLine = null;
+        }
       }
       if (!signal.aborted && !fast) {
         shownAt = performance.now();
