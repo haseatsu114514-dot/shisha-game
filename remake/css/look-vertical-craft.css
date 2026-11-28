@@ -147,6 +147,7 @@
 .vtc-water-pic[data-zone="none"] .vtc-w-surf { stroke: #ff8a8a; } .vtc-water-pic[data-zone="ideal"] .vtc-w-surf { stroke: #7df0b0; }
 .vtc-water-pic:is([data-zone="shallow"], [data-zone="deep"]) .vtc-w-surf { stroke: #ffe07a; }
 .vtc-w-band { fill: #7df0b0; opacity: 0.16; transition: opacity 0.2s; } .vtc-water-pic[data-zone="ideal"] .vtc-w-band { opacity: 0.32; }
+.vtc-w-precise { fill: #ffd37860; stroke: #ffdb8d; stroke-width: 2; }
 .vtc-w-line2 { fill: none; stroke: #fff6c8; stroke-width: 6; stroke-dasharray: 18 10; filter: drop-shadow(0 0 2px #0b0812) drop-shadow(0 0 5px #0b0812); }
 .vtc-water-pic[data-zone="ideal"] .vtc-w-line2 { stroke: #7df0b0; }
 .vtc-w-mark rect { fill: #120c1de6; stroke: #fff6c8; stroke-width: 3; } .vtc-w-mark text { fill: #fff6c8; font-size: 30px; font-weight: 800; text-anchor: middle; }

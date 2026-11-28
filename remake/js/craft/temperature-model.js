@@ -95,16 +95,16 @@ function computeBands(cs, entries, damage, flavorById) {
   // 表情対応の葉だけをグラム比で反映。少量を足して全配合の中央狙いを消せない。
   const expressionWeight = entries.reduce((sum, [id, w]) =>
     sum + (flavorById?.[id]?.thermal_expression?.quality === "range" ? w : 0), 0);
-  // 虹（2026-11-10 オーナー「どのミックスでも、大きさは違えど虹はあるように」）: 採点の適合度が90以上になる範囲。
-  // 表情を作り分けない配合は最適温と同じ細い帯、作り分ける葉が多いほど広がり、作り分ける葉だけなら適温帯と同じ幅になる。
-  // 表示だけの帯で、採点（temperatureFitness・pullResult）は変えない。
+  // 表情を作り分ける葉が多いほど虹が広がる。配合ごとの幅を基準に、虹を高温側へ寄せて細くする。
   const spread = expressionWeight >= .999 ? 1 : Math.min(1, .4 * expressionWeight / (1 - expressionWeight));
-  const halfRainbow = halfOptimal + (halfIdeal - halfOptimal) * spread;
+  const rainbowBase = halfOptimal + (halfIdeal - halfOptimal) * spread;
+  const rainbowCenter = center + rainbowBase * .20;
+  const halfRainbow = rainbowBase * .78;
   return Object.freeze({
     t, center, selected: entries.length > 0, makerWidth, equipWidth, totalWidthScale, expressionWeight, damageScale,
     ideal: Object.freeze([center - halfIdeal, center + halfIdeal]),
     optimal: Object.freeze([center - halfOptimal, center + halfOptimal]),
-    rainbow: Object.freeze([center - halfRainbow, center + halfRainbow]),
+    rainbow: Object.freeze([rainbowCenter - halfRainbow, rainbowCenter + halfRainbow]),
   });
 }
 

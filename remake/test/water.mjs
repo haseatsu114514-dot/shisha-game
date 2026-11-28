@@ -56,7 +56,7 @@ const context = vm.createContext({ console, document, window, Node: Element, Eve
 });
 const modules = new Map();
 const order = [];
-const session = new vm.SyntheticModule(["stepPanel", "benchRoot", "craftTest", "newSession", "openBench", "waitBenchReady", "setBenchWater", "explainTutorialStep"], function() {
+const session = new vm.SyntheticModule(["stepPanel", "benchRoot", "craftTest", "newSession", "openBench", "waitBenchReady", "setBenchWater", "explainTutorialStep", "refreshBench"], function() {
   this.setExport("stepPanel", () => { order.push("water"); const panel = new Element(); document.body.append(panel); return panel; });
   this.setExport("benchRoot", () => document.body);
   this.setExport("craftTest", { auto: null });
@@ -64,6 +64,7 @@ const session = new vm.SyntheticModule(["stepPanel", "benchRoot", "craftTest", "
   this.setExport("openBench", () => {});
   this.setExport("waitBenchReady", async () => {});
   this.setExport("setBenchWater", () => {});
+  this.setExport("refreshBench", () => {});
   this.setExport("explainTutorialStep", async () => true);
 }, { context });
 const stubs = new Map();
@@ -97,11 +98,27 @@ function tick(ms) { now += ms; const pending = [...frames.values()]; frames.clea
 function mounted(options = {}) {
   const panel = new Element(); document.body.append(panel);
   const m = view.mountWater(panel, options);
-  return { ...m, panel, button: name => m.root.querySelector(`[data-test="water-${name}"]`) };
+  return { ...m, get seconds() { return m.seconds; }, panel, button: name => m.root.querySelector(`[data-test="water-${name}"]`) };
 }
 const down = (m, which = "pour") => fire(m.button(which), "pointerdown", { button: 0, isPrimary: true, pointerId: 1 });
 const quantity = m => Number.parseFloat(m.root.querySelector('[data-test="water-meter"]').getAttribute("aria-valuenow")) / 100;
 async function finish(m) { m.confirm(); const q = await m.result; m.panel.remove(); return q; }
+
+await check("water precision is worth more than speed, and confirmation records the playable time", async () => {
+  for (const [quantity, seconds, score] of [[.50, 6, 100], [.48, 7, 99], [.52, 21, 85], [.44, 6, 85], [.56, 10, 81], [0, 0, 0]]) {
+    assert.equal(model.evaluateWater(quantity, seconds).score, score);
+  }
+  const m = mounted({ quantity: .5 });
+  tick(5000);
+  document.hidden = true;
+  fire(document, "visibilitychange");
+  tick(12000);
+  document.hidden = false;
+  fire(document, "visibilitychange");
+  tick(2000);
+  assert.equal(await finish(m), .5);
+  assert.equal(m.seconds, 7);
+});
 
 await check("four water bands render and confirm their messages", async () => {
   for (const [q, band, label, message] of [
@@ -120,7 +137,7 @@ await check("four water bands render and confirm their messages", async () => {
     // 「自動で失敗」は今の水量のまま確定する。各区分の確定文をここで確かめる（成功側は次の検査）。
     session.namespace.craftTest.auto = "bad";
     const cs = { water: q }; await view.stepWater(cs);
-    assert.equal(cs.water, q); assert.equal(notices.at(-1), message);
+    assert.equal(cs.water, q); assert.ok(notices.at(-1).endsWith(message));
     session.namespace.craftTest.auto = null;
   }
 });
@@ -134,12 +151,12 @@ await check("auto good confirms neutral water; auto bad and manual keep the curr
     assert.equal(cs.water, model.WATER.neutral, `auto good from ${start}`);
     const comfort = model.waterComfort(cs.water); // 別realmの戻り値なので項目ごとに比べる。
     assert.equal(comfort.band, "ideal"); assert.equal(comfort.drawW, 0); assert.equal(comfort.bubble, 1);
-    assert.equal(notices.at(-1), ideal);
+    assert.ok(notices.at(-1).endsWith(ideal));
   }
   // 「自動で失敗」は成功側と混同しない。開始時の空のまま確定する。
   session.namespace.craftTest.auto = "bad";
   const bad = {}; await view.stepWater(bad);
-  assert.equal(bad.water, 0); assert.equal(model.waterComfort(bad.water).band, "none"); assert.equal(notices.at(-1), none);
+  assert.equal(bad.water, 0); assert.equal(model.waterComfort(bad.water).band, "none"); assert.ok(notices.at(-1).endsWith(none));
   // 手動（自動なし）は確定ボタンを押すまで待ち、空から始まる量を変えない。
   session.namespace.craftTest.auto = null;
   const manual = {}; const pending = view.stepWater(manual);
@@ -151,7 +168,7 @@ await check("auto good confirms neutral water; auto bad and manual keep the curr
   assert.equal(confirmations.at(-1).options.find(option => option.primary).value, false);
   emptyChoice = true;
   fire(confirm, "click"); await pending;
-  assert.equal(manual.water, 0); assert.equal(notices.at(-1), none);
+  assert.equal(manual.water, 0); assert.ok(notices.at(-1).endsWith(none));
 });
 await check("a blocked view keeps one animation frame while the wave settles (no doubling freeze)", async () => {
   // 注いだ直後（水面がまだ揺れている）に説明や MENU を開く。予約したコマが毎回2つに増えると、数秒で画面が固まる。

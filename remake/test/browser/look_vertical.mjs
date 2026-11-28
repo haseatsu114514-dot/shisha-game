@@ -1389,7 +1389,7 @@ await suite("look_vertical", async (check) => {
       { target: ".vtc-bottle", say: "煙は水をくぐって冷える", live: waterLive },
       { target: ".vtc-w-band, .vtc-w-mark", say: "量で吸い心地が変わるから、まずは目安に合わせろ", live: waterLive },
       { target: `${t("vt-water-drain")}, ${t("vt-water-pour")}`, say: "注ぐときは長押し。こぼして戻してもいい" },
-      { target: t("vt-water-ok"), say: "線のあいだに収めたら、決定だ", last: true },
+      { target: t("vt-water-ok"), say: "細い帯なら高得点。水位を合わせたら決定だ", last: true },
     ];
     const waterButtons = () => page.evaluate(() => ["drain", "pour", "ok"].map((key) => document.querySelector(`[data-test="vt-water-${key}"]`).disabled));
     for (const [i, spot] of waterSpots.entries()) {
@@ -1457,6 +1457,14 @@ await suite("look_vertical", async (check) => {
     const water = await page.evaluate(() => window.vtCraftError || window.vtCraft.water);
     assert.equal(typeof water, "number", String(water));
     assert(Math.abs(water * 100 - drained) < 0.01, `cs.water is the game's level: ${water} / ${drained}`);
+    const evaluation = await page.evaluate(async () => {
+      const { evaluateWater } = await import("./js/craft/water.js");
+      const { water, waterResult } = window.vtCraft;
+      return { actual: waterResult, expected: evaluateWater(water, waterResult.seconds) };
+    });
+    assert(evaluation.actual.seconds >= 3, "time includes pouring and draining");
+    assert.deepEqual(evaluation.actual, evaluation.expected);
+    assert.match(await page.locator(".toast.water-evaluation").textContent(), /水入れ \d+点 · \d+\.\d秒/);
   }, { ...TALL, pageEntry: entry });
 
   await check("craft-holes-in-the-shell", async (page) => {

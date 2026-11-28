@@ -1,10 +1,10 @@
 // 縦画面の作る場面: 水入れ（試作の water・VPL36・VPL46・VPL81・VPL92・VPL101・VPL111〜VPL113・VPL119）。
-// 上の絵＝流し台と蛇口の下で、口の開いたボトルを少し傾けて満たす（水面は画面に水平で揺れ、蛇口から水が落ちる）。二本の線と「目安」の札が目安。
+// 上の絵＝流し台と蛇口の下で、口の開いたボトルを少し傾けて満たす（水面は画面に水平で揺れ、蛇口から水が落ちる）。外側の破線と中央の細い帯が目安。
 // 下＝同じ大きさの丸いボタンを1段に「こぼす」（左）・「注ぐ」（真ん中）・「決定」（右）。こぼす・注ぐは押している間だけ水が動く。
 // 本編の stepWater（craft/water-view.js の mountWater）の画面を読んで描く: 水量はメーター（data-test water-meter の aria-valuenow）を
 // 毎フレーム読み、浸かり具合は status の data-band、注いでいる・こぼしているは .craft-water の data-flow。押す操作は本編のボタン
 // （water-pour・water-drain は長押しのまま pointerdown／pointerup、water-confirm はタップ）へ中継する。水量の増え方・目安・判定は本編のまま。
-// 目安の線の高さは本編の値（craft/water.js の WATER.low・high）。ボトルの形・水面の揺れ・水流は試作の絵の動き（見た目だけ）。
+// 目安の線の高さは本編の値（craft/water.js の WATER の各境界）。ボトルの形・水面の揺れ・水流は試作の絵の動き（見た目だけ）。
 // 説明の間（チュートリアルの初回の説明は本編が部品を出す前、「？」は本編が作業台を止めている）は、説明が指すボタンを押せる形で見せる
 // （押しても本編へは届かない）。説明のスポットライト（craft/tutorial.js・VPN32）は、ボトル→目安の線→注ぐ・こぼす→決定の順に明るく抜く。
 import { imgFileUrl } from "../../../core/img-file.js";
@@ -60,10 +60,8 @@ export const waterView = {
     if (text === WATER_HELP) return [
       { target: "bottle", say: "煙は水をくぐって冷える" }, // 本編の文のまま
       { target: "band", say: "量で吸い心地が変わるから、まずは目安に合わせろ" }, // 本編の文のまま
-      // 本編の水入れのチュートリアルの案内（craft/water-view.js の stepWater「注ぐときは長押し。二本の線を目安に、こぼして戻してもいい」）から、
-      // 線の話（前の段で話す）を省いた文
       { target: "hold", say: "注ぐときは長押し。こぼして戻してもいい" },
-      { target: "ok", say: "線のあいだに収めたら、決定だ" }, // 足した文（作る場面の一言「線のあいだまで注げ」と、本編の brief「目安の44〜56%に収めて進む」から）
+      { target: "ok", say: "細い帯なら高得点。水位を合わせたら決定だ" },
     ];
     const steps = [...lines.map((say) => ({ say })), ...extras].map((line) => ({ ...line, target: aimOf(line.say) }));
     return [...steps.filter((step) => step.target !== "ok"), ...steps.filter((step) => step.target === "ok")];
@@ -71,6 +69,7 @@ export const waterView = {
   create({ hold, relay }) {
     const id = `vtcw${++uid}`, { w, h, inner } = BOTTLE;
     const lowY = waterY(WATER.low), highY = waterY(WATER.high), midY = (lowY + highY) / 2;
+    const preciseTop = waterY(WATER.preciseHigh), preciseBottom = waterY(WATER.preciseLow);
     const bottle = el("div.vtc-bottle", { html: `<img class="vtc-sink" src="${ART}ui-sink-faucet.webp" alt="" draggable="false">
       <svg class="vtc-bottle-svg" viewBox="0 0 ${w} ${h}" aria-hidden="true"><defs><clipPath id="${id}"><path class="vtc-w-clip" d="${inner}"/></clipPath>
         <linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fe6fa"/><stop offset="0.16" stop-color="#3fb4e6"/><stop offset="1" stop-color="#1757a6"/></linearGradient>
@@ -84,6 +83,7 @@ export const waterView = {
         <defs><clipPath id="${id}guide"><path d="${BOTTLE.inner}"/></clipPath></defs>
         <g class="vtc-w-guide"><g clip-path="url(#${id}guide)">
           <path class="vtc-w-band" d="M0 ${highY}H${w}V${lowY}H0Z"/>
+          <path class="vtc-w-precise" d="M0 ${preciseTop}H${w}V${preciseBottom}H0Z"/>
           <path class="vtc-w-line2" d="M-40 ${lowY}H${w + 40}M-40 ${highY}H${w + 40}"/></g>
           <g class="vtc-w-mark" transform="translate(${BOTTLE_WALL(midY)[1] + 34} ${midY})"><rect x="0" y="-26" width="92" height="52" rx="26"/><text x="46" y="12">目安</text></g></g>
         <g clip-path="url(#${id})"><g class="vtc-w-drops">${"<circle r=\"0\"/>".repeat(7)}</g></g></svg>
@@ -126,7 +126,7 @@ export const waterView = {
       last = now;
       const live = readLive();
       if (pic.dataset.zone !== live.zone) pic.dataset.zone = live.zone;
-      const label = `ボトルの水量 ${Math.round(live.level * 100)}%`;
+      const label = `ボトルの水量 ${Math.round(live.level * 100)}%。外の帯が目安、内側の細い帯は高得点`;
       if (pic.getAttribute("aria-label") !== label) pic.setAttribute("aria-label", label);
       pic.classList.toggle("pouring", live.flow === "pour");
       pic.classList.toggle("draining", live.flow === "drain");
@@ -222,7 +222,7 @@ export const waterView = {
     return {
       pic, ctrl,
       spots: { bottle, band: [S.band, S.mark], hold: [drain, pour], ok },
-      coach: () => "線のあいだまで注げ",
+      coach: () => "外の帯が目安。細い帯なら高得点だ",
       thermo: () => null, // 試作の水入れは温度計を出さない（加熱前の帯は配合・詰め方で見る）
       sync(livePanel, bench) {
         panel = livePanel;

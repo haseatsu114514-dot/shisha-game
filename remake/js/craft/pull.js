@@ -125,7 +125,7 @@ export function careStartTemp(cs) {
 const MODES = {
   pull: {
     store: "pull", title: "吸い出し", min: 2, safe: 3, drift: false, serveLabel: "提供する",
-    hint: "右の上げ吸いで温度を上げ、左の下げ吸いで下げる。中央のキープは左寄りで微減、右寄りで微増。雨の日は熱が入りにくいので、温度が下がったら上げ吸いを増やそう。吸い終えてから次の針を止めよう。緑の範囲で味を整える。低めと高めで表情が変わる葉もある。蒸らしで集中できたほど針はゆっくり動く",
+    hint: "右の上げ吸いで温度を上げ、左の下げ吸いで下げる。中央のキープは左寄りで微減、右寄りで微増。雨の日は熱が入りにくいので、温度が下がったら上げ吸いを増やそう。吸い終えてから次の針を止めよう。温度計は緑で合格、虹が理想だ。低めと高めで表情が変わる葉もある。蒸らしで集中できたほど針はゆっくり動く",
     start: startTemp, focus: pullFocusFromSteam,
   },
   care: {
@@ -372,7 +372,7 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
     const optimal = isRainbowTemperature(temp, bands);
     const position = (temp - ideal[0]) / (ideal[1] - ideal[0]);
     const goodLabel = expressive ? position < .35 ? "適温・低" : position > .65 ? "適温・高" : "適温" : "適温";
-    return optimal ? [expressive ? goodLabel : "最適温", "optimal"] : inZone ? [goodLabel, "ok"] : temp >= DANGER_TEMP ? ["焦げる寸前！", "danger"]
+    return optimal ? [`最${goodLabel}`, "optimal"] : inZone ? [goodLabel, "ok"] : temp >= DANGER_TEMP ? ["焦げる寸前！", "danger"]
       : temp > ideal[1] ? ["熱い", "hot"] : mode.drift && temp <= COLD_OUT + 0.08 ? ["冷え切りそう！", "cold"] : ["ぬるい", "cool"];
   };
   const focusNote = renewal && mode.store === "pull" ? steamFocusNote(cs) : null;
@@ -395,7 +395,7 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
       : pulls + 1 > safeLimit && cs.leaf.hp <= 1 ? "これ以上吸うと、最後の葉が抜けそうだ"
       : pulls + 1 > safeLimit ? "次の一口から葉を傷めそうだ" : "");
     if (choosing) return;
-    // 表示の虹（どの配合にもある。作り分ける葉だけの配合はおいしく作れる範囲全体）。採点の最適温とは別。
+    // 虹の成功演出は温度計と同じ帯を使う。
     // 今の温度を短い一語で。温度計の印と同じ色にする。
     const [state, tone] = temperatureWord(T);
     setData(readout, "tone", tone);
@@ -859,7 +859,8 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
     // 山場（CFX03・KMR11）: 作業風景のはじめが、口元から煙を吐く。煙の姿が出来を語る:
     // 適温はまとまった煙、最適温・会心はたっぷり長く残って煙の輪もひとつ。ぬるいと薄く小さく、熱すぎるとむせてちぎれる。
     // 煙は作業風景の窓の中だけで、計器や結果の札には掛けない。待たない（結果の確認を遅らせない）
-    exhale(panel.closest?.(".bench") || panel, { color: mixColor(cs.mix), grand: inZone && (optimal || criticals > 0), quality: inZone ? "good" : T > ideal[1] ? "harsh" : "thin" });
+    const inRainbow = isRainbowTemperature(T, bands);
+    exhale(panel.closest?.(".bench") || panel, { color: mixColor(cs.mix), grand: inZone && (inRainbow || criticals > 0), quality: inZone ? "good" : T > ideal[1] ? "harsh" : "thin" });
     // CRN08・CRN03: ボタンを押す前に、出来（温度の一語）と、この温度がこの後どう効くかを読めるようにする
     const [servedWord] = temperatureWord(T);
     const careFollows = !!panel.closest?.(".bench")?.querySelector?.('.bench-phase[data-step^="care"]');
@@ -869,7 +870,7 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
       summary: [context.summary, ...(renewal ? [`${servedWord}（${pulls}回吸った）${careFollows ? "。この温度から調整が始まる" : ""}`] : []), attackLine, review?.()].filter(Boolean),
       lines: [
         ...(naruFinished ? ["焼き際を見極めた。仕上げの評価に小さな手応え"] : []),
-        inZone && bands.expressionWeight >= .999 ? "適温で、味の表情を整えられた" : optimal ? "最適温に合わせられた" : inZone ? "適温に整えられた" : T > ideal[1] ? "少し熱いままだった" : "まだぬるかった",
+        inRainbow ? "最適温に合わせられた" : inZone && bands.expressionWeight >= .999 ? "適温で、味の表情を整えられた" : inZone ? "適温に整えられた" : T > ideal[1] ? "少し熱いままだった" : "まだぬるかった",
         tasteCard,
         ...(cs.mixInfo?.ngReasons || []),
         waterComfortLine(cs.water),

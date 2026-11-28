@@ -98,17 +98,16 @@ assert.equal(thermalBand(mintHigh, mint).id, "optimal");
 assert.equal(envAt(mintHigh, mint).fire, 0);
 assert.notEqual(thermalBand(.76, mint).id, "optimal", "PST01: 締めた後の .76 は緑の外");
 assert(visualTemperature(.76, mint) > mint.ideal[1] && visualTemperature(.76, mint) < DANGER_TEMP);
-// 虹（2026-11-10 オーナー指示）: どの配合にもあり、最適温を含み適温帯に収まる。作り分ける葉が多いほど広く、
-// 作り分ける葉だけなら適温帯と同じ。虹の端でも採点の適合度は90以上（表示だけの帯で採点は変えない）。
+// 虹は従来の各配合の幅より22%細く、高温側へ寄る。虹の端でも適合度は90以上。
 let rainbowCases = 0, sawFull = false, sawFocused = false;
 for (const mix of [...flavors.map(f => ({ [f.id]: 12 })), { lemon: 6, mint: 6 }, { lemon: 6, peach: 6 }, { mint: 9, vanilla: 3 }, { mint: 3, vanilla: 9 }]) {
   const bands = temperatureBands({ mix });
-  assert(bands.rainbow[0] <= bands.optimal[0] + 1e-12 && bands.rainbow[1] >= bands.optimal[1] - 1e-12, `rainbow covers optimal ${JSON.stringify(mix)}`);
+  assert((bands.rainbow[1] + bands.rainbow[0]) / 2 > bands.center, `hotter rainbow ${JSON.stringify(mix)}`);
   assert(bands.rainbow[0] >= bands.ideal[0] - 1e-12 && bands.rainbow[1] <= bands.ideal[1] + 1e-12, `rainbow inside ideal ${JSON.stringify(mix)}`);
   assert(bands.rainbow[1] > bands.rainbow[0], `rainbow exists ${JSON.stringify(mix)}`);
   for (const edge of bands.rainbow) assert(temperatureFitness(edge, bands) >= 90 - 1e-9, `rainbow edge scores ${JSON.stringify(mix)}`);
-  if (bands.expressionWeight >= .999) { sawFull = true; near(bands.rainbow[0], bands.ideal[0]); near(bands.rainbow[1], bands.ideal[1]); }
-  if (bands.expressionWeight === 0) { sawFocused = true; near(bands.rainbow[0], bands.optimal[0]); near(bands.rainbow[1], bands.optimal[1]); }
+  if (bands.expressionWeight >= .999) { sawFull = true; near(bands.rainbow[1] - bands.rainbow[0], (bands.ideal[1] - bands.ideal[0]) * .78); }
+  if (bands.expressionWeight === 0) { sawFocused = true; near(bands.rainbow[1] - bands.rainbow[0], (bands.optimal[1] - bands.optimal[0]) * .78); }
   rainbowCases++;
 }
 assert(sawFull && sawFocused);
@@ -226,9 +225,9 @@ for (const flavor of flavors) {
 assert.equal(mint.expressionWeight, 1, "AF mint must support low/high expression");
 for (const temp of [mint.ideal[0], mint.center, mint.ideal[1]]) {
   assert.equal(temperatureFitness(temp, mint), 100);
-  // 作り分ける葉だけの配合は、おいしく作れる範囲全体が虹（2026-11-10 オーナー指示。以前は緑のみ）。
-  assert.equal(thermalBand(temp, mint).id, "optimal");
-  assert(envAt(temp, mint).rainbow > 0);
+  const rainbow = temp >= mint.rainbow[0] && temp <= mint.rainbow[1];
+  assert.equal(thermalBand(temp, mint).id, rainbow ? "optimal" : "ready");
+  assert.equal(envAt(temp, mint).rainbow > 0, rainbow);
 }
 assert.equal(vanilla.expressionWeight, 0, "Unconfigured leaves retain their focused heat curve");
 assert.equal(thermalBand(vanilla.center, vanilla).id, "optimal");

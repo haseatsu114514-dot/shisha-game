@@ -1037,7 +1037,7 @@ html.craft-neon body #viewport #stage #screen .bench[data-mode] .craft-water-fil
 html.craft-neon body #viewport #stage #screen .bench[data-mode] .craft-water-fill::after {
   background: #ccf9ff !important;
 }
-html.craft-neon body #viewport #stage #screen .bench[data-mode] .craft-water-band {
+html.craft-neon body #viewport #stage #screen .bench[data-mode] .craft-water-band:not(.precise) {
   border-color: #ffe998 !important;
   background: rgba(255, 233, 152, 0.18) !important;
 }

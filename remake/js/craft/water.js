@@ -1,5 +1,5 @@
 // 実水量だけを扱う。波・入力・温度・得点は保存値に含めない。
-export const WATER = Object.freeze({ neutral: .50, low: .44, high: .56, pour: .18, drain: .03 });
+export const WATER = Object.freeze({ neutral: .50, low: .44, high: .56, preciseLow: .48, preciseHigh: .52, pour: .18, drain: .03 });
 export const STEM_TIP = .30;
 export const DEEP_WATER_LIMIT = .85;
 
@@ -21,6 +21,17 @@ export function changeWater(q, direction, seconds) {
   if (!Number.isFinite(seconds) || seconds <= 0) return waterQuantity(q);
   const rate = direction === "pour" ? WATER.pour : direction === "drain" ? -WATER.drain : 0;
   return waterQuantity(waterQuantity(q) + rate * seconds);
+}
+
+/** 水位を優先し、6秒を超えた分だけ最大15点を引く。 */
+export function evaluateWater(quantity, seconds) {
+  const q = waterQuantity(quantity);
+  const zone = q >= WATER.preciseLow && q <= WATER.preciseHigh ? "precise" : waterBand(q);
+  const distanceOutside = Math.max(WATER.low - q, q - WATER.high, 0);
+  const levelScore = zone === "precise" ? 100 : zone === "ideal" ? 85
+    : q < STEM_TIP ? 0 : Math.max(0, Math.floor(85 - distanceOutside * 300));
+  const timePenalty = Math.min(15, Math.floor(Math.max(0, seconds - 6)));
+  return { zone, seconds, score: Math.max(0, levelScore - timePenalty) };
 }
 
 export function waterBand(q) {

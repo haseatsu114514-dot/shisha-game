@@ -3,9 +3,9 @@ import { buildVersioned } from "../core/asset-version.js";
 import { modal, toast } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, benchRoot, craftTest, setBenchWater, explainTutorialStep } from "./session.js";
+import { stepPanel, benchRoot, craftTest, setBenchWater, explainTutorialStep, refreshBench } from "./session.js";
 import { STEP_BRIEFS } from "./bench-ui.js";
-import { waterQuantity, changeWater, waterComfort, STEM_TIP, WATER } from "./water.js";
+import { waterQuantity, changeWater, waterComfort, evaluateWater, STEM_TIP, WATER } from "./water.js";
 
 function ensureStyle() {
   if (document.querySelector('link[data-craft-water]')) return;
@@ -20,6 +20,7 @@ const WATER_HELP = "押している間だけ水量が変わります。離すと
 // 開始時は空（0）。途中再開はcs.waterの実量をそのまま渡すので保たれる。
 export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal } = {}) {
   let q = waterQuantity(quantity), direction = null, input = null, last = null;
+  let elapsed = 0, clockStart = null;
   let raf = 0, done = false, wave = 0, velocity = 0, nextWaterSound = 0;
   let resolve, reject;
   const result = new Promise((yes, no) => { resolve = yes; reject = no; });
@@ -32,21 +33,36 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
   const fill = el("div.craft-water-fill");
   const tip = el("div.craft-water-tip", { text: "ステムの先", dataset: { test: "water-tip" } });
   tip.style.bottom = `${STEM_TIP * 100}%`;
+  const bandMark = (low, high, precise = false) => {
+    const mark = el(precise ? "div.craft-water-band.precise" : "div.craft-water-band", { "aria-hidden": "true" });
+    mark.style.bottom = `${Math.round(low * 100)}%`;
+    mark.style.height = `${Math.round((high - low) * 100)}%`;
+    return mark;
+  };
   const meter = el("div.craft-water-meter", { role: "meter", "aria-label": "水量", "aria-valuemin": 0, "aria-valuemax": 100, dataset: { test: "water-meter" } }, [
-    fill, el("div.craft-water-band", { "aria-hidden": "true" }), tip,
+    fill, bandMark(WATER.low, WATER.high), bandMark(WATER.preciseLow, WATER.preciseHigh, true), tip,
   ]);
   const status = el("span.craft-water-status", { dataset: { test: "water-status" } });
   const pour = el("button.btn", { type: "button", text: "注ぐ（長押し）", dataset: { test: "water-pour" } });
   const drain = el("button.btn", { type: "button", text: "少しこぼす（長押し）", dataset: { test: "water-drain" } });
   const confirm = el("button.btn.primary", { type: "button", text: "この水量で進む", dataset: { test: "water-confirm" } });
   const root = el("section.craft-water", { dataset: { test: "water-step" } }, [
-    el("div.craft-water-display", [meter, el("div.craft-water-reading", [status, el("p", { text: "目安：ステムが少し浸かるまで（二本の線のあいだ）" })])]),
+    el("div.craft-water-display", [meter, el("div.craft-water-reading", [status, el("p", { text: "外の帯が目安。内側の細い帯に合わせると高得点" })])]),
     el("p.craft-water-help", { text: WATER_HELP }),
     el("div.craft-water-actions", [pour, drain, confirm]),
   ]);
   panel.append(root);
   const available = () => !done && root.isConnected && isCurrent() && !document.hidden
     && !panel.closest('[inert], .done') && !document.querySelector('#modal.show, .bench-guide[open], .bench-condition[open]');
+  function syncClock() {
+    const now = performance.now();
+    if (available()) {
+      clockStart ??= now;
+    } else if (clockStart !== null) {
+      elapsed += now - clockStart;
+      clockStart = null;
+    }
+  }
   let drawnQuantity = null, drawnWave = null, drawnBand = null, drawnFlow = null;
   function render() {
     if (drawnQuantity !== q) {
@@ -128,7 +144,7 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
   listen(window, "keyup", event => { if (input === `key:${event.key}`) stop(); }, true);
   listen(window, "blur", stop);
   listen(window, "pagehide", () => cancel());
-  listen(document, "visibilitychange", () => { if (document.hidden) stop(); });
+  listen(document, "visibilitychange", () => { syncClock(); if (document.hidden) stop(); });
   // MENU/LOAD/説明を開く入力の時点で止める。閉じても再押下が必要。
   for (const type of ["pointerdown", "click", "keydown"]) listen(document, type, event => {
     if (!root.contains(event.target)) stop();
@@ -140,7 +156,7 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
   }
   function finish() {
     if (!available()) return;
-    stop(); done = true; cleanup(); confirm.disabled = true;
+    stop(); done = true; syncClock(); cleanup(); confirm.disabled = true;
     resolve(q);
   }
   function cancel() {
@@ -165,6 +181,7 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
   });
   if (signal) listen(signal, "abort", cancel);
   const observer = new MutationObserver(() => {
+    syncClock();
     if (!root.isConnected || !isCurrent() || panel.closest('.done')) cancel();
     else if (!available()) stop();
   });
@@ -196,7 +213,8 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
   }
   render();
   if (signal?.aborted) cancel();
-  return { root, result, stop, cancel, confirm: finish };
+  syncClock();
+  return { root, result, stop, cancel, confirm: finish, get seconds() { return elapsed / 1000; } };
 }
 
 export async function stepWater(cs) {
@@ -205,23 +223,26 @@ export async function stepWater(cs) {
   // 水はSETUP内の準備。既存の番号付き工程と進捗表示を保つ。
   // 説明文は water 専用（常設 brief と初回レッスン）を使い、setup の文は流用しない。
   const panel = stepPanel("setup", "水入れ", cs.mode === "tutorial"
-    ? "スミ「注ぐときは長押し。二本の線を目安に、こぼして戻してもいい」"
+    ? "スミ「注ぐときは長押し。外の帯が目安。内側の細い帯なら高得点だ」"
     : "長押しで注ぐ・こぼす。水量を決めてから配合へ進む", { brief: STEP_BRIEFS.water, lessonStep: "water" });
   if (cs.mode === "tutorial" && !await explainTutorialStep(cs, "water", "setup")) return;
-  // DBG「自動で成功」は目安（二本の線のあいだ）の真ん中で確定する（#3938。空のまま確定して「水なし」になっていた）。
+  // DBG「自動で成功」は目安の真ん中で確定する（#3938。空のまま確定して「水なし」になっていた）。
   // 「自動で失敗」・手動は今の水量のまま（開始時は空）。
   const quantity = craftTest.auto === "good" ? WATER.neutral : cs.water;
   const view = mountWater(panel, { quantity, isCurrent: () => state === ownerState && !!benchRoot(cs) });
   benchRoot(cs)?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", [el("p", { text: WATER_HELP })]));
   if (craftTest.auto) queueMicrotask(view.confirm);
   cs.water = await view.result;
+  cs.waterResult = evaluateWater(cs.water, view.seconds);
+  refreshBench();
   // 確定した水位を左の作業風景のボトル内部へ描く（本編・練習共通）。
   setBenchWater(cs);
-  toast({
+  const advice = {
     ideal: "ステムがほどよく浸かった。すっきりした吸い心地になりそう",
     shallow: "浅め。煙が冷えきらず、喉に当たるかも",
     deep: "深め。吸い心地が重くなりそう",
     none: "ステムが水に届いていない。煙が冷えないぞ",
-  }[waterComfort(cs.water).band], { kind: "water-level" });
+  }[waterComfort(cs.water).band];
+  toast(`水入れ ${cs.waterResult.score}点 · ${cs.waterResult.seconds.toFixed(1)}秒。 ${advice}`, { kind: "water-evaluation" });
   return cs.water;
 }

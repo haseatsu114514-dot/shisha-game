@@ -106,7 +106,7 @@ await suite("mix-temperature", async check => {
       const preview = await expectBands(page, 1.2);
       assert.equal(await page.locator(".mix-ideal").textContent(), "おいしい範囲");
       assert.equal(await page.locator(".mix-optimal").textContent(), "低め／高め");
-      // 作り分ける葉だけの配合でも虹は出る（おいしく作れる範囲全体。2026-11-10 オーナー指示）
+      // 作り分ける葉だけの配合にも虹が出る
       assert.equal(await page.locator('[data-test="mix-optimal"]').isVisible(), true);
       assert.match(await page.locator(".mix-temperature").getAttribute("aria-label"), /低めと高めで香りが変わる/);
       assert.doesNotMatch(await page.locator(".mix-temperature-legend").textContent(), /[\d%]/);
@@ -152,10 +152,11 @@ await suite("mix-temperature", async check => {
       const result = await page.evaluate(() => ({ pull: QA.cs.pull,
         expected: QA.conditions.pullResult(QA.cs.pull.temp, QA.cs.pull.pulls, QA.cs.pull.justs, QA.conditions.temperatureBands(QA.cs)),
         background: document.querySelector(".bench").dataset.thermalBand,
+        inRainbow: QA.conditions.isRainbowTemperature(QA.cs.pull.temp, QA.conditions.temperatureBands(QA.cs)),
         score: QA.cs.arcade.parts.pull, strain: QA.cs.strain || 0 }));
       assert.equal(result.pull.optimal, true); assert.equal(result.pull.inZone, true);
-      // ミントだけの配合は作り分ける葉なので、おいしく作れる範囲全体が虹（2026-11-10 オーナー指示）。背景も虹
-      assert.equal(result.pull.score, result.expected.score); assert.equal(result.background, "optimal");
+      assert.equal(result.pull.score, result.expected.score);
+      assert.equal(result.background, result.inRainbow ? "optimal" : "ready");
       assert.equal(result.pull.score, 100);
       assert.equal(result.score, result.pull.score * 100); assert.equal(result.strain, 0);
       await finishResult(page);
@@ -290,7 +291,7 @@ await suite("mix-temperature", async check => {
       }, { care, band });
       if (care) await page.locator('[data-test="care-coal-0"]').click();
       await page.locator('[data-test="pull-stop"]:enabled').waitFor();
-      await page.locator(".pull-state").filter({ hasText: ({ low: "適温・低", high: "適温・高" })[band] }).waitFor();
+      await page.locator(".pull-state").filter({ hasText: band === "low" ? /適温・低/ : /適温・高/ }).waitFor();
       await assertFits(page, ".pull-read");
       // 作り分ける葉の配合でも虹は出る（2026-11-10 オーナー指示）
       assert.equal(await page.locator(".thermo-optimal").isVisible(), true);
@@ -388,7 +389,7 @@ await suite("mix-temperature", async check => {
     assert.deepEqual(results.modes.map(m => m.optimal), [true, true, true]);
     assert.equal(new Set(results.modes.map(m => m.center)).size, 1);
     assert.equal(new Set(results.modes.map(m => m.width)).size, 1);
-    assert.match(results.modes[1].text, /おいしく作れる範囲/);
+    assert.equal(results.modes[1].text, "最適温");
     assert.equal(results.modes[1].lowScore, 100); assert.equal(results.modes[1].highScore, 100);
     assert.equal(results.mintRisk, results.mintCenterRisk);
     assert.equal(results.afRisk - results.afCenterRisk, 12);

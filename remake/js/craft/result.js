@@ -531,8 +531,8 @@ export function resultTable(cs, rank, attempt = null) {
       el("h4", { text: "あなたの一台" }),
       progress?.lastPoint && progress.beforeLast ? el("small", { text: `千須の最後の1点は、${nameOf(progress.lastPoint)}へ。` }) : null,
       Number.isFinite(cs.pull?.temp) && !cs.pull.failed ? actualExpressionCard(cs, cs.pull.temp) : null,
-      ...[["穴あけ", P.holes], ["炭焼き", P.heat], ["完成品", P.shisha], ["調整1回目", P.care1], ["調整2回目", P.care2]]
-        .filter(([k]) => !(k === "穴あけ" && cs.foilSkipped)).map(([k, v]) =>
+      ...[["水入れ", P.water], ["穴あけ", P.holes], ["炭焼き", P.heat], ["完成品", P.shisha], ["調整1回目", P.care1], ["調整2回目", P.care2]]
+        .filter(([k, v]) => !(k === "穴あけ" && cs.foilSkipped) && (k !== "水入れ" || Number.isFinite(v))).map(([k, v]) =>
         el("div.rt-part", [el("span", { text: k }), evaluation(v), el("small", { text: evaluationOf(v || 0).label })])),
       // 完成品の中身（P7）。攻めた構成（4点置き・詰め方など）の見返り（煙・味）と代償（焦げやすさ）が読めるように
       cs.stats && renewalCraft(cs) ? el("small.rt-shisha-stats", { dataset: { test: "result-shisha-stats" }, text: `完成品の中身：煙${cs.stats.smoke}・吸い心地の軽さ${cs.stats.draw}・熱の安定${cs.stats.heatStability}・香り${cs.stats.aroma}・味の濃さ${cs.stats.taste}・持ち${cs.stats.duration}・焦げやすさ${cs.stats.burnRisk}` }) : null,

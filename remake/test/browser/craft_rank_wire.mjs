@@ -69,11 +69,11 @@ await suite('craft-rank-wire', async check => {
     assert.equal(await page.locator('.craft-rank').count(), 1);
     assert.equal(await page.locator('.bench-mode').count(), 1);
     await assertFits(page, '.bench-mode');
-    // #3795: 桜井版は未計測から、完了工程の平均を表示する
-    assert.equal(await page.locator('.craft-rank').getAttribute('data-grade'), 'unavailable');
+    // 桜井版も制作中はDから一段ずつ進む。
+    assert.equal(await page.locator('.craft-rank').getAttribute('data-grade'), 'D');
     await page.evaluate(() => { T.session.craftTest.auto = 'good'; window.heatRun = T.heat.runHeat(T.cs); });
     await page.evaluate(() => window.heatRun);
-    assert.notEqual(await page.locator('.craft-rank').getAttribute('data-grade'), 'unavailable');
+    assert.equal(await page.locator('.craft-rank').getAttribute('data-grade'), 'C');
     // Use the actual session fields and refresh path; no production score override hook.
     for (const [grade, score, progress] of [['B', 70, '33'], ['S', 92.5, '50'], ['SS', 96, '50'], ['SSS', 97, '100'], ['B', 70, '33']]) {
       const change = await page.evaluate(score => {
@@ -211,7 +211,7 @@ await suite('craft-rank-wire', async check => {
       cs.pullDone = true;
       cs.stats = { craftQuality: 85 };
       refreshBench();
-      const burst = document.querySelector('.craft-rank-burst[data-grade="A"]');
+      const burst = document.querySelector('.craft-rank-burst[data-grade="C"]');
       const animation = burst.getAnimations()[0];
       // 最大表示が落ち着いたところで、実際の札との位置関係を測る。
       animation.currentTime = 600;

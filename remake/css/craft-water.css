@@ -4,7 +4,8 @@
 .craft-water-fill { position: absolute; bottom: 0; width: 100%; background: linear-gradient(#74d9ea, #3582b4); }
 .craft-water-fill::before, .craft-water-fill::after { content: ""; position: absolute; left: -20%; top: -4px; width: 140%; height: 9px; border-radius: 50%; background: #b8f3fa; transform: translateY(var(--water-wave, 0px)) rotate(-3deg); }
 .craft-water-fill::after { opacity: .45; transform: translateY(calc(var(--water-wave, 0px) * -.6)) rotate(4deg); }
-.craft-water-band { position: absolute; bottom: 44%; height: 12%; width: 100%; border-top: 2px dashed #fff3b0; border-bottom: 2px dashed #fff3b0; background: #fff3b026; pointer-events: none; }
+.craft-water-band { position: absolute; width: 100%; border-top: 2px dashed #fff3b0; border-bottom: 2px dashed #fff3b0; background: #fff3b026; pointer-events: none; }
+.craft-water-band.precise { border-style: solid; border-width: 1px 0; background: #ffd37860; }
 .craft-water-tip { position: absolute; left: 0; width: 100%; padding-left: 1.8rem; font-size: .58rem; line-height: 1; color: #fff; text-shadow: 0 0 3px #0b1f2c, 0 1px 2px #0b1f2c; transform: translateY(50%); pointer-events: none; }
 .craft-water-tip::before { content: ""; position: absolute; left: .15rem; top: 50%; width: 1.3rem; border-top: 2px dashed #fff; }
 .craft-water-status { display: block; color: #fff3b0; }

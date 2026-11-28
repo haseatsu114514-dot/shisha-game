@@ -93,10 +93,15 @@ test('climbing rank starts at D and opens one grade per finished step, with stea
   // 全工程を終えたら、最終の総合（ボーナス前）と一致する（蒸らしは採点の平均には入らない）
   const full = { holes: { score: 90 }, heat: { score: 80 }, steam: { score: 30 }, pullDone: true, stats: { craftQuality: 100 }, careHistory: [{ score: 70 }, { score: 60 }] };
   assert.equal(score.climbingCraftScore(full, steps), score.finalize(structuredClone({ ...full, chapter: 2, mode: 'rehearsal' })).total);
-  // 調整なしの台は、提供で全工程が終わる
+  // 調整なしの台は完成時の採点まで段階の上限を保つ
   const noCare = steps.filter(id => !id.startsWith('care'));
   assert.equal(score.climbingCraftScore({ holes: { score: 90 }, heat: { score: 90 }, steam: {}, pullDone: true, stats: { craftQuality: 90 } }, noCare), 90);
   assert.equal(score.climbingCraftScore({ heat: { score: NaN } }, steps), 0);
+  assert.equal(snapshot(score.climbingCraftScore({ heat: { score: 100 } }, ["heat"])).grade, "C");
+  assert.equal(grade({ waterResult: { score: 100 }, holes: { score: 100 } }), "C");
+  assert.equal(grade({ waterResult: { score: 100 }, holes: { score: 100 }, heat: { score: 0 } }), "C");
+  assert.equal(grade({ holes: { score: 100 }, heat: { score: 100 }, steam: {}, pullDone: true,
+    stats: { craftQuality: 100 }, careHistory: [{ score: 0 }] }), "B");
 });
 
 test('final totals, parts, bonus and D–S ranks match the unchanged scoring formula', () => {
@@ -110,6 +115,18 @@ test('final totals, parts, bonus and D–S ranks match the unchanged scoring for
     });
     assert.equal(next.bonusNotes.length, 0);
   }
+});
+
+test('measured water contributes to the final result without penalizing a missing measurement', () => {
+  const cs = { chapter: 2, holes: { score: 90 }, heat: { score: 90 }, stats: { craftQuality: 90 },
+    careHistory: [{ score: 90 }, { score: 90 }] };
+  assert.equal(score.finalize(structuredClone(cs)).total, 90);
+  const shallow = score.finalize({ ...structuredClone(cs), waterResult: { score: 0 } });
+  assert.equal(shallow.parts.water, 0);
+  assert.equal(shallow.total, 85.7);
+  const precise = score.finalize({ ...structuredClone(cs), waterResult: { score: 100 } });
+  assert.equal(precise.parts.water, 100);
+  assert.equal(precise.total, 90.5);
 });
 
 test('final bonus and cap stay separate from the provisional average', () => {
