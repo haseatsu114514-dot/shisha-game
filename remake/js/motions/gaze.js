@@ -5,6 +5,7 @@
 import { el, sleep, clamp } from "../core/util.js";
 import { W, H, EASE, move, reducedMotion } from "../core/transition-kit.js";
 import { holdCover } from "../core/transitions.js";
+import { mountMotion } from "../core/motion-frame.js";
 import { DB, portraitInfo, faceFrame } from "../core/data.js";
 import { SE } from "../core/audio.js";
 
@@ -73,14 +74,24 @@ export async function gaze(cast = [], { brief = false } = {}) {
   const images = await Promise.all(list.map(entry => loaded(entry.src)));
   const shown = list.filter((_, i) => images[i]);
   if (shown.length < 2 || !host.isConnected) return;
-  const bandHeight = gazeBandHeight(shown.length, brief);
-  const total = bandHeight * shown.length + GAP * (shown.length - 1);
-  const top = brief ? Math.max(24, (H - 220 - total) / 2) : (H - total) / 2; // 短い版は台詞欄にかけない
   const node = el(`div.mo-gaze${brief ? ".brief" : ""}`, { "aria-hidden": "true", dataset: { count: String(shown.length) } });
+  const unhold = holdCover();
+  // 縦画面を縦持ちで使っている間は縦の舞台（720×H・VPO14）。縦に長いぶん帯を太くし、画面の高さの7割（短い版は上の4割）に積む
+  const mounted = mountMotion(node, { portrait: true, host });
+  const { W: FW, H: FH, portrait } = mounted.frame;
+  const count = shown.length;
+  const bandHeight = portrait
+    ? clamp(Math.floor(((brief ? FH * 0.42 : FH * 0.72) - GAP * (count - 1)) / count), brief ? 70 : 90, brief ? 130 : 200)
+    : gazeBandHeight(count, brief);
+  const total = bandHeight * count + GAP * (count - 1);
+  const top = portrait
+    ? (brief ? Math.max(FH * 0.06, (FH * 0.56 - total) / 2) : (FH - total) / 2) // 縦の短い版は、下の会話の帯にかけない
+    : brief ? Math.max(24, (H - 220 - total) / 2) : (H - total) / 2; // 短い版は台詞欄にかけない
   const dim = el("div.mo-gaze-dim");
   const bands = shown.map((entry, i) => {
     const fromLeft = i % 2 === 0;
-    const art = gazeBandArt(entry.frame, bandHeight, W / 2 + (fromLeft ? -150 : 150)); // 一本ごとに左右へずらす
+    const cx = portrait ? FW / 2 + (fromLeft ? -64 : 64) : W / 2 + (fromLeft ? -150 : 150);
+    const art = gazeBandArt(entry.frame, bandHeight, cx); // 一本ごとに左右へずらす
     const image = el("img.mo-gaze-art", { alt: "", draggable: "false", src: entry.src,
       style: { width: `${art.width}px`, left: `${art.left}px`, top: `${art.top}px` } });
     return el(`div.mo-gaze-band${entry.remote ? ".remote" : ""}`, {
@@ -89,8 +100,6 @@ export async function gaze(cast = [], { brief = false } = {}) {
     }, [image, entry.remote ? el("i.mo-gaze-scan") : null]);
   });
   node.append(dim, ...bands);
-  const unhold = holdCover();
-  host.append(node);
   try {
     move(dim, [{ opacity: 0 }, { opacity: 1 }], 200, { easing: "ease-out" });
     await sleep(120);
@@ -114,7 +123,7 @@ export async function gaze(cast = [], { brief = false } = {}) {
       move(dim, [{ opacity: 1 }, { opacity: 0 }], 260, { easing: "ease-in" }),
     ]);
   } finally {
-    node.remove();
+    mounted.remove();
     unhold();
   }
 }

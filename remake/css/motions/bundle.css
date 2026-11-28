@@ -81,6 +81,10 @@
 .mo-tc-band small { position: absolute; left: 54px; bottom: 100%; background: #2a1638; color: #f4ecda; font-size: 20px; line-height: 1.5; letter-spacing: 0.22em;
   font-weight: 700; padding: 4px 15px 4px; white-space: nowrap; }
 .mo-tc-band .t { display: block; color: #1a0f24; font-size: 84px; line-height: 1.2; letter-spacing: 0.14em; white-space: nowrap; font-family: "Suien Name", var(--font); font-weight: 700; }
+/* 縦画面の縦の舞台（720×H・VPO04）: 3枚は画面の上 1/3 に横一列、めくった札は真ん中で大きく。帯は下の 1/8 あたり。卓は上下に暗く沈める */
+.mo-portrait.mo-tarot .mo-tc-shade { background: linear-gradient(to bottom, #0a0410b3 0%, #0a041059 34%, #0a0410a6 68%, #0a0410e6 100%); }
+.mo-portrait.mo-tarot .mo-tc-table { transform-origin: 50% 40%; }
+.mo-portrait.mo-tarot .mo-tc-band { bottom: 11%; width: 640px; }
 
 /* ===== css/motions/gift.css ===== */
 /* 贈り物（remake/js/motions/gift.js）。a／b の2パターンの見た目。色は js の配色から変数で渡す */
@@ -1014,6 +1018,8 @@ html:root[data-density="phone"] body:not(.game-ds) .kj-actions .btn { min-height
 .mo-ride-title b { font-size: 92px; line-height: 1.05; letter-spacing: .08em; font-weight: 700; }
 .mo-ride-title i { display: block; width: 300px; height: 2px; background: linear-gradient(to right, #fff, #fff0); transform-origin: 0 50%; }
 .mo-ride-title.van { top: auto; left: 80px; bottom: 82px; }
+/* 縦画面の縦の舞台（720×H・VPO11・VPO12）: 行き先の題字は窓の下（画面の下 1/8 あたり）に。配送便も同じ所 */
+:is(.mo-portrait.mo-ride-title, .mo-portrait .mo-ride-title) { left: 60px; top: auto; bottom: 11%; }
 
 /* ===== css/motions/shinkansen.css ===== */
 /* 新幹線（remake/js/motions/shinkansen.js の c・TMG58）。本物の車内の絵と、窓の中だけを流れる景色の筋 */
@@ -1026,6 +1032,8 @@ html:root[data-density="phone"] body:not(.game-ds) .kj-actions .btn { min-height
 .mo-shn-win.near { -webkit-mask-image: linear-gradient(to bottom, transparent 43%, #000 55%); mask-image: linear-gradient(to bottom, transparent 43%, #000 55%); opacity: 0; }
 .mo-shn-pole { position: absolute; left: 0; top: -4%; width: 77px; height: 108%; background: linear-gradient(to right, transparent, #1a2236 50%, transparent); filter: blur(10px); opacity: 0; }
 .mo-shn-flick { background: linear-gradient(80deg, transparent 30%, #fff8e633 46%, transparent 60%); mix-blend-mode: soft-light; opacity: 0; }
+/* 縦画面の縦の舞台（VPO11）: 車内の絵（1280×720）を k 倍で画面の高さいっぱいに。横の位置と倍率は JS（窓を真ん中に） */
+.mo-shn-view { position: absolute; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; }
 
 /* ===== css/motions/moments.css ===== */
 /* 章の要所の演出（motions/moments.js・#2688 A3・A5・A6・A8） */
@@ -1066,6 +1074,9 @@ html:root[data-density="phone"] body:not(.game-ds) .kj-actions .btn { min-height
 .mo-unveil-stand { position: absolute; inset: 0; overflow: hidden; opacity: 0; }
 .mo-unveil-figure { position: absolute; left: 69%; width: auto; max-width: none; transform: translateX(var(--ax, -50%)); opacity: 0; -webkit-user-drag: none; }
 .mo-unveil-figure.shadow { opacity: 1; filter: brightness(0); }
+/* 縦画面の縦の舞台（720×H・VPO13）: 混ざる煙は画面の真ん中から立ちのぼる（横の間は JS で詰める）。味が遠のく煙は、横の舞台の大きさのまま真ん中に置く */
+.mo-portrait .mo-mixed-plume { left: -20px; top: calc(55% - 210px); }
+.mo-portrait .mo-taste-puff { inset: auto; left: -280px; top: calc(46% - 360px); width: 1280px; height: 720px; overflow: visible; }
 
 /* ===== css/motions/gaze.css ===== */
 /* 修羅場の「視線」カットイン（motions/gaze.js）。恋人たちの目元の帯が左右から差し込まれる */

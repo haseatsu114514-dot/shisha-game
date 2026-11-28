@@ -9,6 +9,7 @@ import { displayName } from "../core/data.js";
 import { W, svg, stageSvg, move } from "../core/transition-kit.js";
 import { MG_EASE as E, pick, burst, ring, twinkle } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
+import { frameOf } from "../core/motion-frame.js";
 import { graphicIntro } from "../vn/intro-graphic.js";
 
 // ---------------------------------------------------------------- 札の絵（表は 224x368 の枠の中に描く）
@@ -296,6 +297,29 @@ const sheet = (url) => ({ backgroundImage: `url("${url}")`, backgroundSize: "100
 const DEAL = [{ x: 154, y: 237, r: -8 }, { x: 348, y: 218, r: 2 }, { x: 543, y: 243, r: 9 }];
 const ASIDE = [{ x: 96, y: 256, r: -11 }, null, { x: 589, y: 262, r: 12 }];
 const PICK = "translate(323px, 187px) rotate(-2deg) scale(1.5)";
+/**
+ * 札の並べ方。横の舞台（1280×720）は上の DEAL・ASIDE・PICK のまま（卓の左寄りに配り、右下に帯）。
+ * 縦画面の縦の舞台（720×H・VPO04）では、3枚を画面の幅いっぱいに横一列で配り、めくった1枚を真ん中で大きく持ち上げ、下に帯。
+ */
+function tarotLayout({ W, H, portrait }) {
+  const land = {
+    cardW: CARD_W, cardH: CARD_H, deal: DEAL, aside: ASIDE, from: (i) => ({ x: 947, y: 77, r: 38 + i * 9 }), fromShadow: (i) => ({ x: 973, y: 115, r: 38 + i * 9 }),
+    lift: ["translate(323px, 159px) rotate(0deg) scale(1.32)", "translate(323px, 164px) rotate(-3deg) scale(1.6)", PICK],
+    shadowLift: ["translate(358px, 250px) rotate(-2deg) scale(1.66)", "translate(346px, 225px) rotate(-2deg) scale(1.52)"],
+  };
+  if (!portrait) return land;
+  const cardW = 208, cardH = Math.round(cardW * CARD_BOX.h / CARD_BOX.w);
+  const y = Math.round(H * 0.36 - cardH / 2); // 配る列（画面の上 1/3 あたり）
+  const px = Math.round((W - cardW) / 2), py = Math.round(H * 0.4 - cardH / 2); // めくった札の中心は画面の上から 4 割
+  return {
+    cardW, cardH,
+    deal: [{ x: 34, y: y + 22, r: -8 }, { x: px, y, r: 2 }, { x: W - cardW - 34, y: y + 28, r: 9 }],
+    aside: [{ x: -26, y: y + 60, r: -12 }, null, { x: W - cardW + 26, y: y + 66, r: 13 }],
+    from: (i) => ({ x: W - 60, y: y - 420, r: 38 + i * 9 }), fromShadow: (i) => ({ x: W - 40, y: y - 380, r: 38 + i * 9 }),
+    lift: [`translate(${px}px, ${py - 36}px) rotate(0deg) scale(1.5)`, `translate(${px}px, ${py - 30}px) rotate(-3deg) scale(1.86)`, `translate(${px}px, ${py}px) rotate(-2deg) scale(1.74)`],
+    shadowLift: [`translate(${px + 40}px, ${py + 80}px) rotate(-2deg) scale(1.92)`, `translate(${px + 26}px, ${py + 46}px) rotate(-2deg) scale(1.76)`],
+  };
+}
 const place = (p, extra = "") => `translate(${p.x}px, ${p.y}px) rotate(${p.r}deg) ${extra}`.trim();
 const under = (p) => place({ ...p, x: p.x + 6, y: p.y + 12 });
 const FACE = { back: (deg) => `perspective(1150px) rotateY(${deg}deg)`, front: (deg) => `perspective(1150px) rotateY(${deg - 180}deg)` };
@@ -321,6 +345,7 @@ export async function c(charId = state?.fortune?.char) {
   await loadImages([tableUrl, backUrl, frameUrl, artUrl]);
   await stagePlay("tarot", async (node) => {
     node.classList.add("at-c");
+    const L = tarotLayout(frameOf(node));
     const dim = el("i.mo-tc-dim");
     const table = el("i.mo-tc-table", { style: tableUrl ? { backgroundImage: `url("${tableUrl}")` } : { backgroundColor: "#2a1638" } });
     const lantern = el("i.mo-tc-lantern");
@@ -333,7 +358,7 @@ export async function c(charId = state?.fortune?.char) {
     ]);
     cards[1].append(front);
     const band = el("div.mo-tc-band", [el("small", { text: `${displayName(charId, state)}を占った札` }), el("span.t", { text: `${numeral} ${title}` })]);
-    for (const n of [...cards, ...shadows]) Object.assign(n.style, { width: `${CARD_W}px`, height: `${CARD_H}px` });
+    for (const n of [...cards, ...shadows]) Object.assign(n.style, { width: `${L.cardW}px`, height: `${L.cardH}px` });
     node.append(dim, set, shadows[0], shadows[2], cards[0], cards[2], shadows[1], cards[1], band);
     // 札の名前は帯の見えている幅（画面の右端まで）に収める。長い名前（XII 吊るされた男）は字を小さく
     const name = band.lastChild;
@@ -345,31 +370,31 @@ export async function c(charId = state?.fortune?.char) {
     move(lantern, [{ opacity: 0 }, { opacity: 0.85 }, { opacity: 0.6 }, { opacity: 0.9 }, { opacity: 0.7 }], 3800, { delay: 300, easing: "ease-in-out" });
     await sleep(430);
     // 2. 札が3枚、卓の奥から配られる
-    DEAL.forEach((p, i) => {
-      const from = `translate(947px, 77px) rotate(${38 + i * 9}deg) scale(.82)`;
+    L.deal.forEach((p, i) => {
+      const from = place(L.from(i), "scale(.82)");
       move(cards[i], [{ opacity: 0, transform: from }, { opacity: 1, offset: 0.2 }, { opacity: 1, transform: place(p) }], 520, { delay: i * 120 });
-      move(shadows[i], [{ opacity: 0, transform: `translate(973px, 115px) rotate(${38 + i * 9}deg)` }, { opacity: 0.5, transform: under(p) }], 520, { delay: i * 120 });
+      move(shadows[i], [{ opacity: 0, transform: place(L.fromShadow(i)) }, { opacity: 0.5, transform: under(p) }], 520, { delay: i * 120 });
       setTimeout(() => SE.card(), 120 + i * 120); // 札を置く音
     });
     await sleep(1020);
     // 3. 両脇が退いて暗くなり、真ん中の1枚が持ち上がってめくられる
     [0, 2].forEach((i) => {
-      move(cards[i], [{ opacity: 1, filter: "brightness(1)", transform: place(DEAL[i]) }, { opacity: 1, filter: "brightness(.5)", transform: place(ASIDE[i]) }], 520);
-      move(shadows[i], [{ opacity: 0.5, transform: under(DEAL[i]) }, { opacity: 0.5, transform: under(ASIDE[i]) }], 520);
+      move(cards[i], [{ opacity: 1, filter: "brightness(1)", transform: place(L.deal[i]) }, { opacity: 1, filter: "brightness(.5)", transform: place(L.aside[i]) }], 520);
+      move(shadows[i], [{ opacity: 0.5, transform: under(L.deal[i]) }, { opacity: 0.5, transform: under(L.aside[i]) }], 520);
     });
     move(shadows[1], [
-      { opacity: 0.5, transform: under(DEAL[1]) },
-      { opacity: 0.3, transform: "translate(358px, 250px) rotate(-2deg) scale(1.66)", offset: 0.6 },
-      { opacity: 0.6, transform: "translate(346px, 225px) rotate(-2deg) scale(1.52)" },
+      { opacity: 0.5, transform: under(L.deal[1]) },
+      { opacity: 0.3, transform: L.shadowLift[0], offset: 0.6 },
+      { opacity: 0.6, transform: L.shadowLift[1] },
     ], 1080, { easing: E.inOut });
     move(cards[1].firstChild, [{ transform: FACE.back(0) }, { transform: FACE.back(180) }], 560, { delay: 300, easing: E.inOut });
     move(front, [{ transform: FACE.front(0) }, { transform: FACE.front(180) }], 560, { delay: 300, easing: E.inOut });
     setTimeout(() => SE.just(), 600);
     await move(cards[1], [
-      { opacity: 1, transform: place(DEAL[1], "scale(1)"), easing: E.inOut },
-      { opacity: 1, transform: "translate(323px, 159px) rotate(0deg) scale(1.32)", offset: 0.32, easing: E.inOut },
-      { opacity: 1, transform: "translate(323px, 164px) rotate(-3deg) scale(1.6)", offset: 0.78, easing: E.out },
-      { opacity: 1, transform: PICK },
+      { opacity: 1, transform: place(L.deal[1], "scale(1)"), easing: E.inOut },
+      { opacity: 1, transform: L.lift[0], offset: 0.32, easing: E.inOut },
+      { opacity: 1, transform: L.lift[1], offset: 0.78, easing: E.out },
+      { opacity: 1, transform: L.lift[2] },
     ], 1080, { easing: "linear" });
     // 4. 金の光が表を走り、どの札かを帯で
     move(front.lastChild, [{ translate: "-70% 0" }, { translate: "70% 0" }], 750, { easing: E.inOut });
@@ -380,5 +405,5 @@ export async function c(charId = state?.fortune?.char) {
     [...cards, ...shadows].forEach((n) => move(n, [{ opacity: Number(getComputedStyle(n).opacity) }, { opacity: 0 }], 300, { delay: 80 }));
     move(dim, [{ opacity: 0.4 }, { opacity: 0 }], 520, { delay: 200, easing: "ease" });
     await move(set, SET_OUT, 520, { delay: 200, easing: E.inOut });
-  });
+  }, { portrait: true });
 }
