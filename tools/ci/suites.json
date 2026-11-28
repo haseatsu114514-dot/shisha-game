@@ -1138,6 +1138,19 @@
       ]
     },
     {
+      "id": "typo-regressions",
+      "title": "Dialogue typo regression cases",
+      "kind": "quick",
+      "paths": [
+        "data/dialogue/*.json",
+        "tools/typo_cases.json",
+        "tools/check_typo_regressions.py",
+        "tools/test_check_typo_regressions.py",
+        "tools/ci/suites.json"
+      ],
+      "run": ["python3 tools/test_check_typo_regressions.py", "python3 tools/check_typo_regressions.py"]
+    },
+    {
       "id": "docs",
       "title": "AI docs, names and legacy terms",
       "kind": "quick",
