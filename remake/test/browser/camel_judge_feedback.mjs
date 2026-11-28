@@ -96,6 +96,11 @@ await suite("camel-judge-feedback", async check => {
       await page.keyboard.press("Escape");
       await page.locator('[data-test="camel-resume"]').waitFor();
       const paused = await sample();
+      // 案内の CSS がすでに効き、まだ resize が届いていない瞬間を再現する。
+      await rotate.evaluate(hint => { hint.style.display = "flex"; });
+      await page.keyboard.press("Enter");
+      assert.deepEqual(await sample(), paused, "the visible guide blocks Enter before the resize event");
+      await rotate.evaluate(hint => { hint.style.removeProperty("display"); });
       await page.setViewportSize(portrait);
       await rotate.waitFor({ state: "visible" });
       await page.keyboard.press("Enter");

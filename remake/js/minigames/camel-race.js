@@ -7,7 +7,7 @@
 // ラクダ・ロボット騎手・SUV・車輪は Codex の絵（assets/ui/camel_race・2026-11-02 採用。原画は asset_sources/ch4-camel-race）。
 // 絵が読めない環境では Canvas の描画に戻す。砂漠・柵・砂煙・合図の輪・HUD は Canvas で描く。
 import { withMinigameStyles } from "./minigame-styles.js";
-import { installRotateGuard, rotateGuarded as rotateGuardedNow } from "../core/rotate-guard.js";
+import { installRotateGuard, rotateGuarded as rotateGuardedNow, rotateHintVisible } from "../core/rotate-guard.js";
 import { el } from "../core/util.js";
 import { TIER_LABEL, TIER_RULE_LINE, PLAY_RULES } from "../core/play-tiers.js";
 import { SE, currentBgm, playBgm, preloadBgm, unlockAudio, playCamelRaceSe, preloadCamelRaceSe, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
@@ -993,7 +993,8 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       event.preventDefault(); event.stopImmediatePropagation();
       return;
     }
-    if (rotateGuarded()) {
+    // CSS が回転案内を表示してから resize が届くまでの Enter も、背後の再開ボタンへ渡さない。
+    if (!portraitNow() && rotateHintVisible()) {
       if (ours(event) || isPauseKey(event) || event.key === "Enter") {
         event.preventDefault();
         event.stopImmediatePropagation();

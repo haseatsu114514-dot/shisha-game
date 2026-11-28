@@ -5,13 +5,13 @@
 const EVENT = "rotateguardchange";
 let installed = false, guarded = false;
 
-const measure = () => {
+export function rotateHintVisible() {
   const hint = document.getElementById("rotate-hint");
   return !!hint && getComputedStyle(hint).display !== "none";
-};
+}
 
 function sync() {
-  const next = measure();
+  const next = rotateHintVisible();
   if (next === guarded) return;
   guarded = next;
   if (guarded) document.documentElement.dataset.rotateGuard = "true";
