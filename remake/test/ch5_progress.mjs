@@ -946,9 +946,15 @@ for (const scenes of [
   assert(scene("ch5_shop_hands").lines.some(line => line.text?.includes("『つむぎちゃんへ』")), "The unfinished manual");
   assert.equal(gated("ch5_copy_first_cup", "cough_echo"), "ch5_tsumugi_cough");
   assert.equal(gated("ch5_unrecorded_day", "unsaid"), "ch5_tsumugi_cough");
-  const sendoff = scene("ch5_match_day_arrival").lines.filter(line => line.next_true === "sendoff").map(line => line.dialogue);
-  assert.deepEqual(sendoff, ["ch5_tsumugi_full_house", "ch5_tsumugi_menu_board"], "She sends him off wherever she drew the board");
-  assert(scene("ch5_match_day_arrival").branches.sendoff.some(line => line.text === "いってらっしゃい、はじめさん"));
+  const arrival = scene("ch5_match_day_arrival");
+  const sendoff = arrival.lines.find(line => line.next_true === "sendoff");
+  assert.equal(sendoff?.condition_type, "story_seen");
+  assert.equal(sendoff.dialogue, "ch5_tsumugi_full_house");
+  assert.deepEqual(arrival.branches[sendoff.next_false], [{
+    type: "condition", condition_type: "story_seen", dialogue: "ch5_tsumugi_menu_board", next_true: "sendoff",
+  }], "The old blackboard scene also unlocks the send-off");
+  assert.equal(arrival.lines.filter(line => line.next_true === "sendoff").length, 1);
+  assert(arrival.branches.sendoff.some(line => line.text === "いってらっしゃい、はじめさん"));
   // 巻頭ポエムは新人編の保存では挑戦状の直前、章題は面接の後（ch5.js）。旧来の並びは章題の前のまま。
   const runner = readFileSync(new URL("../js/chapters/ch5.js", import.meta.url), "utf8");
   assert.match(runner, /scene\.id === CH5_BEFORE_TITLE/);
