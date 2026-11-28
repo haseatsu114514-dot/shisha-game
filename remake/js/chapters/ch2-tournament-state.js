@@ -2,7 +2,7 @@ import { finishTournamentStep } from "./tournament-finish-step.js";
 import { tournamentResources, restoreTournamentResources, recoverTournamentResources } from "./tournament-resource-snapshot.js";
 import { ChapterSaveError } from "../core/chapter-save.js";
 import { tournamentStandings } from "./tournament-standings.js";
-import { tournamentBallot } from "./tournament-ballot.js";
+import { drawRivalForm, rivalScores, tournamentBallot } from "./tournament-ballot.js";
 import { initialBaseVotes } from "./tournament-base-votes.js";
 import { liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
 // 第2章の保存境界と持ち点。第1章のstate.tournament/固定逆転票には触れない。
@@ -80,6 +80,7 @@ export function startAttempt(value, craft) {
   restoreResources(value, p.entry);
   p.attempts++;
   Object.assign(p, { stage: "craft", step: 0, craft: copy(craft), rollback: null,
+    rivalForm: drawRivalForm(Object.keys(RIVAL_QUALITY), value.weatherSeed, 2, p.attempts),
     comparisonBallot: true, votes: Object.fromEntries(JUDGES.map(id => [id, Object.fromEntries(CONTESTANTS.map(c => [c, 0]))])),
     baseVotes: initialBaseVotes(CONTESTANTS), voted: 0, lastVotes: null, roundVotes: [], result: null, failure: null });
   value.phase = "tournament";
@@ -102,7 +103,7 @@ export function finishStep(value, craft) {
 /** 1回投入した点は保存後も戻らない。各審査員の累計を常に10以内にする。 */
 export function castVotes(p, round, performance, prefByJudge = null, carryP = 0) {
   if (round !== p.voted || round < 0 || round >= SPEND.length) return false;
-  const quality = Object.fromEntries(Object.entries(RIVAL_QUALITY).map(([id, base]) => {
+  const quality = Object.fromEntries(Object.entries(rivalScores(RIVAL_QUALITY, p.rivalForm)).map(([id, base]) => {
     const lifted = liftRivalScore(base, carryP, 2);
     observeRivalScore(base, carryP, 2, lifted);
     return [id, lifted];
@@ -118,7 +119,7 @@ export function castVotes(p, round, performance, prefByJudge = null, carryP = 0)
     const scoreOf = (c) => (c === "hajime" ? hajimeScore : quality[c]) + (bias[c] || 0);
     const [first, second] = tournamentBallot(
       CONTESTANTS, judgeIndex, round, scoreOf, byChapterTwoTie,
-      p.comparisonBallot,
+      p.comparisonBallot, p.rivalForm,
     );
     const amount = SPEND[round], row = p.votes[judge];
     const available = 10 - Object.values(row).reduce((sum, n) => sum + n, 0);

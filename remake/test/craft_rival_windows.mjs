@@ -6,6 +6,7 @@ import vm from "node:vm";
 
 globalThis.window ??= globalThis;
 const real = {
+  "../chapters/tournament-ballot.js": await import("../js/chapters/tournament-ballot.js"),
   "./ch1-votes.js": await import("../js/craft/ch1-votes.js"),
   "../chapters/ch2-tournament-state.js": await import("../js/chapters/ch2-tournament-state.js"),
   "../chapters/ch3-tournament-state.js": await import("../js/chapters/ch3-tournament-state.js"),
@@ -28,7 +29,7 @@ class Node {
 }
 const find = (n, pred, out = []) => { if (pred(n)) out.push(n); for (const c of n.children || []) find(c, pred, out); return out; };
 
-async function load({ chapter = 1, mode = "tournament", fx = "full" } = {}) {
+async function load({ chapter = 1, mode = "tournament", fx = "full", state = {} } = {}) {
   const timers = [], cheers = [], sparkCalls = [];
   const context = vm.createContext({ setTimeout: (fn) => { timers.push(fn); return timers.length; }, clearTimeout() {} });
   const el = (spec, a, b) => {
@@ -41,7 +42,7 @@ async function load({ chapter = 1, mode = "tournament", fx = "full" } = {}) {
     "../core/util.js": { el },
     "../core/audio.js": { SE: { crowd: () => cheers.push(1) } },
     "../core/data.js": { faceIconUrl: id => `face_${id}.png`, displayName: id => id.toUpperCase() },
-    "../core/state.js": { state: {} },
+    "../core/state.js": { state },
     "./fx.js": { sparks: (...a) => sparkCalls.push(a), shockRing() {}, fxMode: () => fx },
   };
   const synth = (values) => new vm.SyntheticModule(Object.keys(values), function () { for (const [k, v] of Object.entries(values)) this.setExport(k, v); }, { context });
@@ -105,6 +106,21 @@ for (const opts of [{ mode: "practice" }, { mode: "rehearsal", chapter: 4 }, { c
   assert.equal(tiersOf(w.root).naru.split(",")[4], tier(R.naru[4]));
   w.mark("mix"); w.mark("heat:2");
   assert.equal(h.timers.length, 0, "mix and sub-steps do not light rival lamps");
+}
+
+// ゲーム中と途中読込で、当日の調子を反映した同じ灯が戻る。
+{
+  const rivalForm = { naru: 0, adam: -8, minto: 8 };
+  const h = await load({ state: { tournament: { voteAttempt: { rivalForm } } } });
+  const windows = h.m.buildRivalWindows(h.cs);
+  windows.mark("holes"); h.run();
+  const played = tiersOf(windows.root);
+  for (const [id, score] of Object.entries({ naru: 90, adam: 76, minto: 84 })) {
+    assert.equal(played[id].split(",")[0], h.rig.recordTier(score));
+  }
+  const restored = h.m.buildRivalWindows(h.cs);
+  restored.restore({ tierOf: id => id === "holes" });
+  assert.deepEqual(tiersOf(restored.root), played);
 }
 
 // 第2章: 一台の出来がそのまま全工程の灯。自動操作中は遅らせず静かに灯す

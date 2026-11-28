@@ -36,8 +36,9 @@ export function ruleSheetPanel(chapter = state?.chapter || 1) {
 
 const focusText = Object.entries(SAKURAI.focus).map(([id, f]) => `${{ uezono: "上園", dr_charcoal: "チャコール博士", sensu: "千須" }[id]}は${f.detail}`).join("、");
 const roundPoints = SAKURAI.rounds.map((_, round) => ch1RoundPoints("uezono", round)).join("・");
-const allocationRule = useComparison => useComparison
-  ? `各回は最高評価の台に「その回の点−1」を入れる。残り1点は別の台を選ぶ比較票。審査員が持ち回りで見る台が次点の評価から${COMPARISON_MARGIN}点以内ならその台へ、それより差があれば次点へ入れる。`
+const formNote = "挑戦ごとにライバルの調子と比較票を回す卓順が変わる。";
+const allocationRule = (useComparison, useForm) => useComparison
+  ? `各回は最高評価の台に「その回の点−1」を入れる。残り1点は別の台を選ぶ比較票。審査員が持ち回りで見る台が次点の評価から${COMPARISON_MARGIN}点以内ならその台へ、それより差があれば次点へ入れる。${useForm ? formNote : ""}`
   : "各回は1位に「その回の点−1」、2位に1点。";
 function ch1Judging() {
   const tournament = state?.chapter === 1 ? state.tournament : null;
@@ -50,12 +51,12 @@ function ch1Judging() {
   const evaluation = sakurai
     ? `各回は、その回に仕上げた工程で決める。提供の回は、${focusText}を見て、制作ボーナスも反映する。温度計の「攻めの帯」で提供・調整を終えると、その回の審査が伸びる。`
     : "各回は、その回までに仕上げた工程の成績で決める。提供の回には制作ボーナスも反映する。";
-  const rule = allocationRule(!attempt || attempt.comparisonBallot);
+  const rule = allocationRule(!attempt || attempt.comparisonBallot, !attempt || attempt.rivalForm);
   return `審査員3人が各10点を、準備・提供・調整1回目・調整2回目の4回に分けて入れる（${roundPoints}点）。${rule}千須は最終回の持ち点から1点を残し、もう一口吸いたい一台へ入れる。${evaluation}`;
 }
 
 const allocation = (spend, match) =>
-  `審査員3人が各${spend.reduce((sum, points) => sum + points, 0)}点を、準備・提供・調整1回目・調整2回目の4回に分けて入れる（${spend.join("・")}点）。${allocationRule(!match?.craft || match.comparisonBallot)}新しい試合では全出場者に基礎票1点が入る。`;
+  `審査員3人が各${spend.reduce((sum, points) => sum + points, 0)}点を、準備・提供・調整1回目・調整2回目の4回に分けて入れる（${spend.join("・")}点）。${allocationRule(!match?.craft || match.comparisonBallot, !match?.craft || match.rivalForm)}新しい試合では全出場者に基礎票1点が入る。`;
 const standings = order =>
   `各回の審査で評価が同じなら${order}の順。最終順位は総得票で決め、同点なら好みなどの補正を加える前の最終回の出来栄え、そこも同じなら各回の審査と同じ順で決める。`;
 

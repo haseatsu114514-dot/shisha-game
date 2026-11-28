@@ -1,7 +1,7 @@
 // 第1章の新規試合。票は各工程の確定時に一度だけ記録し、結果表にも同じ記録を使う。
 // 方式は2つ（core/vote-style.js）: いままで（rulesVersion 2・各回はそこまでの全工程の平均）と、
 // 桜井式（rulesVersion 3・試作。各回はその回に仕上げた工程・提供時の制作ボーナス・攻めの帯の上積み）。
-import { tournamentBallot } from "../chapters/tournament-ballot.js";
+import { rivalScores, tournamentBallot } from "../chapters/tournament-ballot.js";
 import { initialBaseVotes, baseVoteOf } from "../chapters/tournament-base-votes.js";
 import { liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
 import { ATTACK_BAND } from "./attack-band.js";
@@ -34,11 +34,11 @@ function liftCh1Rival(base, carryP) {
 }
 
 /** style: "sakurai" で桜井式の試合を始める。それ以外（省略を含む）はいままでの審査。始めた後は方式を変えない。 */
-export function beginCh1Votes(attempt, { style = null } = {}) {
+export function beginCh1Votes(attempt, { style = null, rivalForm, comparisonBallot = true } = {}) {
   if (attempt.voteAttempt) return attempt.voteAttempt;
   const sakurai = style === "sakurai";
   return attempt.voteAttempt = { rulesVersion: sakurai ? CH1_SAKURAI_VERSION : CH1_VOTE_VERSION,
-    comparisonBallot: true, picks: [], ...(sakurai ? { style: "sakurai", views: [], attacks: [] } : {}),
+    ...(rivalForm ? { rivalForm } : {}), comparisonBallot, picks: [], ...(sakurai ? { style: "sakurai", views: [], attacks: [] } : {}),
     voted: 0, votes: emptyVotes(), baseVotes: initialBaseVotes(CH1_CONTESTANTS), finalVotes: null, result: null };
 }
 export const isSakuraiVotes = (p) => p?.style === "sakurai" && p?.rulesVersion === CH1_SAKURAI_VERSION;
@@ -56,6 +56,11 @@ function evaluated(parts, weights, limit) {
     total += parts[i] * weights[i]; weight += weights[i];
   }
   return total / weight;
+}
+function judgeRivals(form, scoreOf, carryP) {
+  const base = Object.fromEntries(Object.keys(CH1_RIVALS).map(id => [id, scoreOf(id)]));
+  const scores = rivalScores(base, form);
+  return Object.fromEntries(Object.entries(scores).map(([id, score]) => [id, liftCh1Rival(score, carryP)]));
 }
 function checkBudget(p, round) {
   for (const judge of CH1_JUDGES) {
@@ -84,11 +89,11 @@ export function castCh1Votes(attempt, round, cs, { carryP = 0, serveBonus = 0 } 
   const picks = {};
   for (const [judgeIndex, judge] of CH1_JUDGES.entries()) {
     const weights = CH1_WEIGHTS[judge];
-    const scores = Object.fromEntries(CH1_CONTESTANTS.map(id => [id, id === "hajime"
-      ? evaluated(mine, weights, limit) + bonus : liftCh1Rival(evaluated(CH1_RIVALS[id], weights, limit), carryP)]));
+    const scores = judgeRivals(p.rivalForm, id => evaluated(CH1_RIVALS[id], weights, limit), carryP);
+    scores.hajime = evaluated(mine, weights, limit) + bonus;
     const [first, second] = tournamentBallot(
       CH1_CONTESTANTS, judgeIndex, round, id => scores[id], voteTie,
-      p.comparisonBallot,
+      p.comparisonBallot, p.rivalForm,
     );
     const amount = ch1RoundPoints(judge, round);
     picks[judge] = { first, second, points: { [first]: amount - 1, [second]: 1 } };
@@ -112,8 +117,8 @@ export function castCh1Votes(attempt, round, cs, { carryP = 0, serveBonus = 0 } 
   return true;
 }
 export function ch1Standings(p, mineTotal) {
-  const quality = Object.fromEntries(CH1_CONTESTANTS.map(id => [id, id === "hajime" ? mineTotal
-    : CH1_RIVALS[id].reduce((a, b) => a + b, 0) / 5]));
+  const base = Object.fromEntries(Object.entries(CH1_RIVALS).map(([id, parts]) => [id, parts.reduce((a, b) => a + b, 0) / parts.length]));
+  const quality = { ...rivalScores(base, p.rivalForm), hajime: mineTotal };
   const points = id => baseVoteOf(p, id) + CH1_JUDGES.reduce((n, j) => n + p.votes[j][id], 0);
   const last = id => CH1_JUDGES.reduce((n, j) => n + (p.finalVotes?.[j]?.[id] || 0), 0);
   const rows = CH1_CONTESTANTS.slice().sort((a, b) => points(b) - points(a)
@@ -218,11 +223,11 @@ function castSakurai(p, round, cs, carryP, serveBonus) {
   p.finalVotes = round === 3 ? emptyVotes() : null;
   const views = {}, picks = {};
   for (const [judgeIndex, judge] of CH1_JUDGES.entries()) {
-    const scores = Object.fromEntries(CH1_CONTESTANTS.map(id => [id, id === "hajime"
-      ? mine[judge] : liftCh1Rival(sakuraiRival(id, judge, round), carryP)]));
+    const scores = judgeRivals(p.rivalForm, id => sakuraiRival(id, judge, round), carryP);
+    scores.hajime = mine[judge];
     const [first, second] = tournamentBallot(
       CH1_CONTESTANTS, judgeIndex, round, id => scores[id], voteTie,
-      p.comparisonBallot,
+      p.comparisonBallot, p.rivalForm,
     );
     const amount = ch1RoundPoints(judge, round);
     p.votes[judge][first] += amount - 1;

@@ -25,6 +25,8 @@ await suite("tournament-rules", async check => {
       const legacyFourth = ruleSheetPanel(4).textContent;
       return { first, legacy, legacyJudging, second, third, fourth, legacyFourth };
     });
+    for (const rulesText of [rules.first, rules.second, rules.third, rules.fourth]) assert.match(rulesText, /ライバルの調子/);
+    for (const rulesText of [rules.legacyJudging, rules.legacyFourth]) assert.doesNotMatch(rulesText, /ライバルの調子/);
     assert.match(rules.first, /レモン.*2g以上.*大会支給/);
     // 課題フレーバーは全章で大会が支給（無制限）。事前の練習が有利なことも短く伝える。
     assert.match(rules.first, /課題の葉は大会が用意.*好きなだけ使える/);

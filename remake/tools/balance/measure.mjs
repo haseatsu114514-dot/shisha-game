@@ -78,6 +78,7 @@ const profiles = { C1:[1,1,1,1,1], C2:[3,3,2,2,3], C3:[5,5,1,1,4], C4:[5,5,2,1,5
 const growth = await import('../../js/core/growth.js');
 const board = await import('../../js/core/growth-board.js');
 const steam = await import('../../js/craft/steam.js');
+const { drawRivalForm } = await import('../../js/chapters/tournament-ballot.js');
 const ch1Votes = await import('../../js/craft/ch1-votes.js');
 const attackBand = await import('../../js/craft/attack-band.js');
 const ch2Votes = await import('../../js/chapters/ch2-tournament-state.js');
@@ -207,7 +208,7 @@ export function runOne(id, operation, seed, config = plan, skillLookup = hasSkil
     attempt.voteAttempt={result:{rank:won?1:2,rows:won?[hajime,machine]:[machine,hajime]}};
   } else if(chapter===4) {
     // ch4-tournament.js と同じ: 11工程を begin/finish で確定し、8工程目（蒸らし）の後・提供の後・調整1・調整2の後に票が入る。
-    const value={chapter:4,cycle:1,flags:{_ch4:{part:'tournament',read:{ch4_tournament_start:true}}}};
+    const value={chapter:4,cycle:1,weatherSeed:seed,flags:{_ch4:{part:'tournament',read:{ch4_tournament_start:true}}}};
     assert(ch4State.startChapterFourCraft(value,cs));
     const finish=()=>{ch4State.beginChapterFourStep(value);ch4State.finishChapterFourStep(value,cs);};
     for(let step=0;step<8;step++) finish();
@@ -221,6 +222,7 @@ export function runOne(id, operation, seed, config = plan, skillLookup = hasSkil
     // ch2/ch3-tournament.js と同じ: 蒸らしの後・提供の後・調整1の後・調整2の後に、それまでの工程の平均（最後は総合）で投票する。
     const tv=chapter===2?ch2Votes:ch3Votes;
     const p={comparisonBallot:true,votes:Object.fromEntries(tv.JUDGES.map(j=>[j,Object.fromEntries(tv.CONTESTANTS.map(c=>[c,0]))])),voted:0,baseVotes:Object.fromEntries(tv.CONTESTANTS.map(c=>[c,1]))};
+    p.rivalForm=drawRivalForm(Object.keys(tv.RIVAL_QUALITY),seed,chapter,1);
     if(chapter===3) Object.assign(p,{rulesVersion:ch3Votes.TOURNAMENT_RULES_VERSION,tastingPlan:ch3Votes.buildTastingPlan(Math.floor(rng()*0x100000000))});
     const cast=(round,quality)=>chapter===2?tv.castVotes(p,round,quality):tv.castVotes(p,round,quality,null,0);
     const partial=round=>{
@@ -241,7 +243,7 @@ export function runOne(id, operation, seed, config = plan, skillLookup = hasSkil
     attempt.voteAttempt={result:{rank:rows.find(row=>row.id==='hajime').rank,rows}};
   } else if(voteStyle==='sakurai') {
     // 桜井式は各回をその回の工程で決めるので、ch1.js と同じ順で投票する（提供の回は調整前の完成品）。
-    ch1Votes.beginCh1Votes(attempt,{style:'sakurai'});
+    ch1Votes.beginCh1Votes(attempt,{style:'sakurai',rivalForm:drawRivalForm(Object.keys(ch1Votes.CH1_RIVALS),seed,1,1)});
     assert.equal(ch1Votes.castCh1Votes(attempt,0,cs),true);
     cs.pull=finishThermal(0);cs.pullDone=true;
     cs.stats=score.computeShisha(cs);
@@ -252,6 +254,7 @@ export function runOne(id, operation, seed, config = plan, skillLookup = hasSkil
     for(let round=2;round<4;round++) assert.equal(ch1Votes.castCh1Votes(attempt,round,cs),true);
   } else {
     cs.pull=finishThermal(0);cs.pullDone=true;
+    ch1Votes.beginCh1Votes(attempt,{rivalForm:drawRivalForm(Object.keys(ch1Votes.CH1_RIVALS),seed,1,1)});
     const serveBonus=score.bonusOf(cs).bonus;
     cs.careHistory=[finishThermal(1),finishThermal(2)];
     score.finalize(cs);

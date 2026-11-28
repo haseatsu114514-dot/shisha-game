@@ -4,13 +4,15 @@ import fs from "node:fs";
 import vm from "node:vm";
 import * as core from "../js/core/state.js";
 import { captureEntryResources, restoreEntryResources, applyAssistRecovery } from "../js/chapters/tournament-resources.js";
-import { beginCh1Votes, isSakuraiVotes } from "../js/craft/ch1-votes.js";
+import { drawRivalForm } from "../js/chapters/tournament-ballot.js";
+import { CH1_RIVALS, beginCh1Votes, isSakuraiVotes } from "../js/craft/ch1-votes.js";
 import { voteStyleFrom } from "../js/core/vote-style.js";
 import { chosenAssistLevel } from "../js/craft/retry-assist-level.js";
 import { difficultyForRun } from "../js/core/ngplus-difficulty.js";
 import { difficultyEvidence } from "../js/core/cycle-start.js";
 globalThis.document ||= { addEventListener() {} };
 globalThis.window ||= {};
+const { recordTournamentLoss } = await import("../js/chapters/retry-assist.js");
 const { regulationFor } = await import("../js/craft/steps.js");
 
 const storage = new Map();
@@ -102,7 +104,7 @@ const context = vm.createContext({
   play: id => played.push(id),
   // 会場の会話は中継の枠つきの playLive で読む（TSH04）。ここでは読んだ台本だけを記録する。
   playLive: id => played.push(id), ch1LiveStandings: () => [],
-  captureEntryResources, restoreEntryResources, applyAssistRecovery, beginCh1Votes, difficultyForRun, difficultyEvidence, maxStamina: () => 130, regulationFor, chosenAssistLevel,
+  captureEntryResources, restoreEntryResources, applyAssistRecovery, beginCh1Votes, CH1_RIVALS, drawRivalForm, difficultyForRun, difficultyEvidence, maxStamina: () => 130, regulationFor, chosenAssistLevel,
   // 審査の方式（SKR04）は試合を始める時のシーシャ作りの版で決まる（CRN16）。ここでは桜井版を選んだ端末として流す。
   voteStyleFrom: (config) => voteStyleFrom(config, ""), config: { craftVersion: "sakurai" }, isSakuraiVotes, SAKURAI_RULE_LINES: [],
   save: () => saves.push(copy(entrant)), toast: stub,
@@ -126,16 +128,20 @@ assert.equal(sessions[0].stamina, 52);
 assert.equal(entrant.tournament.voteAttempt.style, "sakurai", "試合を始める時の設定の方式で票の記録を始める");
 assert.equal(session.voteStyle, "sakurai", "桜井式の試合の一台には攻めの帯の印が付く");
 assert.equal(session.craftVersion, "sakurai", "桜井式の試合の一台は桜井版の作業台（試合の途中で設定を変えても混ざらない・CRN16）");
+const firstForm = copy(entrant.tournament.voteAttempt.rivalForm);
 entrant.stamina = 48; entrant.flavorStock.lemon = 0;
 await vm.runInContext("tournamentDay()", context);
 // #2536: 再挑戦でも版確定と票の初期化を保存するようになったため、保存回数ではなく
 // 「どの保存でも entry スナップショットが書き換わらない」ことを直接守る。
 for (const sv of saves) assert.deepEqual(sv.tournament.entryResources, saves[0].tournament.entryResources, "retry never overwrites the entry save");
+assert.deepEqual(entrant.tournament.voteAttempt.rivalForm, firstForm, "同じ大会の再開では同じ調子");
+recordTournamentLoss(entrant.tournament);
 assert.equal(sessions[1].stamina, 52);
 assert.deepEqual(sessions[1].flavorStock, {});
 // #590: 救済を選んだ挑戦だけ、戻した直後に現在の最大体力（根性込みの値）へ。entryは書き換えない。
 entrant.stamina = 3; entrant.tournament.retryAssist = true; entrant.tournament.losses = 6; entrant.tournament.retryAssistLevel = 2;
 await vm.runInContext("tournamentDay()", context);
+assert.notDeepEqual(entrant.tournament.voteAttempt.rivalForm, firstForm, "コンティニューで次の調子を引く");
 assert.equal(sessions[2].stamina, 130, "assisted retry recovers to the current maximum");
 assert.equal(session.retryAssist, true);
 assert.equal(session.retryAssistLevel, 2, "6敗で選んだベリーイージーがその一台に付く（WIN13）");

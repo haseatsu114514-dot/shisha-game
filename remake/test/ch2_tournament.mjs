@@ -77,7 +77,7 @@ for (const [scores, rank, points, text] of [
   [[95, 95, 95, 95], 1, [19, 5], "提供後の投票で、2位より5点多く取った。最終14点差。"],
   [[60, 60, 60, 60], 4, [1, 13], "提供後の投票で、首位に4点及ばなかった。最終12点差。"],
 ]) {
-  const value = newState(); value.chapter = 2;
+  const value = newState(); value.chapter = 2; value.weatherSeed = 0; // 通常の調子で講評の文面を固定。
   const attempt = startAttempt(value, { careHistory: [{ score: scores[2] }, { score: scores[3] }] });
   scores.forEach((score, round) => assert(castVotes(attempt, round, score)));
   const result = recordResult(value, scores[3]);

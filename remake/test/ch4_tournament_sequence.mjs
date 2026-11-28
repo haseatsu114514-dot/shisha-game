@@ -25,7 +25,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
   cheers = [] } = {}) {
   const value = resume || newState();
   if (!resume) {
-    value.chapter = 4; value.phase = "tournament";
+    value.chapter = 4; value.phase = "tournament"; value.weatherSeed = 0;
     value.flags._ch4_strategy = "sakura";
     value.flags._ch4 = { part: "tournament", read: { ch4_tournament_start: true, ch4_stranger_second: true, ch4_stranger_third: true } };
   }

@@ -153,7 +153,8 @@ assert.deepEqual(LEGACY_RIVAL_QUALITY, { ayatori: 82, steve: 80, volk: 84 });
 assert.deepEqual(V2_RIVAL_QUALITY, { ayatori: 86, steve: 85, volk: 88 });
 assert.deepEqual(RIVAL_QUALITY, { ayatori: 84.5, steve: 83.5, volk: 86.5 });
 {
-  const fresh = makeState(), current = startAttempt(fresh, craft);
+  const fresh = makeState(); fresh.weatherSeed = 0; // 通常の調子で各版の基準値を照合。
+  const current = startAttempt(fresh, craft);
   assert.equal(current.rulesVersion, 3);
   castVotes(current, 0, 84);
   assert.equal(current.quality.volk, 86.5);

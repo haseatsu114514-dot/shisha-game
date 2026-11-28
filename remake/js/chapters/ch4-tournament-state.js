@@ -2,7 +2,7 @@
 import { difficultyForRun, liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
 import { difficultyEvidence } from "../core/cycle-start.js";
 import { ChapterSaveError } from "../core/chapter-save.js";
-import { tournamentBallot } from "./tournament-ballot.js";
+import { drawRivalForm, rivalScores, tournamentBallot } from "./tournament-ballot.js";
 import { initialBaseVotes, baseVoteOf } from "./tournament-base-votes.js";
 
 export const CH4_CONTESTANTS = Object.freeze(["hajime", "naru", "master_hookah", "sheikh"]);
@@ -13,6 +13,8 @@ export const CH4_JUDGES = Object.freeze(["sensu", "da_silva", "emil"]);
 // 版4（2026-11-20 #3916・WIN12「大会自体、7.6.5.3割」）: 版2・版3はふつうの腕前で約6%と厳しすぎたため、
 // 3人の曲線を各回−2.5にして約3割にした（`node remake/tools/balance/measure.mjs --chapter 4 --n 300 --seed 1`）。
 export const CH4_RULES_VERSION = 4;
+// 世界大会では元の工程別の実力を4割残す（なるの中盤、シェイクの終盤）。
+export const CH4_RIVAL_FORM_SHARE = 0.6;
 // 穴・熱・提供・調整1・調整2・最終総合。各成分は等重みから±10pt以内。
 export const CH4_JUDGE_WEIGHTS = Object.freeze({
   sensu: Object.freeze([15, 15, 15, 15, 15, 25]),
@@ -84,6 +86,7 @@ export function startChapterFourCraft(value, craft) {
   p.entry ||= resources(value);
   p.rulesVersion = CH4_RULES_VERSION;
   p.comparisonBallot = true;
+  p.rivalForm = drawRivalForm(Object.keys(CH4_RIVAL_CURVE), value.weatherSeed, 4, p.history.length + 1);
   p.baseVotes = initialBaseVotes(CH4_CONTESTANTS);
   p.craft = clone(craft);
   return p;
@@ -177,7 +180,7 @@ function commitChapterFourVote(p, craft, quality, rules, round) {
     const score = id => id === "hajime" ? hajimeScore : p.quality[id];
     const [first, second] = tournamentBallot(
       CH4_CONTESTANTS, judgeIndex, round, score, byTie,
-      p.comparisonBallot && rulesVersion(p) === CH4_RULES_VERSION,
+      p.comparisonBallot && rulesVersion(p) === CH4_RULES_VERSION, p.rivalForm,
     );
     picks[judge] = { points: { [first]: firstPoints, [second]: 1 } };
     p.votes[judge][first] += firstPoints;
@@ -216,8 +219,9 @@ export function finishChapterFourStep(value, craft) {
       }
     }
     const carry = difficultyForRun(value, difficultyEvidence(value));
-    quality = Object.fromEntries(Object.entries(rules.curve).map(([id, curve]) => {
-      const base = curve[round];
+    const roundScores = Object.fromEntries(Object.entries(rules.curve).map(([id, curve]) => [id, curve[round]]));
+    const rivals = rivalScores(roundScores, rulesVersion(p) === CH4_RULES_VERSION && p.rivalForm, CH4_RIVAL_FORM_SHARE);
+    quality = Object.fromEntries(Object.entries(rivals).map(([id, base]) => {
       const lifted = liftRivalScore(base, carry, 4);
       observeRivalScore(base, carry, 4, lifted);
       return [id, lifted];

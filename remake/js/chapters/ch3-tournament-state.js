@@ -2,7 +2,7 @@ import { finishTournamentStep } from "./tournament-finish-step.js";
 import { tournamentResources, restoreTournamentResources, recoverTournamentResources } from "./tournament-resource-snapshot.js";
 import { ChapterSaveError } from "../core/chapter-save.js";
 import { tournamentStandings } from "./tournament-standings.js";
-import { tournamentBallot } from "./tournament-ballot.js";
+import { drawRivalForm, rivalScores, tournamentBallot } from "./tournament-ballot.js";
 import { initialBaseVotes } from "./tournament-base-votes.js";
 import { payTournamentPrize } from "./tournament-prize.js";
 import { liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
@@ -112,6 +112,7 @@ export function startAttempt(value, craft) {
     ^ Math.imul(p.attempts, 0x85ebca6b)) >>> 0;
   Object.assign(p, {
     rulesVersion: TOURNAMENT_RULES_VERSION, stage: "craft", step: 0, craft: copy(craft), rollback: null,
+    rivalForm: drawRivalForm(Object.keys(RIVAL_QUALITY), value.weatherSeed, 3, p.attempts),
     comparisonBallot: true, votes: initialVotes(), baseVotes: initialBaseVotes(CONTESTANTS), voted: 0, lastVotes: null, roundVotes: [], result: null, failure: null, defeatRead: false,
     tastingSeed: seed, tastingPlan: buildTastingPlan(seed),
   });
@@ -157,7 +158,7 @@ export function tastingEffect(plan, judge) {
 /** 各審査員の一回分をまとめて確定し、持ち点の二重投入を防ぐ。 */
 export function castVotes(p, round, performance, prefByJudge = null, carryP = 0) {
   if (!p || p.result || round !== p.voted || round < 0 || round >= SPEND.length) return false;
-  const rivals = rivalQuality(p);
+  const rivals = rivalScores(rivalQuality(p), rulesVersion(p) === TOURNAMENT_RULES_VERSION && p.rivalForm);
   if (!Number.isFinite(performance) || performance < 0 || performance > 100)
     throw new ChapterSaveError(3, "全国大会の工程成績を確認できません", "_ch3_tournament.craft / performance");
   const plan = p.tastingPlan?.[round];
@@ -185,7 +186,7 @@ export function castVotes(p, round, performance, prefByJudge = null, carryP = 0)
     };
     const [first, second] = tournamentBallot(
       CONTESTANTS, judgeIndex, round, scoreOf, tieOrder,
-      p.comparisonBallot && rulesVersion(p) === TOURNAMENT_RULES_VERSION,
+      p.comparisonBallot && rulesVersion(p) === TOURNAMENT_RULES_VERSION, p.rivalForm,
     );
     additions[judge] = { first, second, points: { [first]: SPEND[round] - 1, [second]: 1 }, tactic };
   }

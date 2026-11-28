@@ -21,7 +21,7 @@ DB.equipById = Object.fromEntries(read("equipment").equipment.map(row => [row.id
 const finalScene = read("dialogue/ch4_main").dialogues.find(row => row.dialogue_id === "ch4_final");
 function entry() {
   const value = newState();
-  Object.assign(value, { chapter: 3, phase: "cleared", day: 45 });
+  Object.assign(value, { chapter: 3, phase: "cleared", day: 45, weatherSeed: 0 });
   value.flags._ch3_cleared = true;
   advanceToChapterFour(value);
   delete value.flags._ch4.routeVersion; // 旧行程（ドバイ5日）

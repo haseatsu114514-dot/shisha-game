@@ -254,7 +254,8 @@ function sakuraiBoard(p, index) {
   const mine = JUDGES.map(({ id }) => `${short(id)} ${Number(views[id]?.hajime ?? 0).toFixed(1)}`).join(" ／ ");
   const nextNote = index === 0 ? `次は提供の一台。${Object.entries(SAKURAI.focus).map(([id, f]) => `${short(id)}は${f.label}`).join("・")}を見る`
     : index === 1 ? "次は1回目の調整。温度計の攻めの帯で整え終えると、審査が伸びる"
-      : "次は2回目の調整。なるは崩れず、最後はみんとが攻めてくる";
+      : p.rivalForm ? "次は2回目の調整。台の温度と攻めの帯が最後の審査に効く"
+    : "次は2回目の調整。なるは崩れず、最後はみんとが攻めてくる";
   return {
     sub: `この回は${info.parts}だけで決まる · ${allocation} · 全員に基礎票1点`,
     feed: [`はじめの評価（この回）: ${mine}${p.attacks?.[index] ? `（攻めの帯 +${SAKURAI.attackBonus}）` : ""}`, next ? nextNote : ""].filter(Boolean),
