@@ -214,6 +214,7 @@ for (;;) {
   if (snap.modal) {
     // スロットの初回説明（タップ送り）・くじの開封（タップで閉じる）
     if (await click('[data-test="reel-intro"]')) continue;
+    if (await click('[data-test="kannon-visit"]')) continue;
     if (await click('[data-test="drill-finish"]')) continue;
     if (await click('[data-test="kuji-reveal"]')) continue;
     if (await click('[data-test="status-close"]')) continue;
