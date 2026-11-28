@@ -105,11 +105,15 @@ function stylesheet() {
 function spotInDirection(spots, id, key) {
   const heading = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[key];
   if (!heading) return null;
-  const [x, y] = spotCenter(spots[id - 1]);
+  const centers = spots.map(({ seat }) => {
+    const { x, y, width, height } = seat.getBoundingClientRect();
+    return [x + width / 2, y + height / 2];
+  });
+  const [x, y] = centers[id - 1];
   const [hx, hy] = heading;
   let best = Infinity, target = null;
-  spots.map(spotCenter).forEach(([tx, ty], i) => {
-    const dx = (tx - x) * 16, dy = (ty - y) * 9;
+  centers.forEach(([tx, ty], i) => {
+    const dx = tx - x, dy = ty - y;
     const along = dx * hx + dy * hy, across = Math.abs(dx * hy - dy * hx);
     if (along <= 0 || across > along * 1.6) return;
     const rank = along + across * 2;
@@ -1387,7 +1391,7 @@ export function runTonariFloor({
         if (event.key === "f" || event.key === "F") { event.preventDefault(); if (!event.repeat) useFever(); return; }
         if (event.target instanceof HTMLButtonElement && event.target.classList.contains("tf-seat")) {
           // 動かす起点は、いまフォーカスのある卓（マウスを乗せて選んだ卓とは別のことがある）
-          const next = spotInDirection(SPOTS, Number(event.target.closest(".tf-spot")?.dataset.id) || selected, event.key);
+          const next = spotInDirection(refs.spots, Number(event.target.closest(".tf-spot")?.dataset.id) || selected, event.key);
           if (next) { event.preventDefault(); SE.click(); select(next, true); }
         }
         return;

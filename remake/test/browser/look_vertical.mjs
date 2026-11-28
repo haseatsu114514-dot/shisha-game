@@ -246,9 +246,10 @@ await suite("look_vertical", async (check) => {
   await check("tournament-result-restores-rows-and-progress-on-rotation", async (page) => {
     await page.evaluate(() => { window.resultRead = window.__remake.dev.show("champion"); });
     await waitScene(page, "tournamentResult");
-    const splash = page.locator(".ts-splash.win");
+    const splash = page.locator(".ts-splash.win.show");
     assert.match(await splash.locator(".ts-crest img").getAttribute("src"), /champion-seal/);
-    await splash.tap();
+    // 自動で消える表彰演出は、アニメーション中も画面中央をタップして進める。
+    await page.touchscreen.tap(SHORT.viewport.width / 2, SHORT.viewport.height / 2);
     await page.locator(".result-table.ts-revealed").waitFor();
     await page.locator(".vote-breakdown").tap();
     const dialog = page.locator("dialog.review[open]");
@@ -263,7 +264,24 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "tournamentResult");
     await page.locator(".review-more").tap();
     await dialog.locator(".rt-judge-comment").waitFor();
-    await dialog.getByRole("button", { name: "閉じる" }).tap();
+    const close = dialog.getByRole("button", { name: "閉じる" });
+    const initialClose = await close.boundingBox();
+    assert(initialClose.y >= 0 && initialClose.y + initialClose.height <= SHORT.viewport.height, "close fits as soon as the review opens");
+    assert(await close.evaluate(button => {
+      const rect = button.getBoundingClientRect();
+      return button.contains(document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2));
+    }), "close can be tapped before scrolling");
+    const body = dialog.locator(".review-body");
+    assert(await body.evaluate(node => {
+      node.scrollTop = node.scrollHeight;
+      return node.scrollTop > 0;
+    }), "the long review scrolls");
+    assert.deepEqual(await close.boundingBox(), initialClose, "the close button stays in place when the review scrolls");
+    await page.touchscreen.tap(SHORT.viewport.width / 2, 10);
+    await dialog.waitFor({ state: "hidden" });
+    await page.locator(".review-more").tap();
+    assert.equal(await body.evaluate(node => node.scrollTop), 0, "reopening shows the start of the review");
+    await close.tap();
     await page.locator(t("result-next")).tap();
     await page.evaluate(() => window.resultRead);
     assert.equal(await page.locator(".result-table:not(.done)").count(), 0);
@@ -458,6 +476,17 @@ await suite("look_vertical", async (check) => {
     await page.locator(t("vt-row-minto")).tap();
     await page.waitForFunction(() => document.querySelector('.vt-pin[aria-current="true"]')?.dataset.spot === "minto");
     assert.match(await page.locator(t("vt-dest")).textContent(), /みんと/);
+    await pad(page, "up");
+    await page.waitForFunction(() => document.querySelector(".vt-map.overview"));
+    const action = page.locator(t("vt-a"));
+    assert.equal(await action.textContent(), "拡大");
+    assert.equal(await action.getAttribute("aria-label"), "地図を拡大");
+    await pressA(page);
+    await page.waitForFunction(() => !document.querySelector(".vt-map.overview"));
+    assert.equal(await scene(page), "map", "the first tap stays on the map");
+    assert.deepEqual(await selected(), { mine: "minto", live: "minto" }, "zooming keeps the destination");
+    assert.equal(await action.textContent(), "行く");
+    assert.match(await action.getAttribute("aria-label"), /PEPPERMINTへ行く/);
     await manual(page);
     await pressA(page);
     await waitScene(page, "vn", 30000);
@@ -486,6 +515,51 @@ await suite("look_vertical", async (check) => {
     await page.waitForFunction(() => !document.querySelector("#vn .vn-choices.show"));
     assert.equal(await page.evaluate(() => window.__picked), 1, "the chosen reply is relayed to the engine");
     assert.equal(await page.evaluate(() => window.dailyError || ""), "");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("first-shop-errand-shows-lemon-plus-without-scrolling", async page => {
+    await page.evaluate(async () => {
+      const { newGame } = await import("./js/core/state.js");
+      const { openShop } = await import("./js/daily/shop.js");
+      newGame();
+      (await import("./js/vn/engine.js")).vnTest.turbo = true;
+      void openShop({ errand: "lemon", expense: true, expenseFlag: "_errand_lemon_expensed" });
+    });
+    const plus = page.locator(t("sheet-buy-lemon"));
+    await plus.waitFor({ timeout: 60000 });
+    await page.waitForFunction(() => document.querySelector('[data-test="vt-sheet-host"]')?.getAnimations().length === 0);
+    async function assertLemonFits({ wholeCard = false } = {}) {
+      const layout = await plus.evaluate(button => {
+        const bounds = button.getBoundingClientRect();
+        const list = button.closest(".rs-body");
+        const body = list.getBoundingClientRect();
+        const card = button.closest(".s-shop-row").getBoundingClientRect();
+        const checkout = list.nextElementSibling.getBoundingClientRect();
+        const style = getComputedStyle(button);
+        const outline = parseFloat(style.outlineWidth) + parseFloat(style.outlineOffset);
+        return { top: body.top, bottom: Math.min(body.bottom, checkout.top), cardTop: card.top, cardBottom: card.bottom,
+          highlightTop: bounds.top - outline, highlightBottom: bounds.bottom + outline, scroll: list.scrollTop };
+      });
+      assert.equal(layout.scroll, 0);
+      if (wholeCard) {
+        assert(layout.cardTop >= layout.top && layout.cardBottom <= layout.bottom, `the first product card is fully visible ${JSON.stringify(layout)}`);
+      }
+      assert(layout.highlightTop >= layout.top && layout.highlightBottom <= layout.bottom, `the gold outline fits above checkout ${JSON.stringify(layout)}`);
+    }
+    assert.equal(await plus.getAttribute("data-errand-target"), "true");
+    await assertLemonFits({ wholeCard: true });
+    if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/4425-lemon-plus-844.png` });
+    await page.setViewportSize(SHORT.viewport);
+    await assertLemonFits();
+    if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/4425-lemon-plus-664.png` });
+    const button = await plus.boundingBox();
+    await page.touchscreen.tap(button.x + button.width / 2, button.y + button.height - 4);
+    await page.locator(t("sheet-quantity-lemon")).filter({ hasText: /^1$/ }).waitFor();
+    await page.locator(t("sheet-shop-checkout")).tap();
+    assert.deepEqual(await page.evaluate(() => {
+      const { money, flavorStock, flags } = window.__remake.state;
+      return { money, stock: flavorStock.lemon, expensed: flags._errand_lemon_expensed };
+    }), { money: 27000, stock: 50, expensed: true });
   }, { ...TALL, pageEntry: entry });
 
   await check("chapter-one-fullscreen-interludes-return-to-map", async (page) => {
@@ -1055,6 +1129,79 @@ await suite("look_vertical", async (check) => {
     await page.setViewportSize(TALL.viewport);
     await waitScene(page, "craft");
   }
+  await check("first-brew-mix-shows-all-flavors", async page => {
+    await waitScene(page, "title");
+    await page.evaluate(async () => {
+      try { localStorage.removeItem("suien_step_intro"); } catch {}
+      const core = await import("./js/core/state.js");
+      Object.assign(core.newGame(), { phase: "daily", chapter: 1, day: 1, slot: 0 });
+      (await import("./js/core/ui.js")).clearScreen();
+      const { newSession, openBench } = await import("./js/craft/session.js");
+      const { configureFirstBrew } = await import("./js/chapters/first-brew.js");
+      const { TUTORIAL_STEPS } = await import("./js/chapters/ch1.js");
+      const { stepMix } = await import("./js/craft/steps.js");
+      const cs = configureFirstBrew(newSession("tutorial"));
+      cs.onboarding = true;
+      openBench(cs, { steps: TUTORIAL_STEPS });
+      window.firstMix = stepMix(cs);
+      window.firstMixSession = cs;
+    });
+    await finishSpots(page);
+    await page.locator(t("vt-craft-tut")).waitFor({ state: "hidden" });
+    await page.locator(t("vt-mix-plus-mint")).waitFor();
+    await page.evaluate(() => document.fonts.ready);
+
+    const leaves = page.locator(".vtc-leaves");
+    const readLayout = () => leaves.evaluate(list => {
+      const footer = list.nextElementSibling.getBoundingClientRect();
+      const shelf = list.getBoundingClientRect();
+      const rows = [...list.querySelectorAll(".vtc-leaf")].map(row => {
+        const plus = row.querySelector('[data-test^="vt-mix-plus-"]');
+        const box = plus.getBoundingClientRect();
+        return {
+          id: plus.dataset.test.replace("vt-mix-plus-", ""), bottom: row.getBoundingClientRect().bottom,
+          hit: plus.contains(document.elementFromPoint(box.x + box.width / 2, box.bottom - 2)),
+        };
+      });
+      return { scrollTop: list.scrollTop, shelfBottom: shelf.bottom, footerTop: footer.top, rows };
+    });
+    for (const viewport of [TALL.viewport, SHORT.viewport]) {
+      await page.setViewportSize(viewport);
+      const layout = await readLayout();
+      assert.equal(layout.scrollTop, 0, "the leaf list starts at the top");
+      assert.deepEqual(layout.rows.map(row => row.id), ["lemon", "orange", "mint"]);
+      for (const row of layout.rows) {
+        assert(row.hit && row.bottom <= Math.min(layout.shelfBottom, layout.footerTop),
+          `${viewport.height}px: ${row.id} is fully visible above the confirm button ${JSON.stringify(layout)}`);
+      }
+      if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/4422-first-mix-${viewport.height}.png` });
+    }
+    const plus = page.locator(t("vt-mix-plus-mint"));
+    for (let i = 0; i < 12; i++) await plus.tap();
+    await page.locator(".vtc-mix-footer button").tap();
+    await page.evaluate(() => window.firstMix);
+    assert.equal(await page.evaluate(() => window.firstMixSession.mix.mint), 12);
+
+    // 店の練習で候補が多いときも、末尾まで送れば最後の行の下端まで見える。
+    await page.evaluate(async () => {
+      const { addFlavorStock } = await import("./js/daily/shop.js");
+      const { newSession, openBench } = await import("./js/craft/session.js");
+      for (const id of ["orange", "blueberry", "vanilla", "grape", "peach"]) addFlavorStock(id, 50);
+      const cs = newSession("rehearsal");
+      openBench(cs, { steps: [["mix", "配合"]] });
+      window.practiceMix = (await import("./js/craft/steps.js")).stepMix(cs);
+    });
+    await page.locator(t("vt-mix-plus-peach")).waitFor();
+    const before = await readLayout();
+    assert(before.rows.at(-1).bottom > before.shelfBottom, "the practice list starts with more rows below its scrollport");
+    await leaves.evaluate(list => { list.scrollTop = list.scrollHeight; });
+    const after = await readLayout();
+    const last = after.rows.at(-1);
+    assert(after.scrollTop > 0 && last.hit && last.bottom < after.shelfBottom,
+      `the last practice row is fully tappable at the end of the list ${JSON.stringify(after)}`);
+    assert.equal(after.footerTop, before.footerTop, "scrolling the leaves keeps the footer in place");
+  }, { ...TALL, pageEntry: entry });
+
   await check("craft-mix-and-pull-actions", async page => {
     await waitScene(page, "title");
     await runCraftStep(page, { module: "./js/craft/steps.js", fn: "stepMix" });

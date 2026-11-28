@@ -96,6 +96,34 @@
 #stage[data-portrait-scene="dj"] .dj-frame { width: 100%; height: 100%; inset: 0; }
 #stage[data-portrait-scene="floor"] .tonari-floor { --tf-pad-l: 10px; --tf-pad-r: 10px; --tf-side: 0px; }
 #stage[data-portrait-scene="floor"] .tf-stage { top: 90px; transform: none; }
+/* 縦の店内画では奥に3卓、手前に2卓を並べ、札・番号・押し所を同じ列に置く。 */
+#stage[data-portrait-scene="floor"] .tonari-floor[data-style="medal"] .tf-spot {
+  --tf-portrait-x: 50%; --tf-portrait-y: 47%;
+}
+#stage[data-portrait-scene="floor"] .tonari-floor[data-style="medal"] .tf-spot:is([data-id="1"], [data-id="2"]) {
+  --tf-portrait-x: 17.5%;
+}
+#stage[data-portrait-scene="floor"] .tonari-floor[data-style="medal"] .tf-spot:is([data-id="4"], [data-id="5"]) {
+  --tf-portrait-x: 82.5%;
+}
+#stage[data-portrait-scene="floor"] .tonari-floor[data-style="medal"] .tf-spot:is([data-id="1"], [data-id="5"]) {
+  --tf-portrait-y: 97%;
+}
+#stage[data-portrait-scene="floor"] .tonari-floor[data-style="medal"] :is(.tf-bubble, .tf-seat, .tf-plate) {
+  left: var(--tf-portrait-x);
+}
+#stage[data-portrait-scene="floor"] .tonari-floor[data-style="medal"] .tf-bubble {
+  top: var(--tf-portrait-y); max-width: 196px; pointer-events: auto;
+}
+#stage[data-portrait-scene="floor"] .tonari-floor[data-style="medal"] .tf-seat { top: calc(var(--tf-portrait-y) - 84px); }
+#stage[data-portrait-scene="floor"] .tonari-floor[data-style="medal"] .tf-plate { top: calc(var(--tf-portrait-y) - 16px); }
+/* 名指しの長いフレーバー名は、隣の札にはみ出さず帯の中で折り返す。 */
+#stage[data-portrait-scene="floor"] .tonari-floor[data-style="medal"] .tf-tag-req:has([data-pref="true"]) {
+  height: auto; min-height: 32px; padding-block: 4px;
+}
+#stage[data-portrait-scene="floor"] .tonari-floor[data-style="medal"] .tf-tag-req .tf-wish[data-pref="true"] {
+  font-size: var(--tf-small); white-space: normal;
+}
 #stage[data-portrait-scene="floor"] .tf-presets { left: 12px; right: 12px; top: 490px; width: auto; bottom: 110px; }
 #stage[data-portrait-scene="floor"] .tf-preset-list { grid-template-columns: repeat(2,minmax(0,1fr)); overflow-y: auto; }
 #stage[data-portrait-scene="floor"] .tf-top { inset: 12px 12px auto; height: auto; gap: 4px; }
