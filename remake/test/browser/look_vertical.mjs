@@ -729,12 +729,20 @@ await suite("look_vertical", async (check) => {
     await next.waitFor();
     for (const viewport of [TALL.viewport, { width: 320, height: 568 }]) {
       await page.setViewportSize(viewport);
-      const notes = await page.locator(".vt-sheet-host .s-end-notes").boundingBox();
-      const teaser = await page.locator(".vt-sheet-host .s-next-teaser").boundingBox();
-      const body = await page.locator(".vt-sheet-host .rs-body").boundingBox();
-      const action = await next.boundingBox();
-      assert(notes.y >= body.y && teaser.y + teaser.height <= body.y + body.height + 1, "notes and entire teaser are visible before scrolling");
-      assert(action.y >= body.y + body.height - 1 && action.y + action.height <= viewport.height);
+      await page.waitForFunction(({ width, height }) => innerWidth === width && innerHeight === height, viewport);
+      const { notes, teaser, body, action } = await next.evaluate(button => {
+        const sheet = button.closest(".retro-sheet");
+        const rect = node => node.getBoundingClientRect().toJSON();
+        return {
+          notes: rect(sheet.querySelector(".s-end-notes")),
+          teaser: rect(sheet.querySelector(".s-next-teaser")),
+          body: rect(sheet.querySelector(".rs-body")),
+          action: rect(button),
+        };
+      });
+      assert(notes.top >= body.top && teaser.bottom <= body.bottom + 1, "notes and entire teaser are visible before scrolling");
+      assert(action.top >= body.bottom - 1 && action.bottom <= viewport.height,
+        `footer at ${action.top}–${action.bottom}, below body ending at ${body.bottom}, inside height ${viewport.height}`);
     }
     await page.locator(t("sheet-end-save")).tap();
     await page.locator(t("sheet-slot-cancel")).tap();

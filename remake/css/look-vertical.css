@@ -330,7 +330,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 /* 行き先の一覧（上の絵とテロップの場所に重ねる。パッドは残す） */
 .vt-sheet { position: absolute; z-index: 20; left: var(--u); right: var(--u); top: calc(7.6 * var(--u) + env(safe-area-inset-top, 0px)); bottom: calc(1 * var(--u)); display: flex; flex-direction: column; border: calc(0.1 * var(--u)) solid #ffffff38; border-radius: calc(2 * var(--u)); background: #120c1df0; -webkit-backdrop-filter: blur(calc(1.6 * var(--u))); backdrop-filter: blur(calc(1.6 * var(--u))); box-shadow: 0 calc(2 * var(--u)) calc(4 * var(--u)) #000c; animation: vt-sheet-in 0.3s var(--ease-out); }
 .vt-sheet[hidden] { display: none; }
-@keyframes vt-sheet-in { from { opacity: 0; transform: translateY(calc(2 * var(--u))); } }
+@keyframes vt-sheet-in { from { opacity: 0; transform: translateY(var(--vt-sheet-offset, calc(2 * var(--u)))); } }
 .vt-sheet header { display: flex; align-items: center; gap: var(--u); padding: calc(1.2 * var(--u)) calc(1.6 * var(--u)) var(--u); border-bottom: calc(0.1 * var(--u)) solid #ffffff1f; font-family: var(--mincho); font-size: calc(2 * var(--u)); letter-spacing: 0.1em; }
 .vt-sheet header span { flex: 1; }
 .vt-sheet header button { height: calc(3.3 * var(--u)); padding: 0 calc(1.4 * var(--u)); border: calc(0.1 * var(--u)) solid #ffffff38; border-radius: calc(2 * var(--u)); font-family: var(--gothic); font-size: calc(1.22 * var(--u)); font-weight: 700; letter-spacing: 0.06em; }
@@ -516,6 +516,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-shell[data-scene="sheet"] .vt-telop { visibility: hidden; }
 /* 章末は下段まで読める一枚のシート。次章へ進む・セーブする操作は本文の下に固定する。 */
 .vt-shell[data-sheet="end"][data-layout="full"] .vt-sheet-host {
+  --vt-sheet-offset: 0px;
   inset: max(var(--u), env(safe-area-inset-top)) var(--u) max(var(--u), env(safe-area-inset-bottom));
 }
 .vt-shell[data-sheet="end"][data-layout="full"] .rs-body {
