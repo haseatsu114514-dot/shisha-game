@@ -77,6 +77,7 @@ function sync() {
   const root = document.documentElement;
   const next = effectiveLook(chosen, chapterSource());
   root.dataset.lookChoice = chosen;
+  delete root.dataset.lookBoot; // 様式が決まった（起動中は回転案内を出さない・css/base.css）
   if (root.dataset.look === next) return next;
   root.dataset.look = next;
   document.dispatchEvent(new CustomEvent(LOOK_EVENT, { detail: { look: next, choice: chosen } }));

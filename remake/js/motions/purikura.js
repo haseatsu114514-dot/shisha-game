@@ -13,6 +13,7 @@ import { SE, playBgm, currentBgm, preloadBgm } from "../core/audio.js";
 import { move, svg } from "../core/transition-kit.js";
 import { MG_EASE as E } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
+import { frameOf } from "../core/motion-frame.js";
 import { recordCg } from "../scenes/gallery.js";
 
 export const PURIKURA_CG = "cg_ageha_first_purikura";
@@ -38,6 +39,30 @@ const POSES = [
 const VIEW = { x: 60, y: 100 }; // 写真の窓
 const TOOL_X = 740; // 右の列（撮った写真・盛りのボタン・落書きの道具）
 const SLOT = (i) => ({ x: TOOL_X, y: 100 + i * 165, w: 200, h: 150 }); // 撮った写真の列
+
+/**
+ * 場面の並べ方。横の舞台（1280×720）は、写真の窓を左・右の列に 撮った写真 → 盛り → 落書きの道具（上の VIEW・SLOT・TOOL_X と purikura.css）。
+ * 縦画面の縦の舞台（VPO16）は、縦の試作（previews/portrait-stage/purikura.mjs・VPS04）と同じ 720×840 の場面: 写真の窓を上、
+ * その下の一段に 撮った写真 → 盛り → 落書きの道具 を横に並べ、時間で入れ替えて出す。シールは大きく、あげはの道具の輪は横へ動く。
+ */
+const ROW = (i) => 10 + i * 220; // 縦の場面の下の一段の横の位置（3つ）
+const LAYOUT = {
+  land: {
+    W: 1280, H: 720, view: VIEW, slot: SLOT, machine: null,
+    menu: (i) => ({ top: `${120 + i * 120}px` }), tool: (i) => ({ top: `${[120, 250, 380][i]}px` }), pick: null, nail: null,
+    stampTool: { x: TOOL_X + 100, y: 380 + 34 }, pickTo: "translateY(260px)", rise: "translateX(30px)",
+    sheet: SHEET, twinkles: [[120, 120], [1150, 160], [90, 560], [1190, 600], [640, 40], [1000, 680]],
+  },
+  tall: {
+    W: 720, H: 840, view: { x: 10, y: 100 }, slot: (i) => ({ x: ROW(i), y: 610, w: 200, h: 150 }),
+    machine: { left: "20px", top: "20px", width: "680px", height: "790px" },
+    menu: (i) => ({ left: `${ROW(i)}px`, top: "640px" }), tool: (i) => ({ left: `${ROW(i)}px`, top: "626px" }),
+    pick: { left: `${ROW(0) - 8}px`, top: "618px" }, nail: { left: `${20 + 10 + ROW(2) + 100 - 28}px`, top: `${20 + 10 + 640 + 45 - 28}px` },
+    stampTool: { x: ROW(2) + 100, y: 626 + 52 }, pickTo: `translateX(${ROW(2) - ROW(0)}px)`, rise: "translateY(30px)",
+    sheet: { strip: { w: 660, h: 557, top: 150 }, cg: { w: 440, h: 659, top: 90 }, sprites: { w: 534, h: 480, top: 180 } },
+    twinkles: [[86, 96], [640, 130], [60, 560], [668, 600], [360, 34], [560, 812]],
+  },
+};
 
 // a: 撮影が主役／b: 落書きとシールが主役（時刻はms）
 export const PLANS = {
@@ -189,28 +214,28 @@ function doodles(extra = 0) {
 
 // ---------------------------------------------------------------- 画面
 
-function build(art, plan) {
+function build(art, plan, L = LAYOUT.land) {
   const glow = el("div.mo-pk-glow");
   const poses = POSES.map((p, i) => shot(p, i === 2 ? { mori: true, glow } : {}));
   const ink = doodles(plan.stamps);
   const pinkPen = el("div.mo-pk-pen.pink"), goldPen = el("div.mo-pk-pen.gold");
   const count = ["3", "2", "1"].map((n) => el("span.mo-pk-count", { text: n }));
-  const view = el("div.mo-pk-view", [...poses, ink.layer, ...count, pinkPen, goldPen]);
-  const thumbs = POSES.map((p, i) => { const s = SLOT(i); return mini(shot(p), s.w, s.h, ".mo-pk-thumb"); });
-  thumbs.forEach((t, i) => Object.assign(t.style, { left: `${SLOT(i).x}px`, top: `${SLOT(i).y}px` }));
-  const menu = (plan.menu ? ["ナチュラル", "盛り", "超盛り"] : []).map((t, i) => el(`div.mo-pk-mori-btn${i === 2 ? ".pick" : ""}`, { text: t, style: { top: `${120 + i * 120}px` } }));
+  const view = el("div.mo-pk-view", L.machine ? { style: { left: `${L.view.x}px`, top: `${L.view.y}px` } } : {}, [...poses, ink.layer, ...count, pinkPen, goldPen]);
+  const thumbs = POSES.map((p, i) => { const s = L.slot(i); return mini(shot(p), s.w, s.h, ".mo-pk-thumb"); });
+  thumbs.forEach((t, i) => Object.assign(t.style, { left: `${L.slot(i).x}px`, top: `${L.slot(i).y}px` }));
+  const menu = (plan.menu ? ["ナチュラル", "盛り", "超盛り"] : []).map((t, i) => el(`div.mo-pk-mori-btn${i === 2 ? ".pick" : ""}`, { text: t, style: L.menu(i) }));
   const tools = [
-    el("div.mo-pk-tool", { style: { top: "120px" } }, [el("i.mo-pk-dot.pink"), el("span", { text: "ペン" })]),
-    el("div.mo-pk-tool", { style: { top: "250px" } }, [el("i.mo-pk-dot.gold"), el("span", { text: "ペン" })]),
-    el("div.mo-pk-tool", { style: { top: "380px" } }, [el("i.mo-pk-dot.stamp"), el("span", { text: "スタンプ" })]),
+    el("div.mo-pk-tool", { style: L.tool(0) }, [el("i.mo-pk-dot.pink"), el("span", { text: "ペン" })]),
+    el("div.mo-pk-tool", { style: L.tool(1) }, [el("i.mo-pk-dot.gold"), el("span", { text: "ペン" })]),
+    el("div.mo-pk-tool", { style: L.tool(2) }, [el("i.mo-pk-dot.stamp"), el("span", { text: "スタンプ" })]),
   ];
-  const pick = el("div.mo-pk-pick"); // あげはが選んでいる道具の輪
+  const pick = el("div.mo-pk-pick", L.pick ? { style: L.pick } : {}); // あげはが選んでいる道具の輪
   const labels = ["撮影スタート♪", plan.menu ? "盛りレベルを選んでね♪" : "超盛りで仕上げ♪", "らくがきタイム♪"].map((t) => el("div.mo-pk-label", [el("span", { text: t })]));
   const head = el("div.mo-pk-head", labels);
-  const machine = el("div.mo-pk-machine", [head, view, ...thumbs, ...menu, ...tools, pick]);
-  const nail = el("div.mo-pk-nail");
+  const machine = el("div.mo-pk-machine", L.machine ? { style: L.machine } : {}, [head, view, ...thumbs, ...menu, ...tools, pick]);
+  const nail = el("div.mo-pk-nail", L.nail ? { style: L.nail } : {});
   // 印刷したシール。真ん中で切ると半分ずつ（CGは4コマを左右に、代用は2列×2段を1列ずつ）
-  const size = SHEET[art.kind];
+  const size = L.sheet[art.kind];
   const half = (side) => (art.url
     ? el(`div.mo-pk-half.cg${art.kind === "strip" ? ".strip" : ""}.${side}`, { style: { backgroundImage: `url("${art.url}")` } })
     : el(`div.mo-pk-half.${side}`, [mini(finished(plan.stamps), 240, 180), mini(finished(plan.stamps), 240, 180)]));
@@ -221,10 +246,10 @@ function build(art, plan) {
   const bladeL = svg("g", { class: "mo-pk-blade" }, [svg("circle", { cx: -11, cy: -24, r: 9, fill: "none", stroke: "#ff3d9a", "stroke-width": 5 }), svg("path", { d: "M-6 -16 L6 36", stroke: "#cfd6e0", "stroke-width": 6, "stroke-linecap": "round" })]);
   const bladeR = svg("g", { class: "mo-pk-blade" }, [svg("circle", { cx: 11, cy: -24, r: 9, fill: "none", stroke: "#ff3d9a", "stroke-width": 5 }), svg("path", { d: "M6 -16 L-6 36", stroke: "#e9edf2", "stroke-width": 6, "stroke-linecap": "round" })]);
   const scissors = svg("svg", { class: "mo-pk-scissors", viewBox: "-30 -40 60 80", style: `left: ${size.w / 2 - 30}px` }, [bladeL, bladeR, svg("circle", { cx: 0, cy: 0, r: 3, fill: "#8a94a3" })]);
-  const sheet = el(`div.mo-pk-sheet${art.url ? ".cg" : ""}`, { style: { left: `${(1280 - size.w) / 2}px`, top: `${size.top}px`, width: `${size.w}px`, height: `${size.h}px` } }, [left, right, cutLine, shine, scissors]);
+  const sheet = el(`div.mo-pk-sheet${art.url ? ".cg" : ""}`, { style: { left: `${(L.W - size.w) / 2}px`, top: `${size.top}px`, width: `${size.w}px`, height: `${size.h}px` } }, [left, right, cutLine, shine, scissors]);
   const flash = el("div.mo-pk-flash");
   const bg = el("div.mo-pk-bg");
-  const twinkles = [[120, 120], [1150, 160], [90, 560], [1190, 600], [640, 40], [1000, 680]].map(([x, y]) =>
+  const twinkles = L.twinkles.map(([x, y]) =>
     el("i.mo-pk-twinkle", { style: { left: `${x}px`, top: `${y}px` } }));
   return { size, bg, twinkles, machine, head, labels, view, poses, glow, ink, pinkPen, goldPen, count, thumbs, menu, tools, pick, nail, sheet, left, right, cutLine, shine, scissors, blades: [bladeL, bladeR], flash };
 }
@@ -241,7 +266,7 @@ function trace(pen, line, upTo, ms, delay) {
   return at(pen, frames, ms, delay, { easing: "linear" });
 }
 
-function schedule(ui, plan) {
+function schedule(ui, plan, L = LAYOUT.land) {
   const P = plan;
   // 入場: ピンクが丸く広がり、機械の画面が弾んで出る
   at(ui.bg, [{ clipPath: "circle(0% at 50% 50%)" }, { clipPath: "circle(75% at 50% 50%)" }], 560, 0);
@@ -272,9 +297,9 @@ function schedule(ui, plan) {
     }
     snap.push(t);
     at(ui.flash, [{ opacity: 0.95 }, { opacity: 0 }], 320, t, { fill: "forwards", easing: E.out });
-    // 撮った1枚が、写真の窓から右の列へ縮んで飛ぶ
-    const slot = SLOT(i);
-    const big = `translate(${VIEW.x - slot.x}px, ${VIEW.y - slot.y}px) scale(${PW / slot.w})`;
+    // 撮った1枚が、写真の窓から右の列（縦の場面では下の一段）へ縮んで飛ぶ
+    const slot = L.slot(i);
+    const big = `translate(${L.view.x - slot.x}px, ${L.view.y - slot.y}px) scale(${PW / slot.w})`;
     at(ui.thumbs[i], [
       { opacity: 0, transform: big }, { opacity: 1, transform: big, offset: 0.01 }, { opacity: 1, transform: big, offset: 0.25 },
       { opacity: 1, transform: "none" },
@@ -285,7 +310,7 @@ function schedule(ui, plan) {
   ui.thumbs.forEach((t) => at(t, [{ opacity: 1 }, { opacity: 0 }], 220, P.mori, { fill: "forwards" }));
   const glowAt = P.menu ? P.mori + 760 : P.mori + 200;
   if (P.menu) {
-    ui.menu.forEach((b, i) => at(b, [{ opacity: 0, transform: "translateX(30px)" }, { opacity: 1, transform: "none" }], 300, P.mori + 120 + i * 70));
+    ui.menu.forEach((b, i) => at(b, [{ opacity: 0, transform: L.rise }, { opacity: 1, transform: "none" }], 300, P.mori + 120 + i * 70));
     at(ui.nail, [
       { opacity: 0, transform: "translate(160px, 160px)" }, { opacity: 1, transform: "none", offset: 0.6, easing: "cubic-bezier(.2,.8,.3,1)" },
       { opacity: 1, transform: "scale(.8)", offset: 0.75 }, { opacity: 1, transform: "none", offset: 0.88 }, { opacity: 0, transform: "translate(60px, 80px)" },
@@ -300,7 +325,7 @@ function schedule(ui, plan) {
   at(ui.flash, [{ opacity: 0 }, { opacity: 0.7 }, { opacity: 0 }], 420, glowAt, { fill: "forwards" });
 
   // 落書き: 道具が並ぶ。はじめの金のペンはまっすぐ星を描き、あげはのピンクのペンはよれて途中で止まる
-  ui.tools.forEach((t, i) => at(t, [{ opacity: 0, transform: "translateX(30px)" }, { opacity: 1, transform: "none" }], 300, P.doodle + i * 70));
+  ui.tools.forEach((t, i) => at(t, [{ opacity: 0, transform: L.rise }, { opacity: 1, transform: "none" }], 300, P.doodle + i * 70));
   ui.tools.forEach((t) => at(t, [{ opacity: 1 }, { opacity: 0 }], 260, P.print, { fill: "forwards" }));
   const ink = ui.ink;
   const d0 = P.doodle + 200;
@@ -318,14 +343,14 @@ function schedule(ui, plan) {
   const jitter = [[0, 0], [2.5, -1], [-2, 1.5], [1.5, 2], [-2.5, -1], [1, -2], [0, 0]];
   at(ui.pinkPen, jitter.map(([dx, dy]) => ({ transform: `translate(${(sx + dx).toFixed(1)}px, ${(sy + dy).toFixed(1)}px)` })), 260, h0 + heartMs + 40, { fill: "forwards", easing: "linear" });
   const lift = h0 + heartMs + 340;
-  const toolX = TOOL_X + 100 - VIEW.x, toolY = 380 + 34 - VIEW.y;
+  const toolX = L.stampTool.x - L.view.x, toolY = L.stampTool.y - L.view.y; // スタンプの道具の真ん中（写真の窓の座標）
   at(ui.pinkPen, [
     { transform: `translate(${sx}px, ${sy}px)` }, { transform: `translate(${sx + 6}px, ${sy - 14}px) rotate(-8deg)`, offset: 0.3 },
     { transform: `translate(${toolX}px, ${toolY}px)` },
   ], 420, lift, { fill: "forwards", easing: E.inOut });
   at(ui.pinkPen, [{ opacity: 1 }, { opacity: 0 }], 160, lift + 420, { fill: "forwards" });
   at(ui.pick, [{ opacity: 0, transform: "translateY(0)" }, { opacity: 1, transform: "translateY(0)" }], 160, P.doodle + 160, { fill: "forwards" });
-  at(ui.pick, [{ transform: "translateY(0)" }, { transform: "translateY(260px)" }], 260, lift + 300, { fill: "forwards", easing: E.inOut });
+  at(ui.pick, [{ transform: "none" }, { transform: L.pickTo }], 260, lift + 300, { fill: "forwards", easing: E.inOut });
   at(ui.pick, [{ opacity: 1 }, { opacity: 0 }], 200, P.print, { fill: "forwards" });
   // スタンプがポンポン押される。最初のハートが、よれた線を覆う
   const st0 = lift + 420, gap = P.gap;
@@ -336,7 +361,7 @@ function schedule(ui, plan) {
   // 印刷: 機械が引っ込み、シールが下から出てくる → 光沢が走る
   at(ui.machine, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-40px) scale(.94)" }], 380, P.print, { fill: "forwards", easing: E.in });
   const S = ui.size;
-  at(ui.sheet, [{ opacity: 0, transform: `translateY(${760 - S.top}px) rotate(4deg)` }, { opacity: 1, transform: "rotate(-2deg)" }], 640, P.print + 240, { easing: E.out });
+  at(ui.sheet, [{ opacity: 0, transform: `translateY(${L.H + 40 - S.top}px) rotate(4deg)` }, { opacity: 1, transform: "rotate(-2deg)" }], 640, P.print + 240, { easing: E.out });
   at(ui.shine, [{ opacity: 1, backgroundPosition: "130% 0" }, { opacity: 1, backgroundPosition: "-30% 0" }], 620, P.print + 900, { fill: "forwards", easing: E.inOut });
   // 半分こ: 真ん中の点線をハサミが下まで切り、片方がこちらへ来る
   const C = P.cut;
@@ -364,22 +389,25 @@ export async function shoot(variant = "a") {
   if (state !== owner) return;
   await stagePlay("purikura", async (node) => {
     if (state !== owner) return;
-    const ui = build(art, plan);
+    const L = frameOf(node).portrait ? LAYOUT.tall : LAYOUT.land;
+    const ui = build(art, plan, L);
+    // 縦の舞台では、ピンクの豹柄の背景だけを画面いっぱいに敷く（場面 720×840 の上下に暗い帯を残さない）
+    const tall = L === LAYOUT.tall;
     const scene = el("div.mo-pk-scene", { style: {
-      position: "absolute", left: "50%", top: "50%", width: "1280px", height: "720px", transformOrigin: "center",
-    } }, [ui.bg, ...ui.twinkles, ui.machine, ui.sheet, ui.nail, ui.flash]);
+      position: "absolute", left: "50%", top: "50%", width: `${L.W}px`, height: `${L.H}px`, transformOrigin: "center",
+    } }, [...(tall ? [] : [ui.bg]), ...ui.twinkles, ui.machine, ui.sheet, ui.nail, ui.flash]);
     const fit = () => {
-      const scale = Math.min(node.clientWidth / 1280, node.clientHeight / 720);
+      const scale = Math.min(node.clientWidth / L.W, node.clientHeight / L.H);
       scene.style.transform = `translate(-50%, -50%) scale(${scale})`;
     };
-    node.append(backdrop("#1a0f1d"), scene);
+    node.append(backdrop("#1a0f1d"), ...(tall ? [ui.bg] : []), scene);
     fit();
     const resize = new ResizeObserver(fit);
     resize.observe(node);
     const previousMusic = currentBgm();
     playBgm(music);
     try {
-      const T = schedule(ui, plan);
+      const T = schedule(ui, plan, L);
       // 音（予約した動きと同じ時刻に鳴らす）
       const cues = [
         ...plan.shots.flatMap((s, i) => (plan.countdown[i] ? [0, 1, 2].map((n) => [s + n * 240, "tick"]) : [])),
@@ -408,7 +436,7 @@ export async function shoot(variant = "a") {
       // LOADや別場面への切替で鳴り始めた曲は上書きしない。
       if (state === owner && currentBgm() === music) playBgm(previousMusic);
     }
-  });
+  }, { portrait: true });
 }
 
 export const a = () => shoot("a");

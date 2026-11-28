@@ -5,6 +5,7 @@
 import { el, sleep } from "../core/util.js";
 import { W, H, COLOR, EASE, svg, stageSvg, move, holdKeys } from "../core/transition-kit.js";
 import { holdCover } from "../core/transitions.js";
+import { mountMotion } from "../core/motion-frame.js";
 
 // 窓の外の色。from（出た土地の空）→ to（着く土地の空）。ground は窓の下から見えてくる土地
 const SKIES = {
@@ -165,7 +166,7 @@ async function van(mid, { to = "tokyo" } = {}) {
   title.dataset.motion = "van";
   try {
     await mid?.();
-    host.append(title);
+    mountMotion(title, { portrait: true }); // 縦画面の縦の舞台では、画面の下の方に出す（VPO12）
     await titleIn(title);
     await sleep(900);
     await titleOut(title);
@@ -194,10 +195,18 @@ export async function c(mid, { kind = "plane", to = "dubai" } = {}) {
     ])]),
     svg("image", { href: FLY_ART.cabin, x: 0, y: 0, width: CABIN_W, height: CABIN_H, mask: `url(#${id})` }),
   ]);
-  cabin.style.transformOrigin = `${(WIN_AT[0] * 100).toFixed(2)}% ${(WIN_AT[1] * 100).toFixed(2)}%`;
   const title = rideTitle("fly", flight);
   node.append(outside, cabin, title);
-  host.append(node);
+  const mounted = mountMotion(node, { portrait: true });
+  // 縦画面の縦の舞台（720×H・VPO12）: 機内の絵を画面の高さいっぱいにし、窓が画面の真ん中に来る所だけを切り出す
+  const { W: FW, H: FH, portrait } = mounted.frame;
+  let win = WIN_AT;
+  if (portrait) {
+    const w = (CABIN_H * FW) / FH, x0 = WIN_AT[0] * CABIN_W - w / 2;
+    cabin.setAttribute("viewBox", `${x0.toFixed(1)} 0 ${w.toFixed(1)} ${CABIN_H}`);
+    win = [0.5, WIN_AT[1]];
+  }
+  cabin.style.transformOrigin = `${(win[0] * 100).toFixed(2)}% ${(win[1] * 100).toFixed(2)}%`;
   try {
     // 1. 場面の上に機内がにじんで入る（少し寄った所から落ち着く）。窓の外の雲は流れ続ける
     move(outside, [{ transform: "translateX(0)" }, { transform: "translateX(-14%)" }], 3600, { easing: "linear" });
@@ -211,11 +220,11 @@ export async function c(mid, { kind = "plane", to = "dubai" } = {}) {
     await sleep(1150);
     // 3. 窓へ寄って、窓の外がそのまま次の場面になる
     titleOut(title, 260);
-    const tx = (50 - WIN_AT[0] * 100).toFixed(2), ty = (50 - WIN_AT[1] * 100).toFixed(2);
+    const tx = (50 - win[0] * 100).toFixed(2), ty = (50 - win[1] * 100).toFixed(2);
     move(outside, [{ opacity: 1 }, { opacity: 0 }], 460, { delay: 280, easing: "ease-in" });
     await move(cabin, [{ transform: "translate(0, 0) scale(1)" }, { transform: `translate(${tx}%, ${ty}%) scale(${WIN_ZOOM})` }], 760, { easing: EASE.in });
   } finally {
-    node.remove();
+    mounted.remove();
     release();
   }
 }

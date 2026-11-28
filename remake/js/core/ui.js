@@ -14,6 +14,7 @@ import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
 import { syncShopHaze } from "./shop-haze.js";
 import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival, takeParkedCover, smokeArt, smokeIn, smokeOut, dateTypeReady, plainDateType } from "./transitions.js";
+import { mountMotion } from "./motion-frame.js";
 import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
 import { uiThemeFrame } from "./ui-theme.js";
@@ -953,14 +954,15 @@ export async function dayCard(title, sub, { ms = 1900, weather = null, forecast 
   const card = el("div.day-card", [titleNode, el("i.dc-rule"), sub ? el("div.dc-sub", [sub, wx?.badge]) : null]);
   if (forecast) card.append(el("small.dc-sub", { text: `明日は${forecast}`, dataset: { test: "day-forecast" } }));
   if (!(await typeReady)) plainDateType(card, [titleNode]);
-  layers.fx.append(card);
+  // 縦画面を縦持ちで使っている間は、縦の舞台（VPO18）で上の絵の下の方に出す（css/base.css の .mo-portrait.day-card）
+  const mounted = mountMotion(card, { portrait: true, host: layers.fx });
   SE.card();
   await nextFrame();
   card.classList.add("show");
   await sleep(ms);
   card.classList.add("out");
   await sleep(500);
-  card.remove();
+  mounted.remove();
 }
 
 /** 中央の見出し帯（「ROUND 2」など）。登場カットインと同じ生成りの帯を大きく（TMG59） */

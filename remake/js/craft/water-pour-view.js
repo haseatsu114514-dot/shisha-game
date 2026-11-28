@@ -346,15 +346,18 @@ export function mountWaterPour(panel, {
     const row = interiorSpan(target);
     if (!row) return;
     const [left, right] = row;
+    const start = rotate([left - 22, target], tilt);
+    const end = rotate([right + 22, target], tilt);
     ctx.save();
     ctx.strokeStyle = "#1a0f08"; ctx.lineWidth = 11; ctx.setLineDash([]);
-    ctx.beginPath(); ctx.moveTo(left - 22, target); ctx.lineTo(right + 22, target); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(...start); ctx.lineTo(...end); ctx.stroke();
     ctx.strokeStyle = "#ffd977"; ctx.lineWidth = 6; ctx.setLineDash([34, 18]);
-    ctx.beginPath(); ctx.moveTo(left - 22, target); ctx.lineTo(right + 22, target); ctx.stroke();
+    ctx.stroke();
     ctx.setLineDash([]);
     // 右端の目盛り
     ctx.fillStyle = "#ffd977";
-    ctx.beginPath(); ctx.moveTo(right + 34, target); ctx.lineTo(right + 70, target - 20); ctx.lineTo(right + 70, target + 20); ctx.closePath(); ctx.fill();
+    pathOf([[right + 34, target], [right + 70, target - 20], [right + 70, target + 20]].map(point => rotate(point, tilt)));
+    ctx.fill();
     ctx.restore();
   }
   function interiorSpan(y) {
@@ -379,9 +382,9 @@ export function mountWaterPour(panel, {
     else { ctx.fillStyle = "#4a2b55"; pathOf(interior); ctx.fill(); }
     ctx.restore();
     drawWater(points, base);
+    drawTargetLine();
     ctx.save();
     ctx.translate(POUR.pivot.x, POUR.pivot.y); ctx.rotate(tilt); ctx.translate(-POUR.pivot.x, -POUR.pivot.y);
-    drawTargetLine();
     // ガラスの映り込み
     ctx.fillStyle = "#ffffff1c"; ctx.fillRect(560, 170, 26, 330);
     ctx.fillStyle = "#ffffff12"; ctx.beginPath(); ctx.ellipse(400, 720, 22, 120, .25, 0, Math.PI * 2); ctx.fill();

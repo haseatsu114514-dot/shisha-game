@@ -5,6 +5,7 @@ import { SE } from "../core/audio.js";
 import { W, H, svg, stageSvg, move } from "../core/transition-kit.js";
 import { MG_EASE as E, pick } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
+import { frameOf } from "../core/motion-frame.js";
 
 let serial = 0;
 
@@ -479,11 +480,17 @@ export async function c(mid, bgUrl) {
     const dim = el("div.mo-tab-dim");
     node.append(desk, dim, tablet);
     const at = (y, s, r = 0) => ({ transform: `translateY(${y}px) scale(${s}) rotate(${r}deg)` });
-    const S = 0.62;
+    // 縦画面の縦の舞台（720×H・VPO09）: 横長のタブレットを画面の幅いっぱい近くで真ん中に置いて描き、
+    // 寄る時は画面の高さいっぱいまで寄せて、線画の真ん中が画面を覆ってから色がにじむ
+    const { W: FW, H: FH, portrait } = frameOf(node);
+    if (portrait) Object.assign(tablet.style, { left: `${(FW - W) / 2}px`, top: `${(FH - H) / 2}px` });
+    const S = portrait ? 0.54 : 0.62;
+    const Z = portrait ? (FH / H) * 1.02 : 1; // 寄りきった大きさ
+    const enter = portrait ? Math.round(FH * 0.62) : 760;
     // 1. 場面がぼけて暗くなり（机）、タブレットが少し傾いて下から置かれる（机で覆いきったら裏で背景を替えはじめる）
     move(desk, [{ opacity: 0, filter: "blur(0px) brightness(1)" }, { opacity: 1, filter: "blur(14px) brightness(.5)" }], 260, { easing: "ease-out" });
     move(dim, [{ opacity: 0 }, { opacity: 1 }], 260, { easing: "ease-out" });
-    move(tablet, [at(760, S, -6), at(0, S, 0)], 560, { easing: E.out });
+    move(tablet, [at(enter, S, -6), at(0, S, 0)], 560, { easing: E.out });
     await sleep(280);
     const swapped = mid ? mid() : null;
     // 2. ペンが左下から浮いたまま入ってくる
@@ -516,7 +523,7 @@ export async function c(mid, bgUrl) {
       const k = easeIn(t / 360);
       pen.set(mix(tip.x, W + 360, k), mix(tip.y, -420, k), mix(tip.a, -64, k), Math.min(1, (t / 360) * 2.5));
     });
-    const pushed = move(tablet, [at(0, S), at(0, 1)], 560, { easing: E.inOut });
+    const pushed = move(tablet, [at(0, S), at(0, Z)], 560, { easing: E.inOut });
     const spots = [[640, 380, 430], [250, 230, 470], [1040, 210, 470], [1070, 600, 450], [210, 600, 450], [640, 80, 340], [640, 690, 330]];
     const blobs = spots.map(([x, y, R], i) => {
       const shape = blobPath(R);
@@ -544,7 +551,7 @@ export async function c(mid, bgUrl) {
     // 6. 穴が広がるのに合わせて画面の白が薄れ、最後に線画が引いて元の場面に戻る
     move(paperGroup, [{ opacity: 1 }, { opacity: 0 }], 520, { easing: "ease-in", delay: 200 });
     await Promise.all([opened, move(lineArt, [{ opacity: 1 }, { opacity: 0 }], 520, { easing: "ease-in-out", delay: 320 })]);
-  }, { cover: true }).finally(() => {
+  }, { cover: true, portrait: true }).finally(() => {
     defs.remove();
     if (drawn) URL.revokeObjectURL(drawn);
   });
