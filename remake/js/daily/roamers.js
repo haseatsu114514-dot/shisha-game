@@ -101,7 +101,7 @@ export const ROAMERS = Object.freeze([
   { id: "naru", series: "dubai_naru", chapters: [5], shop: "naru",
     at: (spot, value) => spot.id === "adam" || spot.id === "c_station" || spot.id === "minto" && !!value.met?.minto,
     ready: value => atHome(value) && metStory("naru")(value), bond: true },
-  // 帰国後の再訪。出張ブースはもうなく、太陽は休暇、王煙楼は茶の仕入れで立ち寄る。
+  // 帰国後の再訪。出張ブースはもうなく、太陽は休暇、王煙楼はシェイクを訪ねた折に立ち寄る。
   { id: "da_silva", chapters: [5], at: dubaiReturn, ready: metStory("da_silva"), bond: true },
   { id: "master_hookah", chapters: [5], at: dubaiReturn, ready: metStory("master_hookah"), bond: true },
   { id: "sheikh", chapters: [5], at: dubaiReturn, ready: metStory("sheikh"), bond: true },

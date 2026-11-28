@@ -29,7 +29,7 @@ import { cityRegularSpots, visitCityRegular } from "./ch2-preparation.js";
 import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNight, tokyoWakeBackground, chapterFiveMukaiShift,
   chapterFiveTokyoPin, tokyoSpotsNow, preloadTokyoScenes } from "./ch5-tokyo.js";
 import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNight, dubaiWakeBackground, chapterFiveDubaiPin,
-  chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById, preloadNoorScenes, dubaiBondHasNew } from "./ch5-dubai.js";
+  chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById, preloadNoorScenes, dubaiBondHasNew, chapterFiveDubaiRoamerSpots } from "./ch5-dubai.js";
 import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop, chapterFiveShowroom,
   chapterFiveTonariTalks, performChapterFiveTonariTalk } from "./ch5-shops.js";
 import { chapterFiveCateringSpot, performCateringSpot, deliverCateringMorning, settleCateringWork, cateringBusyContacts, finishCateringSeason } from "./ch5-catering.js";
@@ -100,15 +100,13 @@ export function dueTonariScene(value = state) {
   return next && (TONARI_SLOTS[next.id] || [0, 1]).includes(value.slot) ? next : null;
 }
 
-const dubaiRoamerSpots = () => state.chapter === 5 && inDubai() ? DUBAI_SPOTS : [];
-
 /**
  * 日常ループの章定義。
  * @param io.readAndCommit (id) => Promise<boolean> 読了して進行を確定・保存する（ch5.js）
  * @param io.readScene (id) => Promise<boolean> 読むだけ（試作の場面。確定は呼び出し側）
  */
 export function chapterFiveDailyDefinition(io) {
-  addRoamerSpots(dubaiRoamerSpots);
+  addRoamerSpots(chapterFiveDubaiRoamerSpots);
   return {
     get untilDay() {
       const match = state?.flags?._ch5?.matchDay;

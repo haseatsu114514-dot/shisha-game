@@ -43,6 +43,7 @@ export const DUBAI = "dubai";
 const GUEST_FLAG = "_ch5_dubai_guest"; // 最初の到着（屋敷の客間を用意してもらった）を読んだ
 const TALKS_FLAG = "_ch5_dubai_talks"; // 小会話の巡回の回数（行き先ごと）
 const RESIDENCE_BG = "bg_dubai_sheikh_residence";
+const dubaiTalkAt = (spot, visits) => spot.talks[visits % spot.talks.length];
 
 // 座標は第4章のドバイの地図（bg_dubai_map）に対する百分率。第4章の行き先と同じ位置を使う。
 // ただし客間・空港は、左上の状態表示と右上のボタンに隠れない位置へずらした（画面で確認）。
@@ -134,6 +135,15 @@ export function chapterFiveDubaiLeisureSpots(value = state) {
 export const chapterFiveDubaiLeisureById = id => chapterFiveDubaiLeisureSpots().find(entry => entry.id === id && !entry.unavailable) || null;
 
 const REST_SCENES = ["ch5_dubai_guest_rest", "ch5_dubai_guest_rest_b", "ch5_dubai_guest_rest_c"];
+
+/** 路地裏のカフェで、旅装のシェイクや店員との続きがある来店には相席を重ねない。 */
+export function chapterFiveDubaiRoamerSpots() {
+  if (state.chapter !== 5 || !inDubai()) return [];
+  const alley = DUBAI_SPOTS.find(spot => spot.id === "ch5_dubai_alley");
+  const visits = state.flags[TALKS_FLAG]?.[alley.id] || 0;
+  return dubaiTalkAt(alley, visits) !== "ch5_dubai_alley_b" && !chainStageAt(state, alley.id) ? [alley] : [];
+}
+
 const SCENES = DUBAI_SPOTS.flatMap(entry => entry.talks || [])
   .concat(["ch5_dubai_letter", ...DUBAI_LETTER_AGAIN, "ch5_dubai_go", "ch5_dubai_back", "ch5_dubai_arrival", ...REST_SCENES,
     CAMEL_AGAIN.scene, DUNES_AGAIN.scene, CH5_CAMEL_MEET.scene, NOOR_CAFE_AGAIN, ...Object.values(CH5_NOOR_SCENES),
@@ -241,7 +251,7 @@ export async function performDubaiSpot(spot, { staminaGuard, holdSaveUntilAction
     try { await loadBondAfterScenes(DB); } catch { after = null; }
     if (state !== owner) return unused;
   }
-  const scene = after?.scene || spot.talks[visits % spot.talks.length];
+  const scene = after?.scene || dubaiTalkAt(spot, visits);
   if (!await read(scene, spot.preview, owner)) return unused;
   if (spot.cost) addMoney(-spot.cost);
   addStamina(spot.stamina);

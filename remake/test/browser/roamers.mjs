@@ -314,6 +314,15 @@ await suite("roamers", async check => {
       value.flags._ch2_region = "dubai";
       chapterFiveDailyDefinition({});
       const away = sample();
+      const alley = "ch5_dubai_alley";
+      // 旅装のシェイクがいる二回目と、通いの続きが始まる四回目には相席を重ねない。
+      value.flags._ch5_dubai_talks = { [alley]: 1 };
+      const withSheikh = sample();
+      value.flags._ch5_dubai_talks[alley] = 2;
+      const afterSheikh = sample();
+      value.flags._ch5_dubai_talks[alley] = 3;
+      const withChain = sample();
+      delete value.flags._ch5_dubai_talks;
       value.flags._roam_seen_da_silva = 3;
       const heard = [];
       hooks.onLine = (id, line) => heard.push(line.text);
@@ -323,7 +332,7 @@ await suite("roamers", async check => {
       value.day = 38;
       value.flags._ch2_region = "home";
       const home = sample();
-      return { before, festa, wang, naruScene, away, home, ok, after, heard };
+      return { before, festa, wang, naruScene, away, withSheikh, afterSheikh, withChain, home, ok, after, heard };
     });
     assert.deepEqual(Object.keys(result.before), ["naru"]);
     assert.equal(result.before.naru.spotId, "ch4_dubai_cafe");
@@ -332,6 +341,9 @@ await suite("roamers", async check => {
     assert.equal(result.wang.reason, "closed");
     assert.deepEqual(Object.keys(result.away).sort(), ["da_silva", "master_hookah", "sheikh"]);
     assert(Object.values(result.away).every(plan => plan.spotId === "ch5_dubai_alley" && plan.reason === "free"));
+    assert.deepEqual(result.withSheikh, {});
+    assert.deepEqual(result.afterSheikh, result.away);
+    assert.deepEqual(result.withChain, {});
     assert.deepEqual(Object.keys(result.home), ["naru"]);
     assert.equal(result.home.naru.reason, "closed");
     assert(result.ok && result.heard.some(t => t?.includes("審査の席")));

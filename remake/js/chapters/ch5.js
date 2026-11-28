@@ -228,7 +228,12 @@ async function readScene(owner, id, { keepHud = false } = {}) {
     previousOnChoice?.(...args);
     if (args[0] === "ch5_schedule_contact" && args[1] === "ch5_schedule_contact_choice") scheduleChoice = args[2];
   } : null;
+  const previousCondition = hooks.evalCondition;
+  const conditionHook = id === CH5_MATCH_SCENES.arrival ? line => line.condition_type === "story_seen"
+    ? chapterFiveRead(owner.state, line.dialogue)
+    : previousCondition?.(line) : null;
   if (choiceHook) hooks.onChoice = choiceHook;
+  if (conditionHook) hooks.evalCondition = conditionHook;
   try {
     // スタッフロールの後の修羅場の開始は、同席している恋人だけを視線のカットインに出す（motion gaze）
     const cast = id === CH5_POST_ENDING.open ? chapterFivePostEndingCast(state) : null;
@@ -241,6 +246,7 @@ async function readScene(owner, id, { keepHud = false } = {}) {
     return finished;
   } finally {
     if (choiceHook && hooks.onChoice === choiceHook) hooks.onChoice = previousOnChoice;
+    if (conditionHook && hooks.evalCondition === conditionHook) hooks.evalCondition = previousCondition;
     if (owner.controller === controller) owner.controller = null;
   }
 }
