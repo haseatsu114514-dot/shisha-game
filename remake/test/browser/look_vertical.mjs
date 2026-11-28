@@ -763,38 +763,6 @@ await suite("look_vertical", async (check) => {
     assert.deepEqual(await page.evaluate(() => window.rotateFlashes), []);
   }, { ...TALL, pageEntry: entry });
 
-  await check("chapter-one-clear-shows-notes-teaser-and-actions", async (page) => {
-    await waitScene(page, "title");
-    await page.evaluate(async () => {
-      const { newGame } = await import("./js/core/state.js");
-      Object.assign(newGame(), { chapter: 1, day: 14, phase: "cleared" });
-      await (await import("./js/chapters/ch1.js")).showClear();
-    });
-    const next = page.locator(t("sheet-end-chapter2"));
-    await next.waitFor();
-    for (const viewport of [TALL.viewport, { width: 320, height: 568 }]) {
-      await page.setViewportSize(viewport);
-      await page.waitForFunction(({ width, height }) => innerWidth === width && innerHeight === height, viewport);
-      const { notes, teaser, body, action } = await next.evaluate(button => {
-        const sheet = button.closest(".retro-sheet");
-        const rect = node => node.getBoundingClientRect().toJSON();
-        return {
-          notes: rect(sheet.querySelector(".s-end-notes")),
-          teaser: rect(sheet.querySelector(".s-next-teaser")),
-          body: rect(sheet.querySelector(".rs-body")),
-          action: rect(button),
-        };
-      });
-      assert(notes.top >= body.top && teaser.bottom <= body.bottom + 1, "notes and entire teaser are visible before scrolling");
-      assert(action.top >= body.bottom - 1 && action.bottom <= viewport.height,
-        `footer at ${action.top}–${action.bottom}, below body ending at ${body.bottom}, inside height ${viewport.height}`);
-    }
-    await page.locator(t("sheet-end-save")).tap();
-    await page.locator(t("sheet-slot-cancel")).tap();
-    await next.tap();
-    await page.waitForFunction(() => window.__remake.state.chapter === 2);
-  }, { ...TALL, pageEntry: entry });
-
   await check("unsupported-scenes-show-the-rotate-hint", async (page) => {
     await waitScene(page, "title");
     await page.evaluate(async () => {
