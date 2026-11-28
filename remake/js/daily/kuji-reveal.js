@@ -24,11 +24,16 @@ const ORDER = ["LAST", "S", "A", "B", "C"];
 const bestRank = (results) => ORDER.find((r) => results.some((p) => p.rank === r)) || "C";
 
 /**
- * 縦画面を縦持ちで使っている間は、くじの画面を縦の舞台（core/motion-frame.js・VPO17）に出す（今までは回転案内だった）。
- * ガラガラ（1280×720 の舞台）は、抽選器・受け皿・係の人の鐘のまわり（舞台の x 340〜1040・縦の試作 previews/portrait-stage/kuji.mjs と同じ）を
- * 画面の幅いっぱいに写し、賞の札は縦の画面に収まる大きさで真ん中に開く（css/motions/garagara.css の .vt-kj）。横の本編は今までどおり #modal。
+ * 縦画面を縦持ちで使っている間は、くじの画面を縦の舞台（core/motion-frame.js・VPO17・VPO20）に出す（今までは回転案内だった）。
+ * 縦の構図（VPO20・2026-11-28 オーナー「前の仕様を拡大してるだけに見えるのでちゃんと縦仕様にして　背景作り直すとか」）:
+ *   後ろはその店の絵（ぼかして暗く）を画面いっぱいに広げ、カウンターは画面の下の端まで伸ばす。黒板（くじの名前と賞の玉）は上の真ん中に、
+ *   抽選器はその下に大きく。ガラガラの舞台（1280×720 の座標）は、抽選器と受け皿のまわり（x 340〜1040）が画面の幅いっぱいになる倍率で置き、
+ *   舞台の外へもはみ出して描く（css/motions/garagara.css の .vt-kj-stage）。賞の札は縦長の札、連続の結果は2列（端数は最後の1枚を幅いっぱい）。
+ * 横の本編は今までどおり #modal。
  */
-const PORTRAIT_VIEW = { x: 340, w: 700, cy: 404 };
+const PORTRAIT_VIEW = { x: 340, w: 700 };
+const PORTRAIT_AXIS_AT = 0.45; // 抽選器の胴の軸を、画面の上から 45% の所に（上に黒板、下にカウンターと玉置き）
+const AXIS_Y = 292; // 抽選器の胴の軸（motions/garagara-stage.js の AY。演出の部品は引く時に読むので、ここに写す）
 function openOverlay(ov) {
   if (!portraitMotion()) {
     layers.modal.replaceChildren(ov);
@@ -39,15 +44,23 @@ function openOverlay(ov) {
   const mounted = mountMotion(ov, { portrait: true });
   return () => mounted.remove();
 }
-/** ガラガラを置く器。縦の舞台では抽選器のまわりを幅いっぱいに写す 1280×720 の箱（上から 4 割の所に抽選器） */
+/** ガラガラを置く器。縦の舞台では 1280×720 の座標の箱を、抽選器のまわりが幅いっぱいになる倍率で置く（中身は箱の外へもはみ出して描く） */
 function machineHost(ov) {
-  if (!ov.classList.contains("vt-kj")) return { host: ov, done() {} };
+  if (!ov.classList.contains("vt-kj")) return { host: ov, opts: {}, done() {} };
   const { W, H } = frameOf(ov), k = W / PORTRAIT_VIEW.w;
+  const top = H * PORTRAIT_AXIS_AT - AXIS_Y * k; // 箱の上端（画面の座標）
+  // 黒板（絵の高さ 340）は、抽選器の胴の上の空き（画面の上 30px から胴の上 20px 手前まで）に収まる大きさで、上の真ん中に
+  const drumTop = top + (AXIS_Y - 150) * k, room = drumTop - 20 - 30;
+  const signScale = Math.max(0.5, Math.min(1.3, room / (340 * k)));
+  const signTop = (drumTop - 20 - 340 * signScale * k - top) / k;
   const box = el("div.vt-kj-stage", { "aria-hidden": "true", style: {
-    transform: `translate(${(-PORTRAIT_VIEW.x * k).toFixed(1)}px, ${(H * 0.4 - PORTRAIT_VIEW.cy * k).toFixed(1)}px) scale(${k.toFixed(4)})`,
+    transform: `translate(${(-PORTRAIT_VIEW.x * k).toFixed(1)}px, ${top.toFixed(1)}px) scale(${k.toFixed(4)})`,
+    "--vt-sign-top": `${signTop.toFixed(0)}px`, "--vt-sign-scale": signScale.toFixed(3),
+    // SKIP は画面の右下（親指の届く所）に。箱の座標へ直して渡す
+    "--vt-skip-top": `${((H - 150 - top) / k).toFixed(0)}px`,
   } });
   ov.append(box);
-  return { host: box, done: () => box.remove() };
+  return { host: box, opts: { narrow: true }, done: () => box.remove() };
 }
 /** 札が開いた時の粒の中心と札の半分の大きさ（粒の座標は 1280 幅の舞台の真ん中に合わせてある）。縦の舞台では札は縮めて画面の真ん中 */
 const cardSpot = (host) => (host.closest?.(".vt-kj") ? [640, host.clientHeight / 2 - 20, 440 * 0.8, 190 * 0.8] : [640, 330, 440, 190]);
@@ -145,7 +158,7 @@ function revealOne(ov, prize, skip, prev, machine = {}) {
     if (skip) { sleep(300).then(() => show(null)); return; }
     // ガラガラが消え始めたところで札を下で開き、重ねて受け渡す
     const spot = machineHost(ov);
-    loadMotion().then((kit) => kit.garagara(spot.host, prize.rank, { ...machine, onHandoff: () => show(kit) }).then(() => { spot.done(); show(kit); }))
+    loadMotion().then((kit) => kit.garagara(spot.host, prize.rank, { ...machine, ...spot.opts, onHandoff: () => show(kit) }).then(() => { spot.done(); show(kit); }))
       .catch((e) => { console.error(e); spot.done(); show(null); });
   });
 }
@@ -303,7 +316,7 @@ export function revealMany(results, count, machine = {}) {
       timer = setTimeout(step, stillOnly() ? 200 : 300 + cards.length * 45);
     };
     const spot = machineHost(ov);
-    loadMotion().then((loaded) => loaded.garagara(spot.host, results.map((p) => p.rank), { ...machine, onHandoff: () => start(loaded) }).then(() => { spot.done(); start(loaded); }))
+    loadMotion().then((loaded) => loaded.garagara(spot.host, results.map((p) => p.rank), { ...machine, ...spot.opts, onHandoff: () => start(loaded) }).then(() => { spot.done(); start(loaded); }))
       .catch((e) => { console.error(e); spot.done(); start(null); });
   });
 }

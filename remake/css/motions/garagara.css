@@ -386,26 +386,62 @@ html:root[data-density="phone"] body:not(.game-ds) .kj-actions .btn { min-height
   .kuji-card.reveal, .kuji-card.reveal *, .kuji-card::after, .kuji-multi-panel .kuji-short, .kj-ball, .kj-rays, .kj-halo { animation: none !important; transition: none !important; }
 }
 
-/* ---- 縦画面の縦の舞台（VPO17・daily/kuji-reveal.js の openOverlay・machineHost）: 幅 720 の縦長の画面で、くじを引いて見る ----
-   ガラガラの舞台（1280×720）は抽選器のまわりだけを幅いっぱいに写す（倍率と位置は JS）。賞の札は縦の画面に収まる大きさで真ん中に。
-   字は縦の画面の実寸で読める大きさへ上げる（舞台の 1px は 390 幅の画面で約 0.54px） */
-.kuji-overlay.vt-kj { inset: 0; padding: 0; background: radial-gradient(ellipse 120% 60% at 50% 40%, #1d1410f2, #0e0a09fa 70%); }
-/* 抽選器の舞台の上下の端は、暗い地へ溶かす（切れ目を見せない） */
-.vt-kj-stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; pointer-events: none;
-  -webkit-mask-image: linear-gradient(transparent, #000 9%, #000 91%, transparent); mask-image: linear-gradient(transparent, #000 9%, #000 91%, transparent); }
-.vt-kj-stage .kj-skip { right: 270px; bottom: 30px; min-width: 170px; min-height: 76px; font-size: 30px; }
-.vt-kj .kuji-card:not(.kuji-short) { zoom: 0.8; }
-.vt-kj .kuji-card:not(.kuji-short) .kuji-desc { display: none; }
-.vt-kj .kuji-card:not(.kuji-short) .kuji-name { font-size: 38px; }
-.vt-kj .kuji-card:not(.kuji-short) .kuji-dupe { font-size: 26px; }
-.vt-kj .kuji-close { font-size: 40px; }
-.kuji-overlay.vt-kj.kuji-multi { padding: 60px 18px 40px; }
+/* ---- 縦画面の縦の舞台（VPO17・VPO20・daily/kuji-reveal.js の openOverlay・machineHost）: 幅 720 の縦長の画面で、くじを引いて見る ----
+   2026-11-28 オーナー「前の仕様を拡大してるだけに見えるのでちゃんと縦仕様にして　背景作り直すとか」「10連の結果がなんか配置がキリ悪い」。
+   舞台: 店の絵（ぼかして暗く）は画面いっぱい、カウンターは画面の下の端まで伸ばす。黒板は上の真ん中、抽選器はその下に大きく（位置と倍率は JS）。
+   ガラガラの舞台（1280×720 の座標）は箱の外へもはみ出して描く。舞台の 1px は 390 幅の画面で約 0.56px */
+.kuji-overlay.vt-kj { inset: 0; padding: 0; background: #0e0a09; }
+.vt-kj-stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; pointer-events: none; }
+.vt-kj-stage .mo-garagara { overflow: visible; background: transparent; }
+/* 店の絵は見えている所（x 340〜1040・上下は画面の端まで）を縦長に覆う */
+.vt-kj-stage .kj-bg { inset: -560px 200px -760px 300px; }
+.vt-kj-stage :is(.kj-dim, .kj-tint, .kj-vignette, .kj-flash) { inset: -560px 200px -760px 300px; }
+.vt-kj-stage .kj-toplight { inset: -560px 200px 0 300px; background: radial-gradient(ellipse 70% 46% at 50% 4%, rgba(255, 234, 196, 0.3), rgba(255, 234, 196, 0) 70%); }
+/* カウンターの前板を画面の下まで（絵の下の端から続ける） */
+.vt-kj-stage .kj-counter::after {
+  content: ""; position: absolute; left: 0; right: 0; top: calc(100% - 2px); height: 900px;
+  background: repeating-linear-gradient(90deg, rgba(255, 220, 170, 0.035) 0 2px, transparent 2px 46px), linear-gradient(180deg, #23150c 0%, #150c07 30%, #0b0605 100%);
+  box-shadow: inset 0 18px 30px rgba(0, 0, 0, 0.45);
+}
+/* 黒板（くじの名前と賞の玉）は上の真ん中に大きく。位置と倍率は JS（抽選器の上の空きに収める） */
+.vt-kj-stage .kj-sign { left: calc(690px - 112px) !important; top: var(--vt-sign-top, -300px) !important; transform: scale(var(--vt-sign-scale, 1.2)); transform-origin: 50% 0; }
+/* SKIP は画面の右下（親指の届く所） */
+.vt-kj-stage .kj-skip { top: var(--vt-skip-top, 600px); bottom: auto; right: 260px; min-width: 170px; min-height: 76px; font-size: 30px; }
+
+/* 1回引きの賞の札: 縦長の札（上に景品の窓、下に賞と景品名）。描いた札の箔の縁を九分割で使い、中は生成りの地 */
+.vt-kj .kuji-card:not(.kuji-short) {
+  width: 620px; min-height: 0; grid-template-columns: 1fr; text-align: center;
+  border: 10px solid transparent; border-radius: 22px; border-image: var(--kj-card) 40 / 10px / 0 stretch;
+  background: linear-gradient(168deg, #fcf7ec 0%, #f3ead8 60%, #eadfc8 100%) padding-box;
+}
+.vt-kj .kuji-card.rank-LAST:not(.kuji-short) { background: linear-gradient(168deg, #2a2730 0%, #1b1920 60%, #131216 100%) padding-box; }
+.vt-kj .kuji-card:not(.kuji-short) .kj-art {
+  height: 330px; margin: 28px 28px 0;
+  background: radial-gradient(circle at 50% 44%, #ffffff 0%, var(--kj-hi) 34%, var(--kj-main) 120%); box-shadow: inset 0 0 0 1.5px var(--kj-deep), inset 0 6px 18px rgba(60, 40, 20, 0.28);
+}
+.vt-kj .kuji-card.rank-LAST:not(.kuji-short) .kj-art { background: radial-gradient(circle at 50% 44%, #f1f2f8 0%, #b9b4d8 46%, #4a4670 130%); }
+.vt-kj .kuji-card:not(.kuji-short) .kj-body { align-items: center; gap: 12px; padding: 18px 36px 36px; }
+.vt-kj .kuji-card:not(.kuji-short) .kuji-rank { font-size: 120px; }
+.vt-kj .kuji-card.rank-LAST:not(.kuji-short) .kuji-rank { font-size: 76px; }
+.vt-kj .kuji-card:not(.kuji-short) .kuji-name { width: 100%; font-size: 40px; }
+.vt-kj .kuji-card:not(.kuji-short) :is(.kuji-desc, .kuji-dupe, .kuji-hidane) { font-size: 28px; }
+.vt-kj .kuji-card:not(.kuji-short) .kuji-dupe { margin: 0 auto; }
+.vt-kj .kuji-close { width: 76px; height: 76px; font-size: 42px; }
+.vt-kj .kj-banner { top: -46px; font-size: 34px; }
+
+/* 連続の結果: 2列（10連は 2×5。数が奇数の時は最後の1枚を幅いっぱいに）。小さい札は左に景品の窓、右に賞と景品名 */
+.kuji-overlay.vt-kj.kuji-multi { padding: 70px 22px 40px; }
 .vt-kj .kuji-multi-panel { width: 100%; }
 .vt-kj .kuji-multi-panel h2 { font-size: 40px; }
 .vt-kj .kuji-multi-panel h2::before, .vt-kj .kuji-multi-panel h2::after { width: 80px; }
-.vt-kj .kuji-multi-cards .kuji-card.kuji-short, .vt-kj .kuji-multi-cards[data-n="11"] .kuji-card.kuji-short { flex-basis: calc((100% - 24px) / 3); min-height: 270px; }
-.vt-kj .kuji-short .kuji-rank { font-size: 28px; }
+.vt-kj .kuji-multi-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 22px; }
+.vt-kj .kuji-multi-cards > .kuji-card.kuji-short:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.vt-kj .kuji-card.kuji-short { min-height: 156px; display: grid; grid-template-columns: 132px minmax(0, 1fr); align-items: center; text-align: left; }
+.vt-kj .kuji-short .kj-art { height: 132px; margin: 0 0 0 4px; }
+.vt-kj .kuji-short .kj-body { align-items: flex-start; gap: 6px; padding: 10px 12px 10px 14px; }
+.vt-kj .kuji-short .kuji-rank { position: static; font-size: 28px; }
 .vt-kj .kuji-short.rank-LAST .kuji-rank { font-size: 22px; }
 .vt-kj .kuji-short :is(.kuji-name, .kuji-dupe) { font-size: 25px; }
+.vt-kj .kuji-short .kuji-hidane { font-size: 20px; }
 .vt-kj .kj-actions { flex-direction: column; gap: 18px; }
 html:root .kuji-overlay.vt-kj.kuji-multi .kj-actions .btn { min-width: 440px; min-height: 88px; font-size: 32px; }
