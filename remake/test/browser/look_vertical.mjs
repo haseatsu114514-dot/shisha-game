@@ -331,6 +331,12 @@ await suite("look_vertical", async (check) => {
       await card.waitFor();
       assert.equal(await card.locator(".ent-tag").textContent(), `エントリーナンバー${i + 1}`);
       assert.equal(await card.locator(".ent-name").textContent(), name);
+      const id = ["naru", "adam", "minto", "hajime"][i];
+      for (const [selector, stem] of [[".ent-portrait", id], [".ent-backdrop", "bg_" + id]]) {
+        const image = card.locator(selector);
+        assert((await image.getAttribute("src")).includes(`/character_intros/graphic/${stem}.webp`));
+        assert(await image.evaluate(img => img.complete && img.naturalWidth > 0));
+      }
       assert.equal(await card.locator(".ent-speaker").textContent(), "スミ");
       const ordered = await card.evaluate(node => {
         const box = selector => node.querySelector(selector).getBoundingClientRect();
