@@ -232,6 +232,23 @@ await suite("look_vertical", async (check) => {
     assert.equal(await page.locator(".result-table:not(.done)").count(), 0);
   }, { ...SHORT, pageEntry: entry });
 
+  await check("portrait-cold-start-hides-landscape-before-game-loads", async page => {
+    let release;
+    const paused = new Promise(resolve => { release = resolve; });
+    await page.route(/\/(?:main\.js|loading_bg\.webp)(?:\?|$)/, async route => {
+      await paused;
+      await route.continue();
+    });
+    try {
+      await page.reload({ waitUntil: "domcontentloaded" });
+      await page.locator("body > #boot.is-viewport.is-preparing").waitFor({ state: "attached" });
+      assert(await page.locator("html[data-look-boot]").count(), "様式の決定前を検査する");
+      assert.equal(await page.locator("#viewport").evaluate(node => getComputedStyle(node).opacity), "0",
+        "ロード絵と本体が届く前にも、黒地に16:9の舞台が浮かばない");
+    } finally { release(); }
+    await waitScene(page, "title");
+  }, { ...TALL, pageEntry: entry });
+
   await check("loading-keeps-landscape-covered", async page => {
     await waitScene(page, "title");
     await page.evaluate(async () => {
