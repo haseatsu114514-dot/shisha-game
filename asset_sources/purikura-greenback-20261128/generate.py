@@ -65,7 +65,7 @@ PROMPT_CLEAN = (
     "in the input, as a soft plain gradient without pattern or sparkles.\n"
     "The image is padded with a plain band on the left and right; keep those bands plain and do not draw into them.\n" + STYLE
 )
-KEY_BLUE = set()  # 人物の服・髪に緑がある写真（青で抜く）。生成して緑が人物にかかったら足す
+KEY_BLUE = {"minto_p57", "minto_p58", "minto_p59", "minto_p86", "minto_p87", "minto_p105"}  # 人物の服・髪に緑がある写真（青で抜く）。生成して緑が人物にかかったら足す
 SCREENS = {"green": ("GREEN", "green", "#00FF00"), "blue": ("BLUE", "blue", "#0000FF")}
 
 
