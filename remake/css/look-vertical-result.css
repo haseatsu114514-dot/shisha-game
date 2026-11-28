@@ -152,11 +152,13 @@
 #stage .result-actions .rt-save { width: 40%; display: flex; margin: 0; }
 #stage .result-actions .rt-save button { flex: 1; color: #ebdbba; background: #1a2738; border: 1px solid #766c57; }
 dialog.review {
-  width: min(360px,94vw); max-height: 78dvh; padding: 18px; overflow: auto; border: 1px solid #d3b878;
+  width: min(360px,94vw); max-height: 78dvh; padding: 18px; overflow: hidden; border: 1px solid #d3b878;
   border-radius: 7px; background: #152032; color: #f8efdf; font: 500 16px/1.55 var(--font);
 }
+dialog.review[open] { display: flex; flex-direction: column; }
 dialog.review::backdrop { background: #050b15d9; }
-dialog.review h2 { font: 700 24px/1.35 'Suien Name',serif; color: #ffe3a9; margin: 0 0 15px; }
+dialog.review h2 { flex: none; font: 700 24px/1.35 'Suien Name',serif; color: #ffe3a9; margin: 0 0 15px; }
+dialog.review .review-body { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 #stage dialog.review :is(small,p) {
   display: block; color: #f4ead9!important; font: 500 16px/1.55 var(--font); width: auto; margin: 4px 0;
 }
@@ -167,7 +169,7 @@ dialog.review h2 { font: 700 24px/1.35 'Suien Name',serif; color: #ffe3a9; margi
 }
 #stage dialog.review .rt-part b { grid-area: auto; font-size: 22px; }
 dialog.review button {
-  background: #eddaae; color: #201a11; border: 0; width: 100%; height: 46px;
+  flex: none; background: #eddaae; color: #201a11; border: 0; width: 100%; height: 46px;
   font: bold 16px var(--font); margin-top: 12px;
 }
 #stage .ts-splash-bust { background: none; }

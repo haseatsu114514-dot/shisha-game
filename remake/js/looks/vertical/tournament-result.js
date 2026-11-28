@@ -13,14 +13,26 @@ function arrangeRecord(table) {
   const added = [];
   function review(title, content, triggerClass) {
     const heading = el("h2", { text: title, tabindex: "-1" });
+    const body = el("div.review-body", { tabindex: "0" }, content);
     const dialog = el("dialog.review", { "aria-label": title }, [
-      heading, ...content,
+      heading, body,
       el("button", { type: "button", text: "閉じる", onclick: () => dialog.close() }),
     ]);
+    function onBackdrop(event) {
+      if (event.target !== dialog) return false;
+      const { left, top, right, bottom } = dialog.getBoundingClientRect();
+      return event.clientX < left || event.clientX > right || event.clientY < top || event.clientY > bottom;
+    }
+    let startedOnBackdrop = false;
+    dialog.addEventListener("pointerdown", event => { startedOnBackdrop = onBackdrop(event); });
+    dialog.addEventListener("click", event => {
+      if (startedOnBackdrop && onBackdrop(event)) dialog.close();
+      startedOnBackdrop = false;
+    });
     const trigger = el(`button.${triggerClass}`, { type: "button", text: title, "aria-haspopup": "dialog", onclick: () => {
       dialog.showModal();
       heading.focus({ preventScroll: true });
-      dialog.scrollTop = 0;
+      body.scrollTop = 0;
     } });
     table.append(dialog);
     added.push(dialog, trigger);

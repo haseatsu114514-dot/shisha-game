@@ -445,11 +445,12 @@
 .vtc-scale-digits { position:absolute; left:30.5%; top:82.5%; width:32.5%; height:13.5%; display:grid; place-items:center; color:#95ffc2; font:700 calc(1.9 * var(--u)) monospace; }
 .vtc-mix-controls, .vtc-pull-controls { display:grid; gap:calc(.5 * var(--u)); padding:calc(.7 * var(--u)); color:#fff4dc; background:#1b1422f5; font-size:calc(1.5 * var(--u)); }
 .vtc-mix-controls { grid-template-rows:minmax(0,1fr) auto; }
-.vtc-leaves { overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; }
+.vtc-leaves { overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; padding-block-end:calc(.4 * var(--u)); }
 .vtc-leaf { display:grid; grid-template-columns:minmax(0,1fr) auto 3em auto; align-items:center; gap:.25em; padding:.25em 0; border-bottom:1px solid #fff3; text-align:center; }
-.vtc-leaf-name { text-align:left; }
+.vtc-leaf-name { display:flex; flex-wrap:wrap; align-items:center; gap:0 .4em; text-align:left; }
+.vtc-leaf-name button { display:inline-flex; align-items:center; gap:.35em; max-width:100%; text-align:left; }
 .vtc-leaf-name small { display:block; opacity:.8; }
-.vtc-leaf-name img { width:2em; height:2em; object-fit:contain; vertical-align:middle; }
+.vtc-leaf-name img { flex:none; width:2em; height:2em; object-fit:contain; }
 .vtc-bench-button { background:#3b2c3e; border:1px solid #987b73; border-radius:.6em; color:#ffefda; font:inherit; padding:.35em .7em; min-height:calc(4.4 * var(--u)); }
 .vtc-bench-button:disabled { opacity:.52; }
 .vtc-bench-button[aria-pressed="true"] { border-color:#ffd489; }
