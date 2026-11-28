@@ -69,6 +69,7 @@ export const waterView = {
   },
   create({ hold, relay }) {
     const id = `vtcw${++uid}`, { w, h, inner } = BOTTLE;
+    const lowY = waterY(WATER.low), highY = waterY(WATER.high), midY = (lowY + highY) / 2;
     const bottle = el("div.vtc-bottle", { html: `<img class="vtc-sink" src="${ART}ui-sink-faucet.webp" alt="" draggable="false">
       <svg class="vtc-bottle-svg" viewBox="0 0 ${w} ${h}" aria-hidden="true"><defs><clipPath id="${id}"><path class="vtc-w-clip" d="${inner}"/></clipPath>
         <linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fe6fa"/><stop offset="0.16" stop-color="#3fb4e6"/><stop offset="1" stop-color="#1757a6"/></linearGradient>
@@ -79,8 +80,11 @@ export const waterView = {
       <img class="vtc-glass" src="${ART}ui-bottle-open.webp" alt="" draggable="false">
       <svg class="vtc-bottle-svg fx" viewBox="0 0 ${w} ${h}" aria-hidden="true"><defs><clipPath id="${id}f"><rect class="vtc-w-fxclip" x="-400" y="-900" width="${w + 800}" height="0"/></clipPath></defs>
         <g clip-path="url(#${id}f)"><path class="vtc-w-stream" fill="url(#${id}s)" d=""/></g><path class="vtc-w-spill" d=""/>
-        <g clip-path="url(#${id})"><path class="vtc-w-band" d=""/><path class="vtc-w-line2" d=""/></g>
-        <g class="vtc-w-mark"><rect x="0" y="-26" width="92" height="52" rx="26"/><text x="46" y="12">目安</text></g>
+        <defs><clipPath id="${id}guide"><path d="${BOTTLE.inner}"/></clipPath></defs>
+        <g class="vtc-w-guide"><g clip-path="url(#${id}guide)">
+          <path class="vtc-w-band" d="M0 ${highY}H${w}V${lowY}H0Z"/>
+          <path class="vtc-w-line2" d="M-40 ${lowY}H${w + 40}M-40 ${highY}H${w + 40}"/></g>
+          <g class="vtc-w-mark" transform="translate(${BOTTLE_WALL(midY)[1] + 34} ${midY})"><rect x="0" y="-26" width="92" height="52" rx="26"/><text x="46" y="12">目安</text></g></g>
         <g clip-path="url(#${id})"><g class="vtc-w-drops">${"<circle r=\"0\"/>".repeat(7)}</g></g></svg>
       <img class="vtc-sink front" src="${ART}ui-sink-faucet.webp" alt="" draggable="false"><i class="vtc-cabinet"></i>` });
     const pic = el("div.vtc-water-pic", { dataset: { test: "vt-water-pic", zone: "empty" }, role: "img", "aria-label": "ボトルの水量" }, [bottle]);
@@ -103,7 +107,7 @@ export const waterView = {
     const q = (c) => bottle.querySelector(c);
     const S = { h: new Float32Array(28), v: new Float32Array(28), ang: BOTTLE.rest, angV: 0, slope: 0, slopeV: 0, head: null, tail: null, bub: [], drops: [], spawn: 0, kick: 0, was: false,
       glass: q(".vtc-glass"), clip: q(".vtc-w-clip"), body: q(".vtc-w-body"), deep: q(".vtc-w-deep"), surf: q(".vtc-w-surf"), stream: q(".fx .vtc-w-stream"), streamIn: q(".vtc-w-stream.in"),
-      spill: q(".vtc-w-spill"), fxClip: q(".vtc-w-fxclip"), band: q(".vtc-w-band"), line2: q(".vtc-w-line2"), mark: q(".vtc-w-mark"),
+      spill: q(".vtc-w-spill"), fxClip: q(".vtc-w-fxclip"), band: q(".vtc-w-band"), guide: q(".vtc-w-guide"), mark: q(".vtc-w-mark"),
       bubEls: [...bottle.querySelectorAll(".vtc-w-bubbles circle")], dropEls: [...bottle.querySelectorAll(".vtc-w-drops circle")] };
     const motion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
     let raf = 0, last = 0;
@@ -171,7 +175,9 @@ export const waterView = {
       S.slope = Math.max(-0.16, Math.min(0.16, S.slope));
       // 描く: 傾けたボトルの絵と切り抜き、水面、目安の線
       S.glass.style.transform = `rotate(${ang.toFixed(2)}deg)`;
-      S.clip.setAttribute("transform", `rotate(${ang.toFixed(2)} ${BOTTLE.pivot[0]} ${BOTTLE.pivot[1]})`);
+      const rotation = `rotate(${ang.toFixed(2)} ${BOTTLE.pivot[0]} ${BOTTLE.pivot[1]})`;
+      S.clip.setAttribute("transform", rotation);
+      S.guide.setAttribute("transform", rotation);
       const y = (i) => level + S.slope * (i * DX - axisX) + S.h[i];
       let top = `M${-DX} ${y(0).toFixed(1)} L0 ${y(0).toFixed(1)}`;
       for (let i = 1; i < N; i++) { const xm = (i - 0.5) * DX, ym = (y(i - 1) + y(i)) / 2; top += ` Q${((i - 1) * DX).toFixed(1)} ${y(i - 1).toFixed(1)} ${xm.toFixed(1)} ${ym.toFixed(1)}`; }
@@ -181,12 +187,6 @@ export const waterView = {
       S.deep.setAttribute("d", shown ? `${top} V${BOTTLE.h + 260} H${-DX} Z` : "");
       S.deep.setAttribute("transform", "translate(0 18)");
       S.surf.setAttribute("d", shown ? top : "");
-      // 目安の線（本編の WATER.low・high）は、ガラスの手前に太く描き、2本のあいだを薄く塗る。ボトルの右に「目安」の札
-      const [, yl] = tiltPoint(BOTTLE.cx, waterY(WATER.low), ang), [, yh] = tiltPoint(BOTTLE.cx, waterY(WATER.high), ang);
-      S.band.setAttribute("d", `M-40 ${yh.toFixed(1)}H${BOTTLE.w + 40}V${yl.toFixed(1)}H-40Z`);
-      S.line2.setAttribute("d", `M-40 ${yl.toFixed(1)}H${BOTTLE.w + 40}M-40 ${yh.toFixed(1)}H${BOTTLE.w + 40}`);
-      const ym = (waterY(WATER.low) + waterY(WATER.high)) / 2, [mx] = tiltPoint(BOTTLE_WALL(ym)[1] + 34, ym, ang);
-      S.mark.setAttribute("transform", `translate(${mx.toFixed(1)} ${((yl + yh) / 2).toFixed(1)})`);
       // 水流（上が少し太く、下へ細る。わずかに揺れる）
       if (S.head != null && S.head - S.tail > 4) {
         const t = now / 1000, wob = (yy) => Math.sin(t * 19 + yy * 0.045) * 1.6 + Math.sin(t * 31 + yy * 0.09) * 0.8, y0 = S.tail, y1 = S.head, seg = 6;
