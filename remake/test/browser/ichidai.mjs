@@ -595,10 +595,10 @@ await suite("ichidai", async (check) => {
     });
     assert.deepEqual(big.face, { fit: "contain", loaded: true, inside: true }, "拡大札の人物の顔は、絵の欄からはみ出さない（帽子と目元だけにならない）");
     assert.deepEqual(big.cut, [], "拡大札の文が切れない");
-    // 準備の場（CPU に最初の火を任せてから、人の手に戻す）
-    await page.evaluate(() => window.__ichidai.autoplay(30));
-    await page.waitForFunction(() => document.querySelector('[data-test="ichi-game"]')?.dataset.phase === "prep", null, { timeout: 60000 });
-    await page.evaluate(() => window.__ichidai.manual());
+    // 最初の炭を手で置くと、自分の準備の番は葉を選ぶまで進まない。
+    await page.locator(t("ichi-embers")).waitFor();
+    for (const i of [0, 1, 2]) await page.locator(t(`ichi-hand-${i}`)).click();
+    await page.locator(t("ichi-embers")).click();
     await page.locator(`${t("ichi-market")} .ichi-pile-card`).first().waitFor({ timeout: 30000 });
     // 盆は奥へ傾けて出す（遠近）。字と丸の重なりは、傾きと出てくる動きを外した盆の面で測る
     const names = await page.evaluate(() => [...document.querySelectorAll('[data-test="ichi-market"] .ichi-pile-card')].map((pile, i, all) => {
