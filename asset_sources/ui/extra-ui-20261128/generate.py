@@ -2,7 +2,7 @@
 
 2026-11-28 オーナー「今ミニゲームによってロゴがあったりなかったりなのでないのは作って　あとエクストラはなんかCSS感強いから必要に応じでパーツをAPIで用意」。
 - ロゴ: 既存の題字ロゴ（砂丘 DESERT RIDE・ラクダ CAMEL RACE。asset_sources/ui/minigame-visuals-20261127/logos/prompts.md）と同じ作り方
-  （1536x1024・背景透過・quality high・参照画像つき）。文字はゲームの中の呼び名（AXE THROW・TABLETOP RPG・DJ MIX）。
+  （1536x1024・背景透過・quality high・参照画像つき）。文字はゲームの中の呼び名（AXE THROW・TABLE TALK RPG・DJ MIX）。
 - 部品: 本編の縦画面（煙の舞台）の部品（remake/img/ui/vertical/pad-ring・pad-button）と同じ「煙の入った紫の大理石＋細い磨いた金の縁」。
   文字は描かない（字は画面の文字で出す）。
 キーはコードに書かない。環境変数 OPENAI_API_KEY があれば付ける（クラウド環境ではプロキシが付ける）。
@@ -31,9 +31,11 @@ JOBS = {
         "a round end-grain wooden target with red bullseye behind the letters and a steel throwing axe with a wooden handle stuck in it at an "
         "angle, a few flying wood chips and small sparkles. Same logo style and polish as the attached CAMEL RACE logo; colours of the attached "
         "axe-throwing game. " + LOGO_TAIL),
-    "logo_tabletop_rpg": ("1536x1024", True, [UI / "extra/shots/trpg-2.webp", UI / "trpg/roll-logos/success.webp", UI / "camel_race/ui/logo.webp"],
-        "A premium mobile game title logo for a tabletop role-playing game played at a cosy board-game cafe. The logo text reads exactly "
-        "TABLETOP RPG (two words, spelled T-A-B-L-E-T-O-P and R-P-G, nothing else) on two lines, in an ornate fantasy storybook serif with "
+    # 2026-11-28 オーナー「テーブルトークRPGね　テーブルトップではなくて」（最初は TABLETOP RPG で作った）
+    "logo_table_talk_rpg": ("1536x1024", True, [UI / "extra/shots/trpg-2.webp", UI / "trpg/roll-logos/success.webp", UI / "camel_race/ui/logo.webp"],
+        "A premium mobile game title logo for a table-talk role-playing game played at a cosy board-game cafe. The logo text reads exactly "
+        "TABLE TALK RPG (three words, spelled T-A-B-L-E, T-A-L-K and R-P-G, nothing else), with TABLE TALK on the first line and a bigger RPG "
+        "on the second line, in an ornate fantasy storybook serif with "
         "polished gold letters, a thick dark teal-green outline, a cream inner bevel and a 3D extrusion. Integrated emblem: an open old "
         "leather-bound adventure book behind the letters, a big faceted twenty-sided die and a six-sided die tumbling in front, a small "
         "brass lantern glow, a laurel flourish and a few sparkles. Same gold-and-teal finish as the attached SUCCESS dice logo; same logo "
