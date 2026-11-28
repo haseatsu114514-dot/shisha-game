@@ -823,7 +823,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
   top: 9%; height: 60%; object-fit: cover; object-position: center 16%;
 }
 :root[data-vt-interlude] .entrance .ent-tag {
-  align-self: flex-start; margin-bottom: auto; font-size: 24px;
+  align-self: flex-start; margin-bottom: auto;
 }
 :root[data-vt-interlude] .entrance .ent-meta { margin-top: 10px; }
 :root[data-vt-interlude] .entrance .ent-name { font-size: 76px; }
