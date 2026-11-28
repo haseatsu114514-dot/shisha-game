@@ -56,7 +56,7 @@
 .vtc-rank-meter i { display: block; height: 100%; width: calc(var(--p, 0) * 100%); border-radius: inherit; background: linear-gradient(180deg, #fff3d6, #ffcf6b 55%, #e9a93e); box-shadow: 0 0 calc(0.8 * var(--u)) #ffcf6b; transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
 
 /* 温度計（右に大きく。色の意味は本編と同じ・VPL61・VPL103） */
-.vtc-thermo { position: absolute; z-index: 5; right: calc(1.1 * var(--u)); top: calc(10.8 * var(--u)); width: calc(5.8 * var(--u)); height: calc(100cqh - var(--cp-mix) - var(--band) - 14.3 * var(--u));
+.vtc-thermo { position: absolute; z-index: 5; right: calc(1.1 * var(--u)); top: calc(11.2 * var(--u)); width: calc(5.8 * var(--u)); height: calc(100cqh - var(--cp-mix) - var(--band) - 14.3 * var(--u));
   display: grid; grid-template-rows: auto minmax(0, 1fr) calc(2.8 * var(--u)); justify-items: center; gap: calc(0.6 * var(--u)); pointer-events: none; }
 .vtc-th-icon { width: calc(3.6 * var(--u)); height: calc(3.6 * var(--u)); transform: translateY(calc(-0.35 * var(--u)));
   display: grid; place-items: center; border-radius: 50%; font-size: calc(2.3 * var(--u)); color: #fff; background: #120c1dcc; box-shadow: 0 0 0 calc(0.12 * var(--u)) #ffffff40, 0 calc(0.4 * var(--u)) var(--u) #0009; transition: color 0.3s, background 0.3s, box-shadow 0.3s; }
@@ -147,7 +147,7 @@
 .vtc-water-pic[data-zone="none"] .vtc-w-surf { stroke: #ff8a8a; } .vtc-water-pic[data-zone="ideal"] .vtc-w-surf { stroke: #7df0b0; }
 .vtc-water-pic:is([data-zone="shallow"], [data-zone="deep"]) .vtc-w-surf { stroke: #ffe07a; }
 .vtc-w-band { fill: #7df0b0; opacity: 0.16; transition: opacity 0.2s; } .vtc-water-pic[data-zone="ideal"] .vtc-w-band { opacity: 0.32; }
-.vtc-w-precise { fill: #ffd37860; stroke: #ffdb8d; stroke-width: 2; }
+.vtc-w-precise { fill: #ffd37860; stroke: #ffdb8d; stroke-width: 3; stroke-dasharray: 12 8; }
 .vtc-w-line2 { fill: none; stroke: #fff6c8; stroke-width: 6; stroke-dasharray: 18 10; filter: drop-shadow(0 0 2px #0b0812) drop-shadow(0 0 5px #0b0812); }
 .vtc-water-pic[data-zone="ideal"] .vtc-w-line2 { stroke: #7df0b0; }
 .vtc-w-mark rect { fill: #120c1de6; stroke: #fff6c8; stroke-width: 3; } .vtc-w-mark text { fill: #fff6c8; font-size: 30px; font-weight: 800; text-anchor: middle; }
