@@ -1554,7 +1554,7 @@
       "id": "axe-throw",
       "title": "Axe throw on PC and touch",
       "kind": "browser",
-      "weight": 10.5,
+      "weight": 16,
       "timeout": 25,
       "paths": [
         "remake/js/core/stage-fit.js",
@@ -1682,7 +1682,7 @@
       "id": "ch1-presentation",
       "title": "Chapter 1 presentation, first brew and deliveries",
       "kind": "browser",
-      "weight": 15,
+      "weight": 25,
       "timeout": 30,
       "paths": [
         "remake/js/chapters/ch1*.js",
@@ -3258,6 +3258,7 @@
       "title": "Approved chapter 1 scenes and salaryman portraits",
       "kind": "browser",
       "weight": 2,
+      "estimatedMinutes": 10,
       "timeout": 20,
       "paths": [
         "data/dialogue/ch1_main.json",
@@ -3536,7 +3537,7 @@
       "id": "play-spots",
       "title": "Chapter play spots",
       "kind": "browser",
-      "weight": 6.5,
+      "weight": 13,
       "timeout": 15,
       "paths": [
         "remake/js/daily/axe-bar*.js",
@@ -4475,6 +4476,7 @@
       "title": "TRPG story collection",
       "kind": "browser",
       "weight": 5.0,
+      "estimatedMinutes": 28,
       "timeout": 35,
       "paths": [
         "data/dialogue/trpg_*.json",
