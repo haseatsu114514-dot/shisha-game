@@ -907,15 +907,14 @@ await suite("look_neo_portrait", async (check) => {
 
   await check("switching-to-classic-from-the-sheet-leaves-no-trace", async (page) => {
     await page.locator(shellFor("title")).waitFor();
-    // 設定をシートで開き、写しの「旧版」を押す → 外枠・シート・写しの部品が残らず、現行の設定の小窓がそのまま開いている
+    // 設定に様式選択はない。診断用に旧描画へ替え、外枠とシートの後片付けを確かめる。
     await page.locator(t("retro-title-config")).tap();
     await page.locator('.retro-sheet[data-kind="modal"]').waitFor();
-    await page.locator(`${t("sheet-cfg-look")} button[value="classic"]`).tap();
+    assert.equal(await page.locator(t("sheet-cfg-look")).count(), 0);
+    await page.evaluate(async () => (await import("./js/core/look.js")).setLook("classic"));
     await page.waitForFunction(() => document.documentElement.dataset.look === "classic" && !document.querySelector(".retro-shell"));
     assert.deepEqual(await residue(page), { shells: 0, notes: 0, hints: 0, attrs: [], paint: "" });
     assert.equal(await page.evaluate(() => document.querySelectorAll(".retro-sheet, [class*='rs-'], [data-test^='sheet-']").length), 0);
-    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_config") || "{}").look), "classic");
-    assert.equal(await page.locator(`${t("cfg-look")} button[value="classic"]`).getAttribute("aria-checked"), "true");
     await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true");
     // 新版へ戻すと、開いたままの設定が再びシートに写る（LK23: 新版は設定UIからは選べないため、プログラム経由で戻す）
     assert.equal(await page.locator(`${t("cfg-look")} button[value="neo"]`).count(), 0);

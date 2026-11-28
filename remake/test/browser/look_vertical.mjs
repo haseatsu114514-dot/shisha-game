@@ -260,6 +260,7 @@ await suite("look_vertical", async (check) => {
       const button = document.querySelector(".loading-gate .loading-proceed").getBoundingClientRect();
       return !!document.elementFromPoint(button.x + button.width / 2, button.y + button.height / 2)?.closest(".loading-gate");
     }));
+    await page.waitForFunction(() => typeof window.finishGate === "function");
     await page.evaluate(() => { window.finishGate(); return window.gateTest; });
     await page.locator(t("vt-title-config")).tap();
     await waitScene(page, "sheet");
@@ -725,18 +726,21 @@ await suite("look_vertical", async (check) => {
   await check("unsupported-scenes-show-the-rotate-hint", async (page) => {
     await waitScene(page, "title");
     await page.evaluate(async () => {
-      const core = await import("./js/core/state.js");
-      const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 1, day: 2, slot: 0 });
-      (await import("./js/core/ui.js")).clearScreen();
-      const { newSession, openBench } = await import("./js/craft/session.js");
-      const { stepPlace } = await import("./js/craft/steps.js");
-      const cs = newSession("tutorial"); openBench(cs, {}); window.placeRun = stepPlace(cs);
+      const { runIchidai } = await import("./js/minigames/ichidai.js");
+      window.stopCards = new AbortController();
+      void runIchidai({ signal: window.stopCards.signal });
     });
     await page.waitForFunction(() => getComputedStyle(document.getElementById("rotate-hint")).display !== "none", null, { timeout: 10000 });
     assert.equal(await scene(page), "");
     const hint = await page.evaluate(() => document.getElementById("rotate-hint").innerText.replace(/\s+/g, " "));
     assert(hint.includes("この場面は横向きで遊びます"), hint);
     await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true");
+    await page.setViewportSize(WIDE.viewport);
+    await page.locator("#rotate-hint").waitFor({ state: "hidden" });
+    await page.locator(t("ichi-help")).tap();
+    await page.locator(t("ichi-help-close")).tap();
+    await page.evaluate(() => window.stopCards.abort());
+    await page.locator("#rotate-hint .portrait-required").waitFor();
   }, { ...TALL, pageEntry: entry });
 
   await check("craft-pack-and-steam-timer-in-the-shell", async (page) => {
@@ -1240,12 +1244,16 @@ await suite("look_vertical", async (check) => {
     await assertPadHome(page, "short map");
   }, { ...SHORT, pageEntry: entry });
 
-  await check("landscape-uses-the-current-screen", async (page) => {
-    // 横持ち: 外枠を出さず、本編の画面のまま
-    await page.locator(t("title-new")).waitFor();
-    await page.waitForTimeout(400);
-    const state = await page.evaluate(() => ({ shell: !!document.querySelector(".vt-shell"), vt: document.documentElement.dataset.vt || "", opacity: getComputedStyle(document.getElementById("viewport")).opacity }));
-    assert.deepEqual(state, { shell: false, vt: "", opacity: "1" });
+  await check("landscape-blocks-title-input", async (page) => {
+    await page.locator("#rotate-hint .portrait-required").waitFor();
+    await page.locator(t("title-config")).focus();
+    await page.keyboard.press("Enter");
+    const box = await page.locator(t("title-config")).boundingBox();
+    await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+    assert.equal(await page.locator("#modal.show").count(), 0);
+    await page.setViewportSize(TALL.viewport);
+    await page.locator(t("vt-title-config")).tap();
+    await waitScene(page, "sheet");
   }, { ...WIDE, pageEntry: entry });
 
   await check("switching-looks-leaves-no-trace", async (page) => {

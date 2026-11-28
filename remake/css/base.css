@@ -870,6 +870,17 @@ small.dc-sub { font-size: 20px; color: #f1e7d6; }
   :root:not([data-look="vertical"]):not([data-look-boot]) #rotate-hint { display: grid; }
 }
 
+#rotate-hint > .portrait-required { display: none; }
+@media (pointer: coarse) { #rotate-hint .portrait-required small { display: none; } }
+@media (orientation: landscape) {
+  :root[data-look="vertical"]:not([data-vt-wide-play]) body:not(:has(#boot.is-failed)) #rotate-hint { display: grid; }
+  :root[data-look="vertical"] #rotate-hint > * { display: none; }
+  :root[data-look="vertical"] #rotate-hint > .portrait-required { display: block; }
+  /* ネイティブ dialog は通常の z-index より手前。開いた状態のまま縦へ戻せるようにする。 */
+  :root[data-look="vertical"]:not([data-vt-wide-play]) dialog:modal,
+  :root[data-look="vertical"]:not([data-vt-wide-play]) dialog:modal::backdrop { opacity: 0; pointer-events: none; }
+}
+
 /* 初めて縦に持ち替えた時は、縦用 CSS が届くまで横長の画面とその操作を隠す。 */
 @media (orientation: portrait) {
   :root[data-vt-pending] #viewport { visibility: hidden; }

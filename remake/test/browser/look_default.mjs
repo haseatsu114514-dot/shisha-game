@@ -1,6 +1,4 @@
-// 見た目の様式の既定（LK24）: プレイヤーの既定は縦画面（2026-11-27 オーナー「縦画面をメインにする」）、自動操作のブラウザは旧版。
-// 旧版へは設定でいつでも戻せる。新版は設定で選べない（コードは残す）。
-// 自動操作の印（navigator.webdriver）を外した「プレイヤーの端末」で、既定・選び直しの保存・起動時の移行・章による制限を確かめる。
+// 本編は旧設定を縦版へ移す。自動操作の印を外し、プレイヤーの起動経路も検査する。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
@@ -13,6 +11,7 @@ const look = (page) => page.evaluate(() => ({
 const titleReady = (page) => page.locator(t("title-new")).waitFor({ timeout: 40000 });
 /** 以後の読み込みを「プレイヤーの端末」にする（自動操作の印を外す）。 */
 async function asPlayer(page, saved) {
+  await page.evaluate(() => localStorage.setItem("suien_loading_comics", "wait"));
   await page.addInitScript(() => Object.defineProperty(Navigator.prototype, "webdriver", { get: () => false, configurable: true }));
   await page.evaluate(([key, value]) => {
     if (value === undefined) localStorage.removeItem(key); else localStorage.setItem(key, JSON.stringify(value));
@@ -27,7 +26,6 @@ async function reopenWith(page, saved) {
   await page.reload();
   await titleReady(page);
 }
-const checkedLook = (page) => page.locator(`${t("cfg-look")} button[aria-checked="true"]`).getAttribute("value");
 
 await suite("look-default", async (check) => {
   await check("automation-default-is-classic", async (page) => {
@@ -35,24 +33,21 @@ await suite("look-default", async (check) => {
     const state = await look(page);
     assert.deepEqual([state.look, state.choice], ["classic", "classic"], "自動操作のブラウザの既定は旧版");
     await page.locator(t("title-config")).click();
-    assert.deepEqual(await page.locator(`${t("cfg-look")} button`).allTextContents(), ["旧版", "縦画面"], "新版は設定に出ない（LK23）。縦画面（VPN01）は選べる");
-    assert.equal(await checkedLook(page), "classic");
+    assert.equal(await page.locator(t("cfg-look")).count(), 0);
   });
 
-  await check("player-default-is-vertical-and-choice-persists", async (page) => {
-    await asPlayer(page, undefined);
-    let state = await look(page);
-    assert.deepEqual([state.look, state.choice], ["vertical", "vertical"], "プレイヤーの端末の既定は縦画面（LK24）");
-    // 横持ち（この検査の画面）では縦の外枠は出ず、今の画面のタイトルから設定を開ける
-    await page.locator(t("title-config")).click();
-    assert.equal(await checkedLook(page), "vertical", "設定でも縦画面が選ばれている");
-    assert.deepEqual(await page.locator(`${t("cfg-look")} button`).allTextContents(), ["旧版", "縦画面"], "新版は設定に出ない（LK23）。縦画面（VPN01）は選べる");
-    // 旧版へ戻しても保たれる（LK24 の移行は一度だけ）。
-    await page.locator(`${t("cfg-look")} button[value="classic"]`).click();
-    state = await look(page);
-    assert.deepEqual([state.look, state.choice, state.saved.look, state.saved.lookVersion], ["classic", "classic", "classic", 3]);
-    await page.reload(); await titleReady(page);
-    assert.deepEqual([(await look(page)).look, (await look(page)).choice], ["classic", "classic"]);
+  await check("player-uses-portrait-even-with-classic-url", async (page) => {
+    await asPlayer(page, { look: "classic", lookVersion: 3, bgmVolume: 0.2 });
+    await page.goto(new URL("?look=classic", page.url()).href);
+    await titleReady(page);
+    const state = await look(page);
+    assert.deepEqual([state.choice, state.saved.look, state.saved.lookVersion, state.saved.bgmVolume], ["vertical", "vertical", 4, 0.2]);
+    await page.locator("#rotate-hint .portrait-required").waitFor();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator(t("vt-title-config")).click();
+    await page.locator('.vt-shell[data-scene="sheet"]').waitFor();
+    assert.equal(await page.locator(t("cfg-look")).count(), 0);
+    assert.equal(await page.locator(t("sheet-cfg-look")).count(), 0);
   });
 
   await check("saved-look-migrates-once", async (page) => {
@@ -61,7 +56,7 @@ await suite("look-default", async (check) => {
     await reopenWith(page, { look: "classic", lookVersion: 2 });
     assert.equal((await look(page)).choice, "vertical", "LK23 の既定だった旧版も一度だけ縦画面へ（LK24）");
     await reopenWith(page, { look: "classic", lookVersion: 3 });
-    assert.equal((await look(page)).look, "classic", "縦画面にした後で旧版へ戻した端末は、旧版のまま");
+    assert.equal((await look(page)).look, "vertical", "以前に旧版を選んだ端末も縦に移る");
     await reopenWith(page, { look: "retro" });
     assert.equal((await look(page)).choice, "vertical", "廃止した DS風のセーブは既定へ戻す");
     await reopenWith(page, { look: "neo", bgmVolume: 0.2 });

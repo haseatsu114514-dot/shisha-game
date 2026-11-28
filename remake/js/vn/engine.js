@@ -288,6 +288,8 @@ let vnModalOpen = 0;
 function kickAuto() {
   clearTimeout(autoTimer);
   if (!running || !running.ready) return;
+  const layout = document.documentElement?.dataset;
+  if (layout?.look === "vertical" && layout.rotateGuard === "true") return;
   if (dom.log.classList.contains("show") || vnModalOpen) return;
   const fast = vnTest.turbo || skipMode;
   if (!fast && !autoMode) return;
@@ -305,6 +307,9 @@ function kickAuto() {
     advance();
   }, delay);
 }
+
+// 回転案内中に AUTO・SKIP が次の台詞へ進まないよう、解除時に待ち時間を取り直す。
+globalThis.document?.addEventListener?.("rotateguardchange", kickAuto);
 
 // ---------------------------------------------------------------- 再生
 

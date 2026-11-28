@@ -60,11 +60,12 @@ export async function boot() {
   initIchidaiSwitch(); // カードゲーム「一台勝負」の入口（?ichidai=1 で入・ICG）
   const cfg = loadConfig();
   applyUiTheme(cfg.uiTheme);
-  // 見た目の様式（新版／旧版／縦画面・LK01）。既定は縦画面で、まだ選んでいない端末は一度だけ既定へ移す（LK24）。
-  // ?look=neo などで端末の設定ごと切り替えられる。
+  const oldLook = cfg.look, oldVersion = cfg.lookVersion;
   migrateLook(cfg);
-  const lookParam = new URLSearchParams(location.search).get("look");
-  if (lookParam !== null && normalizeLook(lookParam) === lookParam) { cfg.look = lookParam; saveConfig(); }
+  // 旧描画の自動検査は同じ本編 DOM を直接操作する。プレイヤーの入口は常に縦版。
+  const lookParam = navigator.webdriver && new URLSearchParams(location.search).get("look");
+  if (lookParam && normalizeLook(lookParam) === lookParam) cfg.look = lookParam;
+  if (cfg.look !== oldLook || cfg.lookVersion !== oldVersion) saveConfig();
   initLook({ look: cfg.look, chapter: () => (document.body.dataset.screen === "title" ? 1 : state?.chapter || 1) });
   const lookReady = installLooks();
   // 左右の余白（煙と縁・縦書きの帯・親指ボタン。YHK）。設定と見た目の様式が決まってから作る。

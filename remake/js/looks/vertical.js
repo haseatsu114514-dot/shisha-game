@@ -7,7 +7,8 @@
 //   シーシャ作りのうち縦の画面がある工程（作る場面。いまは水入れ・詰め方・穴あけ・炭焼き・蒸らし時間・VPN30・VPN31。vertical/craft.js の登録表）。
 // 大会の会場会話・投票・幕間・表彰は本編の演出で進める。
 // まだ縦にしていない場面（シーシャ作りのほかの工程・店番・ミニゲームなど。別の作業で縦の画面を作っている）は、回転案内を出して横で遊ぶ。
-// 縦持ちの間だけ動く。横持ちにすると外枠を引っ込め、本編の今の画面（旧版）で遊べる。setActive(false) で足した物をすべて片付ける。
+// 縦持ちの間だけ外枠を描く。横持ちでは同じ場面判定で縦向きへの案内を出す。setActive(false) で足した物をすべて片付ける。
+import { syncRotateGuard } from "../core/rotate-guard.js";
 import { state } from "../core/state.js";
 import { el } from "../core/util.js";
 import { detectState, isLoading, topDialogOpen } from "./neo/portrait-shell/detect.js";
@@ -53,14 +54,18 @@ export function setActive(on) {
   syncOrientation();
 }
 
-let styleRequest;
+let styleRequest, stopLandscape;
 async function syncOrientation() {
   const want = active && !!query?.matches;
   const root = document.documentElement;
+  stopLandscape?.();
+  stopLandscape = null;
   if (!want) {
     styleRequest?.abort();
     delete root.dataset.vtPending;
+    const needsLandscape = !!session && root.dataset.vtHint !== "hold";
     session?.stop(); session = null;
+    if (active) stopLandscape = watchLandscape(needsLandscape);
     return;
   }
   if (session) return;
@@ -78,6 +83,69 @@ async function syncOrientation() {
     if (!request.signal.aborted) delete root.dataset.vtPending;
     console.error("[look] 縦画面の見た目を読み込めませんでした", error);
   }
+}
+
+// 両方の向きで同じ本編 DOM を調べる。横持ちでは場面の部品を移動しない。
+function portraitScene(own, frontMotion) {
+  // 一台勝負は地図などを背後に残してステージへ直接重なる横専用のゲーム。
+  if (document.querySelector("#stage .ichi-game")) return { kind: "none" };
+  // 第1章の幕は本編の札をそのまま全面に出す。重なった小窓や操作画面があれば通常の判定に任せる。
+  const frontFx = document.getElementById("fx")?.lastElementChild;
+  const interlude = state?.chapter === 1 && !topDialogOpen() && !document.querySelector("#modal.show") &&
+    (frontMotion ? frontMotion.matches(".day-card, .tr-dawn") :
+      frontFx?.matches('.beat, .round-cut, .entrance, .day-card, .tr-dawn, .chapter-poem[data-poem="poem_ch1"]'));
+  let found = interlude ? { kind: "scene", name: "interlude" } : boardOpen() ? { kind: "scene", name: "board" } : detectState(own, true);
+  // 作業台に重なった大会中継・投票は、前面の大会用レイアウトで操作する。
+  const tournament = found.name === "tournament" || found.name === "tournamentResult";
+  const live = !interlude && !tournament && livePortraitScene();
+  if (live) return { kind: "live", name: live };
+  if (found.variant === "end" && document.querySelector('#screen > .gameover[data-layout="manga"]:not(.done)')) {
+    found = { kind: "scene", name: "continue" };
+  }
+  // シーシャ作り: 作業台の今の工程に縦の画面があれば、作る場面として写す（会話・写せる小窓が上に出ている間と、画面の一番上の小窓の間は除く）
+  if (found.kind !== "scene" && !topDialogOpen() && craftOpen()) found = { kind: "scene", name: "craft" };
+  // 地図のピンが現れる演出・地図の上のスロットの間も、地図のまま写す
+  if (found.kind === "none" && document.querySelector("#screen > .map:not(.done) .map-pins > .spot-pin") && !document.getElementById("modal")?.classList.contains("show")
+    && !document.querySelector("#fx > :is(.gboard, .reel-intro, .kuji-overlay)")) found = { kind: "scene", name: "map" };
+  return found;
+}
+
+function watchLandscape(needsLandscape) {
+  const root = document.documentElement;
+  let waitingKind = "", waitingSince = 0;
+  // 縦の外枠が写せない覆いで横持ちを求めた時は、同じ覆いで縦へ戻す案内を出さない。
+  let fallback = needsLandscape;
+  function update() {
+    if (document.hidden) return;
+    const wipe = document.querySelector("#wipe.resume");
+    const found = isLoading() ? { kind: "scene" } : portraitScene(wipe ? [wipe] : []);
+    // 場面の空白は直前の向きを維持する。写せない場面の上の覆いは横で操作できる。
+    if (found.kind === "cover" || found.kind === "gap") {
+      if (waitingKind !== found.kind) { waitingKind = found.kind; waitingSince = performance.now(); }
+      const limit = found.kind === "gap" ? GAP_MS : found.pressable ? STUCK_MS : COVER_MAX_MS;
+      fallback ||= found.base === false || performance.now() - waitingSince > limit;
+    } else {
+      waitingKind = "";
+      fallback = found.kind === "none" && !topDialogOpen();
+    }
+    root.toggleAttribute("data-vt-wide-play", fallback);
+    syncRotateGuard();
+  }
+  let frame = 0;
+  const observer = new MutationObserver(() => {
+    if (!frame) frame = requestAnimationFrame(() => { frame = 0; update(); });
+  });
+  observer.observe(document.body, { subtree: true, childList: true, attributes: true,
+    attributeFilter: ["class", "data-screen", "data-step", "data-layout", "hidden", "open"] });
+  const timer = setInterval(update, SYNC_MS);
+  update();
+  return () => {
+    observer.disconnect();
+    cancelAnimationFrame(frame);
+    clearInterval(timer);
+    root.removeAttribute("data-vt-wide-play");
+    syncRotateGuard();
+  };
 }
 
 function start() {
@@ -161,32 +229,15 @@ function start() {
       fresh = true;
       return;
     }
-    // 第1章の幕は本編の札をそのまま全面に出す。重なった小窓や操作画面があれば通常の判定に任せる。
-    const frontMotion = motionLayer.root.lastElementChild;
-    const frontFx = document.getElementById("fx")?.lastElementChild;
-    const interlude = state?.chapter === 1 && !topDialogOpen() && !document.querySelector("#modal.show") &&
-      (frontMotion ? frontMotion.matches(".day-card, .tr-dawn") :
-        frontFx?.matches('.beat, .round-cut, .entrance, .day-card, .tr-dawn, .chapter-poem[data-poem="poem_ch1"]'));
-    let found = interlude ? { kind: "scene", name: "interlude" } : boardOpen() ? { kind: "scene", name: "board" } : detectState(wipe ? [...own, wipe] : own);
-    // 作業台に重なった大会中継・投票は、前面の大会用レイアウトで操作する。
-    const tournament = found.name === "tournament" || found.name === "tournamentResult";
-    const live = !interlude && !tournament && livePortraitScene();
-    if (live) {
+    const found = portraitScene(wipe ? [...own, wipe] : own, motionLayer.root.lastElementChild);
+    if (found.kind === "live") {
       root.dataset.vtHint = "hold";
       setScene(null);
-      setLivePortraitScene(live);
+      setLivePortraitScene(found.name);
       candidate = null; streak = 0; noneSince = 0; fresh = true;
       return;
     }
     setLivePortraitScene("");
-    if (found.variant === "end" && document.querySelector('#screen > .gameover[data-layout="manga"]:not(.done)')) {
-      found = { kind: "scene", name: "continue" };
-    }
-    // シーシャ作り: 作業台の今の工程に縦の画面があれば、作る場面として写す（会話・写せる小窓が上に出ている間と、画面の一番上の小窓の間は除く）
-    if (found.kind !== "scene" && !topDialogOpen() && craftOpen()) found = { kind: "scene", name: "craft" };
-    // 地図のピンが現れる演出・地図の上のスロットの間も、地図のまま写す
-    if (found.kind === "none" && document.querySelector("#screen > .map:not(.done) .map-pins > .spot-pin") && !document.getElementById("modal")?.classList.contains("show")
-      && !document.querySelector("#fx > :is(.gboard, .reel-intro, .kuji-overlay)")) found = { kind: "scene", name: "map" };
     const dialogOpen = found.kind === "none" && topDialogOpen();
     if (found.kind !== "none") noneSince = 0;
     if (found.kind === "scene" || found.kind === "none") coverBlocked = false;
@@ -218,7 +269,7 @@ function start() {
       // 未対応からの復帰は、定期の確認で2回続けて同じ場面と判定してから（切り替えのちらつきを避ける）
       if (found.name !== candidate) { candidate = found.name; streak = 0; }
       if (periodic) streak++;
-      if (interlude || fresh || streak >= 2) { setScene(found.name); candidate = null; streak = 0; fresh = false; }
+      if (found.name === "interlude" || fresh || streak >= 2) { setScene(found.name); candidate = null; streak = 0; fresh = false; }
     } else if (!coverBlocked && (found.kind === "gap" || (found.kind === "cover" && found.base))) {
       if (found.kind !== candidate) { candidate = found.kind; streak = 0; }
       if (periodic) streak++;

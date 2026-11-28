@@ -143,13 +143,12 @@ function knownBase() {
  * いまの状態。own は自分の外枠の要素（重なりの確認から除く）。
  * 第2〜5章の地図の案内の箱のボタン、場面カード、確かめの小窓も写せる場面として扱う（新版の縦持ち。LK13）。
  */
-export function detectState(own = []) {
+export function detectState(own = [], vertical = document.documentElement.dataset.vt === "on") {
   const body = document.body, stage = byId("stage");
   if (!stage || isLoading()) return NONE;
   const modal = byId("modal");
   const rect = stage.getBoundingClientRect();
   if (!rect.width || !rect.height) return NONE;
-  const vertical = document.documentElement.dataset.vt === "on";
   if (modal?.classList.contains("show")) {
     // 演出の層の操作する画面（心得の盤など）が上に出ていれば、そちらを現行の画面で見せる
     if (byId("fx")?.querySelector(FX_INTERACTIVE)) return NONE;
