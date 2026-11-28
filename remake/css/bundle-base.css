@@ -82,7 +82,8 @@ html, body {
 .dr-caption, .axe-bar-division-note, .trpg-tutorial-panel > p, .trpg-object-label, .trpg-object-detail {
   text-wrap: balance;
 }
-body:is([data-screen="boot"], [data-screen="title"]) {
+body[data-screen="boot"],
+body[data-screen="title"] :is(#boot, .loading-gate, .title, #rotate-hint) {
   --font: "Suien Title", "Suien Gothic", sans-serif;
   font-family: var(--font);
 }

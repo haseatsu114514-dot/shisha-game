@@ -81,20 +81,30 @@ async function pose(name) {
   await wait(600);
   if (name === "cover") return;
   const ready = SHOT_READY[name] || SHOT_READY.talk;
-  find('[data-test="trpg-start"]').click();
-  await wait(500);
-  for (let step = 0; step < 600 && !ready(); step++) {
-    const show = document.querySelector(".trpg-roll-show");
-    // ダイスの演出は、画面を押して結果へ送る。劇場の中で選ぶ札は「使わずに振る／このまま続ける」。絵本（任意）はとばす
-    if (show?.classList.contains("trpg-rs-choosing")) (find('[data-test="trpg-show-nosupport"]') || find('[data-test="trpg-show-keep"]'))?.click();
-    else if (show) host.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
-    else (find('[data-test="trpg-picturebook-skip"]') || find('[data-test="trpg-picturebook-next"]') || find('[data-test="trpg-incarnate-skip"]')
-      || find('[data-test="trpg-next"]') || find('[data-test="trpg-roll"]') || find('[data-test="trpg-settle"]') || find(".trpg-approach-list .trpg-approach")
-      || find('.trpg-topic-list .trpg-topic:not(.selected)') || find(".trpg-hypothesis-board .trpg-object-choice") || find(".trpg-stage-action .trpg-button.primary")
-      || find(".trpg-room.interactive .trpg-spot:not(.checked)")
-      || find(".trpg-selection:not(.trpg-interview) .trpg-choice-cards:not(:has(.selected)) .trpg-object-choice")
-      || [...document.querySelectorAll(".trpg-choice-tab")].find(tab => tab.offsetParent && !tab.disabled && /選んでいない/.test(tab.textContent)))?.click();
-    await wait(show ? 420 : 120);
+  // 待機中に目的の札をプレイヤーが押すと、その札は次のループまでに消える。操作の直前に到達を記録する。
+  let handedOff = false;
+  const handoff = () => { if (ready()) handedOff = true; };
+  host.addEventListener("click", handoff, true);
+  host.addEventListener("pointerdown", handoff, true);
+  try {
+    find('[data-test="trpg-start"]').click();
+    await wait(500);
+    for (let step = 0; step < 600 && !handedOff && !ready(); step++) {
+      const show = document.querySelector(".trpg-roll-show");
+      // ダイスの演出は、画面を押して結果へ送る。劇場の中で選ぶ札は「使わずに振る／このまま続ける」。絵本（任意）はとばす
+      if (show?.classList.contains("trpg-rs-choosing")) (find('[data-test="trpg-show-nosupport"]') || find('[data-test="trpg-show-keep"]'))?.click();
+      else if (show) host.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+      else (find('[data-test="trpg-picturebook-skip"]') || find('[data-test="trpg-picturebook-next"]') || find('[data-test="trpg-incarnate-skip"]')
+        || find('[data-test="trpg-next"]') || find('[data-test="trpg-roll"]') || find('[data-test="trpg-settle"]') || find(".trpg-approach-list .trpg-approach")
+        || find('.trpg-topic-list .trpg-topic:not(.selected)') || find(".trpg-hypothesis-board .trpg-object-choice") || find(".trpg-stage-action .trpg-button.primary")
+        || find(".trpg-room.interactive .trpg-spot:not(.checked)")
+        || find(".trpg-selection:not(.trpg-interview) .trpg-choice-cards:not(:has(.selected)) .trpg-object-choice")
+        || [...document.querySelectorAll(".trpg-choice-tab")].find(tab => tab.offsetParent && !tab.disabled && /選んでいない/.test(tab.textContent)))?.click();
+      await wait(show ? 420 : 120);
+    }
+  } finally {
+    host.removeEventListener("click", handoff, true);
+    host.removeEventListener("pointerdown", handoff, true);
   }
   await wait(900);
 }
