@@ -327,7 +327,7 @@ export const VISITORS = Object.freeze(Object.fromEntries([
       calls: {
         thin: { said: "…煙が途切れる。炭を見てくれ", good: "…そのままでいい。香ってきた" },
         harsh: { said: "…熱が強い。少し下げてほしい", good: "今くらいがいい。…ありがとう" },
-        thirsty: { said: "…水、一杯もらえるか", good: "助かった。喉が乾いてた" },
+        thirsty: { said: "…水、一杯もらえるか", good: "助かった。喉が渇いてた" },
       },
       miss: "…そっちじゃない。こっちの卓だ", check: "…会計、いいか", skip: "…いや、ここで終わりにする",
       bye: "…最後のひと口がよかった。また来る", byeLow: "…今日は、これで", mad: "…席、空けるよ。また今度",

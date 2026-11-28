@@ -1,4 +1,4 @@
-"""Exercise every registered case through the dialogue regression check."""
+"""Exercise registered cases through the dialogue and JavaScript regression check."""
 
 from contextlib import redirect_stdout
 import io
@@ -24,7 +24,7 @@ class TypoRegressionsTest(unittest.TestCase):
 
             for case in cases:
                 for field, result in (("detect", 1), ("after", 0)):
-                    with self.subTest(pr=case["pr"], detect=case["detect"], field=field):
+                    with self.subTest(detect=case["detect"], field=field):
                         text = f"『{case[field]}』"
                         vn = {"dialogues": [{"branches": {"a": [
                             {"choices": [{"text": text, "next": case["detect"]}]},
@@ -43,6 +43,28 @@ class TypoRegressionsTest(unittest.TestCase):
                             self.assertIn("chapter_poems.json#/dialogues/0/branches/a/1/inner", output)
                             self.assertIn("trpg_sample.json#/options/listen/0/label", output)
                             self.assertIn(case["detect"], output)
+
+    def test_javascript_literals_are_checked_and_comments_are_ignored(self):
+        cases_file = ROOT / "tools/typo_cases.json"
+        cases = [case for case in load_cases(cases_file) if case["file"].endswith(".js")]
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "tools").mkdir()
+            (root / "tools/typo_cases.json").write_bytes(cases_file.read_bytes())
+            (root / "data/dialogue").mkdir(parents=True)
+            (root / "data/dialogue/empty.json").write_text("{}", encoding="utf-8")
+            for case in cases:
+                file = root / case["file"]
+                file.parent.mkdir(parents=True, exist_ok=True)
+                for field, result in (("detect", 1), ("after", 0)):
+                    with self.subTest(file=case["file"], field=field):
+                        text = json.dumps(case[field], ensure_ascii=False)
+                        file.write_text(f'// "{case["detect"]}"\nconst text = {text};\n', encoding="utf-8")
+                        stdout = io.StringIO()
+                        with redirect_stdout(stdout):
+                            self.assertEqual(main(root), result)
+                        if result:
+                            self.assertIn(case["file"], stdout.getvalue())
 
     def test_visible_fields_and_author_metadata(self):
         document = {
