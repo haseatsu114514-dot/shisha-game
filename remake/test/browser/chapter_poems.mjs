@@ -197,7 +197,7 @@ await suite("chapter-poems", async check => {
     await page.waitForTimeout(120);
     assert.equal(await cardPage(), "0", "切り替え直後のタップは無視する");
     await page.waitForTimeout(300);
-    await page.mouse.click(640, 360);
+    await page.locator(POEM).click({ timeout: 2000 });
     await page.waitForFunction(() => document.querySelector('[data-test="chapter-poem"]')?.dataset.page === "1");
     assert.equal(await page.locator(`${POEM} .cp-page.now`).count(), 1);
     assert.equal(await page.locator(`${POEM} .cp-page.now .cp-line`).count(), 2, "2場面目は2行");
