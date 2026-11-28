@@ -5370,7 +5370,7 @@
     },
     {
       "id": "title-extra",
-      "title": "タイトルの EXTRA（あそびば）: 斧投げまでは「？？？」で開かない・実際の画面の写真の横スライドで遊んでいない遊びは鍵・段とセットと本棚はいちばん進んだセーブから・遊んで戻る・前のセーブから拾う・縦持ちと指で流す（EXT01〜EXT05）と「つづきから」の行の「セーブを選ぶ」（EXT02）",
+      "title": "タイトルの EXTRA（あそびば）: 斧投げまでは「？？？」で開かない・実際の画面の写真の横スライドで遊んでいない遊びは鍵・段とセットと本棚はいちばん進んだセーブから・遊んで戻る・前のセーブから拾う・縦持ちと指で流す・題字のロゴと生成した部品の読み込み（EXT01〜EXT07）と「つづきから」の行の「セーブを選ぶ」（EXT02）",
       "kind": "browser",
       "weight": 0.5,
       "timeout": 5,
@@ -5381,6 +5381,9 @@
         "remake/js/trpg/trial.js",
         "remake/css/extra.css",
         "remake/img/ui/extra/**",
+        "remake/img/ui/axe_throw/logo.webp",
+        "remake/img/ui/trpg/logo.webp",
+        "remake/img/ui/dj/logo.webp",
         "remake/js/scenes/title.js",
         "remake/js/looks/vertical/title.js",
         "remake/js/looks/retro/title.js",
