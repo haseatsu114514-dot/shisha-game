@@ -1,7 +1,7 @@
 // 縦持ちの外枠に写せる状態かどうかの見分け。現行の DOM を読むだけで、何も書き換えない。
 // 戻り値の kind:
 //   "scene" … 対応済みの場面（name: "title" | "vn" | "map" | "menu"）。外枠に写す。
-//   "cover" … 見るだけの覆い（場面転換・日付の札・章タイトル・詩・登場カットイン・読み込みの一言）。外枠のまま暗くして、
+//   "cover" … 見るだけの覆い（場面転換・日付の札・章タイトル・詩・登場カットイン）。外枠のまま暗くして、
 //             見えている文字と絵だけを写す（vertical/cover.js）。pressable は、覆いがステージ中央でタップを受ける状態かどうか。
 //   "gap"   … 場面と場面のあいだの、何も出ていない短い間。外枠のまま少し待つ。
 //   "none"  … 未対応（シーシャ作り・大会・ミニゲームなど）。現行の画面をそのまま見せる（新版の縦持ちは回転案内）。
@@ -43,6 +43,15 @@ export function topDialogOpen() {
 
 /** 読み込み・起動の画面（自前の縦長の配置を持つ）。この間は「横向きにすると…」の一言も出さない。 */
 export const isLoading = () => !!document.querySelector("#boot:not(.done), .loading-gate");
+
+/** 場面内の素材待ち。表示の遅延中も作業台や舞台の aria-busy を見て判定する。 */
+export function scenePreparation() {
+  const notice = document.querySelector("#fx > .vn-loading, #stage > .vn-loading, #screen > .bench:not(.done) > .craft-loading");
+  if (notice || document.querySelector('#stage[aria-busy="true"], #screen > .bench:not(.done)[aria-busy="true"]')) {
+    return { kind: "loading", label: notice?.textContent.trim() || "" };
+  }
+  return null;
+}
 
 function layerOf(node, stage) {
   if (!stage.contains(node)) return "outside";
@@ -137,10 +146,10 @@ function knownBase() {
  */
 export function detectState(own = [], vertical = document.documentElement.dataset.vt === "on") {
   const body = document.body, stage = byId("stage");
-  if (!stage || isLoading()) return NONE;
+  if (!stage) return GAP;
   const modal = byId("modal");
   const rect = stage.getBoundingClientRect();
-  if (!rect.width || !rect.height) return NONE;
+  if (!rect.width || !rect.height) return GAP;
   if (modal?.classList.contains("show")) {
     // 演出の層の操作する画面（心得の盤など）が上に出ていれば、そちらを現行の画面で見せる
     if (byId("fx")?.querySelector(FX_INTERACTIVE)) return NONE;
@@ -162,7 +171,7 @@ export function detectState(own = [], vertical = document.documentElement.datase
     return { kind: "scene", name: "sheet", variant: "coach" };
   }
 
-  // 覆い: 演出の層に何か出ている・煙や暗転で覆っている・読み込みの一言が出ている
+  // 覆い: 演出の層に何か出ている・煙や暗転で覆っている
   const overlays = [...(byId("fx")?.children || [])].filter((node) => !node.matches(FX_HARMLESS));
   if (vertical) {
     const screen = byId("screen");

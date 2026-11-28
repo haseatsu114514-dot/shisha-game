@@ -9,7 +9,7 @@
 // 専用の外枠がない場面では本編の操作部品を縦長の舞台に表示する。
 import { state } from "../core/state.js";
 import { el } from "../core/util.js";
-import { detectState, isLoading, topDialogOpen } from "./vertical/detect.js";
+import { detectState, isLoading, scenePreparation, topDialogOpen } from "./vertical/detect.js";
 import { withMinigameStyles } from "../minigames/minigame-styles.js";
 import { createFrame } from "./vertical/frame.js";
 import { refreshPortraits } from "../vn/engine.js";
@@ -128,6 +128,8 @@ function start() {
   let candidate = null, streak = 0, fresh = true;
   let holdSince = 0, pressable = false, gap = false, noneSince = 0, hold = false, coverBlocked = false;
 
+  let preparation = null;
+
   function setScene(next) {
     if ((next || "") === sceneName) return;
     scene?.leave?.();
@@ -160,6 +162,7 @@ function start() {
     if (wipe) resumeSmoke.append(...wipe.querySelectorAll(".wipe-smoke, .wipe-haze"));
     // 漫画を読んでいる間は背後の場面を保ち、閉じたら最初の確認で次の場面を出す。
     if (isLoading()) {
+      preparation = null;
       root.dataset.vtLoading = "on";
       if (!scene && !document.getElementById("stage")?.dataset.portraitScene) setScene("cover");
       holdSince = noneSince = 0;
@@ -168,12 +171,16 @@ function start() {
       return;
     }
     if (root.dataset.vtLoading) delete root.dataset.vtLoading;
-    if (document.querySelector("#fx > .vn-loading")) {
+    preparation = scenePreparation();
+    if (preparation) {
+      root.removeAttribute("data-vt-native");
+      setLivePortraitScene("");
       hold = true;
       gap = false;
       pressable = false;
       setScene("cover");
       holdSince = noneSince = 0;
+      coverBlocked = false;
       return;
     }
     const found = portraitScene(wipe ? [...own, wipe] : own, motionLayer.root.lastElementChild);
@@ -264,7 +271,7 @@ function start() {
     if (dirty || now - lastSync >= SYNC_MS) {
       dirty = false;
       lastSync = now;
-      scene.sync?.({ pressable, gap, hold });
+      scene.sync?.({ pressable, gap, hold, preparation });
       syncNotices();
     }
   }
@@ -311,7 +318,7 @@ function start() {
   });
   observer.observe(document.documentElement, {
     subtree: true, childList: true, characterData: true, attributes: true,
-    attributeFilter: ["class", "hidden", "style", "src", "disabled", "aria-disabled", "aria-pressed", "data-screen", "data-revealing", "data-slot", "data-health", "data-tab", "aria-selected", "aria-expanded", "aria-checked", "title", "data-rain", "open", "data-step"],
+    attributeFilter: ["class", "hidden", "style", "src", "disabled", "aria-busy", "aria-disabled", "aria-pressed", "data-screen", "data-revealing", "data-slot", "data-health", "data-tab", "aria-selected", "aria-expanded", "aria-checked", "title", "data-rain", "open", "data-step"],
   });
 
   const onResize = () => { motionLayer.relayout(); scene?.relayout?.(); detectSoon = true; dirty = true; wake(); };

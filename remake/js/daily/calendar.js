@@ -409,7 +409,8 @@ async function registerTournament() {
  * 自分で先に行った旧セーブの店は飛ばし、DAY2 を過ぎた旧セーブには割り込まない
  */
 const DELIVERIES = [
-  { charId: "minto", scene: "remake_delivery_minto", text: "PEPPERMINTにミントを届ける。" },
+  // 帰宅直後の背景から切り替わる最初の依頼では、倍速時も店内画像の取得を実時間で待つ（#4423）。
+  { charId: "minto", scene: "remake_delivery_minto", text: "PEPPERMINTにミントを届ける。", unscaledBgWait: true },
   { charId: "adam", scene: "remake_delivery_eden", text: "EDENに古いダブルアップルを届ける。" },
 ];
 const DELIVERY_LAST_DAY = 2;
@@ -446,7 +447,7 @@ async function briefDeliveryBatch() {
   const owner = state;
   for (const d of DELIVERIES) {
     if (f[`_delivery_${d.charId}_told`] || f[`_delivery_${d.charId}_done`]) continue;
-    const result = await play(d.scene, { bg: TONARI_BG });
+    const result = await play(d.scene, { bg: TONARI_BG, unscaledBgWait: d.unscaledBgWait });
     if (state !== owner || result?.cancelled) return false;
     f[`_delivery_${d.charId}_told`] = true;
     save(); // 1件目の依頼説明後に中断しても再度読まない。
