@@ -60,6 +60,16 @@ FIXES = {
     "restored-15-1": ([("mukai_master", "normal")], [MUKAI]),
     "restored-15-2": ([("mukai_master", "normal")], [MUKAI]),
     "ageha-model-job-2": ([("hajime", "normal")], [NO_TAG]),
+    # オーナー「漫画でシガーマン対策本部のやつ矢印がおかしい　両方に生えてて」。絵が小さい（528×352）ので2コマとも描き直してそろえる
+    "restored-33-1": ([("kumicho", "normal")], [
+        "Nothing about the people or the story changes. Repaint the whole panel cleanly at full resolution with crisp lines, keeping "
+        "every detail as it is; the top-left corner had a small retouched patch, make it continue naturally."]),
+    "restored-33-2": ([("mashiro", "normal"), ("kumicho", "normal")], [
+        "The small white label that says 「本人」 must have exactly ONE arrow, pointing from the label down to the girl with the pale "
+        "blonde braids (Mashiro) sitting in the big chair. Remove the second arrowhead that points up to the empty chair back, so the "
+        "line does not branch or point both ways.",
+        "Repaint the whole panel cleanly at full resolution with crisp lines; the top-left corner had a small retouched patch, make it "
+        "continue naturally."]),
 }
 
 COMMON = (

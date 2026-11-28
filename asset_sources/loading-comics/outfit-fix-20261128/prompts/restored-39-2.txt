@@ -1,0 +1,9 @@
+Edit IMAGE 1, one panel of a two-panel gag comic shown on a game's loading screen. Change only what is listed below and keep everything else exactly the same: the composition and camera, every speech bubble with its exact Japanese text (same characters, same position, same font look), the background, the props, the lighting and colors, and every other person. Keep the same chibi comic style (2 to 3 heads tall, clean thick outlines, cel shading, warm colors). The other images are the official character sprites: use them only for the correct outfit and accessories, drawn in the comic's chibi style. Repaint the panel cleanly at full resolution (no blur, no jpeg noise). Fill the whole canvas with the panel edge to edge, no added border, frame, text or watermark.
+
+CHANGES:
+- Naru here wears a black graduation gown and mortarboard as a gag costume: keep that costume as it is.
+- The top-left corner of the picture has a blurry, smeared patch over the university building and the pink cherry trees, left over from an old retouch. Repaint that corner cleanly so the building, windows and cherry blossoms continue naturally, in the same style as the rest of the picture.
+
+REFS:
+remake/img/loading/restored-39-2.webp
+remake/img/sprites/character_variants/new/naru/chr_naru_smile.webp
