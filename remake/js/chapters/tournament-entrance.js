@@ -69,7 +69,10 @@ export async function playEntrance(chapterOrCards, { auto = Boolean(window.__rem
       const card = el(`div.ent-card${me ? ".me" : ""}`, { dataset: { art: graphic ? "graphic" : "classic" } }, [
         background ? el("img.ent-backdrop", { src: background, alt: "", onerror: e => e.currentTarget.remove() }) : null,
         p ? el("img.ent-portrait", { src: p.src, alt: "", onerror: e => e.currentTarget.remove() }) : null,
-        el("span.ent-tag", { text: `エントリーナンバー${index + 1}` }),
+        el("span.ent-tag", [
+          el("span.ent-tag-label", [el("span", { text: "エントリー" }), el("span", { text: "ナンバー" })]),
+          el("b.ent-number", { text: String(index + 1) }),
+        ]),
         el("div.ent-meta", [
           el("div.ent-ring", { text: c.ring }),
           el("div.ent-name", { text: me ? "はじめ" : (NAME[c.id] || realName(c.face || c.id)) }),
