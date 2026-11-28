@@ -696,11 +696,11 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-shell .vt-board-modal.retro-shell { z-index: 12; }
 .vt-board-modal[hidden] { display: none; }
 
-/* ───────── タイトルコール（章タイトル・VPN27） ─────────
+/* ───────── タイトルコール（章タイトル・VPN27・VPN28） ─────────
    画面いっぱい（十字キーと丸ボタンは隠す。登場カットインのポスターと同じ）。上・真ん中・下の3段:
-   上の空きにゲームタイトル（本編のタイトルのロゴ）、縦の真ん中に章タイトルの横長の絵を幅いっぱいに切らずに置き、下の空きに章の情報
+   上の空きにゲームタイトル（本編のタイトルのロゴ）、縦の真ん中に章タイトルの絵、下の空きに章の情報
    （CHAPTER n・章名を本編の明朝で・金の線・英題）。後ろには同じ絵を暗くぼかして敷く。
-   絵を切り出す章（第1章の白地の絵）は、枠の縦横比（--ct-ar）と絵のずらし（--ct-shift）を cover.js の TITLE_CROP から受け取る */
+   絵は縦画面用の文字の無い正方形の絵（data-shape="square"・VPN28）で、幅いっぱい（低い画面では高さの半分まで）。正方形の絵が無い章は横長の絵（16:9）を切らずに置く */
 .vt-ct { position: absolute; inset: 0; z-index: 3; display: grid; grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr); overflow: hidden; overflow: clip;
   color: #fff; background: var(--deep); pointer-events: auto; transition: opacity 0.9s ease; }
 .vt-ct[hidden] { display: none; }
@@ -712,14 +712,15 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-ct-logo { display: block; width: min(100%, calc(30 * var(--u))); height: auto; filter: drop-shadow(0 calc(0.3 * var(--u)) calc(1.6 * var(--u)) #000c);
   animation: vt-ct-logo 1.2s cubic-bezier(.16, 1, .3, 1) 0.15s both; }
 @keyframes vt-ct-logo { from { opacity: 0; transform: translateY(calc(-1.2 * var(--u))); filter: blur(calc(0.5 * var(--u))) drop-shadow(0 0 0 #0000); } }
-.vt-ct-pic { grid-row: 2; position: relative; z-index: 1; width: 100%; aspect-ratio: var(--ct-ar, 16 / 9); overflow: hidden; overflow: clip;
+.vt-ct-pic { grid-row: 2; position: relative; z-index: 1; justify-self: center; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; overflow: clip;
   box-shadow: 0 0 calc(3.6 * var(--u)) #000c; }
+.vt-ct[data-shape="square"] .vt-ct-pic { width: min(100%, 50dvh); aspect-ratio: 1 / 1; }
 .vt-ct[data-tone="light"] .vt-ct-pic { background: #fff; }
 /* 絵の上下の端に、細い金の線 */
 .vt-ct-pic::before, .vt-ct-pic::after { content: ""; position: absolute; left: 0; right: 0; z-index: 1; height: 1px; background: linear-gradient(90deg, transparent, #e9c98acc 18%, #e9c98acc 82%, transparent); }
 .vt-ct-pic::before { top: 0; }
 .vt-ct-pic::after { bottom: 0; }
-.vt-ct-art { position: absolute; left: 0; top: calc(var(--ct-shift, 0) * -100%); width: 100%; height: auto; max-width: none;
+.vt-ct-art { position: absolute; left: 0; top: 0; width: 100%; height: auto; max-width: none;
   animation: vt-ct-art 1.6s cubic-bezier(.22, .61, .36, 1) 0.1s both; }
 @keyframes vt-ct-art { 0% { opacity: 0; filter: blur(calc(0.6 * var(--u))) brightness(.72); } 45% { opacity: 1; } 100% { opacity: 1; filter: none; } }
 .vt-ct-copy { grid-row: 3; align-self: start; position: relative; z-index: 1; display: grid; justify-items: center; gap: calc(0.8 * var(--u));
