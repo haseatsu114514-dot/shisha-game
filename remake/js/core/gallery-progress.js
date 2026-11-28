@@ -41,11 +41,13 @@ function photo(value) {
     || unique(people).length !== people.length || value.mode === "pair" && people[1] !== "ageha") return null;
   return { chapter: value.chapter, day: value.day, slot: value.slot, mode: value.mode, people: [...people],
     ...(Number.isInteger(value.chapterDay) && value.chapterDay > 0 ? { chapterDay: value.chapterDay } : {}),
+    ...(typeof value.printId === "string" && /^[0-9a-f]{16}$/.test(value.printId) ? { printId: value.printId } : {}),
+    ...(typeof value.design === "string" && value.design.length <= 40000 ? { design: value.design } : {}),
     // 撮った写真の絵（PFC18・core/purikura-data.js）。絵の無い撮影・旧セーブは無し
     ...(typeof value.cg === "string" && /^cg_[a-z0-9_]+$/.test(value.cg) ? { cg: value.cg } : {}),
   };
 }
-export const purikuraId = p => ["purikura", p.chapter, p.day, p.slot, p.mode, ...p.people].join("-");
+export const purikuraId = p => p.printId ? "purikura-print-" + p.printId : ["purikura", p.chapter, p.day, p.slot, p.mode, ...p.people].join("-");
 
 // 直近に読み込んだ保存文字列と、その parse 結果。save() の二重記録や
 // ギャラリー表示時の全枠走査など、連続した readGalleryProgress() で

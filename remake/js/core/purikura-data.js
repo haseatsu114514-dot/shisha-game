@@ -40,7 +40,13 @@ export const PURIKURA_PHOTOS = Object.freeze([
   photo("hiyori_otsukare", "hiyori", "ひよりと会社帰り", { slot: 1 }),
   photo("hiyori_lover_ude", "hiyori", "恋人のひよりと腕組み", { lover: true }),
   photo("hiyori_lover_heart", "hiyori", "恋人のひよりとハート", { lover: true }),
+  photo("minto_p57", "minto", "私服のみんととぼうし交換"),
+  photo("minto_p58", "minto", "私服のみんととおそろいの角度"),
+  photo("minto_p59", "minto", "私服のみんとの笑い顔"),
+  photo("minto_p86", "minto", "恋人の私服のみんとと肩よせ", { lover: true }),
+  photo("minto_p87", "minto", "恋人の私服のみんとと手つなぎ", { lover: true }),
+  photo("minto_p105", "minto", "恋人の私服のみんとと指切り", { lover: true }),
 ]);
 
 /** ギャラリーの人物の札（core/gallery-catalog.js の CHAR_LABELS にある人だけ。ほかは「その他」） */
-export const PURIKURA_CHAR = Object.freeze({ ageha: "ageha", tsumugi: "tsumugi", rio: "rio" });
+export const PURIKURA_CHAR = Object.freeze({ minto: "minto", ageha: "ageha", tsumugi: "tsumugi", rio: "rio" });

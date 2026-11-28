@@ -409,6 +409,7 @@ await suite('ch2-main', async check => {
     await page.locator('[data-test="purikura-with-kumicho"]').waitFor();
     assert.equal(await page.locator('[data-test^="purikura-with-"]').count(), 1);
     await page.locator('[data-test="purikura-with-kumicho"]').click();
+    await page.getByRole("button", { name: "このまま撮る" }).click();
     await page.locator('[data-test="purikura-receive"]').click();
     await page.waitForFunction(() => window.__photoDone);
     let v = await page.evaluate(() => structuredClone(__remake.state));
@@ -423,6 +424,12 @@ await suite('ch2-main', async check => {
     await page.locator('[data-test="purikura-solo"]').waitFor();
     assert.equal(await page.locator('[data-test^="purikura-with-"]').count(), 0, 'A past visitor is not a current guest');
     await page.locator('[data-test="purikura-solo"]').click();
+    await page.getByRole("button", { name: "パッキーランド" }).click();
+    await page.getByLabel("小道具").selectOption("home_rig_set");
+    await page.getByRole("button", { name: "撮って落書きする" }).click();
+    await page.getByLabel("スタンプ", { exact: true }).selectOption("coal");
+    await page.locator(".pb-ink.editing").click({ position: { x: 40, y: 50 } });
+    await page.getByRole("button", { name: "できあがり" }).click();
     await page.locator('[data-test="purikura-receive"]').click();
     await page.waitForFunction(() => window.__photoDone);
     assert(await page.evaluate(() => __photoTrace.some(row => row.text?.includes('うちですらやったことないのに'))));
@@ -432,6 +439,10 @@ await suite('ch2-main', async check => {
     await page.waitForFunction(() => window.__photoDone);
     v = await page.evaluate(() => structuredClone(__remake.state));
     assert.equal(v.money, 12345 - 800, 'Declining does not charge for a photo');
+    const design = JSON.parse(v.flags._ageha_purikura_history[1].design);
+    assert.equal(design.theme, "pakki");
+    assert.equal(design.rig, "home_rig_set");
+    assert.equal(design.marks[0].stamp, "coal");
     assert.equal(v.flags._ageha_purikura_history.length, 2, 'Declining does not create a photo');
     assert.equal(v.keepsakes.filter(id => id === 'ryuji_purikura').length, 1);
     await page.evaluate(async () => {

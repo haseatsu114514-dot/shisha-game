@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>プリクラ・チェキの選定帳</title>
+<style>
+* { box-sizing:border-box }
+body { margin:0; color:#422d3d; background:#f9f4ed; font:16px/1.5 system-ui,sans-serif }
+main { max-width:960px; margin:auto; padding:16px }
+h1,h2 { font-family:serif; margin:.45em 0 }
+header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; border-bottom:2px solid #ad879b }
+button,select { font:inherit; color:inherit; padding:6px; background:#fffaf7; border:1px solid #a88d9b; border-radius:4px }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(155px,46%),1fr)); gap:10px }
+article { padding:8px; background:#fff; border:1px solid #d9c9cc; border-radius:5px; display:grid; align-content:start; gap:5px }
+article img { width:100%; height:210px; object-fit:contain; background:#f6eef2 }
+article label { min-height:3em }
+article a { display:block }
+textarea { width:100%; min-height:8em }
+</style>
+</head>
+<body><main>
+<header><h1>プリクラ・チェキの選定帳</h1><button id="export">選定結果を表示</button></header>
+<p>写真をタップすると拡大できます。選定結果はこの端末に保存します。</p>
+<p id="status" role="status"></p><textarea id="results" aria-label="共有用の選定結果" readonly hidden></textarea>
+<div id="groups"></div>
+</main><script type="module" src="js/photo-selection.js"></script></body></html>
