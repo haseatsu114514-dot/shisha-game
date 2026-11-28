@@ -193,6 +193,7 @@ function readStage(value, chainId, stage, choose, factsNow = {}) {
       const key = ok ? line.next_true : line.next_false;
       if (key) queue.unshift(...scene.branches[key]);
     } else if (line.type === "remember") remembered.push(line.memory_id);
+    else if (line.type === "sfx") assert(line.id, `${stage.id}: SE ID`);
     else if (!line.type) texts.push(line.text);
     else assert.fail(`${stage.id}: 想定外の行 ${line.type}`);
   }

@@ -38,7 +38,7 @@ async function run(failure=null,{pullMode="success",insight=30}={}){
  return {trace,texts,error};
 }
 const success=await run();const failure=await run('burnt');
-const completion=/各選手、完成|4台のシーシャが、審査員の前に並んだ/;
+const completion=/各選手、完成|四台のシーシャが、審査員の前に並んだ/;
 const early=success.texts.filter(x=>completion.test(x.text)&&x.at<success.trace.indexOf('pull')+1);
 const failedCompletion=failure.texts.filter(x=>completion.test(x.text));
 const result={mode:!process.argv.includes('--baseline')?'regression':'baseline',success:success.trace,failure:failure.trace,early_completion:early,failed_completion:failedCompletion,scope:'Real chapter module public devTournament. Gameplay/UI/VN/time/save ports controlled; real browser AUTO/SKIP/LOAD not tested.'};

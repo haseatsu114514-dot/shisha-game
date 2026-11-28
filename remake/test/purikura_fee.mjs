@@ -33,14 +33,13 @@ async function fixture() {
  }})],
  ['core/data.js',fixed('core/data.js',{DB:{characters:{hajime:{},ageha:{},kumicho:{},kuraudo:{},tsumugi:{},rio:{},hiyori:{},adam:{role:'rival_ch1'},uezono:{role:'judge'},sensu:{role:'judge'},dr_charcoal:{role:'judge_and_hidden_boss'}}},displayName:id=>id,portraitInfo:id=>({src:id+'.webp'}),img:rel=>rel,cgUrl:id=>`img/cgs/${id}.webp`})],
  ['core/scene-art.js',fixed('core/scene-art.js',{homeRigFile:()=>null})],
- ['core/purikura-doodle.js',fixed('core/purikura-doodle.js',{chooseBooth:async()=>({}),finishBooth:async()=>'',receivePrint:async()=>true})],
  ['core/util.js',fixed('core/util.js',{el})],
  ['core/bus.js',fixed('core/bus.js',{emit:(...args)=>log.push({kind:'emit',args})})],
   ['daily/spot-people.js',fixed('daily/spot-people.js',{spotPeople:()=>present})],
  ['vn/engine.js',fixed('vn/engine.js',{play:async(id,opts)=>{log.push({kind:'play',id,opts});return playImpl(id,opts);}})]
  ]);
  const modules=new Map(ports);
- const real=['chapters/ch2-purikura.js','core/keepsakes.js','core/minto-cheki-data.js','core/purikura-data.js','core/travel-budget.js','core/purikura-photo.js','core/rules.js','core/ryuji-visit.js','core/chapter-clock.js'];
+ const real=['chapters/ch2-purikura.js','core/keepsakes.js','core/minto-cheki-data.js','core/purikura-data.js','core/travel-budget.js','core/purikura-photo.js','core/purikura-doodle.js','core/purikura-key-data.js','core/rules.js','core/ryuji-visit.js','core/chapter-clock.js'];
  for(const p of real)modules.set(p,new vm.SourceTextModule(read(p),{context:ctx,identifier:p}));
  const money=read('core/stats.js').match(/export function addMoney\(n\) \{[\s\S]*?\n\}/)?.[0];assert(money,'actual addMoney source');
  modules.set('core/stats.js',new vm.SourceTextModule('import {state} from "./state.js";import {MAX_MONEY} from "./rules.js";import {emit} from "./bus.js";\n'+money,{context:ctx,identifier:'core/stats.js'}));

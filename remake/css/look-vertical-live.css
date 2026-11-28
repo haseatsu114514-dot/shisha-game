@@ -1,0 +1,149 @@
+/* 本編の操作をそのまま使う縦長の舞台。幅640の中で、絵・操作・結果を上から順に並べる。 */
+#stage[data-portrait-scene] {
+  width: 640px;
+  height: var(--stage-h);
+  --stage-gutter: 0px;
+  --portrait-pad: 22px;
+}
+#stage[data-portrait-scene] #hud { display: none; }
+#stage[data-portrait-scene] #screen > .chapter-clear {
+  position: absolute; inset: 0; width: auto; height: auto; max-height: none;
+  display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
+  gap: 20px; overflow: auto; padding: max(32px, env(safe-area-inset-top)) 26px 40px;
+}
+#stage[data-portrait-scene] .chapter-clear > * { flex: none; width: 100%; max-width: 100%; }
+#stage[data-portrait-scene] .chapter-clear .ch2-contest-header { position: static; }
+#stage[data-portrait-scene] .chapter-clear :is(.end-radar, .ch2-contest-growth) {
+  display: grid; justify-items: center; text-align: center; gap: 10px; height: auto;
+}
+#stage[data-portrait-scene] .chapter-clear .ch2-contest-actions { margin-top: auto; display: grid; grid-template-columns: 1fr; gap: 10px; }
+#stage[data-portrait-scene] :is(.chapter-clear, .result-screen, .gal, .rn-panel, .ri-panel) button { min-height: 64px; }
+#stage[data-portrait-scene] :is(.chapter-clear, .result-screen) :is(p, button) { font-size: max(22px, 1em); }
+#stage[data-portrait-scene] .result-screen { padding: 26px; overflow: auto; }
+#stage[data-portrait-scene] .result-panel { width: 100%; max-height: none; margin: auto; padding: 34px 24px; }
+#stage[data-portrait-scene] .result-grid { grid-template-columns: 1fr; }
+#stage[data-portrait-scene] .result-next { width: 100%; }
+#stage[data-portrait-scene] .staff-roll-track { padding-inline: 32px; }
+#stage[data-portrait-scene] .staff-roll-skip { min-height: 64px; }
+#stage[data-portrait-scene] .gal { width: 100%; height: 100%; max-height: none; padding: 30px 20px; }
+#stage[data-portrait-scene] .gal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#stage[data-portrait-scene] .gal-viewer-tools { justify-content: center; }
+#stage[data-portrait-scene] :is(.gal-tab,.gal-close,.gal-caption,.gal-viewer-tools .btn) { font-size: 22px; }
+#stage[data-portrait-scene] .gal-characters { max-height: 15%; overflow: auto; }
+#stage[data-portrait-scene] :is(.ri-panel,.rn-panel) { width: calc(100% - 32px); max-height: calc(100% - 48px); overflow: auto; }
+#stage[data-portrait-scene] .rn-cols { grid-template-columns: 1fr; }
+#stage[data-portrait-scene="reel"] .reel-night {
+  display: grid; place-items: center;
+  background: radial-gradient(ellipse at center, #26182b88, #0a0713de);
+}
+#stage[data-portrait-scene="reel"] .reel-night .rn-label {
+  inset: 18% auto auto; justify-self: center; font-size: 25px;
+}
+#stage[data-portrait-scene="reel"] .reel-night .reel-widget {
+  position: relative; inset: auto; scale: 2.3; transform-origin: center;
+}
+#stage[data-portrait-scene="reel"] .reel-night .rw-bubble {
+  left: 50%; translate: -50% 0; max-width: 215px; white-space: normal; font-size: 13px;
+}
+#stage[data-portrait-scene]:is([data-portrait-scene="equipment"],[data-portrait-scene="steam"]) .bench {
+  position: absolute; inset: 0; width: auto; height: auto; display: grid;
+  grid-template-columns: minmax(0,1fr); grid-template-rows: auto minmax(180px, 26%) minmax(0,1fr); gap: 8px;
+  padding: 14px; overflow: hidden;
+}
+#stage[data-portrait-scene] .bench > :is(.bench-top,.bench-left,.bench-right) {
+  position: relative; inset: auto; width: 100%; height: auto; min-width: 0; min-height: 0; margin: 0;
+}
+#stage[data-portrait-scene] .bench .bench-top { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 10px; }
+#stage[data-portrait-scene] .bench .bench-top .bench-mode { width: auto; }
+#stage[data-portrait-scene] .bench .bench-left { overflow: hidden; padding: 0; }
+#stage[data-portrait-scene] .bench .bench-left .bench-audience { display: none; }
+#stage[data-portrait-scene] .bench .bench-right { display: flex; flex-direction: column; padding: 12px; overflow-y: auto; }
+#stage[data-portrait-scene] .bench .bench-head { position: static; width: auto; flex: none; }
+#stage[data-portrait-scene] .bench .bench-panel { position: static; display: flex; flex-direction: column; justify-content: flex-start;
+  width: 100%; height: auto; min-height: 0; overflow: auto; flex: 1; }
+#stage[data-portrait-scene] .bench .bench-panel > * { flex-shrink: 0; max-width: 100%; }
+#stage[data-portrait-scene] .bench .opt-grid { position: static; width: 100%; grid-template-columns: repeat(2,minmax(0,1fr)); }
+#stage[data-portrait-scene] .bench .opt-grid .opt { min-width: 0; min-height: 76px; white-space: normal; }
+#stage[data-portrait-scene] .bench .bench-guide-tip { max-width: 570px; max-height: 65vh; overflow: auto; }
+#stage[data-portrait-scene="steam"] .bench .steam { display: flex; flex-flow: column; align-items: center; width: 100%; height: auto; gap: 14px; }
+#stage[data-portrait-scene="steam"] .bench .steam-play { width: 100%; display: flex; flex-direction: column; gap: 9px; }
+#stage[data-portrait-scene="steam"] .bench .dodge { flex: none; zoom: .73; }
+#stage[data-portrait-scene="steam"] .bench .dodge-controls { position: static; display: flex; width: 100%; flex-wrap: wrap; justify-content: space-around; gap: 8px; }
+#stage[data-portrait-scene="steam"] .bench .steam > .thermo { position: static; width: 100%; }
+
+/* 横の作業台には工程別の優先指定がある。縦の三段だけ、その幾何を一か所で決める。 */
+@layer portrait-bench {
+  #stage[data-portrait-scene] .bench {
+    display: grid !important; grid-template: auto minmax(0, 19%) minmax(0,1fr) / minmax(0,1fr) !important;
+  }
+  #stage[data-portrait-scene] .bench > :is(.bench-top,.bench-left,.bench-right) {
+    position: relative !important; inset: auto !important; width: 100% !important;
+    height: auto !important; min-height: 0 !important; max-height: none !important; grid-column: 1 !important;
+  }
+  #stage[data-portrait-scene] .bench-top { grid-row: 1 !important; padding: 8px !important; }
+  #stage[data-portrait-scene] .bench-left { grid-row: 2 !important; overflow: hidden !important; }
+  #stage[data-portrait-scene] .bench-right { grid-row: 3 !important; padding: 12px !important; display: flex !important; overflow: auto !important; }
+  #stage[data-portrait-scene] .bench :is(.bench-head,.bench-panel,.opt-grid) {
+    position: relative !important; inset: auto !important; width: 100% !important;
+    min-height: 0 !important; height: auto !important; max-height: none !important;
+  }
+  #stage[data-portrait-scene] .bench-panel { display: flex !important; padding: 10px !important; gap: 12px !important; overflow: auto !important; }
+  #stage[data-portrait-scene] .bench .opt-grid { display: grid !important; grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
+  #stage[data-portrait-scene] .bench .bench-progress { flex: 1 1 auto !important; }
+  #stage[data-portrait-scene] .bench .bench-mode small { display: none !important; }
+}
+#stage[data-portrait-scene="club"] :is(.sub-menu,.sub-panel) { max-width: 100%; width: 100%; max-height: 100%; overflow-y: auto; }
+#stage[data-portrait-scene="dj"] .dj-frame { width: 100%; height: 100%; inset: 0; }
+#stage[data-portrait-scene="floor"] .tonari-floor { --tf-pad-l: 10px; --tf-pad-r: 10px; --tf-side: 0px; }
+#stage[data-portrait-scene="floor"] .tf-stage { top: 90px; transform: none; }
+#stage[data-portrait-scene="floor"] .tf-presets { left: 12px; right: 12px; top: 490px; width: auto; bottom: 110px; }
+#stage[data-portrait-scene="floor"] .tf-preset-list { grid-template-columns: repeat(2,minmax(0,1fr)); overflow-y: auto; }
+#stage[data-portrait-scene="floor"] .tf-top { inset: 12px 12px auto; height: auto; gap: 4px; }
+#stage[data-portrait-scene="floor"] .tf-bottom { inset: auto 12px 12px; }
+#stage[data-portrait-scene="floor"] :is(.tf-intro,.tf-pause,.tf-result,.tf-sheet) { width: 100%; max-width: 100%; max-height: 100%; overflow: auto; }
+#stage[data-portrait-scene="floor"] .tf-layer { overflow: auto; padding: 14px; }
+#stage[data-portrait-scene="floor"] .tf-intro-card { width: 100%; padding: 22px; }
+#stage[data-portrait-scene="floor"] :is(.tf-sheet,.tf-intro-grid,.tf-intro-options) { grid-template-columns: minmax(0,1fr); }
+#stage[data-portrait-scene="floor"] .tf-sheet { height: auto; align-self: center; }
+#stage[data-portrait-scene="floor"] .tf-visit { height: 280px; }
+#stage[data-portrait-scene="floor"] .tf-coach { inset: auto 10px 12px; width: auto; z-index: 14; }
+#stage[data-portrait-scene="axe"] .axe-game { display: flex; flex-direction: column; padding: 14px; gap: 10px; overflow: auto; }
+#stage[data-portrait-scene="axe"] .axe-body { flex: 1; display: grid; grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(360px,1fr) auto auto; gap: 10px; }
+#stage[data-portrait-scene="axe"] .axe-board-pane { position: relative; inset: auto; width: 100%; height: auto; min-height: 360px; grid-area: 1 / 1; }
+#stage[data-portrait-scene="axe"] .axe-panel { position: relative; inset: auto; grid-area: 3 / 1; width: auto; height: auto; max-height: 45cqh; overflow: auto; }
+#stage[data-portrait-scene="axe"] .axe-body > .axe-timing { grid-area: 2 / 1; }
+#stage[data-portrait-scene="axe"] .axe-side { pointer-events: none; }
+#stage[data-portrait-scene="axe"] .axe-side button { pointer-events: auto; }
+#stage[data-portrait-scene="axe"] :is(.axe-rules-card,.axe-dialog,.axe-result-card) { max-width: 100%; max-height: 90cqh; overflow: auto; }
+
+@layer portrait-bench {
+  #stage[data-portrait-scene] .bench .thermo {
+    position: fixed !important; inset: 95px 24px auto auto !important;
+    height: min(18cqh, 240px) !important; width: 68px !important; margin: 0 !important;
+    pointer-events: none !important;
+  }
+  #stage[data-portrait-scene] .bench .thermo * { pointer-events: none !important; }
+  #stage[data-portrait-scene] .bench .bench-heading { display: block !important; visibility: visible !important; }
+  #stage[data-portrait-scene] .bench .bench-title { font-size: 25px !important; }
+}
+#stage[data-portrait-scene="floor"] .tf-slip { width: 100%; padding: 58px 18px 18px; }
+#stage[data-portrait-scene="floor"] .tf-slip-body { grid-template-columns: 1fr; gap: 10px; }
+#stage[data-portrait-scene="floor"] .tf-slip > .tf-eyebrow { top: 0; }
+#stage[data-portrait-scene="floor"] .tf-options { grid-template-columns: 1fr 1fr; }
+#stage[data-portrait-scene="floor"] :is(.tf-list,.tf-options[data-count="1"]) { grid-template-columns: 1fr; }
+#stage[data-portrait-scene="floor"] .tf-sheet { inset: 10px; width: auto; max-height: calc(100% - 20px); }
+#stage[data-portrait-scene="floor"] .tf-intro-card h2 { min-width: 0; }
+#stage[data-portrait-scene="axe"] .axe-first-person .axe-body { position: absolute; inset: 0; display: flex; flex-direction: column; }
+#stage[data-portrait-scene="axe"] .axe-first-person .axe-board-pane {
+  flex: none; min-height: 0; height: min(648px, 56cqh); overflow: hidden;
+}
+/* 的の絵、当たり判定のSVG、手元は同じカメラに置く。 */
+#stage[data-portrait-scene="axe"] .axe-first-person :is(.axe-target-art,.axe-target,.axe-hand-front) {
+  position: absolute; inset: 0 auto 0 50%; width: max(100%, min(1152px, 99.56cqh)); height: 100%;
+  translate: -50% 0;
+}
+#stage[data-portrait-scene="axe"] .axe-first-person .axe-panel {
+  flex: 0 1 auto; min-height: 86px; overflow: visible; background: transparent;
+}
+#stage[data-portrait-scene="axe"] .axe-first-person .axe-side { position: absolute; inset: auto 15px 12px; width: auto; }
+#stage[data-portrait-scene="axe"] .axe-rules { width: 100%; max-width: 100%; }

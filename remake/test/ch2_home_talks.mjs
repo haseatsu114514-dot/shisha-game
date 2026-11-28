@@ -402,7 +402,7 @@ for (const id of ["remake_ch2_aquarium_repeat", "remake_ch2_aquarium_repeat_b", 
   for (const [who, ids] of Object.entries(PRC)) for (const id of ids) {
     assert(all[id]?.lines?.length, `${id} exists`);
     assert(CH2_HOME_IDS.includes(id), `${id} is loaded with the chapter 2 preparation`);
-    assert(all[id].lines.every(line => !line.type), `${id}: the visit handles reading and affinity`);
+    assert(all[id].lines.every(line => !line.type || line.type === "sfx"), `${id}: the visit handles reading and affinity`);
     assert(all[id].lines.some(line => line.speaker === who), `${id}: ${who} speaks`);
     assert(!/大会|本番|県大会|優勝|審査|採点|が(少し|かなり|大きく)?上がった/.test(textOf(id)), `${id}: before or after the tournament, no reward text`);
     // はじめは味の感想を言わない（第2章の味の不調の前後どちらでも読む）

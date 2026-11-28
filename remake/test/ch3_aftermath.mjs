@@ -426,7 +426,7 @@ console.log("PASS: Chapter 3 aftermath offers Steve's ♥5 finale with the same 
   const playlist = CH3_AFTERMATH_DETOURS.find(scene => scene.id === "ch3_mukai_yoru_playlist");
   assert.deepEqual([playlist.file, playlist.location, playlist.met, playlist.after], ["ch3_mukai", "mukai", ["yoru"], undefined]);
   const lines = readData("dialogue/ch3_mukai").dialogues.find(row => row.dialogue_id === playlist.id).lines;
-  assert(!lines.some(line => line.type || line.affinity), "no affinity, stats, memory or flag rows");
+  assert(lines.every(line => (!line.type || line.type === "sfx") && !line.affinity), "no affinity, stats, memory or flag rows");
   assert(lines.some(line => line.speaker === "yoru") && lines.some(line => line.speaker === "mukai_master"));
   assert(!lines.some(line => /大会|優勝|PITCH|SYNC|フェーダー|▶|小節/.test(line.text || "")), "no tournament timing, no DJ how-to");
   assert(!lines.some(line => line.speaker && /。$/.test(line.text || "")), "spoken lines end without 。");

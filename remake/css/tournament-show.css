@@ -372,10 +372,24 @@ html:root body:not(:root) #stage #modal > .modal-box.ts-contest-modal .modal-act
 .ent-portrait { z-index: -1; left: -2%; bottom: 0; width: 56%; height: 94%; object-fit: contain; object-position: center bottom; }
 .ent-card[data-art="classic"] .ent-portrait { height: 145%; bottom: -38%; }
 .entrance .ent-tag {
-  position: static; grid-column: 2; grid-row: 1; align-self: end; justify-self: start;
-  padding: 6px 24px; font: 800 24px/1.4 var(--font); letter-spacing: .08em;
-  color: #15101b; background: var(--entry-ink); border-left: 6px solid #fff3d1;
-  transform: skewX(-7deg); box-shadow: 7px 5px 0 #11101ca8;
+  position: relative; inset: auto; grid-column: 2; grid-row: 1; align-self: end; justify-self: start;
+  display: grid; grid-template-columns: 30% 1fr; align-items: center;
+  width: 366px; aspect-ratio: 2136 / 612; padding: 0; isolation: isolate;
+  color: #fff1d4; background: #1a121a; transform: rotate(-2deg); transform-origin: 16% 70%;
+}
+.entrance .ent-tag.printed { background: transparent; }
+.ent-tag > img, .ent-number > img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none;
+}
+.ent-tag-label {
+  grid-column: 2; grid-row: 1; display: grid;
+  font: 900 28px/1.05 var(--font); letter-spacing: .06em;
+}
+.ent-tag.printed > .ent-tag-label, .ent-number.printed { color: transparent; }
+.ent-number {
+  position: relative; grid-column: 1; grid-row: 1; justify-self: center;
+  width: 83%; height: 80%; display: grid; place-items: center;
+  font: 900 78px/1 var(--font); color: #f9df98;
 }
 .entrance .ent-meta {
   grid-column: 2; grid-row: 2; max-width: 100%; min-width: 0;
@@ -388,14 +402,25 @@ html:root body:not(:root) #stage #modal > .modal-box.ts-contest-modal .modal-act
 }
 .entrance .ent-note { margin: 0; padding: 12px 20px; background: #100c19e8; color: #fff2dc; font-size: 24px; line-height: 1.55; }
 .entrance .ent-speaker { display: block; margin-bottom: 3px; color: #f3cf87; font-size: .85em; font-weight: 700; }
+.ent-card.in .ent-tag { animation: ent-tag-in .42s cubic-bezier(.16, .8, .24, 1) both; }
+.ent-card.in .ent-number { animation: ent-number-stamp .38s ease-out both; }
+@keyframes ent-tag-in {
+  from { translate: -48px 0; opacity: 0; }
+  to { translate: 0 0; opacity: 1; }
+}
+@keyframes ent-number-stamp {
+  0% { scale: 1.45; }
+  65% { scale: .94; }
+  100% { scale: 1; }
+}
 .ent-card.in .ent-portrait { animation: ent-arrive .5s var(--ease-snap) both; }
-.ent-card.in .ent-meta { animation: ent-name-in .4s var(--ease-snap) both; }
+.ent-card.in .ent-meta { animation: ent-name-in .4s .1s var(--ease-snap) both; }
 @keyframes ent-arrive { from { transform: translateX(-10%); opacity: .15; } to { transform: none; opacity: 1; } }
 @keyframes ent-name-in { from { translate: 7% 0; opacity: 0; } to { translate: 0 0; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
-  .entrance .ent-card, .ent-card.in :is(.ent-portrait, .ent-meta) { animation: none; transition: none; }
+  .entrance .ent-card, .ent-card.in :is(.ent-tag, .ent-number, .ent-portrait, .ent-meta) { animation: none; transition: none; }
 }
-.reduce-shake .ent-card.in :is(.ent-portrait, .ent-meta) { animation: none; }
+.reduce-shake .ent-card.in :is(.ent-tag, .ent-number, .ent-portrait, .ent-meta) { animation: none; }
 
 .round-cut-band { box-shadow: 0 0 0 1px #6b4a12, 0 16px 36px #05020a99, 0 0 50px #f6d68e44;
   background: linear-gradient(180deg, #e3bd6e 0 4px, #f4ecda 4px 9px, #e3bd6e 9px 10px, #f4ecda 10px calc(100% - 10px), #e3bd6e calc(100% - 10px) calc(100% - 9px), #f4ecda calc(100% - 9px) calc(100% - 4px), #e3bd6e calc(100% - 4px)); }

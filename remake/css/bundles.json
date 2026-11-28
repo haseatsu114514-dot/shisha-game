@@ -90,7 +90,8 @@
     "look-neo-board.css",
     "look-neo-art.css",
     "look-neo-portrait.css",
-    "loading.css"
+    "loading.css",
+    "purikura-studio.css"
    ]
   }
  ]

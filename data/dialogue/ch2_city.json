@@ -55,6 +55,10 @@
           "text": "（SMOKE CROWN CUPは、勝てた。次は、ここで戦う）"
         },
         {
+          "type": "sfx",
+          "id": "phone_receive"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "ポケットの中のスマホが鳴る。スミさんからだった。"

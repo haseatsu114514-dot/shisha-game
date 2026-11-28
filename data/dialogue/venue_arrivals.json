@@ -5,6 +5,7 @@
       "dialogue_id": "axe_bar_first_visit",
       "lines": [
         { "speaker": "", "face": "", "text": "入口の脇に、使い込まれた斧が何本も掛けてある。" },
+        { "type": "sfx", "id": "axe_impact" },
         { "speaker": "", "face": "", "text": "金網の向こうから、斧が板に刺さる乾いた音が響いてくる。" },
         { "speaker": "hajime", "face": "normal", "text": "（……どこで声をかければいいんだろう）" },
         { "speaker": "maki", "face": "normal", "text": "いらっしゃい！　そこ、突っ立ってないで入んな" },
@@ -149,6 +150,7 @@
     {
       "dialogue_id": "axe_regular_c",
       "lines": [
+        { "type": "sfx", "id": "axe_impact" },
         { "speaker": "", "face": "", "text": "扉を開ける前から、斧の音で今夜の混み具合が分かるようになってきた。" },
         { "speaker": "maki", "face": "normal", "text": "いらっしゃい。今日は一本、空いてるよ" },
         { "speaker": "hajime", "face": "normal", "text": "じゃあ、そこでお願いします" }
@@ -157,6 +159,7 @@
     {
       "dialogue_id": "axe_arrival_rain",
       "lines": [
+        { "type": "sfx", "id": "axe_impact" },
         { "speaker": "", "face": "", "text": "雨の夜。扉の前で傘をたたむと、中から斧の音が聞こえてきた。" },
         { "speaker": "maki", "face": "normal", "text": "いらっしゃい。濡れたろ、そこのタオル使いな" },
         { "speaker": "hajime", "face": "normal", "text": "ありがとうございます。雨の日も、お客さん来るんですね" },
@@ -290,6 +293,7 @@
       "dialogue_id": "trpg_cafe_first_visit_day",
       "lines": [
         { "speaker": "", "face": "", "text": "駅の北側。教わった道を行くと、窓にボードゲームの箱が並ぶ店があった。" },
+        { "type": "sfx", "id": "dice_roll" },
         { "speaker": "", "face": "", "text": "扉を開けると、壁いっぱいの棚。奥の席で、サイコロの転がる音がした。" },
         { "speaker": "hajime", "face": "normal", "text": "（ボードゲームって、こんなに種類があるのか……）" },
         { "speaker": "sai", "face": "normal", "text": "いらっしゃいませ。お一人ですか" },
@@ -341,6 +345,7 @@
     {
       "dialogue_id": "trpg_day_dice",
       "lines": [
+        { "type": "sfx", "id": "dice_roll" },
         { "speaker": "", "face": "", "text": "カウンターの上に、色とりどりのサイコロ。サイさんが一つずつ転がしている。" },
         { "speaker": "hajime", "face": "normal", "text": "こんにちは。それ、何を調べてるんですか？" },
         { "speaker": "sai", "face": "normal", "text": "偏りです。同じ目ばかり出るものは、卓に出せませんので" },
@@ -398,6 +403,7 @@
     {
       "dialogue_id": "trpg_night_tea",
       "lines": [
+        { "type": "sfx", "id": "pour" },
         { "speaker": "", "face": "", "text": "夜の店に入ると、サイさんがポットを傾けていた。湯気の向こうで、糸目が笑う。" },
         { "speaker": "sai", "face": "normal", "text": "いらっしゃいませ。卓の前に、一杯どうぞ。長い夜になりますから" },
         { "speaker": "hajime", "face": "normal", "text": "ありがとうございます。……あれ、俺、まだ頼んでないですよね" },

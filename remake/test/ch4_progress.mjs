@@ -50,7 +50,8 @@ for (const scene of [...Object.values(CH4_ARRIVAL_EVENING_SCENES), ...Object.val
   assert.equal(CH4_SCENE_BG[scene], "bg_dubai_inn_night", `${scene} is spent at the inn`);
   // 報酬・制御行を持たない（読むだけの場面。報酬は付けない）。
   const row = Object.values(files).flat().find(item => item.dialogue_id === scene);
-  assert(row?.lines?.every(line => typeof line.text === "string" && !line.type && !/(上がった|下がった)。?$/.test(line.text)), `${scene}: plain lines only`);
+  assert(row?.lines?.filter(line => line.type !== "sfx")
+    .every(line => typeof line.text === "string" && !line.type && !/(上がった|下がった)。?$/.test(line.text)), `${scene}: no rewards or state commands`);
 }
 assert.equal(new Set(connected).size, connected.length, "A scene is listed twice");
 // ヒロイン来訪の台本は全ファイル（ch4_visitors と *_dubai）を読込登録し、本文があり、本編の場面表（CH4_SCENE_FILES）とは別に持つ。
@@ -572,7 +573,7 @@ console.log("PASS: Chapter 4 runner state keeps the Dubai days, mandatory scenes
   for (const entry of CH4_STORY_NIGHTS) {
     assert.equal(CH4_SCENE_BG[entry.id], entry.bg, entry.id);
     const row = rows.find(item => item.dialogue_id === entry.id);
-    assert(row.lines.every(line => typeof line.text === "string" && !line.type), `${entry.id}: plain lines, no rewards`);
+    assert(row.lines.every(line => line.type === "sfx" || (typeof line.text === "string" && !line.type)), `${entry.id}: no rewards or state commands`);
     assert(!/シェイク|ナジュム|王煙楼|太陽|千須|エミル/.test(row.lines.map(line => line.text).join("")), `${entry.id}: no early reveal of the other players or judges`);
   }
   const before = readData("story_routes").chapters["4"].before_eve;

@@ -7,6 +7,7 @@ const {selectStoryEvening, selectStoryEnding, selectPostEndingConflict, canReadO
 const sceneData = new Map(fs.readdirSync(new URL('data/dialogue/', root)).filter(f => f.endsWith('.json'))
   .flatMap(f => JSON.parse(fs.readFileSync(new URL(`data/dialogue/${f}`, root))).dialogues || []).map(s => [s.dialogue_id, s]));
 const scenes = new Set(sceneData.keys());
+const hasSceneControl = row => row.type && row.type !== 'sfx';
 const all = routes.heroine_ids;
 const context = {present: all, accepted: all};
 assert.equal(selectStoryEvening(routes, {chapter: 4, affinity: Object.fromEntries(all.map(id => [id, 100]))}, context).kind, 'rest');
@@ -68,7 +69,7 @@ for (const id of all) {
   const talk = sceneData.get(routes.romance[id].talk)?.lines;
   assert.ok(talk, `${id} talk`);
   assert(talk.some(row => row.speaker === id) && talk.some(row => row.speaker === 'hajime'), id);
-  assert(!talk.some(row => row.type || row.flag || ['steve', ...all.filter(x => x !== id)].includes(row.speaker)), id);
+  assert(!talk.some(row => hasSceneControl(row) || row.flag || ['steve', ...all.filter(x => x !== id)].includes(row.speaker)), id);
 }
 assert(!sceneData.get(routes.romance.hiyori.conflict).lines.some(row => row.text?.includes('付き合おう')), 'hiyori quotes her real confession');
 assert.equal(selectPostEndingConflict(routes, {lovers: [], flags: {_story_shuraba_unresolved: true}}).kind, 'pending');
@@ -139,7 +140,7 @@ const fileScenes = file => new Set(JSON.parse(fs.readFileSync(new URL(`data/dial
   // 前夜デートは報酬・フラグを持たない。分岐は選択と、東京前夜／ドバイ前夜の帰り道を分ける大会の終了判定だけ（#1895）。
   for (const id of all) {
     const dateLines = [...sceneData.get(routes.romance[id].date).lines, ...Object.values(sceneData.get(routes.romance[id].date).branches || {}).flat()];
-    assert(dateLines.every(row => !row.type || row.type === 'choice'
+    assert(dateLines.every(row => !hasSceneControl(row) || row.type === 'choice'
       || (row.type === 'condition' && row.condition_type === 'tournament_finished')), 'eve date must not apply rewards or flags');
     assert(!dateLines.some(row => row.stats || row.money || row.affinity || row.flag), `${id} date must not apply rewards or flags`);
   }
@@ -341,7 +342,7 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   wiring.commitOptionalRead(value, 'ch3_mukai_yoru_playlist');
   assert(!playlist(value), 'read once');
   const lines = sceneData.get('ch3_mukai_yoru_playlist').lines;
-  assert(!lines.some(row => row.type), 'no affinity, stats, memory or flag rows');
+  assert(!lines.some(hasSceneControl), 'no affinity, stats, memory or flag rows');
   assert(lines.some(row => row.speaker === 'yoru') && lines.some(row => row.speaker === 'mukai_master'));
 }
 {
@@ -407,7 +408,7 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   wiring.commitOptionalRead(value, 'ch3_rival_volk_steve_seat');
   assert.deepEqual(pair(value), [], 'each is read once');
   for (const id of ['ch3_rival_volk_steve_greeting', 'ch3_rival_volk_steve_seat']) {
-    assert(!sceneData.get(id).lines.some(row => row.type), `${id}: no affinity, stats, memory or flag rows`);
+    assert(!sceneData.get(id).lines.some(hasSceneControl), `${id}: no affinity, stats, memory or flag rows`);
   }
 }
 {
@@ -494,7 +495,7 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
     const place = wiring.CH3_OPTIONAL_SCENES[id];
     assert.deepEqual([place.file, place.location, place.bg], ['ch3_mashiro', 'mukai', 'bg_mukai_shop'], id);
     const lines = sceneData.get(id).lines;
-    assert(!lines.some(row => row.type), `${id}: no affinity, stats, memory or flag rows`);
+    assert(!lines.some(hasSceneControl), `${id}: no affinity, stats, memory or flag rows`);
     assert(lines.some(row => row.speaker === 'mashiro') && lines.some(row => row.speaker === 'mukai_master'), id);
     assert(!/大会|優勝|本番|シガーマン|猫|写真|ましろさん|経費/.test(lines.map(row => row.text || '').join('')), id);
   }

@@ -63,7 +63,7 @@ async function play(id) {
       assert.equal(visibleCg, "cg_ch2_naru_score_sheet");
       visibleCg = null;
     } else {
-      assert(!line.type || line.type === "hide_portrait", `${id}: unexpected effect ${line.type}`);
+      assert(!line.type || ["hide_portrait", "sfx"].includes(line.type), `${id}: unexpected effect ${line.type}`);
       if (line.text) shown.push([id, line.text]);
     }
   }

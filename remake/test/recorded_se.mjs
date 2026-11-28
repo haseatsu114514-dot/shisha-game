@@ -1,6 +1,7 @@
 // Production audio module: decode/cache, missing files, mute, held draws and late loads.
 // node --experimental-vm-modules remake/test/recorded_se.mjs
 import assert from "node:assert/strict";
+import { webcrypto } from "node:crypto";
 import fs from "node:fs/promises";
 import vm from "node:vm";
 
@@ -22,7 +23,7 @@ async function boot({ fail = false, deferred = false } = {}) {
     gain = new Param(); frequency = new Param(); Q = new Param(); playbackRate = new Param(); stops = [];
     connect(node) { this.destination = node; return node; }
     disconnect() { this.disconnected = true; }
-    start() { sources.push(this); }
+    start(at = 0) { this.startedAt = at; sources.push(this); }
     stop(t) { this.stops.push(t); if (!t) this.onended?.(); }
   }
   class AudioContext {
@@ -37,7 +38,7 @@ async function boot({ fail = false, deferred = false } = {}) {
     addEventListener() {}
   }
   const document = { hidden: false, addEventListener: (type, fn) => listeners.set(type, fn) };
-  const context = vm.createContext({ document, window: { AudioContext }, console, Math, Promise, Date, AbortController,
+  const context = vm.createContext({ document, window: { AudioContext }, console, Math, Promise, Date, AbortController, TextDecoder, crypto: webcrypto,
     setTimeout: fn => { const id = ++serial; timers.set(id, fn); return id; }, clearTimeout: id => timers.delete(id),
     setInterval: fn => { const id = ++serial; intervals.set(id, fn); return id; }, clearInterval: id => intervals.delete(id),
     fetch: async url => {
@@ -119,6 +120,9 @@ const failure = await boot({ fail: true }); failure.audio.unlockAudio();
 assert.equal(await failure.audio.preloadSe(), false);
 const attempts = failure.requests.length;
 failure.audio.SE.click(); assert(failure.oscillators() > 0, "missing recordings keep the existing synthetic fallback");
+const beforeStamp = failure.oscillators();
+failure.audio.SE.introImpact({ brief: true });
+assert.equal(failure.oscillators(), beforeStamp + 1, "a missing drum uses one existing stamp on the reveal");
 await failure.audio.preloadSe(); assert.equal(failure.requests.length, attempts, "failed requests are backed off");
 const stopFallback = failure.audio.startBubbling(); assert.equal(failure.intervals.size, 1);
 failure.config.mute = true; failure.audio.applyVolumes(); assert.equal(failure.intervals.size, 0);
@@ -131,6 +135,26 @@ await Promise.resolve();
 assert(!slow.sources.some(source => source.buffer?.file), "late decoding cannot replay a completed draw");
 assert.equal(slow.intervals.size, 0);
 console.log("PASS: recorded files, cache, user unlock, mute/volume, variants, water loop/tail, visibility/resume, failed-file fallback/backoff, late-load cancellation");
+
+const intro = await boot();
+intro.audio.SE.introImpact();
+assert.equal(intro.sources.length, 0, "intros require user unlock");
+intro.audio.unlockAudio(); await intro.audio.preloadSe();
+intro.context().currentTime = 2;
+for (const brief of [false, true]) {
+  const before = intro.sources.length;
+  intro.audio.SE.introImpact({ brief });
+  const [drum, air] = intro.sources.slice(before);
+  assert.deepEqual(intro.sources.slice(before).map(s => s.buffer.file), ["cue_drum.wav", "ui_whoosh.wav"]);
+  assert.equal(drum.startedAt, 0, "the drum is immediate");
+  assert.equal(air.startedAt, 2.025, "the air layer follows the impact");
+  assert.equal(drum.destination.destination, air.destination.destination, "both layers use the SE bus");
+  assert.equal(drum.stops[0] < 2.6, brief, "the brief fade ends inside the 600ms reveal");
+}
+const introCount = intro.sources.length;
+intro.config.mute = true; intro.audio.applyVolumes(); intro.audio.SE.introImpact();
+assert.equal(intro.sources.length, introCount, "mute blocks both layers");
+console.log("PASS: intro impact layers, short timing, user unlock and mute");
 
 // New LIME IDs use the same unlock/visibility/settings contract and SE bus.
 const lime = await boot();

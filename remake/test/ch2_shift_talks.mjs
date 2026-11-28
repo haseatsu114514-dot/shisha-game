@@ -109,7 +109,8 @@ assert.equal(ts({ day: 27 }, true), "ch2_shift_talk_one_hose", "not on DAY13");
   for (const id of third) {
     const rows = dialogues[id].lines;
     assert(rows.some(line => line.speaker === "sumi"), `${id}: Sumi's craft`);
-    assert(rows.length >= 8 && rows.length <= 14, `${id}: 8-14 lines`);
+    const textRows = rows.filter(line => !line.type);
+    assert(textRows.length >= 8 && textRows.length <= 14, `${id}: 8-14 text lines`);
   }
 }
 // 全部読んだら定型へ
@@ -128,7 +129,12 @@ for (const d of file.dialogues) {
     assert(!d.lines.some(line => line.speaker === "hajime" && /(甘|苦|酸|しょっぱ|うま|おいし|美味|味)/.test(line.text)), `${d.dialogue_id}: Hajime does not taste`);
   }
   for (const line of d.lines) {
-    assert(!line.type, `${d.dialogue_id}: no commands (no affinity, flags or rewards from the script)`);
+    if (line.type === "sfx") {
+      assert.deepEqual(Object.keys(line).sort(), ["id", "type"]);
+      assert.equal(typeof line.id, "string");
+      continue;
+    }
+    assert(!line.type, `${d.dialogue_id}: no affinity, flags or rewards from the script`);
     assert.equal(typeof line.text, "string");
     if (line.speaker) assert(!line.text.endsWith("。"), `${d.dialogue_id}: no 句点 at the end of a spoken line`);
   }

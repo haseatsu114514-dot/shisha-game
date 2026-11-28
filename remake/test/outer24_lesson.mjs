@@ -32,9 +32,11 @@ assert.match(lesson.text, /「外周24穴」/, "盤とTRAININGのカードで、
 // 2. 教わる場面: 最後に外周の配置を短く教わる（台詞の規範: 48字以内・改行なし・話者付きの末尾に「。」なし）
 const scenes = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/growth_lessons.json", import.meta.url), "utf8")).dialogues;
 const scene = scenes.find(row => row.dialogue_id === "lesson_sumi_four");
-const at = scene.lines.findIndex(line => line.text === "炭を縁に回すなら、穴も外周に寄せる手がある");
+// 効果音は演出なので、台詞の行数・文字数の検査から外す。
+const dialogue = scene.lines.filter(line => line.type !== "sfx");
+const at = dialogue.findIndex(line => line.text === "炭を縁に回すなら、穴も外周に寄せる手がある");
 assert(at > 0, "四つ置きの後に、穴の配置の話が続く");
-const added = scene.lines.slice(at);
+const added = dialogue.slice(at);
 assert(added.length >= 3 && added.length <= 6, "教わる場面は数行");
 assert(added.some(line => /二十四/.test(line.text)), "外周に二十四の穴");
 for (const line of added) {

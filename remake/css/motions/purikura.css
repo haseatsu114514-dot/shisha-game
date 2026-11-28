@@ -59,6 +59,8 @@
 .mo-pk-sprite { position: absolute; width: 130.2%; height: auto; image-rendering: auto; }
 .mo-pk-sprite.ageha.lean { transform: translate(-7%, 2%) rotate(-4deg); transform-origin: 53.5% 26%; }
 .mo-pk-photo.mori { filter: brightness(1.1) saturate(1.22) contrast(1.03); }
+/* 落書きの場面の写真: 半分こシール（640×1080）の上のコマを、窓（640×480）いっぱいに写す（コマは y 42〜492・横の白い縁は外す。VPO25） */
+.mo-pk-paper { background: #fff no-repeat; background-size: 683px 1152px; background-position: -21px -45px; opacity: 0; }
 .mo-pk-glow {
   position: absolute; inset: 0; mix-blend-mode: screen;
   background: radial-gradient(ellipse at 50% 38%, #ffffff8c, #ffd0e655 50%, transparent 78%);

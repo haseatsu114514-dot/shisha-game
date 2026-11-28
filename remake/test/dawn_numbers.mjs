@@ -7,7 +7,7 @@ import { chapterDay, chapterDaysLeft, relationshipElapsedDay } from "../js/core/
 // fonts: 日付の題字の明朝（Suien Name）の読み込み。省略＝document.fonts なし（従来）／"ready"＝届く／"stalled"＝届かない／"missing"＝読めない
 async function checkDawn(info, { reduced = false, cancel = false, failMid = false, fonts = null } = {}) {
   const faces = [], keyHandlers = new Set(), fontLoads = [];
-  let card, midCalls = 0;
+  let card, midCalls = 0, birds = 0;
   class Element {
     constructor(spec) {
       const [tag, ...classes] = spec.split(".");
@@ -54,7 +54,7 @@ async function checkDawn(info, { reduced = false, cancel = false, failMid = fals
   });
   const mocks = {
     "util.js": { el, sleep: async () => sample(), nextFrame: async () => sample() },
-    "audio.js": { SE: { tick() {} } },
+    "audio.js": { SE: { tick() {}, birds() { birds++; } } },
     "transition-moves.js": { moveCurtain() {}, moveStyle() {} },
     "state.js": { state: {} }, "entry-sound.js": { createEntrySound() {} }, "store-arrival.js": { withStoreArrival() {} },
   };
@@ -76,6 +76,7 @@ async function checkDawn(info, { reduced = false, cancel = false, failMid = fals
   if (failMid) await assert.rejects(running, /wake failed/); else await running;
   assert.equal(midCalls, 1); assert.equal(host.children.length, 0);
   assert.equal(mod.namespace.isCovering(), false); assert.equal(keyHandlers.size, 0);
+  assert.equal(birds, !failMid && !info.eve && !info.sick && info.weather === "sun" ? 1 : 0);
   if (failMid) return;
   if (info.eve) { assert.equal(card, undefined, "大会前夜の当日版は日付のカードを出さない（#2688 A10）"); return; }
   assert(faces.length > 0);
@@ -124,12 +125,14 @@ assert.equal(chapterDay(JSON.parse(JSON.stringify(restored))), 2);
 
 for (const info of [
   firstMorning,
+  { ...firstMorning, weather: "sun" },
+  { ...firstMorning, weather: "rain" },
   { day: 2, left: 12 }, // 旧呼び出しで前日値が無い場合も当日値を表示する
   { fromDay: 6, day: 7, fromLeft: 8, left: 7 },
   { fromDay: "３", day: "４", fromLeft: "１１", left: "１０" }, // 旧データの全角入力も半角で描く
   { fromDay: 12, day: 13, fromLeft: 2, left: 1, tournamentName: "県大会" },
   { fromDay: 2, day: 3, fromLeft: null, left: null, undatedNote: "勝負の日は未定" },
-  { fromDay: 6, day: 7, fromLeft: 8, left: 7, sick: true },
+  { fromDay: 6, day: 7, fromLeft: 8, left: 7, sick: true, weather: "sun" },
 ]) {
   await checkDawn(info);
   await checkDawn(info, { reduced: true });

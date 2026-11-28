@@ -106,9 +106,10 @@ function domNode() {
   n.insertBefore = (c, ref) => { n.append(c); if (ref) { n.children = n.children.filter(x => x !== c); n.children.splice(n.children.indexOf(ref), 0, c); } };
   return n;
 }
-let pendingImages = [], failImages = false;
+let pendingImages = [], failImages = false, outdoorBirds = 0, weather = 'sun';
 const integrated = await load(ui, {
   el: domNode, sceneArtUrls: url => [url], renderSceneArt() {},
+  SE: { outdoorBirds: () => outdoorBirds++ }, weatherOf: () => weather,
   createSceneCurtain: transitions.createSceneCurtain, takeSceneArrival: transitions.takeSceneArrival,
   isCovering: transitions.isCovering,
 }, {
@@ -150,6 +151,28 @@ transitions.cueTransition('place', { spotId: 'tonari' });
 await integrated.setBg('bg_tonari_inside_night.png');
 assert.equal(transitionRings, base + 1, 'image failure preserves DOM-commit progression contract');
 console.log('PASS: production setBg/transition first, instant, fast, cover, redraw, interruption and image-failure integration');
+
+const park = 'bg_tokyo_park_day.webp';
+failImages = false;
+for (const [spot, background, tint, sky, expected] of [
+  ['ch3_tokyo_park', park, null, 'sun', 1],
+  ['ch5_tokyo_park', park, null, 'cloud', 0],
+  ['ch5_tokyo_park', park, null, 'rain', 0],
+  ['ch5_tokyo_park', park, 'night', 'sun', 0],
+  ['ch5_tokyo_park', 'bg_tokyo_park_night.webp', null, 'sun', 0],
+  ['ch5_tokyo_shrine', park, null, 'sun', 0],
+  ['ch5_tokyo_shrine', 'bg_tokyo_benten_day.webp', null, 'sun', 1],
+  ['kannon', 'bg_kannon_day.png', null, 'sun', 1],
+]) {
+  const before = outdoorBirds;
+  weather = sky;
+  await integrated.setBg(home, { instant: true });
+  transitions.cueTransition('place', { spotId: spot });
+  await integrated.setBg(background, { instant: true, tint });
+  await integrated.setBg(background, { instant: true, tint });
+  assert.equal(outdoorBirds - before, expected, `${spot}/${background}/${tint}/${sky}`);
+}
+console.log('PASS: daylight outdoor arrival cues, weather, and redraw deduplication');
 
 // The shared curtain must keep its animation lifetime and keyboard guard through nested/failing transitions.
 await import('./transition_lifecycle.mjs');

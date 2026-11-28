@@ -404,6 +404,10 @@
           "next_false": "before_tournament"
         },
         {
+          "type": "sfx",
+          "id": "crowd"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "太陽が幕をくぐって出ていくと、手拍子がいっせいに揃った。"

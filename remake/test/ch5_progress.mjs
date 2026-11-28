@@ -864,7 +864,7 @@ for (const scenes of [
       ["condition", "story_seen", "ch5_tsumugi_first_day", "omote_note"]);
     assert.deepEqual([tail.type, tail.condition_type, tail.dialogue, tail.next_true],
       ["condition", "story_seen", "ch5_tsumugi_little_notes", "omote_note"]);
-    assert.match(name.branches.omote_note[0].text, /『表さん』/);
+    assert.match(name.branches.omote_note.find(line => line.type !== "sfx").text, /『表さん』/);
     for (const id of ["ch5_tsumugi_first_day", "ch5_tsumugi_little_notes"])
       assert(files.ch5_main.find(row => row.dialogue_id === id).lines
         .some(line => line.text?.includes("ネクタイを締めていた")), `The necktie cat is in Tsumugi's notebook scene: ${id}`);

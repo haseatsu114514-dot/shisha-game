@@ -166,7 +166,9 @@ export function runDjSet({ host, set = 1, signal = null, muted = false, volume =
     window.addEventListener("message", listen);
     signal?.addEventListener("abort", finish, { once: true });
     frame.addEventListener("load", () => { try { frame.contentWindow?.focus(); } catch { /* same origin only */ } }, { once: true });
-    frame.src = djUrl(set, { muted, volume, phones, phone, best });
+    const src = new URL(djUrl(set, { muted, volume, phones, phone, best }));
+    if (document.documentElement.dataset.look === "vertical") src.searchParams.set("layout", "auto");
+    frame.src = src.href;
     host.append(frame);
   });
 }

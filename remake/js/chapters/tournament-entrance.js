@@ -48,12 +48,30 @@ export const CH1_EVE_NOTES = Object.freeze({
   drill: "昨夜さらった工程、焦るなよ。目の前の一人に届けてこい",
 });
 
+// 透過原画が届いた層だけ文字と置き換える。通信中や欠番でも名乗りは読める。
+function ticketImage(name) {
+  return el("img", {
+    src: `img/ui/tournament-show/entry-${name}.webp`, alt: "", draggable: "false",
+    onload: e => e.currentTarget.parentElement?.classList.add("printed"),
+    onerror: e => e.currentTarget.remove(),
+  });
+}
+
+function entryTag(number) {
+  return el("span.ent-tag", [
+    el("span.ent-tag-label", [el("span", { text: "エントリー" }), el("span", { text: "ナンバー" })]),
+    ticketImage("ticket"),
+    el("b.ent-number", [String(number), number <= 4 ? ticketImage(`digit-${number}`) : null]),
+  ]);
+}
+
 /** cards を順に1枚ずつ出す。chapter を渡すと ENTRANCE_CARDS の章のカードを使う。heroNote ははじめのカードの一言を差し替える。 */
 export async function playEntrance(chapterOrCards, { auto = Boolean(window.__remake?.craftTest?.auto || vnTest.turbo), heroNote = null } = {}) {
   const cards = Array.isArray(chapterOrCards) ? chapterOrCards : ENTRANCE_CARDS[chapterOrCards];
   if (!cards?.length || !layers?.fx) return;
   const host = el("div.entrance");
   // 初対面の既読や台詞を動かさず、設定で選ばれた人物絵・背景だけを再利用する。
+  const tags = cards.map((_, index) => entryTag(index + 1));
   const cast = cards.map(c => introSources(c.face || c.id));
   const ready = cast.map(({ p, background }) => Promise.all([
     p && imageReady(p.src), background && imageReady(background),
@@ -69,7 +87,7 @@ export async function playEntrance(chapterOrCards, { auto = Boolean(window.__rem
       const card = el(`div.ent-card${me ? ".me" : ""}`, { dataset: { art: graphic ? "graphic" : "classic" } }, [
         background ? el("img.ent-backdrop", { src: background, alt: "", onerror: e => e.currentTarget.remove() }) : null,
         p ? el("img.ent-portrait", { src: p.src, alt: "", onerror: e => e.currentTarget.remove() }) : null,
-        el("span.ent-tag", { text: `エントリーナンバー${index + 1}` }),
+        tags[index],
         el("div.ent-meta", [
           el("div.ent-ring", { text: c.ring }),
           el("div.ent-name", { text: me ? "はじめ" : (NAME[c.id] || realName(c.face || c.id)) }),

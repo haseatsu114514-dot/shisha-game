@@ -5,9 +5,8 @@ import { buyKeepsake } from "../core/keepsakes.js";
 import { addMoney } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { DB, displayName } from "../core/data.js";
-import { chooseBooth, finishBooth, receivePrint } from "../core/purikura-doodle.js";
-import { printedPurikura } from "../core/purikura-photo.js";
-import { PURIKURA_PHOTOS } from "../core/purikura-data.js";
+import { purikuraPhoto } from "../core/purikura-photo.js";
+import { PURIKURA_PHOTOS, purikuraKey } from "../core/purikura-data.js";
 import { modal } from "../core/ui.js";
 import { spotPeople } from "../daily/spot-people.js";
 import { play } from "../vn/engine.js";
@@ -76,9 +75,16 @@ export function purikuraGuests(spot, extra = []) {
     && person.id !== "ageha" && !!DB.characters[person.id] && !purikuraJudge(person.id));
 }
 
-function recordPhoto(photo) {
-  const history = state.flags._ageha_purikura_history ||= [];
-  history.push({ chapter: state.chapter, day: state.day, chapterDay: chapterDay(state), slot: state.slot, ...photo });
+/**
+ * 2回目からの撮影の「自分でらくがき」（VPO22・2026-11-28 オーナー「自分でスマホのキーボードで文字入れたり好きにやれるようにもしたい」）。
+ * グリーンバックで抜いた写真（core/purikura-data.js の purikuraKey）がある撮影だけ。背景を選び、描く（VPO24）。描く画面は、選んだ時だけ読み込む（daily/purikura-studio.js）。
+ * 返す値: 描いた落書き（core/purikura-doodle.js）、おまかせに戻したら null、撮影の途中で場面が変わったら false。
+ */
+async function drawDoodle(photo, title, mode, initial, live, signal) {
+  const { openPurikuraStudio } = await import("../daily/purikura-studio.js");
+  if (!live()) return false;
+  const doodle = await openPurikuraStudio({ photo, title, initial, signal, owned: state.owned, autoLabel: mode === "solo" ? "おまかせに戻す" : "あげはにおまかせ" });
+  return live() ? doodle : false;
 }
 
 async function revisitPurikura(background, spot, { live, read, stamp, signal, extra = [] }) {
@@ -132,25 +138,29 @@ async function revisitPurikura(background, spot, { live, read, stamp, signal, ex
     const firstSolo = mode === "solo" && !(state.flags._ageha_purikura_history || []).some(row => row?.mode === "solo");
     const scene = ryuji ? "remake_ch2_purikura_ryuji" : pick?.trio ? "remake_ch2_purikura_trio"
       : mode === "solo" && !firstSolo ? "remake_ch2_purikura_solo_again" : `remake_ch2_purikura_${mode}`;
+    if (!await read(scene)) return false;
     const cg = ryuji ? "cg_ryuji_purikura" : pick?.cg || null;
-    const photo = { people, mode, ...(cg ? { cg } : {}) };
-    const nameFor = id => displayName(id === "minto" ? "oneesan" : id, state);
-    const setup = await chooseBooth(photo, state.owned || [], nameFor, signal);
-    if (!live() || !setup || !await read(scene)) return false;
-    const design = await finishBooth(photo, setup, nameFor, signal);
-    if (!live() || design === null) return false;
-    if (design) photo.design = design;
     const title = mode === "solo" ? (firstSolo ? "一人で初挑戦！" : "今日のソロぷり") : pick?.trio ? "3人ぷり☆" : "今日のプリクラ";
-    const received = design ? await receivePrint(title, photo, nameFor, signal) : await modal({ title, signal, body: printedPurikura(photo, nameFor), options: [
-      { label: "受け取る（400円）", value: true, test: "purikura-receive", primary: true },
-    ] });
+    // 受け取る前に、おまかせの落書き（今の写真）を見てから「自分でらくがき」もできる（VPO22・落書き無しの写真がある撮影だけ。初めてのギャルプリは今のまま）
+    const clean = purikuraKey(cg);
+    let doodle = null, received;
+    for (;;) {
+      received = await modal({ title, signal, body: purikuraPhoto(cg, people, mode, id => displayName(id === "minto" ? "oneesan" : id, state), { doodle }), options: [
+        { label: "受け取る（400円）", value: true, test: "purikura-receive", primary: true },
+        ...(clean ? [{ label: doodle ? "らくがきし直す" : "自分でらくがき", value: "doodle", test: "purikura-doodle-self" }] : []),
+      ] });
+      if (!live() || received !== "doodle" || !clean) break;
+      const drawn = await drawDoodle(clean, title, mode, doodle, live, signal);
+      if (drawn === false) return false;
+      doodle = drawn;
+    }
     if (!live() || received !== true) return false;
     if (mode === "guest" && !purikuraGuests(spot, extra).some(person => person.id === people[1])) return false;
     if (!canPay()) return shortage();
     if (ryuji && !buyKeepsake("ryuji_purikura")) return false;
-    if (design) photo.printId = Array.from(crypto.getRandomValues(new Uint32Array(2)), n => n.toString(16).padStart(8, "0")).join("");
     addMoney(-REVISIT_FEE);
-    recordPhoto(photo);
+    const history = state.flags._ageha_purikura_history ||= [];
+    history.push({ chapter: state.chapter, day: state.day, chapterDay: chapterDay(state), slot: state.slot, people, mode, ...(cg ? { cg } : {}), ...(doodle ? { doodle } : {}) });
   }
   state.flags._ageha_purikura_offer = stamp;
   save();

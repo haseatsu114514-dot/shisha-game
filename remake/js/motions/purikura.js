@@ -2,7 +2,8 @@
 // 撮影スタート → 3連写（ふつう・笑顔・あげはが寄ってはじめがびっくり）→ 盛り → 落書き → 印刷 → ハサミで半分こ。
 // a は撮影が主役（毎回3・2・1、盛りを選ぶ）、b は落書きとシールが主役（撮影はさっと、スタンプ多め）。?movar=b で比べる。
 // 落書きで、あげはのペンの線だけがゆっくりよれ、途中でペンを置いてスタンプに持ち替える（手の震え。演出の中では誰も触れない）。
-// 撮影から落書きまでは立ち絵の胸から上で写す。最後に出てくるシールは、半分こ用の縦長シール（cg_ch2_ageha_purikura_strip）があれば2枚並べて、
+// 撮影（3連写・盛り）は立ち絵で写す。落書きからは、印刷される半分こシールの上のコマの落書き無しの版（img/cgs/purikura-clean/）に切り替え、
+// その上にあげはが描く（2026-11-28 オーナー「らくがきの時点で立ち絵ではなく文字が入ってない版のそのプリにする」・要望台帳 VPO25）。最後に出てくるシールは、半分こ用の縦長シール（cg_ch2_ageha_purikura_strip）があれば2枚並べて、
 // 無ければ #921 で作った4コマのCG（cg_ageha_first_purikura）を、どちらも無ければ立ち絵の写真と落書きの2×2を使う（オーナー決定 2026-10-24）。
 // DOMの初期値は「撮り終えた画面」。動きは最初にまとめて予約し、fill で途中の見た目を作る。
 import { el, sleep } from "../core/util.js";
@@ -21,6 +22,8 @@ export const PURIKURA_CG = "cg_ageha_first_purikura";
 export const PURIKURA_BGM = ["bgm_purikura", "bgm_purikura_b", "bgm_purikura_d"];
 // 半分こ用の縦長シール1列分（640×1080・CG制作プラン #16）。あれば同じ絵を2枚並べて真ん中で切る（#15より優先）
 export const PURIKURA_STRIP = "cg_ch2_ageha_purikura_strip";
+// 半分こシールの落書き無しの版（落書きの場面で写す。asset_sources/purikura-greenback-20261128/generate.py strip）
+export const PURIKURA_STRIP_CLEAN = `img/cgs/purikura-clean/${PURIKURA_STRIP}.webp`;
 // 印刷したシールの大きさ（場面の座標）。1列分×2、4コマ（960×1440）、代用は写真の2×2
 const SHEET = { strip: { w: 616, h: 520, top: 100 }, cg: { w: 374, h: 560, top: 80 }, sprites: { w: 534, h: 480, top: 120 } };
 const PW = 640, PH = 480; // 写真の大きさ（落書きの座標もこの画素）
@@ -220,7 +223,9 @@ function build(art, plan, L = LAYOUT.land) {
   const ink = doodles(plan.stamps);
   const pinkPen = el("div.mo-pk-pen.pink"), goldPen = el("div.mo-pk-pen.gold");
   const count = ["3", "2", "1"].map((n) => el("span.mo-pk-count", { text: n }));
-  const view = el("div.mo-pk-view", L.machine ? { style: { left: `${L.view.x}px`, top: `${L.view.y}px` } } : {}, [...poses, ink.layer, ...count, pinkPen, goldPen]);
+  // 落書きの場面で写す、印刷されるシールの上のコマ（落書き無し）。無い時は立ち絵の写真のまま
+  const paper = art.clean ? el("div.mo-pk-photo.mo-pk-paper", { style: { backgroundImage: `url("${art.clean}")` } }) : null;
+  const view = el("div.mo-pk-view", L.machine ? { style: { left: `${L.view.x}px`, top: `${L.view.y}px` } } : {}, [...poses, paper, ink.layer, ...count, pinkPen, goldPen]);
   const thumbs = POSES.map((p, i) => { const s = L.slot(i); return mini(shot(p), s.w, s.h, ".mo-pk-thumb"); });
   thumbs.forEach((t, i) => Object.assign(t.style, { left: `${L.slot(i).x}px`, top: `${L.slot(i).y}px` }));
   const menu = (plan.menu ? ["ナチュラル", "盛り", "超盛り"] : []).map((t, i) => el(`div.mo-pk-mori-btn${i === 2 ? ".pick" : ""}`, { text: t, style: L.menu(i) }));
@@ -251,7 +256,7 @@ function build(art, plan, L = LAYOUT.land) {
   const bg = el("div.mo-pk-bg");
   const twinkles = L.twinkles.map(([x, y]) =>
     el("i.mo-pk-twinkle", { style: { left: `${x}px`, top: `${y}px` } }));
-  return { size, bg, twinkles, machine, head, labels, view, poses, glow, ink, pinkPen, goldPen, count, thumbs, menu, tools, pick, nail, sheet, left, right, cutLine, shine, scissors, blades: [bladeL, bladeR], flash };
+  return { size, bg, twinkles, machine, head, labels, view, poses, paper, glow, ink, pinkPen, goldPen, count, thumbs, menu, tools, pick, nail, sheet, left, right, cutLine, shine, scissors, blades: [bladeL, bladeR], flash };
 }
 
 /** 点列に沿って動く（ペン先）。WAAPIの位置キーを長さに合わせて並べる */
@@ -318,6 +323,8 @@ function schedule(ui, plan, L = LAYOUT.land) {
     at(ui.menu[2], [{ transform: "none", boxShadow: "0 0 0 0 #ff3d9a00" }, { transform: "scale(1.12)", boxShadow: "0 0 0 10px #ff3d9a66" }, { transform: "scale(1.06)", boxShadow: "0 0 0 6px #ff3d9a55" }], 260, glowAt - 60, { fill: "forwards" });
   }
   ui.menu.forEach((b) => at(b, [{ opacity: 1 }, { opacity: 0 }], 200, P.doodle - 220, { fill: "forwards" }));
+  // 落書きの場面: 撮った写真（立ち絵）から、印刷されるシールの写真（落書き無し）へ白く光って切り替える
+  if (ui.paper) at(ui.paper, [{ opacity: 0, filter: "brightness(1.8)" }, { opacity: 1, filter: "brightness(1)" }], 320, P.doodle - 160);
   // 盛る前の3枚目（明るさなし）→ 盛ったあと
   const third = ui.poses[2];
   at(third, [{ filter: "none" }, { filter: "brightness(1.1) saturate(1.22) contrast(1.03)" }], 520, glowAt, { easing: E.out });
@@ -380,12 +387,13 @@ export async function shoot(variant = "a") {
   const plan = PLANS[variant] || PLANS.a;
   const strip = cgUrl(PURIKURA_STRIP);
   const sheetCg = strip ? null : cgUrl(PURIKURA_CG);
-  const art = strip ? { kind: "strip", url: strip } : sheetCg ? { kind: "cg", url: sheetCg } : { kind: "sprites", url: null };
-  const urls = [...new Set([...POSES.flatMap((p) => [portraitInfo("hajime", p.hajime, "classic")?.src, portraitInfo("ageha", p.ageha, "classic")?.src]), art.url].filter(Boolean))];
+  const art = strip ? { kind: "strip", url: strip, clean: PURIKURA_STRIP_CLEAN } : sheetCg ? { kind: "cg", url: sheetCg } : { kind: "sprites", url: null };
+  const urls = [...new Set([...POSES.flatMap((p) => [portraitInfo("hajime", p.hajime, "classic")?.src, portraitInfo("ageha", p.ageha, "classic")?.src]), art.url, art.clean].filter(Boolean))];
   // 画像と並行して用意する。取得に失敗しても撮影を止めない。
   void preloadBgm(music);
   const ready = await Promise.all(urls.map((u) => imageReady(u, 3000)));
   const artReady = art.url && ready[urls.indexOf(art.url)];
+  if (art.clean && !ready[urls.indexOf(art.clean)]) delete art.clean; // 読めなければ落書きの場面も立ち絵の写真のまま
   if (state !== owner) return;
   await stagePlay("purikura", async (node) => {
     if (state !== owner) return;

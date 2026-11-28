@@ -656,6 +656,10 @@
       "dialogue_id": "ch3_outing_enmaku_notes",
       "lines": [
         {
+          "type": "sfx",
+          "id": "page"
+        },
+        {
           "speaker": "",
           "text": "路地の「煙幕」。開店前の店で、綾取がノートをめくっていた。"
         },
@@ -1258,6 +1262,10 @@
             "text": "てつこは目で追うだけで、動かない。……と思ったら、前足が一度だけ伸びた。"
           },
           {
+            "type": "sfx",
+            "id": "mew"
+          },
+          {
             "speaker": "tetsuko",
             "face": "surprise",
             "text": "にゃっ"
@@ -1300,6 +1308,10 @@
         {
           "speaker": "",
           "text": "そのまま足元まで来て、すねに頭をこすりつける。"
+        },
+        {
+          "type": "sfx",
+          "id": "mew"
         },
         {
           "speaker": "tetsuko",
@@ -3795,6 +3807,10 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（同じ店でも、雨の日は段取りが一個ずつずれるんだな）"
+        },
+        {
+          "type": "sfx",
+          "id": "doorbell"
         },
         {
           "speaker": "",

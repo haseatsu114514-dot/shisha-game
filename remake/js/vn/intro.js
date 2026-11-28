@@ -134,6 +134,12 @@ export async function playIntro(id, {
     const host = illustratedIntro(id, variant, intro, nameSource, p, art, background);
     host.dataset.art = graphic ? "graphic" : "classic"; // ひより専用の明るい配色は旧絵柄（白い背景）だけ
     const motion = motionOf(intro);
+    let revealed = false;
+    const reveal = () => {
+      if (revealed) return;
+      revealed = true;
+      SE.introImpact?.({ brief });
+    };
     // 立ち絵からの「変身」のつなぎ（グラフィック絵柄のときだけ。既定 none は今まで通り）
     const standingRect = !brief && graphic ? measureStanding(id, layers.fx) : null;
     const transition = createTransition(!brief && graphic ? (override.transition ?? config.introTransition ?? "none") : "none", {
@@ -141,17 +147,17 @@ export async function playIntro(id, {
       standing: standingRect && standingInfo ? { rect: standingRect, p: standingInfo } : null,
       colors: { color: art.color, secondary: art.secondary, shadow: art.shadow },
       mount: () => mountIntro(host, layers.fx, { brief }),
+      onReveal: reveal,
     });
     const animations = [];
     let unmount = null;
     try {
       unmount = await transition.enter();
       const twoLines = layoutIntro(host, id, variant, intro);
-      if (!brief) animations.push(...animateIntro(host, id, motion, { sound: (cue) => introSound(motion, cue), skip: transition.skip }));
+      if (!brief) animations.push(...animateIntro(host, id, motion, { skip: transition.skip }));
       host.classList.remove("ci-staged");
       appear();
-      if (!brief) introSound(motion, "appear");
-      await holdIntro(host, { brief, motion, twoLines, exit: transition.exit ? () => transition.exit() : null });
+      await holdIntro(host, { brief, motion, twoLines, reveal, exit: transition.exit ? () => transition.exit() : null });
     } finally {
       animations.forEach((animation) => animation.cancel());
       transition.cancel();
@@ -187,28 +193,23 @@ export async function playIntro(id, {
   const unmount = mountIntro(host, layers.fx, { brief });
   try {
     appear();
-    if (!brief) SE.select();
-    await holdIntro(host, { brief, motion: motionOf(intro), legacy: true });
+    await holdIntro(host, { brief, motion: motionOf(intro), legacy: true, reveal: () => SE.introImpact?.({ brief }) });
   } finally {
     unmount();
   }
 }
 
-/** 型ごとの音。余韻は場面のBGMだけにする */
-function introSound(motion, cue) {
-  if (cue === "reduced") return SE.select();
-  if (motion === "bounce" && cue === "appear") { SE.select(); setTimeout(() => SE.select(), 120); }
-  if (motion === "sharp" && cue === "enter") SE.whoosh();
-  if (motion === "still" && cue === "name") SE.hit();
-}
-
 /** 一言が2行の時は400ms長く見せる */
 export const introHoldMs = (motion, twoLines = false) => (MOTIONS[motion] || MOTIONS.sharp).hold + (twoLines ? 400 : 0);
 
-async function holdIntro(host, { brief = false, motion = "sharp", twoLines = false, legacy = false, exit = null } = {}) {
-  if (brief) return sleep(600);
+async function holdIntro(host, { brief = false, motion = "sharp", twoLines = false, legacy = false, reveal, exit = null } = {}) {
+  if (brief) {
+    reveal();
+    return sleep(600);
+  }
   await sleep(30);
   host.classList.add("in");
+  reveal();
   const onTap = (e) => { e.preventDefault(); e.stopPropagation(); };
   const onKey = (e) => {
     if (!["Enter", " ", "Control"].includes(e.key)) return;

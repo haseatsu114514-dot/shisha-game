@@ -186,7 +186,7 @@
         {
           "speaker": "adam",
           "face": "serious",
-          "text": "ふむ。俺は、これを齧った瞬間の、皮が弾ける音を煙で出したい"
+          "text": "ふむ。俺は、これを齧った瞬間の張りつめた気配──皮が弾ける音を、アニスの立ち上がりで出したい"
         },
         {
           "speaker": "hajime",
@@ -196,7 +196,7 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "まだ一度も出せていない。昨夜の炭は、皮の手前で止まった……"
+          "text": "まだ一度も出せていない。昨夜の炭は、その一拍手前で止まった……"
         },
         {
           "speaker": "",
@@ -258,7 +258,7 @@
           "condition_type": "flag",
           "flag": "_minto_identity_revealed",
           "next_true": "familiar",
-          "next_false": ""
+          "next_false": "unfamiliar"
         },
         {
           "speaker": "minto",
@@ -396,6 +396,18 @@
             "face": "normal",
             "text": "tonariで会う時と同じ服ですね。……今日はよろしくお願いします"
           }
+        ],
+        "unfamiliar": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（お店のときと雰囲気が全然違う……あれ、どこかで見かけたような気もするけど、気のせいか）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あ、ごめん、ちょっとびっくりして。……今日はよろしくお願いします"
+          }
         ]
       }
     },
@@ -504,6 +516,10 @@
         "topic": "新作の試飲"
       },
       "lines": [
+        {
+          "type": "sfx",
+          "id": "doorbell"
+        },
         {
           "speaker": "",
           "face": "",
@@ -669,7 +685,7 @@
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……取材、でした。今日のは、……たぶん"
+          "text": "……取材、でした。今日のは……たぶん"
         },
         {
           "speaker": "",
@@ -1121,6 +1137,10 @@
       },
       "lines": [
         {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "ドアベルが鳴った。入ってきた瞬間、店の空気が少しだけ張り詰めた。"
@@ -1148,7 +1168,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "…はいっ。お任せで承ります"
+          "text": "……はいっ。お任せで承ります"
         },
         {
           "speaker": "hajime",
@@ -1168,7 +1188,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "それから30分、一言も喋らなかった。"
+          "text": "それから三十分、一言も喋らなかった。"
         },
         {
           "speaker": "",
@@ -1183,7 +1203,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（…炎の歌……？）"
+          "text": "（……炎の歌……？）"
         },
         {
           "speaker": "",
