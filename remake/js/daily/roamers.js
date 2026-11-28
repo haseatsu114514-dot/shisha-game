@@ -80,9 +80,11 @@ export const ROAMERS = Object.freeze([
   { id: "kuraudo", chapters: [2], shop: "ch2_rei", at: greetedAgeha("kuraudo", "_kuraudo_melty_greeting"), ready: metStory("kuraudo"), bond: true },
   { id: "rio", chapters: [1, 2], at: shishaShop, ready: metStory("rio"), bond: true },
   { id: "tsumugi", chapters: [1, 2], at: spot => shishaShop(spot) || spot.id === "cafe", ready: metStory("tsumugi"), bond: true },
-  // 第3章の東京。ヴォルクは市場調査（自分の店「鉄の煙」には出ない）、ましろちゃんは休日（働いている mukai には出ない）、
-  // エミルは全国大会で名前を知るまで伏せる（台詞は met で分岐）
-  { id: "volk", chapters: [3], at: spot => tokyoShop(spot) && spot.place !== "volk", ready: metStory("volk"), bond: true },
+  // 第3章の東京。店を持つライバル（ヴォルク・綾取・スティーブ）は、自分の店の定休日か早じまいの夜だけ、東京のよその店に出る。
+  // ましろちゃんは休日（働いている mukai には出ない）、エミルは全国大会で名前を知るまで伏せる（台詞は met で分岐）
+  { id: "volk", chapters: [3], shop: "ch3_tokyo_volk", at: spot => tokyoShop(spot) && spot.place !== "volk", ready: metStory("volk"), bond: true },
+  { id: "ayatori", chapters: [3], shop: "ch3_tokyo_enmaku", at: spot => tokyoShop(spot) && spot.place !== "enmaku", ready: metStory("ayatori"), bond: true },
+  { id: "steve", chapters: [3], shop: "ch3_tokyo_steve", at: spot => tokyoShop(spot) && spot.place !== "steve", ready: metStory("steve"), bond: true },
   { id: "mashiro", chapters: [3], at: spot => tokyoShop(spot) && spot.place !== "mukai", ready: metStory("mashiro"), bond: true },
   { id: "emil", chapters: [3], at: tokyoShop, ready: () => true },
   // 第5章の地元。ひよりは自分の店を持たないので、仕事帰りによその店に居合わせる（BLC08。第1・2章の相席 daily/hiyori.js の続き）。
@@ -98,6 +100,9 @@ const BY_ID = Object.fromEntries(ROAMERS.map(entry => [entry.id, entry]));
 const extraSources = [];
 export function addRoamerSpots(source) { if (!extraSources.includes(source)) extraSources.push(source); }
 const chapterSpots = () => [...allSpots(), ...extraSources.flatMap(source => source() || [])];
+// 店を持つ人の、自分の店（地図に出ていない日もある。東京のライバルの店は用のある日だけ地図に出る）。章のモジュールが登録する
+const shopSources = [];
+export function addRoamerShops(source) { if (!shopSources.includes(source)) shopSources.push(source); }
 
 // 検査用: 店を訪ねる他の検査で会話の流れを変えないよう、browser の support.mjs が既定で "off" にする。
 // 居合わせる人の検査（roamers.mjs）だけが外す。遊ぶ時は使わない。
@@ -129,7 +134,8 @@ function busySpots(value) {
   return busy;
 }
 
-const ownShopSpot = (entry, spots) => entry.shop ? spots.find(spot => spot?.id === entry.shop) || null : null;
+const ownShopSpot = (entry, spots) => entry.shop
+  ? spots.find(spot => spot?.id === entry.shop) || shopSources.flatMap(source => source() || []).find(spot => spot?.id === entry.shop) || null : null;
 /** 店の休みの日（定休日・臨時休業）か。営業時間外（喫茶の夜など）は休みに数えない。 */
 const shopOff = (spot, value) => isClosedDay(spot, value) || isTemporaryClosed(spot);
 /** 今夜その店を早じまいにしてよいか。新しい話（地図の「！」）・今日の約束・第1章の配達が待っている店は閉めない。 */
