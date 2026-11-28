@@ -2,6 +2,8 @@
 // 確かめること: タイトル→会話（本編の会話の箱が縦のテロップと同じ比の幅になり、2行ずつ送れる）、返事の中継、
 // 地図（左右で隣の店・一覧・決定で店に入る）、tonari の行動選び、LIME・MENU のシート、心得の盤（縦の外枠へ移して十字キーと丸ボタンで灯す・決定）、
 // 登場カットインの縦のポスター、シーシャ作りの詰め方・蒸らし時間は縦の作る場面（外枠の札・ボタンを本編へ中継して工程が進む・VPN30）、
+// 水入れ・穴あけ・炭焼きも縦の作る場面（外枠の長押しを本編のボタンへ pointerdown／pointerup で中継し、炭は押した瞬間に本編の炭を取る。
+// 工程の結果の札も外枠で閉じる・VPN31）、
 // まだ縦にしていない場面（シーシャ作りのほかの工程）は回転案内、横持ちは旧版、様式を替えると何も残らない、
 // 第2〜5章の日常（朝の小窓・地図・駅から隣町・場面カード・東京の地図の小窓・第5章の地図）も縦の外枠のまま。
 // 自動操作のブラウザの既定は旧版なので ?look=vertical を付けて選ぶ。
@@ -570,6 +572,220 @@ await suite("look_vertical", async (check) => {
     await page.locator(t("vt-timer-start")).tap();
     await page.waitForFunction(() => window.timerDone === true || window.vtCraftError);
     assert.deepEqual(await page.evaluate(() => window.vtCraftError || { seconds: window.vtCraft.steamSeconds, min: window.vtCraft.steamMin }), { seconds: 190, min: 190 / 60 });
+  }, { ...TALL, pageEntry: entry });
+
+  /** 作業台を開いて、本編の工程の関数を走らせる（自動の craftTest は使わない）。終わると window.vtStepDone、失敗は window.vtCraftError。 */
+  const runCraftStep = (page, { module, fn, mode = "tutorial", setup = null }) => page.evaluate(async ({ module, fn, mode, setup }) => {
+    try { localStorage.removeItem("suien_step_intro"); } catch {}
+    const core = await import("./js/core/state.js");
+    const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 1, day: 2, slot: 0 });
+    (await import("./js/core/ui.js")).clearScreen();
+    const { newSession, openBench } = await import("./js/craft/session.js");
+    const cs = newSession(mode); window.vtCraft = cs;
+    if (setup) Object.assign(cs, setup);
+    openBench(cs, {});
+    window.vtStepDone = false;
+    (await import(module))[fn](cs).then(() => { window.vtStepDone = true; }, (error) => { window.vtCraftError = String(error.stack || error); });
+  }, { module, fn, mode, setup });
+  /** 外枠のボタンを長押しする（pointerdown → 待つ → pointerup）。during は押している間に確かめる関数。 */
+  async function holdShell(page, id, ms, during = null) {
+    const box = await page.locator(t(id)).boundingBox();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    try {
+      if (during) await during();
+      await page.waitForTimeout(ms);
+    } finally { await page.mouse.up(); }
+  }
+  /** 作る場面のまま（外枠の全画面・回転案内なし）。 */
+  async function assertCraftShell(page, label) {
+    const shell = await page.evaluate(() => ({
+      scene: window.__verticalLook?.scene?.(), layout: document.querySelector(".vt-shell").dataset.layout,
+      hint: getComputedStyle(document.getElementById("rotate-hint")).display, guard: document.documentElement.dataset.rotateGuard || "",
+    }));
+    assert.deepEqual(shell, { scene: "craft", layout: "full", hint: "none", guard: "" }, `${label}: the craft scene fills the shell, without the rotate hint`);
+  }
+
+  await check("craft-water-in-the-shell", async (page) => {
+    // 水入れ（VPN31）: 縦の作る場面の流し台とボトル。外枠の「注ぐ」「こぼす」の長押しを本編のボタンへ pointerdown／pointerup で中継し、
+    // 本編の水量（毎フレーム読む）がボトルの水面になる。「決定」で本編の水入れが終わり、水量が cs.water に入る
+    await waitScene(page, "title");
+    await runCraftStep(page, { module: "./js/craft/water-view.js", fn: "stepWater" });
+    await waitScene(page, "craft");
+    await assertCraftShell(page, "water intro");
+    // チュートリアルの初回の説明（部品の前）も、水入れの画面のまま写す
+    await page.locator(t("vt-craft-guide")).waitFor();
+    assert.equal(await page.evaluate(() => document.querySelector(".vtc").dataset.step), "water");
+    await page.locator(t("vt-craft-guide-close")).tap();
+    // 説明を閉じると本編が水入れの部品を出し、外枠のボタンが押せるようになる
+    await page.locator(`#screen ${t("water-pour")}`).waitFor();
+    await page.locator(`${t("vt-water-pour")}:not([disabled])`).waitFor();
+    await page.locator(t("vt-craft-guide")).waitFor({ state: "hidden" });
+    const level = () => page.evaluate(() => Number(document.querySelector('#screen [data-test="water-meter"]').getAttribute("aria-valuenow")));
+    const first = await page.evaluate(() => ({
+      now: document.querySelector('[data-test="vt-craft-steps"] li.now')?.dataset.step, zone: document.querySelector('[data-test="vt-water-pic"]').dataset.zone,
+      sink: document.querySelector(".vtc-sink").getAttribute("src"), glass: document.querySelector(".vtc-glass").getAttribute("src"),
+      buttons: ["drain", "pour", "ok"].map((key) => !!document.querySelector(`[data-test="vt-water-${key}"]`)),
+    }));
+    assert.equal(first.now, "pack", "water is part of the packing step");
+    assert.equal(first.zone, "empty", "the bottle starts empty like the game");
+    assert(first.sink.endsWith("img/ui/vertical-craft/ui-sink-faucet.webp") && first.glass.endsWith("img/ui/vertical-craft/ui-bottle-open.webp"), JSON.stringify(first));
+    assert.deepEqual(first.buttons, [true, true, true]);
+    assert.equal(await level(), 0);
+    // 「注ぐ」の長押し: 押している間だけ本編が注ぎ、離すと止まる
+    await holdShell(page, "vt-water-pour", 2700, async () => {
+      await page.waitForFunction(() => document.querySelector('#screen [data-test="water-step"]').dataset.flow === "pour"
+        && document.querySelector('[data-test="vt-water-pour"]').classList.contains("pressing"));
+    });
+    await page.waitForFunction(() => document.querySelector('#screen [data-test="water-step"]').dataset.flow === "stopped");
+    const poured = await level();
+    assert(poured > 40 && poured < 60, `poured into the band: ${poured}`);
+    await page.waitForTimeout(300);
+    assert.equal(await level(), poured, "the water stops when the button is let go");
+    await page.waitForFunction(() => document.querySelector('[data-test="vt-water-pic"]').dataset.zone
+      === document.querySelector('#screen [data-test="water-status"]').dataset.band);
+    // 「こぼす」の長押し: 本編の水量が減る
+    await holdShell(page, "vt-water-drain", 500, async () => {
+      await page.waitForFunction(() => document.querySelector('#screen [data-test="water-step"]').dataset.flow === "drain");
+    });
+    await page.waitForFunction(() => document.querySelector('#screen [data-test="water-step"]').dataset.flow === "stopped");
+    const drained = await level();
+    assert(drained < poured && drained > poured - 5, `drained a little: ${poured} → ${drained}`);
+    await assertCraftShell(page, "water");
+    // 「決定」で本編の水入れが終わり、確定した水量が cs.water に入る
+    await page.locator(t("vt-water-ok")).tap();
+    await page.waitForFunction(() => window.vtStepDone === true || window.vtCraftError);
+    const water = await page.evaluate(() => window.vtCraftError || window.vtCraft.water);
+    assert.equal(typeof water, "number", String(water));
+    assert(Math.abs(water * 100 - drained) < 0.01, `cs.water is the game's level: ${water} / ${drained}`);
+  }, { ...TALL, pageEntry: entry });
+
+  await check("craft-holes-in-the-shell", async (page) => {
+    // 穴あけ（VPN31）: 縦の作る場面のアルミと「刺す」。配置の札と決定、「刺す」の長押し（本編の「穴を開ける」へ押し始めと離すを中継。
+    // 押す長さの判定・穴の位置・テンプレート・制限時間は本編のまま）、桜井版の「次のリングへ」「結果へ」、結果の札まで外枠で進める
+    await waitScene(page, "title");
+    await runCraftStep(page, { module: "./js/craft/holes.js", fn: "runHoles" });
+    await waitScene(page, "craft");
+    await assertCraftShell(page, "holes intro");
+    await page.locator(t("vt-craft-guide")).waitFor();
+    assert.equal(await page.evaluate(() => document.querySelector(".vtc").dataset.step), "holes");
+    await page.locator(t("vt-craft-guide-close")).tap();
+    // 配置選び: 本編の札を写し、決定で本編の「穴あけを始める」へ
+    await page.locator(`${t("vt-holes-start")}:not([disabled])`).waitFor();
+    const choose = await page.evaluate(() => ({
+      shell: [...document.querySelectorAll(".vtc-ht-card")].map((card) => [card.dataset.live, card.getAttribute("aria-pressed")]),
+      live: [...document.querySelectorAll("#screen .ht-option")].map((node) => [node.dataset.test, node.getAttribute("aria-pressed")]),
+      planned: document.querySelectorAll(".vtc-foil-marks .vtc-todo").length, liveDots: document.querySelectorAll("#screen .ht-preview .foil-marker.planned").length,
+      coach: document.querySelector(".vtc-say-text").textContent, now: document.querySelector('[data-test="vt-craft-steps"] li.now')?.dataset.step,
+    }));
+    assert(choose.shell.length > 0, JSON.stringify(choose));
+    assert.deepEqual(choose.shell, choose.live, "the template cards are the game's");
+    assert(choose.planned > 0 && choose.planned === choose.liveDots, `the planned marks are drawn on the foil ${JSON.stringify(choose)}`);
+    assert.equal(choose.now, "pack");
+    assert.equal(choose.coach, "配置を選んで、始めろ");
+    await page.locator(t("vt-holes-start")).tap();
+    // 始まりの 3・2・1 も外枠の絵の上に出る。数え終わるまで「刺す」は本編が受けない
+    await page.locator(`#screen ${t("hole-punch")}`).waitFor();
+    await page.locator(`${t("vt-craft-count")}:not([hidden])`).waitFor();
+    await page.waitForFunction(() => !document.querySelector("#fx > .countdown"));
+    await page.locator(`${t("vt-holes-poke")}:not([disabled])`).waitFor();
+    await assertCraftShell(page, "holes");
+    let pressed = null;
+    for (let i = 0; i < 60; i++) {
+      const view = await page.evaluate(() => {
+        const pill = document.querySelector('[data-test="vt-holes-next"]');
+        return { result: !document.querySelector('[data-test="vt-craft-result"]').hidden, pill: pill.hidden ? "" : pill.textContent,
+          live: document.querySelectorAll('#screen [data-test="foil"] .foil-holes > .foil-hole').length };
+      });
+      if (view.result) break;
+      if (view.pill) {
+        // 桜井版: リングが埋まると「次のリングへ」、全部開けると「結果へ」（本編で押せる時だけ右上に出る）
+        await page.locator(t("vt-holes-next")).tap();
+        if (view.pill === "結果へ") break;
+        await page.waitForFunction(() => document.querySelector('[data-test="vt-holes-next"]').hidden);
+        continue;
+      }
+      // 「刺す」を約0.2秒押す（本編の小穴の長さ）。押している間は本編の針も押されている
+      await holdShell(page, "vt-holes-poke", 200, async () => {
+        pressed ??= await page.evaluate(() => {
+          const cursor = document.querySelector('#screen [data-test="hole-needle"]');
+          return { live: cursor.classList.contains("pressing"), shell: document.querySelector('[data-test="vt-holes-poke"]').classList.contains("pressing") };
+        });
+      });
+      await page.waitForFunction((before) => document.querySelectorAll('#screen [data-test="foil"] .foil-holes > .foil-hole').length > before, view.live);
+    }
+    assert.deepEqual(pressed, { live: true, shell: true }, "holding the shell's button holds the game's punch");
+    // 結果の札: 本編の結果の札を写し、「確認して次の工程へ」で本編の工程が終わる。開けた穴は絵に残る
+    await page.locator(`${t("vt-craft-result")}:not([hidden])`).waitFor();
+    const result = await page.evaluate(() => ({
+      title: document.querySelector(".vtc-result-title").textContent, live: document.querySelector("#screen .result-card .rc-title").textContent,
+      next: document.querySelector('[data-test="vt-craft-result-next"]').textContent, drawn: document.querySelectorAll(".vtc-foil-marks .vtc-hole").length,
+      pips: document.querySelectorAll(".vtc-pip.done, .vtc-pip.good").length,
+    }));
+    assert.equal(result.title, result.live);
+    assert.equal(result.next, "確認して次の工程へ");
+    assert.equal(result.drawn, 24, "the holes stay on the foil during the result");
+    assert.equal(result.pips, 24, "one lit pip per hole");
+    await assertCraftShell(page, "holes result");
+    await page.locator(t("vt-craft-result-next")).tap();
+    await page.waitForFunction(() => window.vtStepDone === true || window.vtCraftError);
+    const res = await page.evaluate(() => window.vtCraftError || { total: window.vtCraft.holes.total, score: typeof window.vtCraft.holes.score, template: window.vtCraft.holes.templateId });
+    assert.deepEqual(res, { total: 24, score: "number", template: "outer12-middle12" });
+  }, { ...TALL, pageEntry: entry });
+
+  await check("craft-heat-in-the-shell", async (page) => {
+    // 炭焼き（VPN31）: 縦の作る場面の寄りのコンロと炭、上に炭壺を持つはじめ。炭の焼け具合（本編の炭の --red）と取り頃の光（.pikan）を写し、
+    // 外枠の炭を押すと本編のその炭を取る（焼ける速さ・取り頃・採点は本編のまま）。取った炭は炭壺へ入り、結果の札まで外枠で進める
+    await waitScene(page, "title");
+    await runCraftStep(page, { module: "./js/craft/heat.js", fn: "runHeat" });
+    await waitScene(page, "craft");
+    await assertCraftShell(page, "heat intro");
+    await page.locator(t("vt-craft-guide")).waitFor();
+    assert.equal(await page.evaluate(() => document.querySelector(".vtc").dataset.step), "heat");
+    await page.locator(t("vt-craft-guide-close")).tap();
+    await page.locator(t("vt-heat-coal-0")).waitFor();
+    const first = await page.evaluate(() => ({
+      shell: document.querySelectorAll(".vtc-coal").length, live: document.querySelectorAll("#screen .heat .stove .coal").length,
+      stove: document.querySelector(".vtc-stove > img").getAttribute("src"), hero: document.querySelector(".vtc-coal-hero > img").getAttribute("src"),
+      now: document.querySelector('[data-test="vt-craft-steps"] li.now')?.dataset.step, coach: document.querySelector(".vtc-say-text").textContent,
+    }));
+    assert(first.shell > 0 && first.shell === first.live, `one coal per coal of the game ${JSON.stringify(first)}`);
+    assert(first.stove.endsWith("img/ui/vertical-craft/ui-stove-zoom.webp") && first.hero.endsWith("img/ui/vertical-craft/craft-coal-hajime.webp"), JSON.stringify(first));
+    assert.equal(first.now, "heat");
+    assert.equal(first.coach, "全面が赤くなったら取れ");
+    // 数え終わるとコンロが点き、炭が焼けていく（外枠の炭の焼け具合は本編の炭と同じ）
+    await page.waitForFunction(() => document.querySelector("#screen .heat")?.getAttribute("aria-busy") === "false", null, { timeout: 15000 });
+    await page.waitForFunction(() => document.querySelector(".vtc-stove").classList.contains("on"));
+    await page.waitForTimeout(500);
+    const burn = await page.evaluate(() => [...document.querySelectorAll("#screen .heat .stove .coal")].map((live, i) => [
+      Number(live.style.getPropertyValue("--red")), Number(document.querySelector(`[data-test="vt-heat-coal-${i}"]`).style.getPropertyValue("--red"))]));
+    for (const [live, shell] of burn) assert(live > 0 && Math.abs(live - shell) < 0.08, `the shell's coal burns like the game's ${JSON.stringify(burn)}`);
+    await assertCraftShell(page, "heat");
+    // 本編の取り頃の光が出た炭を、外枠の炭で取る
+    for (let n = 0; n < first.live; n++) {
+      const idx = await page.waitForFunction(() => {
+        const i = [...document.querySelectorAll("#screen .heat .stove .coal")].findIndex((live) => live.classList.contains("pikan") && !live.classList.contains("picked"));
+        return i >= 0 && document.querySelector(`[data-test="vt-heat-coal-${i}"]`).classList.contains("pikan") ? String(i) : null; // 0 番も返す（数の 0 は「まだ」扱い）
+      }, null, { timeout: 20000 }).then((handle) => handle.jsonValue());
+      await page.locator(t(`vt-heat-coal-${idx}`)).tap();
+      await page.waitForFunction((i) => document.querySelector(`#screen [data-test="coal-${i}"]`).classList.contains("picked"), idx);
+    }
+    // 取った炭は炭壺の中へ、判定の札は左上へ。結果の札を写し、外枠で閉じると本編の工程が終わる
+    await page.locator(`${t("vt-craft-result")}:not([hidden])`).waitFor();
+    const result = await page.evaluate(() => ({
+      slots: document.querySelectorAll(".vtc-slot").length, judges: document.querySelectorAll(".vtc-coal-judges .vtc-jtag").length,
+      title: document.querySelector(".vtc-result-title").textContent, live: document.querySelector("#screen .result-card .rc-title").textContent,
+      lines: document.querySelectorAll(".vtc-result-lines p").length,
+    }));
+    assert.deepEqual([result.slots, result.judges], [first.live, first.live], JSON.stringify(result));
+    assert.equal(result.title, result.live);
+    assert(result.lines >= 1, "the result's summary is shown");
+    await page.locator(t("vt-craft-result-next")).tap();
+    await page.waitForFunction(() => window.vtStepDone === true || window.vtCraftError);
+    const heat = await page.evaluate(() => window.vtCraftError || { picks: window.vtCraft.heat.picks, score: typeof window.vtCraft.heat.score });
+    assert.equal(heat.picks?.length, first.live, JSON.stringify(heat));
+    assert(heat.picks.every((pick) => ["just", "hot"].includes(pick)), `taken in the ready window ${JSON.stringify(heat)}`);
+    assert.equal(heat.score, "number");
   }, { ...TALL, pageEntry: entry });
 
   await check("short-screen-fits", async (page) => {

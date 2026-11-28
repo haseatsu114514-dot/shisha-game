@@ -8,6 +8,8 @@
   --acc: #ffc978;
   /* 下の段の高さ（--cp）・右下の決定の大きさ（--ok）・端の余白（--edge）・下の余白（--low）・一言のために空ける帯（--band）。試作の 844 の画面の値 */
   --cp-std: calc(30 * var(--u)); --ok: calc(11.2 * var(--u)); --edge: calc(1.4 * var(--u)); --low: calc(1.6 * var(--u)); --band: calc(3 * var(--u));
+  /* 押し続ける大きな丸（刺す）の大きさ（--hold）と、その中心のパネルの下からの高さ（--hold-y） */
+  --hold: calc(18 * var(--u)); --hold-y: calc(14 * var(--u));
   --cp: var(--cp-std);
   --cp-mix: var(--cp-std); /* 温度計の長さは、いちばん狭い配合の上の画面に合わせる（試作 VPL103） */
   position: absolute; inset: 0; overflow: hidden; overflow: clip;
@@ -15,12 +17,12 @@
 .vtc[data-step="timer"] { --ok: calc(12 * var(--u)); --edge: calc(1 * var(--u)); --cp: calc(var(--low) + var(--ok) + 7.8 * var(--u)); }
 /* 背の低い画面（試作の @container phone (max-height: 80rem)・(max-height: 71rem) と同じ段階。外枠の幅は 39u なので、縦横比で見る） */
 @container vtshell (min-aspect-ratio: 39 / 80) {
-  .vtc { --cp-std: calc(26.6 * var(--u)); --ok: calc(10 * var(--u)); --edge: calc(1.2 * var(--u)); --low: calc(1.2 * var(--u)); --band: calc(2.6 * var(--u)); }
+  .vtc { --cp-std: calc(26.6 * var(--u)); --ok: calc(10 * var(--u)); --edge: calc(1.2 * var(--u)); --low: calc(1.2 * var(--u)); --band: calc(2.6 * var(--u)); --hold: calc(15.6 * var(--u)); --hold-y: calc(12.4 * var(--u)); }
   .vtc[data-step="timer"] { --ok: calc(10.8 * var(--u)); --edge: calc(1 * var(--u)); }
   .vtc-say { font-size: calc(1.5 * var(--u)); }
 }
 @container vtshell (min-aspect-ratio: 39 / 71) {
-  .vtc { --cp-std: calc(24 * var(--u)); --ok: calc(8.8 * var(--u)); --edge: calc(1 * var(--u)); --low: calc(1 * var(--u)); --band: calc(2.4 * var(--u)); }
+  .vtc { --cp-std: calc(24 * var(--u)); --ok: calc(8.8 * var(--u)); --edge: calc(1 * var(--u)); --low: calc(1 * var(--u)); --band: calc(2.4 * var(--u)); --hold: calc(13.4 * var(--u)); --hold-y: calc(11 * var(--u)); }
   .vtc[data-step="timer"] { --ok: calc(9.6 * var(--u)); --edge: calc(1 * var(--u)); }
   .vtc-say { font-size: calc(1.4 * var(--u)); }
 }
@@ -106,6 +108,61 @@
 .vtc-ok[disabled] { filter: grayscale(1) brightness(0.7); cursor: default; } .vtc-ok[disabled]::before { animation: none; }
 .vtc-lab { position: absolute; z-index: 4; left: 0; right: 0; bottom: 15%; text-align: center; font-size: calc(var(--ok) * 0.12); line-height: 1.1; font-weight: 800; letter-spacing: 0.06em; color: #fff; text-shadow: 0 calc(0.1 * var(--u)) calc(0.4 * var(--u)) #0b0812, 0 0 calc(0.2 * var(--u)) #0b0812; pointer-events: none; }
 
+/* 押している間だけ効く丸いボタン（注ぐ・こぼす・刺す）。押している間は少し沈んで明るくなる。長押しでメニューや文字選びを出さない */
+.vtc-hold { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.vtc-ok.vtc-hold.pressing:not(.vtc-poke) { transform: scale(0.95); filter: brightness(1.15); }
+.vtc-ok.hot { box-shadow: 0 0 0 calc(0.35 * var(--u)) #ffffffcc, 0 0 calc(4.6 * var(--u)) #fff, 0 0 calc(2 * var(--u)) var(--acc), 0 calc(1.4 * var(--u)) calc(2.6 * var(--u)) #000b; }
+/* ボタンの白い図形（試作の .tool-svg）と、図形の下の短い言葉（.vtc-lab） */
+.vtc-tool-t { position: absolute; z-index: 1; inset: 0; margin: 0; display: block; }
+.vtc-tool { position: absolute; inset: 9% 21% 31% 21%; width: 58%; height: 60%; overflow: visible; fill: currentColor; color: #fff;
+  filter: drop-shadow(0 calc(0.2 * var(--u)) calc(0.5 * var(--u)) #0b0812) drop-shadow(0 0 calc(0.15 * var(--u)) #0b0812); }
+
+/* ───────── 水入れ（試作の water・VPL36・VPL81・VPL92・VPL101・VPL111〜VPL113・VPL119）: 流し台と蛇口の下のボトル、下にこぼす・注ぐ・決定 ───────── */
+.vtc[data-step="water"] { --ok: calc(12 * var(--u)); --edge: var(--u); --cp: calc(var(--low) + var(--ok) + 0.6 * var(--u)); }
+@container vtshell (min-aspect-ratio: 39 / 80) { .vtc[data-step="water"] { --ok: calc(10.8 * var(--u)); --edge: var(--u); } }
+@container vtshell (min-aspect-ratio: 39 / 71) { .vtc[data-step="water"] { --ok: calc(9.6 * var(--u)); --edge: var(--u); } }
+/* 上の絵は、いちばん下の段のすぐ上まで続ける（流し台の下の戸棚が一言の後ろまで見える）。紫の幕はボタンの段のすぐ上から下だけ */
+.vtc[data-step="water"] .vtc-pic { height: calc(100% - var(--low) - var(--ok) - 1.2 * var(--u) - var(--safe-b));
+  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 95%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 95%, transparent 100%); }
+.vtc[data-step="water"] .vtc-veil { top: calc(100% - var(--low) - var(--ok) - 4 * var(--u) - var(--safe-b)); }
+.vtc-water-pic { --bw: min(calc(24 * var(--u)), calc((100cqh - var(--cp) - 16.4 * var(--u)) / 1.63)); position: absolute; inset: 0; background: radial-gradient(ellipse 70% 46% at 50% 60%, #ffe2a61f, transparent 70%); }
+/* ボトル（540×800）: 蛇口のてっぺんがランクのすぐ下、カウンターの手前の縁が一言の段の真ん中に来る高さ。流し台の真ん中が画面の真ん中 */
+.vtc-bottle { position: absolute; left: calc(50% - var(--bw) * 0.179); top: calc(11.6 * var(--u) + var(--bw) * 0.3325); width: var(--bw); aspect-ratio: 540 / 800; transform: translateX(-50%); }
+.vtc-glass, .vtc-bottle-svg { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+.vtc-glass { transform-origin: 50% 98.75%; transform: rotate(8deg); filter: drop-shadow(0 calc(1.2 * var(--u)) calc(1.8 * var(--u)) #000b); pointer-events: none; }
+.vtc-bottle-svg { overflow: visible; pointer-events: none; }
+/* 流し台と蛇口（1152×1010）。手前の縁から下をもう1枚ボトルの上に重ね、ボトルの足を流し台の中に隠す */
+.vtc-sink { position: absolute; z-index: 0; left: -41.33%; top: -24.9%; width: 222.6%; max-width: none; height: auto; pointer-events: none; filter: drop-shadow(0 var(--u) calc(1.6 * var(--u)) #0009); }
+.vtc-sink.front { z-index: 1; filter: none; -webkit-clip-path: inset(85.3% 0 0 0); clip-path: inset(85.3% 0 0 0); }
+/* 前板の下は流し台の下の戸棚（ステンレスの扉）で、いちばん下の段の上まで埋める */
+.vtc-cabinet { position: absolute; z-index: 1; left: -41.33%; width: 222.6%; top: calc(106.9% - 0.2 * var(--u)); height: calc(60 * var(--u)); pointer-events: none;
+  background: linear-gradient(180deg, #00000066 0, transparent calc(0.8 * var(--u))), repeating-linear-gradient(90deg, transparent 0 calc(25% - 0.1 * var(--u)), #0000004d calc(25% - 0.1 * var(--u)) 25%), linear-gradient(180deg, #8a6e5c, #5a463d 40%, #2c2027); }
+/* 水面の色: 赤＝ステムに届いていない、緑＝ちょうど、金＝浅い・深い */
+.vtc-w-body { opacity: 0.94; } .vtc-w-deep { fill: #123f80; opacity: 0.22; }
+.vtc-w-surf { fill: none; stroke: #e8fbff; stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.2s; }
+.vtc-water-pic[data-zone="none"] .vtc-w-surf { stroke: #ff8a8a; } .vtc-water-pic[data-zone="ideal"] .vtc-w-surf { stroke: #7df0b0; }
+.vtc-water-pic:is([data-zone="shallow"], [data-zone="deep"]) .vtc-w-surf { stroke: #ffe07a; }
+.vtc-w-band { fill: #7df0b0; opacity: 0.16; transition: opacity 0.2s; } .vtc-water-pic[data-zone="ideal"] .vtc-w-band { opacity: 0.32; }
+.vtc-w-line2 { fill: none; stroke: #fff6c8; stroke-width: 6; stroke-dasharray: 18 10; filter: drop-shadow(0 0 2px #0b0812) drop-shadow(0 0 5px #0b0812); }
+.vtc-water-pic[data-zone="ideal"] .vtc-w-line2 { stroke: #7df0b0; }
+.vtc-w-mark rect { fill: #120c1de6; stroke: #fff6c8; stroke-width: 3; } .vtc-w-mark text { fill: #fff6c8; font-size: 30px; font-weight: 800; text-anchor: middle; }
+.vtc-water-pic[data-zone="ideal"] .vtc-w-mark rect { stroke: #7df0b0; } .vtc-water-pic[data-zone="ideal"] .vtc-w-mark text { fill: #7df0b0; }
+.vtc-w-stream { opacity: 0.8; filter: drop-shadow(0 0 3px #bfeaff); } .vtc-w-stream.in { opacity: 1; }
+.vtc-w-spill { fill: #bfeaff; opacity: 0.85; filter: drop-shadow(0 0 3px #bfeaff); }
+.vtc-w-bubbles circle { fill: #ffffff26; stroke: #e8fbff; stroke-width: 1.6; }
+.vtc-w-drops circle { fill: #e2f7ff; }
+/* こぼす・注ぐ・決定を同じ大きさで1段に（左下・真ん中・右下） */
+.vtc-w-drain { left: var(--edge); bottom: var(--low); }
+.vtc-w-pour { left: 50%; bottom: var(--low); margin-left: calc(var(--ok) / -2); }
+.vtc-w-ok { right: var(--edge); bottom: var(--low); }
+.vtc-water-ctrl .vtc-tool { inset: 8% 17% 30% 17%; width: 66%; height: 62%; } /* 注ぐ・こぼすはボトルを大きく見せる */
+.vtc-gl-pipe { fill: none; stroke: currentColor; stroke-width: 7; stroke-linecap: round; }
+.vtc-gl-glass { fill: none; stroke: currentColor; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; } .vtc-gl-glass.thin { stroke-width: 3; opacity: 0.8; }
+.vtc-w-pour.pressing .vtc-gl-drops circle { animation: vtc-drop-fall 0.42s linear infinite; }
+.vtc-w-pour.pressing .vtc-gl-drops circle:nth-child(2) { animation-delay: -0.14s; }
+.vtc-w-drain.pressing .vtc-gl-drop { animation: vtc-drop-fall 0.6s linear infinite; }
+@keyframes vtc-drop-fall { 0% { transform: translateY(-6px); opacity: 0.3; } 50% { opacity: 1; } 100% { transform: translateY(6px); opacity: 0.3; } }
+
 /* ───────── 詰め方（試作の pack・VPL77・VPL91）: 上に選んだ詰め方の器、下に3枚の札・説明・決定 ───────── */
 .vtc-pack-pic { position: absolute; inset: 0; }
 .vtc-bowl { position: absolute; left: 46%; top: 18%; height: 66%; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 calc(2 * var(--u)) calc(2.4 * var(--u)) #000c); }
@@ -136,6 +193,162 @@
 .vtc-pack-ok { right: var(--edge); bottom: var(--low); }
 @container vtshell (min-aspect-ratio: 39 / 80) { .vtc-packinfo b { font-size: calc(1.7 * var(--u)); } .vtc-packinfo span { font-size: calc(1.35 * var(--u)); } }
 @container vtshell (min-aspect-ratio: 39 / 71) { .vtc-card b { font-size: calc(1.3 * var(--u)); } .vtc-packinfo { padding: 0 var(--u); } .vtc-packinfo b { font-size: calc(1.5 * var(--u)); } .vtc-packinfo span { font-size: calc(1.25 * var(--u)); } }
+
+/* ───────── 穴あけ（試作の holes・VPL27・VPL58・VPL80・VPL90）: 上にアルミと目印・穴・針先、下に大きな「刺す」と周りの点・開けた数 ───────── */
+.vtc-holes-pic { position: absolute; inset: 0; }
+.vtc-foil { position: absolute; left: 50%; bottom: calc(9 * var(--u)); width: calc(31.6 * var(--u)); aspect-ratio: 1; transform: translateX(-50%); filter: drop-shadow(0 calc(1.6 * var(--u)) calc(2.4 * var(--u)) #000c); }
+@container vtshell (min-aspect-ratio: 39 / 80) { .vtc-foil { width: calc(27.6 * var(--u)); } }
+@container vtshell (min-aspect-ratio: 39 / 71) { .vtc-foil { width: calc(23 * var(--u)); } }
+.vtc-foil > img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+/* 目印と穴は本編の盤（.foil-target-plane。箔の絵に対して 3% 上）と同じ所に置く */
+.vtc-foil-plane, .vtc-foil-dots { position: absolute; inset: -3% 0 3%; }
+.vtc-foil-plane { pointer-events: none; }
+.vtc-foil-marks { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.vtc-foil-marks .vtc-todo { fill: #fff8e8; stroke: #0b081266; stroke-width: 0.5; opacity: 0.85; } .vtc-foil-marks .vtc-todo.later { opacity: 0.45; }
+.vtc-foil-marks .vtc-target rect { fill: none; stroke: #fff; stroke-width: 1.3; filter: drop-shadow(0 0 2px #ffcf6b); }
+.vtc-foil-marks .vtc-ideal { fill: #0b081233; stroke: #ffe2a6; stroke-width: 0.9; stroke-dasharray: 1.6 1.2; }
+.vtc-foil-marks .vtc-hole { fill: #0b0812; stroke: #fbf4e0; stroke-width: 0.7; } .vtc-foil-marks .vtc-hole.good { stroke: #ffe2a6; stroke-width: 1; filter: drop-shadow(0 0 2px #ffcf6b); }
+.vtc-foil-marks .vtc-tip { fill: none; stroke: #5ee6ff; stroke-width: 1.6; filter: drop-shadow(0 0 3px #5ee6ff); transition: opacity 0.12s; } .vtc-foil-marks .vtc-tip.resting { opacity: 0.45; }
+.vtc-foil-marks .vtc-grow { fill: #0b0812; stroke: #fff; stroke-width: 0.8; } .vtc-foil-marks .vtc-grow.good { stroke: #ffe2a6; stroke-width: 1.3; filter: drop-shadow(0 0 3px #ffcf6b); }
+.vtc-foil-marks .vtc-grow.over { stroke: #ff6b5e; stroke-width: 1.3; }
+/* 前回の穴の開け直し: 押した穴は開け直す印（金の輪） */
+.vtc-redo { position: absolute; width: 10%; height: 10%; transform: translate(-50%, -50%); border-radius: 50%; display: grid; place-items: center; touch-action: manipulation; }
+.vtc-redo i { width: 30%; height: 30%; border-radius: 50%; background: #0b0812; box-shadow: 0 0 0 calc(0.15 * var(--u)) #fbf4e0; }
+.vtc-redo[data-depth="shallow"] i { width: 15%; height: 15%; } .vtc-redo[data-depth="wide"] i { width: 40%; height: 40%; } .vtc-redo[data-depth="large"] i { width: 50%; height: 50%; }
+.vtc-redo[aria-pressed="true"] { box-shadow: 0 0 0 calc(0.25 * var(--u)) #ffe2a6, 0 0 calc(1.2 * var(--u)) #ffcf6b; }
+/* 判定の文字（本編の .stamp）: 絵の上に小さな札で出し、少しすると薄くなる */
+.vtc-judges { position: absolute; z-index: 2; left: 0; right: 0; bottom: 100%; margin-bottom: calc(0.6 * var(--u)); display: flex; justify-content: center; pointer-events: none; }
+.vtc-jtag { padding: calc(0.2 * var(--u)) var(--u); border-radius: calc(0.6 * var(--u)); font-size: calc(1.9 * var(--u)); font-weight: 900; font-style: italic; letter-spacing: 0.04em; white-space: nowrap; color: #fff; background: #0b0812b3;
+  box-shadow: 0 0 0 calc(0.12 * var(--u)) #ffffff40; animation: vtc-jtag-in 0.35s cubic-bezier(0.2, 0.8, 0.3, 1.3); transition: opacity 0.4s; }
+.vtc-jtag.excellent { color: #ffe2a6; box-shadow: 0 0 0 calc(0.14 * var(--u)) #ffcf6b, 0 0 calc(1.2 * var(--u)) #ffcf6b80; } .vtc-jtag.miss { color: #ff8a7a; box-shadow: 0 0 0 calc(0.12 * var(--u)) #ff6b5e80; }
+.vtc-jtag.out { opacity: 0.35; }
+@keyframes vtc-jtag-in { from { transform: scale(1.8); opacity: 0; } }
+.vtc-holes-ctrl > * { position: absolute; inset: 0; }
+/* 「刺す」（真ん中の大きな丸。中心はパネルの下から --hold-y）と周りの点 */
+.vtc-hp { --hb: var(--hold); --hp: calc(var(--hold) * 1.45); --hy: calc(var(--cp) - var(--hold-y) - var(--hp) / 2); }
+.vtc-pips { position: absolute; left: 50%; top: var(--hy); width: var(--hp); height: var(--hp); margin-left: calc(var(--hp) / -2); pointer-events: none; }
+.vtc-pips svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.vtc-pip { fill: #ffffff26; stroke: #ffffff4d; stroke-width: 0.5; } .vtc-pip.done { fill: #fff; } .vtc-pip.good { fill: #ffe2a6; filter: drop-shadow(0 0 1.5px #ffcf6b); }
+.vtc-poke { --fill: 0; left: 50%; top: calc(var(--hy) + (var(--hp) - var(--hb)) / 2); width: var(--hb); height: var(--hb); margin-left: calc(var(--hb) / -2); overflow: hidden;
+  scale: calc(1 - var(--fill) * 0.1); transition: transform 0.1s, scale 0.08s linear; }
+.vtc-poke::after { content: ""; position: absolute; z-index: 2; inset: 0; border-radius: 50%; pointer-events: none; box-shadow: inset 0 calc(var(--fill) * 1.2 * var(--u)) calc(var(--fill) * 2.6 * var(--u)) #0b0812cc; }
+.vtc-poke .vtc-lab { font-size: calc(var(--hb) * 0.12); }
+/* 押すと色が下から一気に満ち（本編の「浅い」の長さで）、満ちたら金に光って弾む（ここで離す）。深すぎると赤 */
+.vtc-fill { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; transform-origin: 50% 100%; transform: scaleY(var(--level, 0));
+  background: linear-gradient(0deg, #fff8e6e6, #ffffffb3); mix-blend-mode: screen; opacity: 0.55; transition: transform 0.18s ease-out, background 0.15s; }
+.vtc-poke.live-press .vtc-fill { transition: none; }
+.vtc-fill-line { position: absolute; left: 8%; right: 8%; bottom: calc(var(--level, 0) * 100%); height: calc(0.25 * var(--u)); margin-bottom: calc(-0.12 * var(--u)); border-radius: var(--u); background: #fff; box-shadow: 0 0 calc(0.8 * var(--u)) #fff; opacity: 0; pointer-events: none; }
+.vtc-poke.live-press[data-zone="under"] .vtc-fill-line { opacity: 1; }
+.vtc-poke[data-zone="under"] { box-shadow: 0 0 0 calc(0.3 * var(--u)) #ffffffb3, 0 calc(1.4 * var(--u)) calc(2.6 * var(--u)) #000b; }
+.vtc-poke[data-zone="good"] { box-shadow: 0 0 0 calc(0.35 * var(--u)) #ffe2a6, 0 0 calc(4.4 * var(--u)) #ffcf6b, 0 calc(1.4 * var(--u)) calc(2.6 * var(--u)) #000b; }
+.vtc-poke[data-zone="good"] .vtc-fill { background: linear-gradient(0deg, #ffcf6b, #fff3d6); opacity: 0.8; }
+.vtc-poke[data-zone="good"] :is(.vtc-tool, .vtc-lab) { color: #3a2408; text-shadow: 0 calc(0.1 * var(--u)) 0 #fff8e6; }
+.vtc-poke.live-press[data-zone="good"] { animation: vtc-hole-full 0.22s ease-out; }
+.vtc-poke[data-zone="over"] { box-shadow: 0 0 0 calc(0.35 * var(--u)) #ff6b5e, 0 0 calc(3.4 * var(--u)) #ff6b5e99, 0 calc(1.4 * var(--u)) calc(2.6 * var(--u)) #000b; }
+.vtc-poke[data-zone="over"] .vtc-fill { background: linear-gradient(0deg, #ff3b2e, #ff9a8f); opacity: 0.75; animation: vtc-hole-over 0.3s steps(2) infinite; }
+@keyframes vtc-hole-full { 0% { scale: calc(1 - var(--fill) * 0.1); } 45% { scale: 1.07; } 100% { scale: calc(1 - var(--fill) * 0.1); } }
+@keyframes vtc-hole-over { 50% { opacity: 0.45; } }
+.vtc-poke.res-good { animation: vtc-res-good 0.5s ease-out; } .vtc-poke.res-off { animation: vtc-res-off 0.4s ease-out; }
+@keyframes vtc-res-good { 0% { box-shadow: 0 0 0 0 #ffe2a6, 0 0 calc(3 * var(--u)) #ffcf6b; } 100% { box-shadow: 0 0 0 calc(2.4 * var(--u)) #ffe2a600, 0 0 calc(3 * var(--u)) #ffcf6b00; } }
+@keyframes vtc-res-off { 20% { translate: calc(-0.6 * var(--u)) 0; } 45% { translate: calc(0.5 * var(--u)) 0; } 70% { translate: calc(-0.3 * var(--u)) 0; } 100% { translate: 0 0; } }
+/* 刺す（試作の needle）: 押し具合で道具の先の方へ突き出て、離すと戻る。深すぎるとさらに沈む */
+.vtc-tool-needle .vtc-gl-needle { transform: translateY(calc(var(--level, 0) * 7px - 3px)); transition: transform 0.2s var(--ease-out); }
+.vtc-poke.live-press .vtc-tool-needle .vtc-gl-needle { transition: none; }
+.vtc-poke[data-zone="over"] .vtc-tool-needle .vtc-gl-needle { transform: translateY(8px); }
+/* 開けた穴の数（左下） */
+.vtc-hole-count { position: absolute; inset: auto auto calc(1.4 * var(--u)) calc(1.6 * var(--u)); display: flex; align-items: baseline; gap: calc(0.3 * var(--u)); padding: calc(0.3 * var(--u)) calc(1.1 * var(--u)) calc(0.4 * var(--u)) calc(0.9 * var(--u));
+  border-radius: calc(2 * var(--u)); background: #ffffff0d; color: #fff; font-variant-numeric: tabular-nums; pointer-events: none; }
+.vtc-hole-count .vtc-ic { align-self: center; margin-right: calc(0.2 * var(--u)); font-size: calc(2 * var(--u)); color: #ffe2a6; }
+.vtc-hole-count b { font-size: calc(2.4 * var(--u)); } .vtc-hole-count small { font-size: calc(1.4 * var(--u)); color: #ffffffa6; }
+@container vtshell (min-aspect-ratio: 39 / 71) { .vtc-hole-count { bottom: var(--u); } .vtc-hole-count b { font-size: calc(2 * var(--u)); } }
+/* 試し刺しの「穴あけを始める」、桜井版の「次のリングへ」「結果へ」（本編で押せる時だけ。右上の、点の輪にかからない所） */
+.vtc-pill { position: absolute; inset: calc(0.4 * var(--u)) var(--edge) auto auto; height: calc(4.2 * var(--u)); display: flex; align-items: center; padding: 0 calc(1.4 * var(--u));
+  border: calc(0.16 * var(--u)) solid color-mix(in srgb, var(--acc) 82%, #fff); border-radius: calc(2.1 * var(--u)); font-size: calc(1.4 * var(--u)); font-weight: 800; letter-spacing: 0.04em; white-space: nowrap; color: #fff;
+  background: radial-gradient(120% 140% at 50% 0%, color-mix(in srgb, var(--acc) 46%, transparent), #120c1de6 70%);
+  box-shadow: 0 0 0 calc(0.5 * var(--u)) #ffffff12, 0 0 calc(2.4 * var(--u)) color-mix(in srgb, var(--acc) 45%, transparent), 0 var(--u) calc(2 * var(--u)) #000b, inset 0 calc(0.2 * var(--u)) calc(0.4 * var(--u)) #ffffff66;
+  animation: vtc-fade 0.25s ease-out; touch-action: manipulation; }
+.vtc-pill:active { scale: 0.95; }
+/* 配置選び: 上に配置の札、下に選んだ配置の説明と決定 */
+.vtc-ht { --card-h: min(calc(18.4 * var(--u)), calc(var(--cp) - var(--ok) - var(--low) - 2.2 * var(--u))); }
+.vtc-ht-cards { position: absolute; left: calc(1.2 * var(--u)); right: calc(1.2 * var(--u)); top: calc(0.6 * var(--u)); display: flex; justify-content: center; gap: calc(0.8 * var(--u)); }
+.vtc-ht-card { flex: 0 1 calc((100% - 1.6 * var(--u)) / 3); }
+.vtc-ht-art { display: grid; place-items: center; width: 100%; height: calc(var(--card-h) - 6.6 * var(--u)); }
+.vtc-ht-mark { height: 100%; max-width: 100%; aspect-ratio: 1; fill: #fff8e8; }
+.vtc-ht-disc { fill: #c9c4bd33; stroke: #fff8e8aa; stroke-width: 1.2; }
+.vtc-ht-card b { font-size: calc(1.3 * var(--u)); line-height: 1.25; white-space: normal; text-align: center; word-break: auto-phrase; overflow-wrap: anywhere; }
+.vtc-ht-ok { right: var(--edge); bottom: var(--low); }
+
+/* ───────── 炭焼き（試作の coal・VPL54・VPL55・VPL57・VPL65・VPL104）: 上に炭壺とトングを持つはじめ、下に寄りのコンロと炭 ───────── */
+.vtc[data-step="heat"] .vtc-pic { -webkit-mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); }
+.vtc[data-step="heat"] .vtc-veil { top: calc(100% - var(--cp) - 12.2 * var(--u) - var(--safe-b)); }
+.vtc-heat-pic, .vtc-coal-up { position: absolute; inset: 0; }
+/* はじめ（背景なしの人物）。コンロが点くと、下から熱の明かりが差す */
+.vtc-coal-hero { --hw: min(calc(35 * var(--u)), calc((100cqh - var(--cp) - 11.8 * var(--u)) * 0.7)); position: absolute; left: 50%; top: calc(4.4 * var(--u)); width: var(--hw); aspect-ratio: 2 / 3; transform: translateX(-50%); }
+.vtc-coal-hero > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 var(--u) calc(2 * var(--u)) #000a) brightness(0.86); transition: filter 0.8s; }
+.vtc-coal-up.on .vtc-coal-hero > img { filter: drop-shadow(0 var(--u) calc(2 * var(--u)) #000a) brightness(1.04); }
+.vtc-heat-glow { position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; height: 52%; background: radial-gradient(ellipse 75% 100% at 50% 100%, #ff6a2a80, #ff6a2a2e 48%, transparent 74%);
+  mix-blend-mode: screen; opacity: 0; transition: opacity 0.8s; pointer-events: none; }
+.vtc-coal-up.on .vtc-heat-glow { opacity: 1; animation: vtc-heat-breathe 2.6s ease-in-out infinite; }
+@keyframes vtc-heat-breathe { 50% { opacity: 0.72; } }
+/* 取った炭は炭壺の中へ（取った時の焼け具合の段階で光り方が替わる） */
+.vtc-slots { position: absolute; inset: 0; }
+.vtc-slot { position: absolute; transform: translate(-50%, -50%); animation: vtc-slot-in 0.45s var(--ease-out); }
+@keyframes vtc-slot-in { from { transform: translate(-50%, 240%) scale(1.5); opacity: 0.2; } }
+.vtc-tcoal { --tw: calc(var(--hw) * 0.135); position: relative; display: block; width: var(--tw); height: calc(var(--tw) * 0.805); }
+.vtc-tcoal img { position: absolute; left: calc(var(--tw) * -0.3638); top: calc(var(--tw) * -0.3737); width: calc(var(--tw) * 1.7241); max-width: none; }
+.vtc-tcoal .lit { opacity: 1; filter: drop-shadow(0 0 calc(0.8 * var(--u)) #ff5a2acc); }
+.vtc-tcoal.pre .lit { opacity: 0.8; } .vtc-tcoal:is(.raw, .early) .lit { opacity: 0.35; filter: none; }
+.vtc-tcoal.hot .lit { filter: saturate(0.7) drop-shadow(0 0 calc(0.6 * var(--u)) #ff5a2a99); } .vtc-tcoal.over .lit { opacity: 0.4; filter: grayscale(0.8); }
+/* 判定の札（左上に炭ごとに積む） */
+.vtc-coal-judges { position: absolute; z-index: 2; left: calc(1.4 * var(--u)); top: calc(7.4 * var(--u)); display: grid; justify-items: start; gap: calc(0.5 * var(--u)); pointer-events: none; }
+@container vtshell (min-aspect-ratio: 39 / 71) { .vtc-coal-judges { top: calc(6.6 * var(--u)); } .vtc-jtag { font-size: calc(1.5 * var(--u)); } }
+/* コンロ（絵は 3:2）: 下の端にそろえ、パネルの高さに収める。点くとコイルの赤い明かりが灯る */
+.vtc-heat-ctrl .vtc-stove { position: absolute; inset: auto; left: 50%; bottom: calc(1.4 * var(--u)); width: calc((var(--cp) - 0.6 * var(--u)) * 1.5); aspect-ratio: 1536 / 1024; transform: translateX(-50%);
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 calc(3.4 * var(--u))); mask-image: linear-gradient(180deg, transparent, #000 calc(3.4 * var(--u))); }
+.vtc-stove > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 var(--u) calc(1.6 * var(--u)) #000b) brightness(0.8); transition: filter 0.6s; pointer-events: none; }
+.vtc-stove.on > img { filter: drop-shadow(0 var(--u) calc(1.6 * var(--u)) #000b) brightness(1); }
+.vtc-stove::after { content: ""; position: absolute; left: 18%; top: 14%; width: 64%; height: 76%; border-radius: 50%; background: radial-gradient(closest-side, #ff5a2a59, transparent); opacity: 0; transition: opacity 0.8s; pointer-events: none; }
+.vtc-stove.on::after { opacity: 1; }
+/* 炭（本編の炭の --red・--ash で、黒い面から赤へ、過ぎると灰をまとう） */
+.vtc-coal { --cw: calc(9.4 * var(--u)); position: absolute; z-index: 1; width: var(--cw); height: calc(var(--cw) * 0.805); transform: translate(-50%, -50%); padding: 0; border: 0; background: none; touch-action: manipulation; }
+.vtc-coal::before { content: ""; position: absolute; inset: calc(-1.3 * var(--u)); border-radius: 30%; }
+.vtc-coal img { position: absolute; left: calc(var(--cw) * -0.3638); top: calc(var(--cw) * -0.3737); width: calc(var(--cw) * 1.7241); max-width: none; pointer-events: none; }
+.vtc-c-lit { opacity: var(--red, 0); filter: saturate(calc(1 - var(--ash, 0) * 0.7)) drop-shadow(0 0 calc(var(--red, 0) * 1.4 * var(--u)) #ff5a2acc); }
+.vtc-c-ash { position: absolute; inset: 6% 4%; border-radius: 22%; background: radial-gradient(ellipse at 50% 40%, #e9e4e0, #b9b2ad 70%, #8f8884); mix-blend-mode: screen; opacity: calc(var(--ash, 0) * 0.85); pointer-events: none; }
+.vtc-c-seat { position: absolute; left: -10%; right: -10%; bottom: -16%; height: 52%; border-radius: 50%; background: radial-gradient(closest-side, #000000b3, #00000059 55%, transparent); pointer-events: none; }
+.vtc-c-seat::after { content: ""; position: absolute; inset: -18% -8%; border-radius: 50%; background: radial-gradient(closest-side, #ff5a2a8c, transparent 72%); mix-blend-mode: screen; opacity: calc(0.35 + var(--red, 0) * 0.65); }
+/* 枠の光: 取り頃の少し前に一度だけ瞬き（本編の構え）、取り頃の間は明滅する（本編の取り頃の光） */
+.vtc-coal::after { content: ""; position: absolute; inset: calc(-0.6 * var(--u)); border-radius: 30%; box-shadow: 0 0 0 calc(0.25 * var(--u)) #fff3b0, 0 0 calc(1.4 * var(--u)) #ffcf6b; opacity: 0; pointer-events: none; }
+.vtc-coal.blink::after { animation: vtc-coal-blink 0.32s ease-out; }
+.vtc-coal.pikan::after { animation: vtc-coal-ready 0.35s ease-in-out infinite alternate; }
+.vtc-coal.soon::after { opacity: 0.3; }
+@keyframes vtc-coal-blink { 40% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes vtc-coal-ready { from { opacity: 0.4; } to { opacity: 1; } }
+.vtc-coal:active { scale: 0.95; }
+.vtc-coal.taken { animation: vtc-coal-take 0.36s var(--ease-out) forwards; pointer-events: none; }
+@keyframes vtc-coal-take { to { transform: translate(-50%, -260%) scale(0.6); opacity: 0; } }
+.vtc-coal.dropped { animation: vtc-coal-drop 0.6s ease-in forwards; pointer-events: none; }
+@keyframes vtc-coal-drop { to { transform: translate(-50%, -30%) scale(0.85); opacity: 0; filter: grayscale(1); } }
+
+/* ───────── 工程の結果（本編の結果の札を、下の段の代わりに出す）と始まりの数え ───────── */
+.vtc[data-result="on"] .vtc-body { visibility: hidden; }
+.vtc-result { position: absolute; z-index: 20; left: 0; right: 0; bottom: 0; padding: 0 calc(1.2 * var(--u)) calc(var(--low) + var(--safe-b)); animation: vtc-fade 0.25s ease-out; }
+.vtc-result-card { display: grid; gap: calc(0.8 * var(--u)); padding: calc(1.5 * var(--u)) calc(1.8 * var(--u)) calc(1.6 * var(--u)); border: calc(0.12 * var(--u)) solid #f1d79a99; border-radius: calc(1.8 * var(--u));
+  background: #120c1df2; box-shadow: 0 var(--u) calc(2.4 * var(--u)) #000c; }
+.vtc-result-head { display: flex; align-items: center; gap: var(--u); }
+.vtc-result-mark { font-size: calc(3 * var(--u)); line-height: 1; color: #ffe2a6; }
+.vtc-result-mark[data-tone="bright"] { color: #ffe27a; text-shadow: 0 0 calc(1.2 * var(--u)) #ffcf6b; } .vtc-result-mark[data-tone="quiet"] { color: #c9c3d6; }
+.vtc-result-title { font-family: var(--mincho); font-size: calc(2 * var(--u)); letter-spacing: 0.08em; color: #ffe2a6; }
+.vtc-result-lines { display: grid; gap: calc(0.3 * var(--u)); font-size: calc(1.4 * var(--u)); line-height: 1.5; color: #f1ecf9; }
+.vtc-result-lines p { margin: 0; }
+.vtc-result-next { min-height: calc(5.2 * var(--u)); margin-top: calc(0.2 * var(--u)); padding: calc(0.6 * var(--u)) calc(1.6 * var(--u)); border: calc(0.14 * var(--u)) solid var(--acc); border-radius: calc(2.6 * var(--u));
+  font-size: calc(1.74 * var(--u)); font-weight: 700; letter-spacing: 0.04em; color: var(--deep); background: var(--acc); box-shadow: 0 0 calc(1.6 * var(--u)) color-mix(in srgb, var(--acc) 45%, transparent); touch-action: manipulation; }
+.vtc-result-next:active { transform: scale(0.98); }
+.vtc-count { position: absolute; z-index: 12; left: 0; right: 0; top: 0; height: calc(100% - var(--cp) - var(--band) - var(--safe-b)); display: grid; place-items: center; pointer-events: none;
+  font-size: calc(9 * var(--u)); font-weight: 900; font-style: italic; line-height: 1; color: #fff; text-shadow: 0 0 calc(2 * var(--u)) var(--acc), 0 calc(0.4 * var(--u)) calc(1.2 * var(--u)) #000; }
+.vtc-count.go { color: #ffe2a6; }
+.vtc-count.pop { animation: vtc-count-pop 0.45s var(--ease-out); }
+@keyframes vtc-count-pop { from { transform: scale(1.6); opacity: 0; } }
 
 /* ───────── 蒸らし時間（試作の timer・VPL105・VPL127〜VPL130）: 上に縦長のキッチンタイマー、下に早見とリセット、分・秒・スタート ───────── */
 .vtc[data-step="timer"] .vtc-pic { -webkit-mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); }

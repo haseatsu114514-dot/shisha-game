@@ -1,17 +1,21 @@
-// 縦画面「煙の舞台」: シーシャ作り（作る場面・2026-11-28 VPN30）。見た目は試作（remake/previews/portrait-stage/ の app.mjs の craftHtml・
+// 縦画面「煙の舞台」: シーシャ作り（作る場面・2026-11-28 VPN30・VPN31）。見た目は試作（remake/previews/portrait-stage/ の app.mjs の craftHtml・
 //   craftTelopHtml・craftCtrlHtml・thermoHtml・rankHtml、style.css の作る場面の部分）と同じ:
 //   上＝工程の並び（絵記号の丸。今の工程が光る・名前の文字は出さない VPL31）と制作ランク、真ん中＝工程の絵と温度計、
 //   下＝スミさんの顔と一言・「？」、いちばん下＝工程ごとの操作。日付・体力・お金は出さない（VPL12）。外枠の十字キーと丸ボタンは使わず、
 //   画面いっぱいに組む（layout "full"。下画面の操作は工程ごとに形が違うため）。
 // 作り: 本編の作業台（craft/session.js の openBench・stepPanel と各工程の関数）は裏でそのまま動かし、その DOM（工程の並び・ランク・温度計・
-//   「?」の説明・工程の部品）を読んで描き、押した操作は本編の要素へ中継する（frame.js の relayTap）。規則・数値・採点・チュートリアル・
-//   自動の検査（craftTest）は本編のまま。試作の写しの計算は持ち込まない。
+//   「?」の説明・工程の部品）を読んで描き、押した操作は本編の要素へ中継する（タップは frame.js の relayTap、長押しは relayPress）。
+//   規則・数値・採点・チュートリアル・自動の検査（craftTest）は本編のまま。試作の写しの計算は持ち込まない。
+//   どの工程にも共通の、始まりの 3・2・1・GO!（core/ui.js の countdown）と工程の結果の札（craft/common.js の resultCard）もここで写す。
 // 工程ごとの画面は looks/vertical/craft/<工程>.js に分け、下の登録表（VIEWS）から呼ぶ。登録の無い工程（まだ縦にしていない工程）では
 //   この場面にせず、今までどおり回転案内を出す（vertical.js の evaluate）。途中の工程だけ縦、で構わない。
 import { el } from "../../core/util.js";
-import { relayTap, mirrorBackground, cssUrl, liveBackground, textOf } from "./frame.js";
+import { relayTap, relayPress, mirrorBackground, cssUrl, liveBackground, textOf } from "./frame.js";
 import { createThermo } from "./craft/thermo.js";
+import { waterView } from "./craft/water.js";
 import { packView } from "./craft/pack.js";
+import { holesView } from "./craft/holes.js";
+import { heatView } from "./craft/heat.js";
 import { timerView } from "./craft/timer.js";
 
 /**
@@ -20,18 +24,23 @@ import { timerView } from "./craft/timer.js";
  *   step   … 本編の作業台の data-step（stepPanel の id）
  *   match(panel) … 本編のその工程の部品が出ているか（同じ data-step の別の画面と見分ける。蒸らしは時間決めと雑念回避が同じ "steam"）
  *   intro  … true なら、工程の部品を出す前の初回の「操作の説明」（パネルが空で説明が開いている間）もこの画面で写す
- *            （同じ data-step の工程のうち、部品の前に説明を開くのは1つだけ。蒸らしでは時間決め。雑念回避は場を出してから説明する）
+ *            （同じ data-step の工程のうち、部品の前に説明を開くのは1つだけ。蒸らしでは時間決め。雑念回避は場を出してから説明する）。
+ *            同じ data-step のほかの工程も部品の前に説明を開く時は、関数 intro(bench) で見分ける（水入れと機材は作業台の見出し）
+ *   persist … true なら、本編がその工程の部品を作り直しても外枠の画面を作り直さず、同じ画面のまま描き替える
+ *            （穴あけ: 配置選び→穴あけ→結果で本編がパネルの中身を替える。結果の間も開けた穴を絵に残す）
  *   create(kit)  … 画面を作る。{ pic, ctrl, coach(bench), thermo(bench), sync(panel, bench), leave() } を返す
  *                  （pic＝真ん中の絵、ctrl＝いちばん下の操作、coach＝スミさんの一言、
  *                   thermo＝写す本編の温度計と見せ方 { node, mode: "bands"|"forecast"|"live", label, note }（無ければ null で温度計を出さない）。
- *                   押す操作は kit.relay(本編の要素) で中継する。長押しの工程は pointerdown／pointerup を本編の要素へ送る口を足す）
+ *                   押す操作は kit.relay(本編の要素) で中継する。長押しは kit.hold(外枠のボタン, () => 本編の要素) で、
+ *                   押した時に本編の要素へ pointerdown、離した時に pointerup を送る）
  */
-const VIEWS = [packView, timerView];
+const VIEWS = [waterView, packView, holesView, heatView, timerView];
 
 const IMG = new URL("../../../img/", import.meta.url).href;
 const SUMI_FACE = `${IMG}ui/face_icons/new/face_sumi.webp`;
 const GRADES = ["D", "C", "B", "A", "S", "SS", "SSS"]; // 本編の制作ランク（craft/rank-hud.js の CRAFT_GRADES）。絵は img/ui/craft-rank/
-// 演出の層に出ていると、作る場面を写さない物（自分で操作する画面・ボタンのある覆い。結果の札など）
+// 演出の層に出ていると、作る場面を写さない物（自分で操作する画面・ボタンのある覆い。結果の札など）。
+// 工程の結果の札（common.js の resultCard。パネルの中の .result-card）は作る場面の上に写す
 const FX_BLOCKERS = ".gboard, .reel-intro, .lime-coach, .kuji-overlay";
 const CONTROLS = "button, input, select, textarea, a[href]";
 
@@ -65,7 +74,48 @@ function viewFor(bench) {
   if (shown) return shown;
   // 工程の初回の「操作の説明」（craft/session.js の explainStepOnce）は、工程の部品を出す前に開く。読む間も作る場面に写す
   const intro = !panel.firstElementChild && bench.querySelector(".bench-guide")?.open;
-  return intro ? mine.find((view) => view.intro) || null : null;
+  return intro ? mine.find((view) => view.intro === true || (typeof view.intro === "function" && view.intro(bench))) || null : null;
+}
+
+/**
+ * 外枠のボタンを長押しのボタンにする（試作の「注ぐ」「こぼす」「刺す」）。押している間 .pressing を付け、本編の要素へ
+ * pointerdown を送り、離した（指が外れた・キーを離した）時に pointerup を送る。live() は押した時の本編の要素（押せなければ null）。
+ */
+function holdButton(button, live) {
+  let release = null, pointer = null;
+  const start = (who) => {
+    if (release) return;
+    const target = live();
+    if (!target) return;
+    pointer = who;
+    release = relayPress(target);
+    button.classList.add("pressing");
+  };
+  const end = () => {
+    if (!release) return;
+    const done = release;
+    release = null; pointer = null;
+    button.classList.remove("pressing");
+    done();
+  };
+  button.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || release) return;
+    event.preventDefault();
+    try { button.setPointerCapture(event.pointerId); } catch { /* 捕まえられない指でも、離した時の pointerup は届く */ }
+    start(event.pointerId);
+  });
+  for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) {
+    button.addEventListener(type, (event) => { if (event.pointerId === pointer) end(); });
+  }
+  button.addEventListener("keydown", (event) => {
+    if ((event.key === " " || event.key === "Enter") && !event.repeat) { event.preventDefault(); start("key"); }
+  });
+  button.addEventListener("keyup", (event) => {
+    if ((event.key === " " || event.key === "Enter") && pointer === "key") { event.preventDefault(); end(); }
+  });
+  button.addEventListener("blur", end);
+  button.addEventListener("contextmenu", (event) => event.preventDefault());
+  return { end };
 }
 
 /** 作業台が見えていて、今の工程に縦の画面があるか（vertical.js の evaluate が見る）。 */
@@ -95,12 +145,20 @@ export function createCraftScene(frame) {
   const guide = el("div.vtc-guide", { hidden: true, role: "dialog", "aria-modal": "true", "aria-label": "操作の説明", dataset: { test: "vt-craft-guide" } }, [
     el("div.vtc-guide-card", [guideTitle, guideText, guideNote, guideClose]),
   ]);
-  const root = el("div.vtc", { dataset: { test: "vt-craft" } }, [pic, veil, steps, rank, thermo.root, body, guide]);
+  // 工程の結果の札（本編の .result-card）: 下の段の代わりに出し、「確認して次の工程へ」は本編のボタンへ中継する
+  const resultMark = el("b.vtc-result-mark"), resultTitle = el("b.vtc-result-title"), resultLines = el("div.vtc-result-lines");
+  const resultNext = el("button.vtc-result-next", { type: "button", dataset: { test: "vt-craft-result-next" } });
+  const result = el("div.vtc-result", { hidden: true, role: "dialog", "aria-label": "工程の結果", dataset: { test: "vt-craft-result" } }, [
+    el("div.vtc-result-card", [el("div.vtc-result-head", [resultMark, resultTitle]), resultLines, resultNext]),
+  ]);
+  // 始まりの 3・2・1・GO!（本編の .countdown）を絵の真ん中に写す
+  const count = el("b.vtc-count", { hidden: true, "aria-live": "assertive", dataset: { test: "vt-craft-count" } });
+  const root = el("div.vtc", { dataset: { test: "vt-craft" } }, [pic, veil, steps, rank, thermo.root, count, body, result, guide]);
 
   let bench = null, view = null, viewDef = null, panel = null, content = null;
-  let stepSig = "", rankSig = "", guideSig = "", coachText = null;
+  let stepSig = "", rankSig = "", guideSig = "", resultSig = "", countSig = "", coachText = null;
 
-  const kit = { relay: relayTap, icon: craftIcon, img: IMG };
+  const kit = { relay: relayTap, hold: holdButton, icon: craftIcon, img: IMG };
   const liveGuide = () => bench?.querySelector(".bench-guide");
 
   help.addEventListener("click", () => {
@@ -108,6 +166,10 @@ export function createCraftScene(frame) {
     if (summary) relayTap(summary);
   });
   coach.addEventListener("click", () => coach.classList.toggle("quiet"));
+  resultNext.addEventListener("click", () => {
+    const button = panel?.querySelector(":scope > .result-card:not(.done) .rc-next");
+    if (button && !button.disabled) relayTap(button);
+  });
   guideClose.addEventListener("click", () => {
     const live = liveGuide();
     const button = live?.querySelector('[data-test="bench-guide-close"]');
@@ -188,23 +250,64 @@ export function createCraftScene(frame) {
     guideClose.textContent = textOf(close) || "閉じる";
   }
 
+  /** 工程の結果の札。題・評価の印・まとめ（無ければ詳しい行の先頭）と、次へ進むボタン。 */
+  function syncResult() {
+    const card = panel?.querySelector(":scope > .result-card:not(.done)");
+    const button = card?.querySelector(".rc-next");
+    if (!card || !button) {
+      if (!result.hidden) { result.hidden = true; resultSig = ""; delete root.dataset.result; }
+      return;
+    }
+    const summary = [...card.querySelectorAll(".rc-summary p")].map(textOf).filter(Boolean);
+    const lines = summary.length ? summary : [...card.querySelectorAll(".rc-lines li")].map(textOf).filter(Boolean).slice(0, 3);
+    const mark = card.querySelector(".rc-evaluation");
+    const sig = JSON.stringify([textOf(card.querySelector(".rc-title")), textOf(mark), lines, textOf(button), button.disabled]);
+    result.hidden = false;
+    root.dataset.result = "on";
+    if (sig === resultSig) return;
+    resultSig = sig;
+    resultTitle.textContent = textOf(card.querySelector(".rc-title"));
+    resultMark.textContent = textOf(mark);
+    resultMark.hidden = !mark;
+    resultMark.dataset.tone = ["bright", "warm", "quiet"].find((tone) => mark?.classList.contains(tone)) || "";
+    if (mark) resultMark.setAttribute("aria-label", mark.getAttribute("aria-label") || ""); else resultMark.removeAttribute("aria-label");
+    resultLines.replaceChildren(...lines.map((text) => el("p", { text })));
+    resultNext.textContent = textOf(button) || "次へ";
+    resultNext.disabled = button.disabled;
+  }
+
+  /** 始まりの数え（本編の .countdown。穴あけは演出の層、炭焼きは炭壺の欄に出る）。 */
+  function syncCount() {
+    const live = document.querySelector("#fx > .countdown") || bench?.querySelector(".countdown");
+    const text = textOf(live);
+    count.hidden = !text;
+    if (text === countSig) return;
+    countSig = text;
+    count.textContent = text;
+    count.classList.toggle("go", /GO/.test(text));
+    if (text) { count.classList.remove("pop"); void count.offsetWidth; count.classList.add("pop"); }
+  }
+
   function sync() {
     bench = liveBench();
     const nextDef = viewFor(bench);
     const nextPanel = bench?.querySelector(".bench-panel") || null;
     // 本編の工程の部品を作り直した時（やり直し・同じ工程の2回目）も、外枠の画面を作り直す
     const nextContent = nextPanel?.firstElementChild || null;
-    if (nextDef !== viewDef || nextPanel !== panel || nextContent !== content) { mount(nextDef, nextPanel); content = nextContent; }
+    if (nextDef !== viewDef || nextPanel !== panel || (nextContent !== content && !nextDef?.persist)) mount(nextDef, nextPanel);
+    content = nextContent;
     if (!bench || !view) return;
     const bg = liveBackground();
     frame.setAmbient(bg ? cssUrl(getComputedStyle(bg).backgroundImage) : "");
     mirrorBackground(bgHost, { focusX: 30, focusY: 50 });
     syncSteps();
     syncRank();
+    view.sync(panel, bench);
     const say = view.coach(bench);
     if (say !== coachText) { coachText = say; sayText.textContent = say; }
-    view.sync(panel, bench);
     thermo.sync(view.thermo?.(bench) || null);
+    syncCount();
+    syncResult();
     syncGuide();
   }
 
@@ -216,8 +319,10 @@ export function createCraftScene(frame) {
       frame.over.hidden = false;
       frame.setHud("none");
       frame.setAccent("#ffc978");
-      stepSig = rankSig = guideSig = ""; coachText = null;
+      stepSig = rankSig = guideSig = resultSig = countSig = ""; coachText = null;
       guide.hidden = true;
+      result.hidden = true; delete root.dataset.result;
+      count.hidden = true;
       sync();
     },
     leave() { mount(null, null); content = null; bench = null; delete bgHost.dataset.sig; },
