@@ -5573,6 +5573,7 @@
       "paths": [
         "remake/css/look-vertical.css",
         "remake/css/look-vertical-craft.css",
+        "remake/css/look-vertical-tournament.css",
         "remake/img/ui/vertical-craft/**",
         "remake/js/craft/steps.js",
         "remake/js/craft/timer.js",

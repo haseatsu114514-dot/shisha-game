@@ -171,6 +171,41 @@ const manual = (page) => page.evaluate(async () => {
 const typed = (page) => page.waitForFunction(() => document.querySelector("#vn .vn-next")?.classList.contains("show") || document.querySelector("#vn .vn-choices.show"));
 
 await suite("look_vertical", async (check) => {
+  await check("tournament-live-frame-survives-rotation", async (page) => {
+    await page.evaluate(() => { void window.__remake.dev.show("interval"); });
+    await waitScene(page, "tournament");
+    await page.locator(".ts-eyecatch.in").tap();
+    const live = page.locator(".vt-pic > .ts-live-front");
+    await live.waitFor();
+    assert.equal(await live.locator(".ts-live-chip").count(), 4);
+    await live.evaluate(node => { window.liveBug = node; });
+    await page.setViewportSize(WIDE.viewport);
+    await page.waitForFunction(() => document.querySelector("#vn > .ts-live-front") === window.liveBug);
+    await page.setViewportSize(TALL.viewport);
+    await live.waitFor();
+    assert(await live.evaluate(node => node === window.liveBug));
+    await pressA(page);
+    assert.equal(await page.locator("#rotate-hint").isVisible(), false);
+  }, { ...TALL, pageEntry: entry });
+
+  await check("tournament-interim-vote-on-short-screen", async (page) => {
+    await page.evaluate(() => { window.voteRead = window.__remake.dev.show("vote-2"); });
+    await waitScene(page, "tournament");
+    const next = page.locator(t("standings-next"));
+    assert(await next.isDisabled());
+    await page.locator(".standings .sd-row").first().tap();
+    await next.and(page.locator(":enabled")).waitFor();
+    assert.equal(await page.locator(".sd-row").count(), 4);
+    const board = page.locator(".standings");
+    assert(await board.evaluate(node => node.scrollWidth <= node.clientWidth + 1));
+    const rect = await board.boundingBox();
+    assert(rect.x >= 0 && rect.x + rect.width <= SHORT.viewport.width + 1);
+    assert(rect.y >= 0 && rect.y + rect.height <= SHORT.viewport.height + 1);
+    await next.tap();
+    await page.evaluate(() => window.voteRead);
+    await page.waitForFunction(() => !document.documentElement.hasAttribute("data-vt-tournament"));
+  }, { ...SHORT, pageEntry: entry });
+
   await check("title-and-conversation-in-two-line-pages", async (page) => {
     await waitScene(page, "title");
     assert.equal(await page.evaluate(() => document.documentElement.dataset.look), "vertical");

@@ -55,7 +55,7 @@ function syncOrientation() {
   if (session) return;
   const mine = ++loadToken;
   // 見た目の CSS は縦画面を使う時だけ読み込む（index.html の styles-look-vertical。ほかの端末には読ませない）
-  withMinigameStyles("look-vertical", null, () => {
+  withMinigameStyles("look-vertical", null, async () => {
     if (mine !== loadToken || !active || !query?.matches || session) return;
     session = start();
   }).catch((error) => console.error("[look] 縦画面の見た目を読み込めませんでした", error));
@@ -78,7 +78,7 @@ function start() {
   const own = [frame.root, resumeSmoke];
   const scenes = {
     // CONTINUE は本編の文字・ボタン・アニメーションを直接表示する。
-    continue: { native: true },
+    continue: { native: true }, tournament: { native: true },
     title: createTitleScene(frame), vn: createTalkScene(frame), map: createMapScene(frame), menu: createMenuScene(frame),
     sheet: createSheetScene(frame), cover: createCoverScene(frame, own), board: createBoardScene(frame), craft: createCraftScene(frame),
   };
@@ -108,7 +108,8 @@ function start() {
     frame.root.dataset.scene = sceneName;
     frame.root.dataset.layout = scene?.layout || ""; // "full": 下画面を出さない場面（試作どおりのタイトルなど）
     frame.root.hidden = !scene || !!scene.native;
-    root.toggleAttribute("data-vt-continue", !!scene?.native);
+    root.toggleAttribute("data-vt-continue", next === "continue");
+    root.toggleAttribute("data-vt-tournament", next === "tournament");
     if (next !== "cover") holdSince = 0; // 覆いを待つ時間は、覆いに入るたびに数え直す（前の転換から数えると、すぐ待ちすぎと判断してしまう）
     if (scene) {
       if (scene.native) delete root.dataset.vtShell;
