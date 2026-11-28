@@ -26,3 +26,4 @@
 .st-nav button span { font-size: 2.8rem; line-height: 1; }
 .st-nav button[aria-pressed="true"] { color: #170f1f; background: var(--acc); border-color: transparent; }
 .st-nav button:active { transform: scale(0.97); }
+.st-nav button:disabled { opacity: 0.55; cursor: default; }

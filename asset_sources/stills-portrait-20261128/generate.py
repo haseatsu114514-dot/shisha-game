@@ -195,8 +195,8 @@ SCENES = {
               "near foreground, waist-up, focused and a little tense, steadying himself ('Calm down. Same as always. Draw it, then deliver it'): "
               "his hookah has finished steaming and he has just lifted the hose handle, about to take the first pull. At the next table, one step "
               "behind him and higher in the frame, Naru (23) works on his own hookah and glances over. Two more competitors stand further back, "
-              "small and out of focus: Adam (28, short hair red on the screen-left side and green on the screen-right side, black henley "
-              "shirt) and Minto in her café uniform (long straight black hair, small black horns, black dress with mint-green frills); no "
+              "small and out of focus: Adam (28, short hair red on the screen-left side and green on the screen-right side, white t-shirt "
+              "and black waist apron) and Minto in her café uniform (long straight black hair, small black horns, black dress with mint-green frills); no "
               "one else wears a cap like Hajime. Spotlights from above; the hall beyond is dark blur."),
     "cg_ch1_tsumugi_heart_art": dict(
         chars=[("tsumugi", "normal", "Tsumugi")], place="indoor", palette=TONARI, hajime="pov",
@@ -496,6 +496,8 @@ UNSET_NOTE = (
 OUTFITS = {
     "naru": "Naru's outfit is exactly his new sprite's: a cropped brown-and-beige zip jacket with white stripes on the sleeves over a dark "
             "brown turtleneck, grey wide trousers; NOT the black-and-white track jacket, black t-shirt or dog-tag chains of IMAGE 1.",
+    "adam": "Adam's outfit is exactly his new sprite's: a plain WHITE short-sleeved crew-neck t-shirt, a long BLACK waist apron tied at "
+            "the waist, black trousers; NOT a black henley shirt (VPT06).",
     "saku": "Ayatori's outfit is exactly his new sprite's: a red-brown pullover hoodie with an ochre-yellow shoulder panel and a cream hood "
             "lining, khaki trousers, a small brown pouch on his belt; NOT the dark jacket of IMAGE 1.",
 }
@@ -510,10 +512,13 @@ def sprite(folder, face):
 
 def build(cg_id):
     s = SCENES[cg_id]
-    refs = [CG / f"{cg_id}.webp"]
-    if refs[0].stat().st_size < 1000:
-        raise SystemExit(f"元のスチルが LFS 未取得: {refs[0]}")
-    lines = [FORMAT, CONTENT_REF]
+    if s.get("new"):  # 新しく足すスチル（元の横長の絵が無い。VPT07〜）
+        refs, lines = [], [FORMAT]
+    else:
+        refs = [CG / f"{cg_id}.webp"]
+        if refs[0].stat().st_size < 1000:
+            raise SystemExit(f"元のスチルが LFS 未取得: {refs[0]}")
+        lines = [FORMAT, CONTENT_REF]
     present = {c[0] for c in s["chars"]}
     roles = []
     for folder, face, name in s["chars"]:

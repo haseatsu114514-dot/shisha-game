@@ -60,7 +60,7 @@ const STILLS = [
   ["cg_hiyori_confession", "love", "ひより・告白", "confession", "confession_hiyori_accept"],
   ["cg_samechan_confession", "love", "サメちゃん・告白", "confession", "confession_samechan_accept"],
   ["cg_ending_tonari_night", "love", "閉店後のtonari", "ending", "ending_start"],
-].map(([id, set, title, file, scene]) => ({ id, set, title, file, scene }));
+].map(([id, set, title, file, scene, extra = {}]) => ({ id, set, title, file, scene, ...extra }));
 const SETS = { ch1: "第1章", ch2: "第2章", ch3: "第3章", ch4: "第4章", ch5: "第5章", love: "告白・結末" };
 const STILL_IDS = new Set(STILLS.map((s) => s.id));
 
@@ -78,9 +78,18 @@ const loadNames = () => namesOnce ??= fetch(new URL("../../../data/characters.js
   return names;
 }).catch(() => ({}));
 
-/** 台本の1場面から、そのスチルを出している間の台詞（show_cg の次から hide_cg まで）を取り出す */
-function linesFor(scene, id) {
+/** 台本の1場面から、そのスチルを出している間の台詞（show_cg の次から hide_cg まで）を取り出す。
+ *  新しく足したスチル（VPT07〜。本編の台本にまだ show_cg が無い）は、出す所の台詞 at から n 行 */
+function linesFor(scene, id, { at = null, n = 4 } = {}) {
   const all = [scene.lines, ...Object.values(scene.branches || {})].filter(Array.isArray);
+  const clean = (l) => ({ ...l, text: l.text.replace(/\[\/?[a-z]+\]/g, "") });
+  if (at) {
+    for (const lines of all) {
+      const from = lines.findIndex((l) => typeof l.text === "string" && l.text.includes(at));
+      if (from >= 0) return lines.slice(from).filter(isSpeech).slice(0, n).map(clean);
+    }
+    return [];
+  }
   for (const lines of all) {
     const at = lines.findIndex((l) => l.type === "show_cg" && l.cg_id === id);
     if (at < 0) continue;
@@ -154,7 +163,7 @@ export class StillsScene {
     const { REMAKE_IMG: IMG } = this.kit;
     refs.pic.src = `${IMG}cgs/portrait/${s.id}.webp`;
     refs.amb.src = refs.pic.src;
-    refs.old.src = `${IMG}cgs/${s.id}.webp`;
+    if (!s.fresh) refs.old.src = `${IMG}cgs/${s.id}.webp`;
     refs.title.textContent = s.title;
     refs.set.textContent = SETS[s.set];
     refs.count.textContent = `${this.i + 1} / ${STILLS.length}`;
@@ -162,7 +171,7 @@ export class StillsScene {
     refs.pic.classList.remove("in"); void refs.pic.offsetWidth; refs.pic.classList.add("in");
     this.telop.stop();
     let lines = [];
-    try { lines = linesFor(findDialogue(await loadDialogue(s.file), s.scene) || { lines: [] }, s.id); } catch (error) { console.warn(`${s.file}.json を読めませんでした:`, error); }
+    try { lines = linesFor(findDialogue(await loadDialogue(s.file), s.scene) || { lines: [] }, s.id, s); } catch (error) { console.warn(`${s.file}.json を読めませんでした:`, error); }
     if (gen !== this.gen || this.dead) return;
     if (!lines.length) { this.telop.say({ speaker: "", text: "（このスチルの台詞が台本に見つからない）" }, { wait: false }); return; }
     if (this.phone.fixed) { this.telop.say(lines[0], { wait: false }); return; }
@@ -176,10 +185,13 @@ export class StillsScene {
   step(d) { this.i = (this.i + d + STILLS.length) % STILLS.length; this.show(); }
 
   syncOld() {
-    this.refs.old.hidden = !this.showOld;
-    this.refs.pic.hidden = this.showOld;
-    this.refs.oldBtn.setAttribute("aria-pressed", String(this.showOld));
-    this.el.querySelector(".st-app")?.classList.toggle("old", this.showOld);
+    const fresh = !!this.still.fresh, old = this.showOld && !fresh; // 新しく足したスチルには横の元絵が無い
+    this.refs.old.hidden = !old;
+    this.refs.pic.hidden = old;
+    this.refs.oldBtn.disabled = fresh;
+    this.refs.oldBtn.textContent = fresh ? "新しいスチル" : "横の元絵";
+    this.refs.oldBtn.setAttribute("aria-pressed", String(old));
+    this.el.querySelector(".st-app")?.classList.toggle("old", old);
   }
 
   onClick(event) {
