@@ -36,8 +36,8 @@ export function spotPeople(spot, { visitBlock = null } = {}) {
   for (const guest of GUESTS) if (guest.present(spot)) ids.push(guest.id);
   const visiting = cityGuestAtShop(spot);
   if (visiting) ids.push(visiting.id);
-  // よその店に居合わせる人（roamers.js）。会ったことのない審査員は「見知らぬ客」
-  if (roaming && roaming.spotId === spot.id) ids.push(roaming.id);
+  // よその店に居合わせる人（roamers.js）。会ったことのない審査員は「見知らぬ客」。ゲリラの回（hidden）は地図に出さず、入って一服した後に会う
+  if (roaming && roaming.spotId === spot.id && !roaming.hidden) ids.push(roaming.id);
   return [...new Set(ids)].map(id => {
     const known = id === "sumi" || id === "tetsuko" || !!state.met[id]
       || id === "tsumugi" && !!(state.flags._met_tsumugi || state.story.tsumugi > 0);
