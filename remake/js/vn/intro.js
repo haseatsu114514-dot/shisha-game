@@ -19,6 +19,7 @@ import { mountIntro } from "./intro-fit.js";
 
 import { motifs } from "./intro-motifs.js";
 import { illustratedIntro, layoutIntro, animateIntro, exitIntro, flavorTag, plainLine, motionOf, MOTIONS, nameNode, plainName } from "./intro-art.js";
+import { introQuote } from "./intro-quote.js";
 import { introFlavor } from "./intro-flavors.js";
 import { graphicIntro } from "./intro-graphic.js";
 import { createTransition, measureStanding } from "./intro-transition.js";
@@ -153,7 +154,7 @@ export async function playIntro(id, {
     let unmount = null;
     try {
       unmount = await transition.enter();
-      const twoLines = layoutIntro(host, id, variant, intro);
+      const twoLines = layoutIntro(host);
       if (!brief) animations.push(...animateIntro(host, id, motion, { skip: transition.skip }));
       host.classList.remove("ci-staged");
       appear();
@@ -187,7 +188,7 @@ export async function playIntro(id, {
       nameNode("div.ci-name", nameSource, { style: `font-size: ${fitSize(main, 570, 116)}px` }),
       ...(subSource ? [nameNode("div.ci-name-sub", subSource)] : []),
     ].filter(Boolean)),
-    intro.line ? el("div.ci-line", { text: `「${plainLine(intro.line)}」`, style: `font-size: ${fitSize(`「${plainLine(intro.line)}」`, 575, 30)}px` }) : null,
+    intro.line ? introQuote("div.ci-line", intro.line, { style: `font-size: ${fitSize(`「${plainLine(intro.line)}」`, 575, 30)}px` }) : null,
   ].filter(Boolean));
   const brief = isSkipping() || shown.has(id);
   const unmount = mountIntro(host, layers.fx, { brief });

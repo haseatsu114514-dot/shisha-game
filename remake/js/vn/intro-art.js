@@ -1,5 +1,6 @@
 // PR226の採用組版。文言・表情は正本から受け取り、配色と人物配置は目録から読む。
 import { el } from "../core/util.js";
+import { introQuote } from "./intro-quote.js";
 import { introFlavor } from "./intro-flavors.js";
 
 export function flavorTag(flavor) {
@@ -95,7 +96,7 @@ export function illustratedIntro(id, variant, intro, main, portrait, art, backgr
     // 読む順番: 名前→二つ名→一言→好きなフレーバー（2026-10-31）
     el(`div.ci-quote-area${flavor ? ".has-flavor" : ""}`, [
       el("div.ci-quote-rule", { "aria-hidden": "true" }),
-      el("div.ci-line", { text: `「${plainLine(intro.line)}」` }),
+      introQuote("div.ci-line", intro.line),
       flavorTag(flavor),
     ].filter(Boolean)),
     el("div.ci-flash", { "aria-hidden": "true" }),
@@ -117,7 +118,7 @@ function fitWidth(node, max, high, low, limit) {
 }
 
 /** 一言は1行に収まれば42px（無理なら38px）、収まらなければ「／」で2行・36px。2行なら true */
-export function layoutIntro(host, id, variant, intro) {
+export function layoutIntro(host) {
   // グラフィック絵柄は人物が大きいので、名前の欄を右へ寄せたぶん幅を詰める（intro.css と同じ値）
   const shift = host.dataset.art === "graphic" ? GRAPHIC_META_SHIFT : 0;
   const name = host.querySelector(".ci-name");
@@ -129,21 +130,17 @@ export function layoutIntro(host, id, variant, intro) {
   const title = host.querySelector(".ci-title");
   title.style.fontSize = "28px";
   if (title.scrollWidth > 580 - shift) fitWidth(title, 1, 27, 20, 580 - shift);
-  const quote = host.querySelector(".ci-line"), raw = intro.line || "", text = plainLine(raw);
+  const quote = host.querySelector(".ci-line");
+  quote.classList.remove("is-split");
   const oneLine = () => quote.offsetHeight <= parseFloat(getComputedStyle(quote).lineHeight) + 1;
   for (const size of [42, 38]) {
     quote.style.fontSize = `${size}px`;
     if (oneLine()) return false;
   }
   quote.style.fontSize = "36px";
-  const cut = raw.indexOf("／");
-  if (cut > 0) {
-    quote.replaceChildren(
-      el("span", { text: `「${plainLine(raw.slice(0, cut))}` }),
-      el("span", { text: `${plainLine(raw.slice(cut + 1))}」` }),
-    );
-  } else quote.textContent = `「${text}」`;
-  return true;
+  const wrapped = !oneLine();
+  quote.classList.toggle("is-split", wrapped);
+  return wrapped;
 }
 
 /** 型ごとの登場。戻り値は止めるための Animation の配列 */

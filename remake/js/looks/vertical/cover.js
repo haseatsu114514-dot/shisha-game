@@ -4,6 +4,7 @@
 // 名前・二つ名・一言・好きなフレーバー・色・絵は、本編が出したカットイン（vn/intro-art.js の .cutin.art-intro）からそのまま読む。
 // 章タイトル（タイトルコール）は VPN27 の形: 上にゲームタイトル（本編のタイトルのロゴ）、真ん中に章タイトルの横長の絵をそのまま、下の空きに章の情報。
 // どの章かは本編の章タイトル（core/ui.js chapterTitle の .chapter-card）から読み、章名・英題は core/chapter-title-art.js の登録から（「〇〇編」は出さない・VPN23）。
+import { introQuote } from "../../vn/intro-quote.js";
 import { imgFileUrl } from "../../core/img-file.js";
 import { el } from "../../core/util.js";
 import { CHAPTER_TITLE_ART } from "../../core/chapter-title-art.js";
@@ -56,7 +57,7 @@ function readCutin(host) {
     name,
     plainName: name?.getAttribute("aria-label") || textOf(name),
     title: textOf(host.querySelector(".ci-title")),
-    line: textOf(host.querySelector(".ci-line")),
+    line: host.querySelector(".ci-line")?.dataset.line,
     flavorLabel: textOf(flavor?.querySelector(".ci-flavor-label")) || "好きなフレーバー",
     flavor: textOf(flavor?.querySelector(".ci-flavor-name")),
   };
@@ -146,7 +147,7 @@ export function createCoverScene(frame, own) {
       el("div.vt-cv-band", [el("i.vt-cv-accent"), nameHtml(card.name)]),
       card.title ? el("div.vt-cv-tag", { text: card.title }) : null,
       el("div.vt-cv-say", [
-        card.line ? el("p.vt-cv-quote", { text: card.line }) : null,
+        card.line ? introQuote("p.vt-cv-quote", card.line) : null,
         card.flavor ? el("p.vt-cv-flavor", [el("small", { text: card.flavorLabel }), el("b", { text: card.flavor })]) : null,
       ]),
     ].filter(Boolean));
