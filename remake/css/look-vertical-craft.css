@@ -1,0 +1,192 @@
+/* 縦画面「煙の舞台」のシーシャ作り（作る場面・js/looks/vertical/craft.js と craft/*.js・VPN30）。縦画面を使う時だけ読み込む（index.html の styles-look-vertical）。
+   寸法は試作 remake/previews/portrait-stage/style.css の作る場面と同じ比（試作の 1rem を --u と書く。--u は css/look-vertical.css の外枠が決める）。
+   外枠の十字キーと丸ボタンは出さず（data-layout="full"）、画面いっぱいに組む:
+   上＝工程の並びとランク／真ん中＝工程の絵と右の温度計／下＝スミさんの一言と「？」／いちばん下＝工程ごとの操作（高さ --cp）。
+   クラスは vtc- で始め、本編の作業台の CSS とぶつからないようにする。 */
+
+.vtc {
+  --acc: #ffc978;
+  /* 下の段の高さ（--cp）・右下の決定の大きさ（--ok）・端の余白（--edge）・下の余白（--low）・一言のために空ける帯（--band）。試作の 844 の画面の値 */
+  --cp-std: calc(30 * var(--u)); --ok: calc(11.2 * var(--u)); --edge: calc(1.4 * var(--u)); --low: calc(1.6 * var(--u)); --band: calc(3 * var(--u));
+  --cp: var(--cp-std);
+  --cp-mix: var(--cp-std); /* 温度計の長さは、いちばん狭い配合の上の画面に合わせる（試作 VPL103） */
+  position: absolute; inset: 0; overflow: hidden; overflow: clip;
+}
+.vtc[data-step="timer"] { --ok: calc(12 * var(--u)); --edge: calc(1 * var(--u)); --cp: calc(var(--low) + var(--ok) + 7.8 * var(--u)); }
+/* 背の低い画面（試作の @container phone (max-height: 80rem)・(max-height: 71rem) と同じ段階。外枠の幅は 39u なので、縦横比で見る） */
+@container vtshell (min-aspect-ratio: 39 / 80) {
+  .vtc { --cp-std: calc(26.6 * var(--u)); --ok: calc(10 * var(--u)); --edge: calc(1.2 * var(--u)); --low: calc(1.2 * var(--u)); --band: calc(2.6 * var(--u)); }
+  .vtc[data-step="timer"] { --ok: calc(10.8 * var(--u)); --edge: calc(1 * var(--u)); }
+  .vtc-say { font-size: calc(1.5 * var(--u)); }
+}
+@container vtshell (min-aspect-ratio: 39 / 71) {
+  .vtc { --cp-std: calc(24 * var(--u)); --ok: calc(8.8 * var(--u)); --edge: calc(1 * var(--u)); --low: calc(1 * var(--u)); --band: calc(2.4 * var(--u)); }
+  .vtc[data-step="timer"] { --ok: calc(9.6 * var(--u)); --edge: calc(1 * var(--u)); }
+  .vtc-say { font-size: calc(1.4 * var(--u)); }
+}
+.vtc-ic { width: 1em; height: 1em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.vtc-ic .f { fill: currentColor; stroke: none; }
+.vtc [hidden] { display: none !important; }
+
+/* 上の絵（作業台の背景を暗くぼかして敷き、工程の絵を重ねる） */
+.vtc-pic { position: absolute; left: 0; right: 0; top: 0; height: calc(100% - var(--cp) - var(--band) - var(--safe-b)); overflow: hidden; overflow: clip;
+  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 86%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 86%, transparent 100%); }
+.vtc-pic::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: calc(10 * var(--u)); background: linear-gradient(180deg, #0b0812b8, transparent); pointer-events: none; }
+.vtc-bg { position: absolute; inset: 0; filter: brightness(0.5) blur(calc(0.25 * var(--u))); transform: scale(1.06); }
+.vtc-veil { position: absolute; left: 0; right: 0; top: 32%; bottom: 0; background: linear-gradient(180deg, transparent 0%, #0b081280 32%, #0b0812b8 58%, #0b0812d9 100%); pointer-events: none; }
+
+/* 工程の並び（絵記号だけ。今の工程は少し大きい光る丸・VPL31） */
+.vtc-steps { position: absolute; z-index: 5; left: var(--u); top: max(calc(1.3 * var(--u)), env(safe-area-inset-top, 0px)); display: flex; align-items: center; gap: calc(0.2 * var(--u)); margin: 0; padding: calc(0.5 * var(--u)); list-style: none;
+  border: calc(0.1 * var(--u)) solid #ffffff26; border-radius: calc(3 * var(--u)); background: #120c1d99; -webkit-backdrop-filter: blur(var(--u)); backdrop-filter: blur(var(--u)); }
+.vtc-steps li { width: calc(2.6 * var(--u)); height: calc(2.6 * var(--u)); display: grid; place-items: center; border-radius: calc(3 * var(--u)); font-size: calc(1.55 * var(--u)); color: #ffffff59; }
+.vtc-steps li.done { color: var(--acc); }
+.vtc-steps li.now { width: calc(3.8 * var(--u)); height: calc(3 * var(--u)); font-size: calc(1.9 * var(--u)); color: var(--deep); background: var(--acc); box-shadow: 0 0 calc(1.6 * var(--u)) color-mix(in srgb, var(--acc) 55%, transparent); }
+
+/* 制作ランク（試作の案D の置き場所: 右上。絵は本編の D〜SSS） */
+.vtc-rank { position: absolute; z-index: 5; right: calc(0.9 * var(--u)); top: max(calc(0.6 * var(--u)), calc(env(safe-area-inset-top, 0px) - 0.6 * var(--u))); pointer-events: none; }
+.vtc-rank-box { position: relative; display: block; width: calc(11.2 * var(--u)); height: calc(8.35 * var(--u)); filter: drop-shadow(0 calc(0.3 * var(--u)) calc(0.6 * var(--u)) #000b); }
+.vtc-rank-box img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.vtc-rank-meter { position: relative; display: block; width: calc(8.6 * var(--u)); height: calc(0.85 * var(--u)); margin: calc(0.1 * var(--u)) auto 0; border: calc(0.1 * var(--u)) solid #ffffff2e; border-radius: var(--u); overflow: hidden;
+  background: #0b081299; box-shadow: inset 0 calc(0.1 * var(--u)) calc(0.3 * var(--u)) #000c, 0 calc(0.2 * var(--u)) calc(0.6 * var(--u)) #000a; }
+.vtc-rank-meter i { display: block; height: 100%; width: calc(var(--p, 0) * 100%); border-radius: inherit; background: linear-gradient(180deg, #fff3d6, #ffcf6b 55%, #e9a93e); box-shadow: 0 0 calc(0.8 * var(--u)) #ffcf6b; transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+
+/* 温度計（右に大きく。色の意味は本編と同じ・VPL61・VPL103） */
+.vtc-thermo { position: absolute; z-index: 5; right: calc(1.1 * var(--u)); top: calc(10.8 * var(--u)); width: calc(5.4 * var(--u)); height: calc(100cqh - var(--cp-mix) - var(--band) - 15.2 * var(--u));
+  display: grid; grid-template-rows: auto minmax(0, 1fr) calc(2.8 * var(--u)); justify-items: center; gap: calc(0.6 * var(--u)); pointer-events: none; }
+.vtc-th-icon { width: calc(3.6 * var(--u)); height: calc(3.6 * var(--u)); display: grid; place-items: center; border-radius: 50%; font-size: calc(2.3 * var(--u)); color: #fff; background: #120c1dcc; box-shadow: 0 0 0 calc(0.12 * var(--u)) #ffffff40, 0 calc(0.4 * var(--u)) var(--u) #0009; transition: color 0.3s, background 0.3s, box-shadow 0.3s; }
+.vtc-thermo[data-state="ok"] .vtc-th-icon { color: #0b2a1c; background: #74e0b0; box-shadow: 0 0 0 calc(0.12 * var(--u)) #fff, 0 0 calc(1.8 * var(--u)) #4fcf98; }
+.vtc-thermo[data-state="best"] .vtc-th-icon { color: #24160a; background: linear-gradient(135deg, #ff9ab0, #ffe27a, #7cf0c8, #8fc8ff, #d2a6ff); box-shadow: 0 0 0 calc(0.12 * var(--u)) #fff, 0 0 calc(2.2 * var(--u)) #fff; }
+.vtc-thermo[data-state="burn"] .vtc-th-icon { color: #fff; background: #c81e1e; box-shadow: 0 0 0 calc(0.12 * var(--u)) #fff, 0 0 calc(2 * var(--u)) #ff3a00; }
+.vtc-th-tube { position: relative; display: flex; justify-content: center; min-height: 0; }
+.vtc-th-bar { position: relative; width: calc(3 * var(--u)); height: 100%; border-radius: calc(1.6 * var(--u)); overflow: hidden; background: linear-gradient(0deg, #fff4d2, #ffe270 37%, #4fcf98 44%, #74e0b0 54%, #ffb247 71%, #ff3f17 83%, #650609);
+  box-shadow: 0 0 0 calc(0.25 * var(--u)) #120c1dd9, 0 0 0 calc(0.38 * var(--u)) #ffffff59, 0 var(--u) calc(2 * var(--u)) #000b; transition: filter 0.3s; }
+.vtc-th-bar::before { content: ""; position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent 0 calc(10% - 0.1 * var(--u)), #0b081233 calc(10% - 0.1 * var(--u)) 10%), linear-gradient(90deg, transparent 14%, #ffffff40 22%, transparent 34%); }
+.vtc-th-zone { position: absolute; left: 0; right: 0; z-index: 3; }
+.vtc-th-zone::before, .vtc-th-zone::after { content: ""; position: absolute; left: 0; right: 0; height: calc(0.25 * var(--u)); background: linear-gradient(90deg, #fff 0 30%, transparent 30% 70%, #fff 70%); filter: drop-shadow(0 0 calc(0.1 * var(--u)) #0008); }
+.vtc-th-zone::before { top: calc(-0.12 * var(--u)); } .vtc-th-zone::after { bottom: calc(-0.12 * var(--u)); }
+.vtc-th-best { position: absolute; left: 0; right: 0; z-index: 5; overflow: hidden; background: linear-gradient(90deg, #ff6c85, #ffb554, #ffef72, #71ffc6, #69dfff, #a59bff, #e89bf4);
+  -webkit-mask-image: linear-gradient(0deg, transparent, #000 15% 85%, transparent); mask-image: linear-gradient(0deg, transparent, #000 15% 85%, transparent); filter: brightness(1.07); }
+.vtc-th-best::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: calc(0.12 * var(--u)); background: #fff; box-shadow: 0 0 calc(0.2 * var(--u)) #fff; }
+.vtc-th-danger { position: absolute; left: 0; right: 0; top: 0; z-index: 3; display: grid; place-items: center; border-bottom: calc(0.2 * var(--u)) solid #fff6e0cc; font-size: calc(1.8 * var(--u)); color: #fff6e0; }
+.vtc-th-danger .vtc-ic { filter: drop-shadow(0 0 calc(0.3 * var(--u)) #ff3a00) drop-shadow(0 0 calc(0.1 * var(--u)) #000); }
+.vtc-th-dim { position: absolute; left: 0; right: 0; top: 0; bottom: calc(var(--t) * 100%); z-index: 2; background: #0b08124d; transition: bottom 0.6s var(--ease-out); }
+.vtc-th-now { position: absolute; left: 0; right: 0; z-index: 6; bottom: calc(var(--t) * 100%); height: calc(0.42 * var(--u)); margin-bottom: calc(-0.21 * var(--u)); background: #fff; box-shadow: 0 0 0 calc(0.12 * var(--u)) #120a10, 0 0 calc(0.8 * var(--u)) #fff; transition: bottom 0.6s var(--ease-out); }
+.vtc-th-range { position: absolute; left: calc(-0.3 * var(--u)); right: calc(-0.3 * var(--u)); z-index: 6; border: calc(0.2 * var(--u)) solid #fff; border-radius: calc(0.6 * var(--u)); background: #ffffff33; box-shadow: 0 0 calc(0.8 * var(--u)) #fff; transition: bottom 0.4s var(--ease-out), height 0.4s var(--ease-out); }
+.vtc-th-pointer { position: absolute; z-index: 7; left: calc(-1.5 * var(--u)); bottom: calc(var(--t) * 100%); width: 0; height: 0; margin-bottom: calc(-1.05 * var(--u)); border: calc(1.05 * var(--u)) solid transparent; border-left: calc(1.6 * var(--u)) solid #fff; border-right: 0;
+  filter: drop-shadow(0 0 calc(0.1 * var(--u)) #120a10) drop-shadow(0 calc(0.2 * var(--u)) calc(0.4 * var(--u)) #000a); transition: bottom 0.6s var(--ease-out); }
+.vtc-th-note { align-self: start; margin: calc(0.2 * var(--u)) calc(-2 * var(--u)) 0; font-size: calc(1.2 * var(--u)); font-weight: 700; color: #ffe2a6; white-space: nowrap; text-shadow: 0 calc(0.1 * var(--u)) calc(0.4 * var(--u)) #000; }
+.vtc-thermo[data-mode="bands"][data-selected="false"] .vtc-th-bar { filter: grayscale(1) brightness(0.55); }
+
+/* 下: スミさんの一言（小さな吹き出し。顔を押すと畳む）と「？」、いちばん下の操作 */
+.vtc-body { position: absolute; z-index: 6; left: 0; right: 0; bottom: 0; padding-bottom: var(--safe-b); }
+.vtc-telop { position: relative; margin: 0 calc(1.2 * var(--u)); }
+.vtc-coach { display: flex; align-items: flex-end; gap: var(--u); width: 100%; margin-bottom: calc(0.2 * var(--u)); padding-right: calc(4.2 * var(--u)); text-align: left; }
+.vtc-coach img { flex: none; width: calc(4.4 * var(--u)); height: calc(4.4 * var(--u)); border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 calc(0.15 * var(--u)) var(--acc), 0 calc(0.4 * var(--u)) var(--u) #000a; }
+.vtc-say { padding: calc(0.75 * var(--u)) calc(1.3 * var(--u)) calc(0.85 * var(--u)); border: calc(0.1 * var(--u)) solid #ffffff30; border-radius: calc(1.9 * var(--u)) calc(1.9 * var(--u)) calc(1.9 * var(--u)) calc(0.5 * var(--u));
+  font-size: calc(1.6 * var(--u)); line-height: 1.6; font-weight: 500; letter-spacing: 0.03em; color: #fff; background: linear-gradient(180deg, #1e1632cc, #0e0a18e6);
+  -webkit-backdrop-filter: blur(calc(1.6 * var(--u))); backdrop-filter: blur(calc(1.6 * var(--u))); box-shadow: 0 calc(1.2 * var(--u)) calc(2.4 * var(--u)) #000a, inset 0 calc(0.1 * var(--u)) 0 #ffffff3d;
+  transition: opacity 0.4s, transform 0.4s var(--ease-out); transform-origin: 0 100%; }
+.vtc-say-text { display: block; }
+.vtc-coach.quiet .vtc-say { opacity: 0; transform: translateY(calc(0.6 * var(--u))) scale(0.94); }
+.vtc-help { position: absolute; right: 0; bottom: calc(0.6 * var(--u)); z-index: 2; width: calc(3.2 * var(--u)); height: calc(3.2 * var(--u)); display: grid; place-items: center; border: calc(0.1 * var(--u)) solid #ffffff4d; border-radius: 50%;
+  font-size: calc(1.7 * var(--u)); font-weight: 700; line-height: 1; color: #ffffffd9; background: #120c1dcc; box-shadow: 0 calc(0.3 * var(--u)) calc(0.8 * var(--u)) #000a; -webkit-backdrop-filter: blur(var(--u)); backdrop-filter: blur(var(--u)); }
+.vtc-help:active { color: var(--deep); background: var(--acc); }
+.vtc-ctrl { position: relative; height: var(--cp); }
+.vtc-ctrl > * { position: absolute; inset: 0; }
+
+/* 丸いボタン（試作の .btn-a: 煙のガラスの面と真鍮の縁。場面の色は中心の光で重ねる） */
+.vtc-ok { position: absolute; width: var(--ok); height: var(--ok); border-radius: 50%; display: grid; place-items: center; touch-action: manipulation;
+  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--acc) 34%, transparent) 0%, color-mix(in srgb, var(--acc) 10%, transparent) 46%, transparent 66%), url("../img/ui/vertical/pad-button.webp") center / 100% 100% no-repeat;
+  box-shadow: 0 0 calc(3.4 * var(--u)) color-mix(in srgb, var(--acc) 42%, transparent), 0 calc(1.4 * var(--u)) calc(2.6 * var(--u)) #000b; transition: transform 0.1s; }
+.vtc-ok::before { content: ""; position: absolute; inset: calc(-0.16 * var(--u)); border-radius: 50%; border: calc(0.12 * var(--u)) solid var(--acc); opacity: 0; animation: vtc-halo 2.4s ease-out infinite; pointer-events: none; }
+@keyframes vtc-halo { 0% { opacity: 0.7; transform: scale(1); } 100% { opacity: 0; transform: scale(1.3); } }
+.vtc-ok-t { font-family: var(--mincho); font-size: calc(var(--ok) * 0.28); letter-spacing: 0.1em; margin-right: -0.1em; color: #fff; text-shadow: 0 calc(0.2 * var(--u)) calc(0.8 * var(--u)) #0b0812, 0 0 calc(0.3 * var(--u)) #0b0812; pointer-events: none; }
+.vtc-ok:active { transform: scale(0.94); }
+.vtc-ok[disabled] { filter: grayscale(1) brightness(0.7); cursor: default; } .vtc-ok[disabled]::before { animation: none; }
+.vtc-lab { position: absolute; z-index: 4; left: 0; right: 0; bottom: 15%; text-align: center; font-size: calc(var(--ok) * 0.12); line-height: 1.1; font-weight: 800; letter-spacing: 0.06em; color: #fff; text-shadow: 0 calc(0.1 * var(--u)) calc(0.4 * var(--u)) #0b0812, 0 0 calc(0.2 * var(--u)) #0b0812; pointer-events: none; }
+
+/* ───────── 詰め方（試作の pack・VPL77・VPL91）: 上に選んだ詰め方の器、下に3枚の札・説明・決定 ───────── */
+.vtc-pack-pic { position: absolute; inset: 0; }
+.vtc-bowl { position: absolute; left: 46%; top: 18%; height: 66%; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 calc(2 * var(--u)) calc(2.4 * var(--u)) #000c); }
+.vtc-pack { --card-h: min(calc(18.4 * var(--u)), calc(var(--cp) - var(--ok) - var(--low) - 2.2 * var(--u))); }
+.vtc-cards { position: absolute; left: calc(1.2 * var(--u)); right: calc(1.2 * var(--u)); top: calc(0.6 * var(--u)); display: grid; grid-template-columns: repeat(3, 1fr); gap: calc(0.8 * var(--u)); }
+.vtc-card { position: relative; height: var(--card-h); min-width: 0; display: grid; justify-items: center; align-content: start; gap: calc(0.35 * var(--u)); padding: calc(0.7 * var(--u)) calc(0.3 * var(--u)) 0;
+  border: calc(0.1 * var(--u)) solid #ffffff38; border-radius: calc(1.7 * var(--u)); background: #120c1dd9; box-shadow: 0 calc(0.6 * var(--u)) calc(1.4 * var(--u)) #0008, inset 0 calc(0.1 * var(--u)) 0 #ffffff29;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s; touch-action: manipulation; }
+.vtc-card img { width: 100%; height: calc(var(--card-h) - 7.6 * var(--u)); object-fit: contain; filter: drop-shadow(0 calc(0.5 * var(--u)) calc(0.8 * var(--u)) #000a); }
+.vtc-card b { font-size: calc(1.5 * var(--u)); white-space: nowrap; }
+.vtc-card[aria-pressed="true"] { border-color: var(--acc); background: color-mix(in srgb, var(--acc) 24%, #120c1dcc);
+  box-shadow: 0 0 0 calc(0.15 * var(--u)) color-mix(in srgb, var(--acc) 55%, transparent), 0 0 calc(2.4 * var(--u)) color-mix(in srgb, var(--acc) 40%, transparent), 0 calc(0.8 * var(--u)) calc(1.6 * var(--u)) #0009; }
+.vtc-card:active:not([disabled]) { transform: translateY(calc(0.15 * var(--u))); }
+.vtc-dens { display: flex; gap: calc(0.4 * var(--u)); }
+.vtc-dens i { width: var(--u); height: var(--u); border-radius: 50%; box-shadow: inset 0 0 0 calc(0.16 * var(--u)) #ffffff80; }
+.vtc-dens i.on { background: var(--acc); box-shadow: 0 0 calc(0.6 * var(--u)) var(--acc); }
+.vtc-heat { display: flex; align-items: center; gap: calc(0.35 * var(--u)); font-size: calc(1.6 * var(--u)); color: #ffb98a; }
+.vtc-heat .vtc-ic { margin-right: calc(0.2 * var(--u)); font-size: calc(1.7 * var(--u)); }
+.vtc-heat i { width: calc(0.7 * var(--u)); height: calc(0.7 * var(--u)); margin-left: calc(-0.15 * var(--u)); border-top: calc(0.22 * var(--u)) solid currentColor; border-right: calc(0.22 * var(--u)) solid currentColor; rotate: 45deg; opacity: 0.22; }
+.vtc-heat i.on { opacity: 1; }
+.vtc-card.locked :is(img, b, .vtc-dens, .vtc-heat) { opacity: 0.45; }
+.vtc-lock { position: absolute; right: calc(0.8 * var(--u)); top: calc(0.8 * var(--u)); display: grid; font-size: calc(1.8 * var(--u)); color: #ffffffcc; }
+.vtc-packinfo { position: absolute; inset: auto; left: var(--edge); right: calc(var(--ok) + var(--edge) + var(--u)); bottom: var(--low); height: var(--ok); display: grid; align-content: center; gap: calc(0.3 * var(--u)); padding: 0 calc(1.4 * var(--u));
+  border: calc(0.1 * var(--u)) solid #ffffff26; border-radius: calc(1.8 * var(--u)); background: #120c1db3; overflow: hidden; }
+.vtc-packinfo b { font-size: calc(1.9 * var(--u)); line-height: 1.3; }
+.vtc-packinfo span { font-size: calc(1.45 * var(--u)); line-height: 1.45; color: #ffe2c2; }
+.vtc-packinfo small { font-size: calc(1.2 * var(--u)); font-weight: 700; color: #ffffffb3; }
+.vtc-pack-ok { right: var(--edge); bottom: var(--low); }
+@container vtshell (min-aspect-ratio: 39 / 80) { .vtc-packinfo b { font-size: calc(1.7 * var(--u)); } .vtc-packinfo span { font-size: calc(1.35 * var(--u)); } }
+@container vtshell (min-aspect-ratio: 39 / 71) { .vtc-card b { font-size: calc(1.3 * var(--u)); } .vtc-packinfo { padding: 0 var(--u); } .vtc-packinfo b { font-size: calc(1.5 * var(--u)); } .vtc-packinfo span { font-size: calc(1.25 * var(--u)); } }
+
+/* ───────── 蒸らし時間（試作の timer・VPL105・VPL127〜VPL130）: 上に縦長のキッチンタイマー、下に早見とリセット、分・秒・スタート ───────── */
+.vtc[data-step="timer"] .vtc-pic { -webkit-mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); }
+.vtc[data-step="timer"] .vtc-veil { top: calc(100% - var(--cp) - var(--safe-b) - 5 * var(--u)); }
+.vtc-timer-pic { position: absolute; inset: 0; }
+.vtc-timer { position: absolute; left: 0; right: calc(5.6 * var(--u)); top: calc(9.4 * var(--u)); bottom: calc(2.4 * var(--u)); z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; container-type: size; }
+.vtc-ktimer { position: relative; z-index: 1; flex: none; width: min(calc(31.4 * var(--u)), 100cqh * var(--ar)); container-type: inline-size; }
+.vtc-ktimer > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 var(--u) calc(1.6 * var(--u)) #000b); pointer-events: none; }
+.vtc-lcd { position: absolute; display: grid; place-items: center; color: #192e28; }
+.vtc-lcd svg { width: 90%; height: 88%; }
+.vtc-lcd path, .vtc-lcd circle { fill: #192e2812; } .vtc-lcd .on { fill: currentColor; }
+.vtc-kt { position: absolute; transform: translate(-50%, -50%); padding: 0; border: 0; border-radius: 3cqw; background: transparent; color: #27342e; font-weight: 800; line-height: 1.1; mix-blend-mode: multiply; touch-action: manipulation; }
+.vtc-kt:disabled { opacity: 0.4; }
+.vtc-kt.hit { animation: vtc-kt-hit 0.2s ease-out; }
+@keyframes vtc-kt-hit { 0% { background: #0003; transform: translate(-50%, calc(-50% + 0.25cqw)); } 100% { background: transparent; transform: translate(-50%, -50%); } }
+.vtc-timer.go .vtc-lcd { animation: vtc-lcd-go 0.6s steps(2) 1; }
+@keyframes vtc-lcd-go { 50% { opacity: 0.25; } }
+/* 慣れた人だけの「雑念回避を短めにする」（工程の並びのすぐ下） */
+.vtc-shorten { position: absolute; z-index: 5; left: var(--u); top: calc(max(calc(1.3 * var(--u)), env(safe-area-inset-top, 0px)) + 5 * var(--u)); height: calc(3.2 * var(--u)); padding: 0 calc(1.3 * var(--u));
+  border: calc(0.12 * var(--u)) solid #ffffff38; border-radius: calc(1.6 * var(--u)); font-size: calc(1.3 * var(--u)); font-weight: 700; color: #ffffffcc; background: #120c1dcc; box-shadow: 0 calc(0.4 * var(--u)) var(--u) #000a; touch-action: manipulation; }
+.vtc-shorten[aria-pressed="true"] { border-color: var(--acc); color: var(--deep); background: var(--acc); }
+.vtc-presets { position: absolute; inset: auto; left: var(--edge); right: var(--edge); top: calc((var(--cp) - var(--low) - var(--ok)) / 2 - 2.6 * var(--u)); display: flex; gap: calc(0.8 * var(--u)); }
+.vtc-preset { flex: 1; height: calc(5.2 * var(--u)); border: calc(0.14 * var(--u)) solid #ffffff38; border-radius: calc(2.6 * var(--u)); color: #fff; background: #120c1dcc; font-size: calc(2 * var(--u)); font-weight: 800;
+  box-shadow: 0 calc(0.6 * var(--u)) calc(1.2 * var(--u)) #000a, inset 0 calc(0.1 * var(--u)) 0 #ffffff33; touch-action: manipulation; }
+.vtc-preset[aria-pressed="true"] { border-color: var(--acc); color: var(--deep); background: var(--acc); box-shadow: 0 0 calc(1.6 * var(--u)) color-mix(in srgb, var(--acc) 55%, transparent); }
+.vtc-preset.reset { flex: 0.9; font-size: calc(1.5 * var(--u)); color: #ffffffb3; }
+.vtc-preset:active:not([disabled]) { transform: translateY(calc(0.15 * var(--u))); }
+.vtc-preset[disabled] { opacity: 0.5; }
+.vtc-t-min { left: var(--edge); bottom: var(--low); }
+.vtc-t-sec { left: 50%; bottom: var(--low); margin-left: calc(var(--ok) / -2); }
+.vtc-t-start { right: var(--edge); bottom: var(--low); }
+:is(.vtc-t-min, .vtc-t-sec) .vtc-ok-t { font-size: calc(var(--ok) * 0.32); margin-bottom: calc(var(--ok) * 0.12); }
+.vtc-t-start .vtc-ok-t { font-size: calc(var(--ok) * 0.16); letter-spacing: 0; margin-right: 0; white-space: nowrap; }
+
+/* ───────── 「?」の説明（本編の .bench-guide を写す。工程の初回の「操作の説明」も同じ） ───────── */
+.vtc-guide { position: absolute; z-index: 30; inset: 0; display: grid; place-items: center; padding: calc(1.6 * var(--u)) calc(1.4 * var(--u)) calc(1.6 * var(--u) + var(--safe-b)); background: #0b0812cc;
+  -webkit-backdrop-filter: blur(calc(0.4 * var(--u))); backdrop-filter: blur(calc(0.4 * var(--u))); animation: vtc-fade 0.25s ease-out; }
+@keyframes vtc-fade { from { opacity: 0; } }
+.vtc-guide-card { width: 100%; max-height: 100%; overflow-y: auto; display: grid; gap: calc(0.8 * var(--u)); padding: calc(1.6 * var(--u)) calc(1.8 * var(--u)) calc(1.8 * var(--u));
+  border: calc(0.12 * var(--u)) solid #f1d79a99; border-radius: calc(1.8 * var(--u)); background: #120c1df2; box-shadow: 0 var(--u) calc(2.4 * var(--u)) #000c; scrollbar-width: none; }
+.vtc-guide-card::-webkit-scrollbar { display: none; }
+.vtc-guide-card > b { font-size: calc(1.7 * var(--u)); letter-spacing: 0.06em; color: #ffe2a6; }
+.vtc-guide-text { display: grid; gap: calc(0.6 * var(--u)); font-size: calc(1.5 * var(--u)); line-height: 1.65; color: #f1ecf9; user-select: text; -webkit-user-select: text; }
+.vtc-guide-text :is(p, ul, ol) { margin: 0; }
+.vtc-guide-text :is(ul, ol) { display: grid; gap: calc(0.3 * var(--u)); padding-left: calc(1.8 * var(--u)); }
+.vtc-guide-text li b { margin-right: var(--u); color: #ffe2a6; }
+.vtc-guide-card > small { font-size: calc(1.25 * var(--u)); font-weight: 700; color: #ffffffa6; }
+.vtc-guide-close { min-height: calc(5.2 * var(--u)); margin-top: calc(0.4 * var(--u)); padding: calc(0.6 * var(--u)) calc(1.6 * var(--u)); border: calc(0.14 * var(--u)) solid var(--acc); border-radius: calc(2.6 * var(--u));
+  font-size: calc(1.74 * var(--u)); font-weight: 700; letter-spacing: 0.04em; color: var(--deep); background: var(--acc); box-shadow: 0 0 calc(1.6 * var(--u)) color-mix(in srgb, var(--acc) 45%, transparent); touch-action: manipulation; }
+.vtc-guide-close:active { transform: scale(0.98); }
+
+@media (prefers-reduced-motion: reduce) {
+  .vtc *, .vtc *::before, .vtc *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
