@@ -529,7 +529,7 @@ async function staminaGuard(cost, { mandatory = false } = {}) {
     body: "この行動の後は、体力が赤い範囲になる。行動後の残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。"
       + (tournamentEve() ? "<br>今夜発病すると睡眠で体力が戻らず、翌朝は休養の時間を取れないまま本番に入る。" : "")
       + (mandatory ? "<br>今日のシフトは外せない。" : "<br>無事に済むこともあるけど、今は「家に帰る」で休める。")
-      + (fitActive(state) ? "<br>（チョコザップで体を整えたので、今は風邪をひきにくい）" : ""),
+      + (fitActive(state) ? "<br>（サクッとジムで体を整えたので、今は風邪をひきにくい）" : ""),
     options: mandatory ? [{ label: "わかった", value: true, test: "stamina-go" }]
       : [{ label: "やめておく", value: false }, { label: "それでも行く", value: true, test: "stamina-go" }],
   });

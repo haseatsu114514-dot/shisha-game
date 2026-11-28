@@ -14,7 +14,7 @@ for (const ratio of [.250001, .5, 1]) {
 for (const ratio of [.25, .1, 0]) {
   assert(catchesCold(ratio, () => 0)); assert(!catchesCold(ratio, () => .99));
 }
-// チョコザップの数日は同じ無理でも風邪をひきにくい。健康なときは抽選しない
+// サクッとジムの数日は同じ無理でも風邪をひきにくい。健康なときは抽選しない
 for (const ratio of [.25, .1, 0]) assert(Math.abs(coldRisk(ratio, { fit: true }) - coldRisk(ratio) * FIT_RISK) < 1e-12);
 assert.equal(coldRisk(.5, { fit: true }), 0);
 const fitSave = (day, chapter = 1) => ({ chapter, day, flags: { _fit_since: { chapter: 1, day: 3 } } });

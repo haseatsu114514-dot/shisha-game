@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Reject known typo phrases in player-visible dialogue JSON fields."""
+"""Reject known typo phrases in dialogue fields and game JavaScript strings."""
 
 import json
 from pathlib import Path
 import sys
+
+from check_hesitation_fragments import js_literals
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -70,11 +72,13 @@ def load_cases(path):
     seen = set()
     fields = ("detect", "after", "type", "file", "note")
     for index, case in enumerate(cases):
+        reference = case.get("pr", case.get("issue")) if isinstance(case, dict) else None
         if (
             not isinstance(case, dict)
             or not all(isinstance(case.get(key), str) and case[key].strip() for key in fields)
-            or type(case.get("pr")) is not int
-            or case["pr"] <= 0
+            or ("pr" in case and "issue" in case)
+            or type(reference) is not int
+            or reference <= 0
         ):
             raise ValueError(f"{path}: invalid typo case at index {index}")
         if case["detect"] in seen or case["detect"] in case["after"]:
@@ -91,8 +95,18 @@ def json_pointer(path):
     return "/" + "/".join(str(part).replace("~", "~0").replace("/", "~1") for part in path)
 
 
+def report(location, text, cases):
+    hits = 0
+    for case in regressions(text, cases):
+        source = f"PR #{case['pr']}" if "pr" in case else f"Issue #{case['issue']}"
+        print(f"{location}: {case['detect']!r} → {case['after']!r} ({source})")
+        hits += 1
+    return hits
+
+
 def main(root=ROOT):
     files = sorted((root / "data/dialogue").rglob("*.json"))
+    js_files = sorted((root / "remake/js").rglob("*.js"))
     count = 0
     hits = 0
     try:
@@ -102,18 +116,19 @@ def main(root=ROOT):
         for file in files:
             for path, text in visible_texts(read_json(file)):
                 count += 1
-                for case in regressions(text, cases):
-                    hits += 1
-                    print(f"{file.relative_to(root)}#{json_pointer(path)}: "
-                          f"{case['detect']!r} → {case['after']!r} (PR #{case['pr']})")
-    except ValueError as exc:
+                hits += report(f"{file.relative_to(root)}#{json_pointer(path)}", text, cases)
+        for file in js_files:
+            for text in js_literals(file):
+                hits += report(file.relative_to(root), text, cases)
+    except (OSError, ValueError) as exc:
         print(exc, file=sys.stderr)
         return 2
 
     if hits:
         print(f"NG: 誤字の再出現 {hits} 件")
         return 1
-    print(f"OK: 誤字の再出現 0 件（{len(files)} JSON、表示文字列 {count} 件、登録 {len(cases)} 事例）")
+    print(f"OK: 誤字の再出現 0 件（{len(files)} JSON、JSON表示文字列 {count} 件、"
+          f"{len(js_files)} JS、登録 {len(cases)} 事例）")
     return 0
 
 
