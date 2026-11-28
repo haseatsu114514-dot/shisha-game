@@ -746,3 +746,16 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 @keyframes vt-ct-rule { from { transform: scaleX(0); } }
 .vt-ct-read { font-family: "Times New Roman", "Suien Name", serif; font-style: italic; font-size: calc(1.8 * var(--u)); letter-spacing: 0.1em; opacity: 0.9; }
 @media (prefers-reduced-motion: reduce) { .vt-ct-logo, .vt-ct-art, .vt-ct-copy, .vt-ct-rule { animation: none; } }
+
+/* 章頭詩は本編の札のまま、上に横長のコマ、下に連の列を置く。 */
+.chapter-poem:popover-open {
+  position: fixed; inset: 0; box-sizing: border-box; margin: 0;
+  width: 100%; height: 100%; max-width: none; max-height: none; border: 0;
+  padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  pointer-events: auto;
+}
+.chapter-poem:popover-open .cp-panel { width: 90%; margin-top: 12dvh; }
+.chapter-poem:popover-open .cp-body {
+  max-height: none; font-size: min(5.7vw, 2.8dvh, 32px); line-height: 2; letter-spacing: .12em;
+}
+.chapter-poem:popover-open .cp-page { inset: 0 0 5dvh; }
