@@ -432,7 +432,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-shell[data-scene="cover"] .vt-telop { visibility: hidden; }
 
 /* 登場カットイン（案A 縦のポスター: 上に人物、真ん中に斜めの帯と名前、下に一言） */
-.vt-cv { --art-w: calc(52 * var(--u)); --art-top: calc(1.5 * var(--u)); --art-x: calc(19.5 * var(--u)); --band-top: min(56%, calc(100% - 33 * var(--u))); --band-h: calc(var(--nsz) * 1.32 + 2.2 * var(--u)); --focus: 0.5; --nsz: calc(var(--name-size, 6) * var(--u));
+.vt-cv { --art-w: calc(52 * var(--u)); --art-top: calc(1.5 * var(--u)); --art-x: calc(19.5 * var(--u)); --band-top: min(56%, calc(100% - 36.5 * var(--u) - var(--safe-b))); --band-h: calc(var(--nsz) * 1.32 + 2.2 * var(--u)); --focus: 0.5; --nsz: calc(var(--name-size, 6) * var(--u));
   position: absolute; inset: 0; z-index: 45; overflow: hidden; isolation: isolate; background: var(--ci-shadow); }
 .vt-cv[hidden] { display: none; }
 .vt-cv-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 78% 50%; animation: vt-cv-bg 0.7s var(--ease-out) both; }
