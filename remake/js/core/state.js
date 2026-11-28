@@ -696,6 +696,13 @@ export function readSlot(key) {
   const s = parseSave(readRaw(key));
   return s?.day ? s : null;
 }
+/** 枠の中身を、読み込みと同じ移行を通した写しで返す（今の状態・保存は変えない）。読めなければ null。
+ *  タイトルの EXTRA（scenes/extra-progress.js）が、ミニゲームの進み具合を読むのに使う（EXT04）。 */
+export function readSlotMigrated(key) {
+  const s = readSlot(key);
+  if (!s) return null;
+  try { return migrate(s) || null; } catch { return null; }
+}
 /** 外から受け取ったセーブが、読み込みと同じ移行を通せるか（保存はしない。形式は変えない） */
 export function isLoadableSave(s) {
   try { return !!migrate(s); } catch { return false; }

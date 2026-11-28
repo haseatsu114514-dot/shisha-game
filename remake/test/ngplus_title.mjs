@@ -23,10 +23,10 @@ function makeEl() {
     const node = {
       tag, classes, children: [], dataset: { ...(p.dataset ?? {}) }, style: {},
       text: p.text ?? null, hidden: p.hidden === true, complete: false, naturalWidth: 1,
-      classList: { add() {}, remove() {}, toggle() {} },
+      classList: { add() {}, remove() {}, toggle() {}, contains: (name) => classes.includes(name) },
       append(...nodes) { this.children.push(...nodes.flat(Infinity).filter((n) => n != null && n !== false)); },
       replaceChildren(...nodes) { this.children = nodes.filter((n) => n != null && n !== false); },
-      addEventListener() {},
+      addEventListener() {}, toggleAttribute() {}, setAttribute() {},
       querySelector(sel) { return findFirst(this, sel); },
       querySelectorAll(sel) { const out = []; collectAll(this, sel, out); return out; },
     };
@@ -136,6 +136,8 @@ function makeFixture(opts = {}) {
     "../chapters/ch1.js": { startNewGame: () => { calls.startNewGame++; }, resumeGame() {} },
     "../vn/engine.js": { clearLog() {} },
     "./gallery.js": { openGallery: async () => {} },
+    "./extra.js": { openExtra: async () => {}, extraPlayedNow: () => new Set() },
+    "../core/extra-games.js": { extraUnlocked: () => false },
     "./saves.js": { loadWithRecovery: async () => false, saveHeadline: () => "" },
     "./title-art.js": {
       pickTitleArt: () => ({ character: "sumi", file: "sumi.webp", url: "blob:sumi", ready: true }),
@@ -244,7 +246,7 @@ const META = (over = {}) => ({
   // 並び順: NEW GAME の次
   const menu = findByClass(fx.screens.at(-1).root, "title-menu");
   assert.deepEqual(menu.children.map((b) => b.dataset.test),
-    ["title-new", "title-next-cycle", "title-continue", "title-load", "title-gallery", "title-config"]);
+    ["title-new", "title-next-cycle", "title-continue", "title-extra", "title-gallery", "title-config"]); // ロードは「つづきから」の行の中（EXT02）
 }
 {
   // 解放済み・パッケージなし: ボタンは出るが開始できない

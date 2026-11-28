@@ -28,15 +28,26 @@ export function createTitleScene(frame) {
   const root = el("div.vt-tt", { dataset: { test: "vt-title" } }, [pic, veil, ver, body]);
   let pick = -1, sig = "", artUrl = "";
   const liveItems = () => [...document.querySelectorAll("#screen > .title .title-menu > .title-item")];
-  const usable = (node) => !!node && !node.disabled;
+  const usable = (node) => !!node && !node.disabled && !node.classList.contains("is-locked");
 
   function renderPick() {
     for (const node of items.children) node.setAttribute("aria-current", String(Number(node.dataset.index) === pick));
   }
   items.addEventListener("click", (event) => {
+    // 「つづきから」の行の「セーブを選ぶ」（本編の行の右下の押し所と同じ・EXT02）。押しても行（つづきから）にはしない
+    const sub = event.target.closest(".vt-tt-sub");
+    if (sub) {
+      event.stopPropagation();
+      const live = liveItems()[Number(sub.closest(".vt-tt-item")?.dataset.index)]?.querySelector('.ti-sub:not([aria-disabled="true"])');
+      if (live && !live.hidden) live.click();
+      return;
+    }
     const node = event.target.closest(".vt-tt-item");
     if (!node || node.disabled) return;
     event.stopPropagation();
+    // まだ開いていない行（EXTRA の「？？？」）は、本編の行へ伝えて開き方の案内だけ出す（選んだ行にはしない）
+    const locked = liveItems()[Number(node.dataset.index)];
+    if (locked?.classList.contains("is-locked")) { locked.click(); return; }
     pick = Number(node.dataset.index);
     renderPick();
     node.classList.remove("is-picked"); void node.offsetWidth; node.classList.add("is-picked");
@@ -60,7 +71,7 @@ export function createTitleScene(frame) {
     const live = document.querySelector("#screen > .title");
     if (!live) return;
     const list = liveItems();
-    const next = list.map((node) => `${node.dataset.test}|${node.disabled}|${node.textContent}`).join("\n");
+    const next = list.map((node) => `${node.dataset.test}|${node.disabled}|${node.textContent}|${!!node.querySelector(".ti-sub:not([hidden])")}`).join("\n");
     if (next !== sig) {
       sig = next;
       // 決定を押すだけで本編へ入れるよう、いちばん使う行を選んでおく（セーブがあれば CONTINUE）
@@ -68,10 +79,13 @@ export function createTitleScene(frame) {
       if (!usable(list[pick])) pick = Math.max(0, list.findIndex(usable));
       items.replaceChildren(...list.map((node, index) => {
         const note = textOf(node.querySelector(".ti-note"));
-        return el("button.vt-tt-item", { type: "button", disabled: node.disabled, style: { "--i": String(index) },
+        // 「つづきから」の行は、日本語の名前の段を「セーブを選ぶ」の札に置き換える（縦の行の右側には札を足す幅が無い。英字の CONTINUE で意味は通じる）
+        const subNode = node.querySelector(".ti-sub:not([hidden])");
+        const sub = subNode ? el("span.vt-tt-sub", { text: textOf(subNode), dataset: { test: "vt-title-load" } }) : null;
+        return el(`button.vt-tt-item${node.classList.contains("is-locked") ? ".is-locked" : ""}`, { type: "button", disabled: node.disabled, style: { "--i": String(index) },
           dataset: { index: String(index), test: `vt-${node.dataset.test}` } }, [
           el("i"), el("span.vt-tt-en", { text: textOf(node.querySelector(".ti-en")) || textOf(node) }),
-          el("span.vt-tt-side", [el("span.vt-tt-ja", { text: textOf(node.querySelector(".ti-ja")) }), note ? el("span.vt-tt-note", { text: note }) : null]),
+          el("span.vt-tt-side", [sub || el("span.vt-tt-ja", { text: textOf(node.querySelector(".ti-ja")) }), note ? el("span.vt-tt-note", { text: note }) : null]),
         ]);
       }));
       renderPick();
