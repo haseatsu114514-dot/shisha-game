@@ -390,4 +390,46 @@ await suite("roamers", async check => {
     });
     assert(!ids[0].includes("naru") && ids[1].includes("naru"), "先に話した居合わせの人は、会った後もプリクラの相手に出る");
   });
+
+  // あげはの店（夜）: 居合わせた人と先に話して理由を聞き、その後でプリクラを撮るか選ぶ（その人とも撮れる）
+  await check("at-ageha-the-roamer-talk-comes-before-the-photo-booth", async page => {
+    const plan = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), value = core.newGame();
+      Object.assign(value, { chapter: 2, phase: "daily", day: 18, slot: 1, money: 30000, stamina: 80 });
+      value.met = { hajime: true, ageha: true, naru: true, adam: true };
+      value.story.naru = 1; value.story.adam = 1;
+      Object.assign(value.flags, { _ch2_day1: { startDay: 15 }, _ageha_first_purikura: true, _ch2_talks: { ageha: 3 } });
+      const city = await import("./js/chapters/ch2-city-data.js");
+      await city.loadChapterTwoDialogues(); await city.loadPreparationDialogues();
+      const roamers = await import("./js/daily/roamers.js"), prep = await import("./js/chapters/ch2-preparation.js");
+      roamers.addRoamerSpots(() => prep.PREPARATION_SPOTS);
+      let plan = null;
+      for (let seed = 1; seed < 40000 && !plan; seed++) {
+        value.seed = seed;
+        const found = roamers.roamerPlan(value);
+        if (found?.spotId === "ch2_ageha" && ["naru", "adam"].includes(found.id)) plan = found;
+      }
+      core.save();
+      const engine = await import("./js/vn/engine.js");
+      engine.vnTest.turbo = true;
+      window.R = { trace: [], done: null };
+      engine.hooks.onLine = scene => R.trace.push(scene);
+      const spot = prep.PREPARATION_SPOTS.find(entry => entry.id === "ch2_ageha");
+      prep.visitPreparationSpot(spot, { staminaGuard: async () => true, roamer: plan,
+        meetRoamerNow: () => roamers.meetRoamer(spot, plan, { deferSave: true }) }).then(result => { R.done = result; });
+      return plan;
+    });
+    assert(plan, "MELTY PUFF に、店の休み・早じまいのライバルが居合わせる種が見つからない");
+    await page.locator('[data-test="purikura-shoot"]').click();
+    await page.locator(`[data-test="purikura-with-${plan.id}"]`).click();
+    await page.locator('[data-test="purikura-receive"]').click();
+    await page.waitForFunction(() => R.done);
+    const result = await page.evaluate(() => ({ scenes: [...new Set(R.trace)], done: R.done,
+      photo: __remake.state.flags._ageha_purikura_history?.at(-1)?.people, met: __remake.state.flags._roam_day }));
+    const talk = result.scenes.indexOf(`roam_${plan.id}_first`), booth = result.scenes.indexOf("remake_ch2_purikura_match");
+    assert(talk >= 0 && booth > talk, `居合わせの会話の後でプリクラ: ${result.scenes.join(",")}`);
+    assert.equal(result.done.used, true);
+    assert.deepEqual(result.photo, ["hajime", plan.id], "居合わせた人と撮れる");
+    assert.equal(result.met?.[plan.id], "2:18");
+  });
 }, { roamers: true });
