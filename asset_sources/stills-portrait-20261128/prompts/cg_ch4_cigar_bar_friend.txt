@@ -5,6 +5,7 @@ IMAGE 1 is the present-day official sprite of the Sheikh (to be drawn about 22 y
 SCENE:
 Chapter 4, a memory about 22 years ago, told by the Sheikh: a small cigar bar in a Japanese town at night, the old wooden counter (the same counter that later became tonari's). The young Sheikh, the young Sheikh at about 30, travelling incognito in Japan: the same face design as his sprite (same eye shape, brows, nose and warm brown skin) but 22 years younger, smooth face, a neatly trimmed short black beard, thick black wavy hair, no headdress, no gold, no jewelry; a plain beige linen jacket over a white open-collar shirt; a kind, curious, slightly mischievous smile, has set an exotic brass hookah from his country on the counter and holds its small clay bowl in one hand, explaining with the other. Beside him behind the counter, the Master, the owner of the bar and his old friend, leans in and translates with a smile. In the near foreground at the end of the counter, young Sumi at about 23 (clearly young, smooth skin, no grey hair, no beard; a dark blazer a little too big for him over a white t-shirt, trying to look grown-up) leans forward from the back seat, chin on his hand, eyes shining with curiosity. A cigar rests in an ashtray. Warm, intimate, a little nostalgic.
 MEMORY TONE: this is a flashback. Slightly faded, warm memory colors (a little desaturated, gentle warm light), but the same clean anime rendering as everything else: no sepia filter, no film grain, no vignette, no blur over the people.
+Young Sumi's look in every memory scene: the same square black glasses as his sprite, messy short black hair with a fringe, a lean build, clearly young with smooth skin and no grey hair; a slight family-like resemblance to Hajime (similar messy black hair and soft eye shape) is welcome, but he is a different person with glasses.
 
 Hajime is not in the picture and there is no first-person hand.
 
@@ -18,7 +19,7 @@ This hookah is NOT set up yet: ignore the bowl, HMD and coal parts of the struct
 
 No text, letters, numbers, logos, borders, signature or watermark anywhere, and no game interface (no dialogue window, menu or status icons, battery or signal marks, play buttons); papers, screens, labels, signs and packages are blank or show only abstract shapes. Unnamed people are ordinary adults with plain everyday faces, kept smaller, softer or partly out of frame.
 
-DESIGN FOR THIS CANDIDATE: DESIGN A for the Master (the owner of the cigar bar, about 60): a small, upright elderly gentleman, neatly combed white hair, round gold-rimmed glasses, white shirt with sleeve garters, black waistcoat and a black bow tie, a gentle, dignified smile.
+DESIGN FOR THIS CANDIDATE: DESIGN C for the Master (the owner of the cigar bar, mid 50s): a lean man with swept-back salt-and-pepper hair, a thin mustache and calm, slightly hooded eyes; he wears a RED-BROWN (burgundy-brown) knit cardigan over a dark charcoal waistcoat and a dark shirt without a tie, a small pocket square; a calm, wry half-smile. The red-brown cardigan is his signature in every scene.
 
 REFS:
 remake/img/sprites/character_variants/new/sheikh/chr_sheikh_smile.webp

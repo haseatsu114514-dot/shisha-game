@@ -131,7 +131,7 @@ export function createTalkScene(frame) {
   /**
    * 会話カットイン（VPT13。オーナー「縦画面でも会話中にカットインとかたまに入る演出復活させたい」）。
    * 本編の帯（舞台 1280×720 の座標）をそのまま写し、縦の絵の場所の大きさに縮めて置く。出し方・消え方の動きは本編の CSS（css/vn/conversation-cutin.css）のまま。
-   * 寄りの帯は左端から、絵の場所の幅の 8 割で、下端（テロップのすぐ上）に。大会の目元の帯は幅いっぱいで、絵の場所の真ん中より少し上に。
+   * 寄りの帯は左端から、絵の場所の幅の 68% で、下端（テロップのすぐ上）に。大会の目元の帯は幅いっぱいで、絵の場所の真ん中より少し上に。
    */
   function syncCutin() {
     const layer = document.querySelector("#vn .vn-cutin-layer");
@@ -145,7 +145,8 @@ export function createTalkScene(frame) {
     const W = frame.picture.clientWidth, H = frame.picture.clientHeight;
     const wide = band.dataset.frame === "eyes";
     // 目元の帯は、幅に合わせると縦画面では細すぎる（高さ 162 → 50px ほど）ので、高さを絵の場所の 3 割にして、顔を真ん中に左右を切る
-    const s = wide ? (H * 0.3) / f.h : (W * 0.8) / f.w;
+    // 寄りの帯は絵の場所の幅の 68%（2026-11-28 オーナー「少し大きすぎかも　もう一回り小さく」で 80% から縮めた）
+    const s = wide ? (H * 0.3) / f.h : (W * 0.68) / f.w;
     const top = wide ? H * 0.38 - (f.h * s) / 2 : H * 0.78 - f.h * s;
     const left = wide ? W / 2 - f.face[0] * s : 0;
     const holder = el("div.vt-cutin-band", { style: { width: `${f.w}px`, height: `${f.h}px`, transform: `translate(${left}px, ${top}px) scale(${s})` } });

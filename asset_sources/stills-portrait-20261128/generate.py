@@ -153,6 +153,10 @@ YOUNG_SHEIKH_30 = ("the young Sheikh at about 30, travelling incognito in Japan:
                    "and warm brown skin) but 22 years younger, smooth face, a neatly trimmed short black beard, thick black wavy hair, no "
                    "headdress, no gold, no jewelry; a plain beige linen jacket over a white open-collar shirt; a kind, curious, slightly "
                    "mischievous smile")
+# 2026-11-28 オーナー「昔のスミさんはちょっとだけ今のはじめに似てるのも良い」→ 若いスミは案B（眼鏡）で決定。はじめに少し似ていてよい
+YOUNG_SUMI_LOOK = ("Young Sumi's look in every memory scene: the same square black glasses as his sprite, messy short black hair with a "
+                   "fringe, a lean build, clearly young with smooth skin and no grey hair; a slight family-like resemblance to Hajime "
+                   "(similar messy black hair and soft eye shape) is welcome, but he is a different person with glasses.")
 YOUNG_SUMI = {
     "a": "DESIGN A for young Sumi: clean-shaven, NO glasses, NO cap, short neat black hair with a soft fringe, lean and a little lanky; the "
          "same eye shape, brows and jaw as his sprite but clearly young, smooth skin, no wrinkles",
@@ -166,8 +170,11 @@ MASTER = {
          "round gold-rimmed glasses, white shirt with sleeve garters, black waistcoat and a black bow tie, a gentle, dignified smile",
     "b": "DESIGN B for the Master (the owner of the cigar bar, late 50s): a broad-shouldered man, bald head, a thick grey walrus "
          "mustache, rolled-up shirt sleeves under a dark brown leather apron, warm crinkled eyes and a hearty grin",
+    # 2026-11-28 オーナー「マスターは赤茶色のやつが良い」→ 案Cの顔に、赤茶のカーディガン（どの場面も）で決定
     "c": "DESIGN C for the Master (the owner of the cigar bar, mid 50s): a lean man with swept-back salt-and-pepper hair, a thin "
-         "mustache, a dark three-piece suit without a tie, a pocket square, a calm, wry half-smile",
+         "mustache and calm, slightly hooded eyes; he wears a RED-BROWN (burgundy-brown) knit cardigan over a dark charcoal "
+         "waistcoat and a dark shirt without a tie, a small pocket square; a calm, wry half-smile. The red-brown cardigan is his "
+         "signature in every scene",
 }
 CIGAR_BAR = "deep mahogany brown, oxblood leather red, brass and amber lamp glow, a faint haze of cigar smoke"
 
@@ -799,6 +806,8 @@ def build(cg_id):
     text += "".join("\n" + OUTFITS[c[0]] for c in s["chars"] if c[0] in OUTFITS and "younger" not in c[2])
     if s.get("memory"):
         text += "\n" + MEMORY
+        if any(c[0] == "sumi" for c in s["chars"]) and s.get("variants") is not YOUNG_SUMI:
+            text += "\n" + YOUNG_SUMI_LOOK
     lines.append(text)
     lines.append(HAJIME[s["hajime"]])
     lines.append(BG_INDOOR.format(palette=s["palette"]) if s["place"] == "indoor" else BG_OUTDOOR)

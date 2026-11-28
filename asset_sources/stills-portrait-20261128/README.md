@@ -113,7 +113,9 @@ STILLS_WORK=/tmp/stills python3 generate.py adopt <cg_id> 01    # 採用: origin
 - `cg_ch4_young_sumi_water`（今のスチルの作り直し。オーナー「15年前のスミさんが全然見た目若くない」）・`cg_ch4_sensu_first_shisha`（終電の晩・若い千須）: **若いスミさんの3案**（A 眼鏡なし・ひげなし／B 眼鏡・無精ひげ／C バンダナ・無精ひげ）
 - `cg_ch4_cigar_bar_friend`（葉巻のバーに異国の台・若いシェイクと先代のマスター）・`cg_ch4_master_keys`（店を閉める夜に鍵を預かる）: **先代のマスターの3案**（A 白髪・丸眼鏡・蝶ネクタイ／B 坊主・口ひげ・革エプロン／C 白髪まじり・細い口ひげ・スーツ）
 
-12枚の候補は `candidates/<cg_id>-<a|b|c>.webp`（文面は同名の `.prompt.txt`）、見比べの図は `candidates/candidates.jpg`。採用（`originals/`・ゲーム用）には仮に **若いスミさん＝B、マスター＝A** を入れた（スミさんの面影が一番残るB、葉巻のバーの店主らしいA）。オーナーが選んだ案で、ほかの場面もそろえて作り直す。回想の3枚（`cg_ch4_cigar_bar_friend` など）は本編の台本にまだ入れていない。
+12枚の候補は `candidates/<cg_id>-<a|b|c>.webp`（文面は同名の `.prompt.txt`）、見比べの図は `candidates/candidates.jpg`。
+
+**決定（2026-11-28 オーナー）**: マスターは「赤茶色のやつ」＝**案Cの顔（白髪まじりのオールバック・細い口ひげ）に、どの場面も赤茶のカーディガン**（確認の質問で「案Cの顔＋赤茶の服」）。若いスミさんは**案B（眼鏡）**のまま、「ちょっとだけ今のはじめに似てるのも良い」ので、はじめに少し似た髪と目元を許す一文を足した（`generate.py` の `YOUNG_SUMI_LOOK`）。葉巻のバー（`cg_ch4_cigar_bar_friend` の c2）と鍵の夜（`cg_ch4_master_keys` の c3）を、この決定で作り直して採用した。15年前の水と終電の晩は案Bのまま。回想の3枚（`cg_ch4_cigar_bar_friend` など）は本編の台本にまだ入れていない。
 
 ### はじめの顔（VPT08）
 
