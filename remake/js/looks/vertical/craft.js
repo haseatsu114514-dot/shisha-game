@@ -16,6 +16,8 @@ import { relayTap, relayPress, mirrorBackground, cssUrl, liveBackground, textOf 
 import { createThermo } from "./craft/thermo.js";
 import { createSpotlight, readGuide, tutorialSteps } from "./craft/tutorial.js";
 import { waterView } from "./craft/water.js";
+import { mixView } from "./craft/mix.js";
+import { pullView } from "./craft/pull.js";
 import { packView } from "./craft/pack.js";
 import { holesView } from "./craft/holes.js";
 import { heatView } from "./craft/heat.js";
@@ -40,7 +42,7 @@ import { timerView } from "./craft/timer.js";
  *   tutorial     … 説明のスポットライトの段（無くてよい。書き方は craft/tutorial.js の冒頭）。
  *                  例: tutorial: (guide) => [{ target: "pic", say: "…" }, { target: "cards", say: "…" }, { target: "ok", say: "…" }]
  */
-const VIEWS = [waterView, packView, holesView, heatView, timerView];
+const VIEWS = [waterView, mixView, packView, holesView, heatView, timerView, pullView];
 
 const IMG = new URL("../../../img/", import.meta.url).href;
 const SUMI_FACE = `${IMG}ui/face_icons/new/face_sumi.webp`;
@@ -75,7 +77,7 @@ function liveBench() {
 function viewFor(bench) {
   const panel = bench?.querySelector(".bench-panel");
   if (!panel) return null;
-  const mine = VIEWS.filter((view) => view.step === bench.dataset.step);
+  const mine = VIEWS.filter((view) => view.step === panel.dataset.step);
   const shown = mine.find((view) => view.match(panel));
   if (shown) return shown;
   // 工程の初回の「操作の説明」（craft/session.js の explainStepOnce）は、工程の部品を出す前に開く。読む間も作る場面に写す
