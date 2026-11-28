@@ -692,6 +692,14 @@ await suite("look_vertical", async (check) => {
     await assertCraftShell(page, "holes");
     let pressed = null;
     for (let i = 0; i < 60; i++) {
+      // 外枠は本編の様子を少し遅れて写す（負荷の高い時は数フレーム）。リングが埋まった直後に古い札のまま「刺す」を押すと、
+      // 本編は埋まったリングへの一刺しを受けないので、本編の「次のリングへ」「結果へ」と外枠の札がそろうまで待ってから読む
+      await page.waitForFunction(() => {
+        const live = (node) => !!node && !node.disabled && !node.closest("[inert]");
+        if (!document.querySelector('[data-test="vt-craft-result"]').hidden) return true;
+        const game = live(document.querySelector('#screen [data-test="hole-next"]')) || live(document.querySelector('#screen [data-test="hole-done"]'));
+        return game === !document.querySelector('[data-test="vt-holes-next"]').hidden;
+      });
       const view = await page.evaluate(() => {
         const pill = document.querySelector('[data-test="vt-holes-next"]');
         return { result: !document.querySelector('[data-test="vt-craft-result"]').hidden, pill: pill.hidden ? "" : pill.textContent,
