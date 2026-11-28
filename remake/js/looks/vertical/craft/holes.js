@@ -6,10 +6,14 @@
 // 中継する（押し始めと離す。押す長さの判定・穴の位置・テンプレート・制限時間は本編のまま）。
 // 本編が出す前段と後段も同じ画面で写す: 穴の配置（テンプレート）を選ぶ札と「決定」（hole-template-*・hole-reuse・hole-start。前回の穴の開け直しは
 // 絵の穴を押す）、チュートリアルの試し刺しの「穴あけを始める」（hole-warmup-start）、桜井版の「次のリングへ」「結果へ」（hole-next・hole-done）。
+// チュートリアルの初回の説明（本編は配置の札の前に開く）の間は、穴あけの形（「刺す」と、既定の配置の数の点）を見せる。説明の間は「刺す」・
+// 「決定」を押せる形で見せる（押しても本編へは届かない）。説明のスポットライト（craft/tutorial.js・VPN32）は、アルミ→刺す→開けた穴の数の順に明るく抜く。
 import { el } from "../../../core/util.js";
 import { textOf } from "../frame.js";
 import { PRESS } from "../../../craft/holes_logic.js";
-import { HOLE_TEMPLATES, ringsForTemplate } from "../../../craft/holes_templates.js";
+import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, ringsForTemplate } from "../../../craft/holes_templates.js";
+import { TUTORIAL_STEP_HELP } from "../../../craft/bench-ui.js";
+import { sayLines, speech } from "./tutorial.js";
 
 const FOIL = new URL("../../../../img/ui/making/foil_interactive_top.webp", import.meta.url).href;
 // 箔の上の穴の半径（箔の幅を200とした値。試作の HOLE_R）。本編の穴の深さ（.foil-hole の shallow・small・wide・large）ごと
@@ -27,6 +31,17 @@ const goodHole = (node) => (node.classList.contains("perfect") || node.classList
 const live = (node) => node && !node.disabled && !node.closest("[inert]") ? node : null;
 /** 押している長さ（本編の深さ）→ 「刺す」の色（浅い＝白・ちょうどいい＝金・深すぎ＝赤） */
 const ZONES = { shallow: "under", small: "good", wide: "over", large: "over" };
+// 本編が配置を出す前（初回の説明の間）に見せる点の数（本編の既定の配置 DEFAULT_HOLE_TEMPLATE の穴の数）
+const PREVIEW_HOLES = ringsForTemplate(HOLE_TEMPLATES.find((item) => item.id === DEFAULT_HOLE_TEMPLATE) || HOLE_TEMPLATES[0])
+  .reduce((sum, ring) => sum + ring.targets, 0);
+// 本編の説明（チュートリアルの初回と「？」。TUTORIAL_STEP_HELP.holes）。この文の時は段を分けて、指す所を決める
+const HOLES_HELP = speech(TUTORIAL_STEP_HELP.holes.detail);
+// ほかの文（チュートリアル以外の「？」の本文と、本編 craft/holes.js が足す一覧）は、話している部品を指す。
+// 一覧の行は名前で（リングの名前の行はアルミ）、ほかは中身で決める。並びの先は見えている物（配置選びの間は「刺す」が無いので、操作の段）
+const AIM_BY_LABEL = { 狙う: "foil", 押し加減: "poke", ズレたとき: "foil", 採点: "count", 技: "poke", 感: "poke" };
+const AIM = [[/リング/, ["next", "count"]], [/テンプレート/, "cards"], [/開始/, "start"], [/押し|離す/, "poke"], [/時間/, "count"]];
+const aimOf = ({ label, say }) => label ? AIM_BY_LABEL[label] || "foil" : AIM.find(([pattern]) => pattern.test(say))?.[1] || "foil";
+
 /** テンプレートの札の小さな絵（本編のテンプレートのリングと穴の数から。箔の丸に点） */
 function patternSvg(id) {
   const template = HOLE_TEMPLATES.find((item) => item.id === id);
@@ -45,6 +60,16 @@ export const holesView = {
     || !!panel.querySelector(":scope > .result-card"),
   intro: (bench) => bench.querySelector(".bench-title")?.textContent.trim() === "アルミ穴あけ", // チュートリアルの初回の説明
   persist: true, // 配置選び→穴あけ→結果で本編が部品を作り直しても、同じ画面のまま描き替える（結果の間も開けた穴を残す）
+  // 説明のスポットライトの段（craft/tutorial.js）。本編の説明の文を段に分け、アルミ・刺す・開けた穴の数を順に指す
+  tutorial: ({ text, lines, extras }) => text === HOLES_HELP ? [
+    { target: "foil", say: "アルミは葉を覆うふた、穴は空気と熱の入口だ" }, // 本編の文のまま
+    { target: "poke", say: "目印に針を合わせて、同じ加減で刺せ" }, // 本編の文のまま
+    { target: "poke", say: "押しすぎると穴が大きくなる" }, // 本編の文のまま
+    { target: "count", say: "周りの点が開けた穴だ。金ならちょうどいい" }, // 足した文（「刺す」の周りの点と左下の数。金の点＝ちょうどいい穴）
+  ] : [
+    // 一覧の行は、二文以上なら一文ずつの段にする（2行に収める）
+    ...[...lines.map((say) => ({ say })), ...extras].flatMap((line) => sayLines(line.say).map((say) => ({ ...line, say, target: aimOf(line) }))),
+  ],
   create({ hold, relay, icon }) {
     const marks = el("div.vtc-foil-plane", { html: '<svg class="vtc-foil-marks" viewBox="-100 -100 200 200" aria-hidden="true"></svg>' });
     const svg = marks.firstElementChild;
@@ -199,6 +224,7 @@ export const holesView = {
 
     return {
       pic, ctrl,
+      spots: { foil, poke, count: [pips, count], cards, start, next },
       coach: () => ({
         choose: "配置を選んで、始めろ",
         warmup: "試し刺しで、押す長さを覚えろ",
@@ -206,8 +232,10 @@ export const holesView = {
         done: "開け終えたら、結果へ",
       })[ctrlSig.split("|")[0]] || "目印で押し、満ちたら離せ",
       thermo: () => null, // 試作の穴あけは温度計を出さない（箔を真ん中に大きく）
-      sync(livePanel) {
+      sync(livePanel, bench) {
         panel = livePanel;
+        // 説明の間は、説明が指す「刺す」「決定」を押せる形で見せる（本編のボタンが無い・止まっているので、押しても何も起きない）
+        const explaining = !!bench?.querySelector(".bench-guide")?.open;
         const choosing = !!one('[data-test="hole-start"]');
         if (choosing) sentDone = false; // 同じ工程のやり直し
         const punching = !!one('[data-test="hole-punch"]');
@@ -232,7 +260,7 @@ export const holesView = {
           infoName.textContent = chosen?.name || "";
           infoText.textContent = [textOf(one('[data-test="hole-template-counts"]')), textOf(one(".ht-description"))].filter(Boolean).join("。");
           const go = one('[data-test="hole-start"]');
-          start.disabled = !live(go);
+          start.disabled = !explaining && !live(go);
           start.setAttribute("aria-label", textOf(go?.querySelector(".btn-label")) || "この配置で穴あけを始める");
           ctrlSig = "choose|";
           return;
@@ -253,8 +281,12 @@ export const holesView = {
           if (next.textContent !== label) next.textContent = label;
           next.dataset.kind = which;
           // 押している間は止めない（押しすぎで本編が先に刺し抜けても、指を離すまでボタンを生かす）
-          poke.disabled = !live(one('[data-test="hole-punch"]')) && !poke.classList.contains("pressing");
-        } else poke.disabled = !poke.classList.contains("pressing");
+          poke.disabled = !explaining && !live(one('[data-test="hole-punch"]')) && !poke.classList.contains("pressing");
+        } else {
+          // 本編の盤が無い間（チュートリアルの初回の説明は配置の札の前）は、既定の配置の数の点を、まだ開けていない形で見せる
+          if (phase === "idle") drawPips([], PREVIEW_HOLES, false);
+          poke.disabled = !explaining && !poke.classList.contains("pressing");
+        }
       },
       leave() { cancelAnimationFrame(raf); raf = 0; panel = null; },
     };

@@ -25,3 +25,24 @@ remake/img/sprites/character_variants/new/hajime/chr_hajime_serious.webp
 remake/img/sprites/character_variants/new/naru/chr_naru_serious.webp
 remake/img/sprites/character_variants/new/minto/chr_minto_normal.webp
 remake/img/sprites/character_variants/new/ageha/chr_ageha_normal.webp
+
+
+## 2026-11-28 アダムの服の色だけ直した編集（VPT06）
+
+入力は上の文面で生成して採用した絵。範囲指定（マスク）なしの images/edits。
+
+Edit IMAGE 1 only where needed: change ONLY the clothing of Adam (the man with short hair that is red on the screen-left side and green on the screen-right side) to match his official sprite in IMAGE 2: a plain WHITE short-sleeved crew-neck t-shirt instead of the black henley shirt, with his long BLACK waist apron tied at the waist over black trousers. Keep his face, hair, expression, pose, hands and body exactly as they are. Keep everything else exactly the same as IMAGE 1: the composition, framing, every other person, the hookahs and hoses, the table and props, the background blur, the lighting and the colors. Same drawing style as IMAGE 1 (clean dark outlines, two or three cel-shadow steps, matte, no glow). No text, no UI. In IMAGE 1, Adam is ONLY the small, softly blurred background figure at the far top-left, working at a far table. Change only his shirt there (white t-shirt, black apron). The large young man in the black cap and black zip hoodie in the foreground is Hajime: do not change him at all. The silver-haired young man and the black-haired woman in the background stay exactly as they are.
+
+IMAGE 1: cg_ch1_tournament_battle-02.png
+IMAGE 2: remake/img/sprites/character_variants/new/adam/chr_adam_normal.webp
+mask: なし
+
+
+## 編集（hajime_face）
+
+Edit IMAGE 1 only where needed: redraw ONLY the face of Hajime (the young man in the black cap with the white smoke-line emblem and the black zip hoodie) so that it is exactly the face of his official sprite in IMAGES 2 and 3: a gentle, youthful, ordinary 22-year-old face, large round soft dark-brown eyes with a calm gaze, a soft rounded jaw (not sharp or angular), a small nose, black hair whose bangs fall over one eye from under the cap. Expression: focused and a little tense, eyes looking down at the hose handle, lips closed; NOT scowling, NOT narrow sharp eyes. Keep his cap, hair outline, head angle, pose, hands, hoodie and size exactly as they are. Keep everything else exactly the same as IMAGE 1: every other person, the props, the background, the composition, the lighting and the colors. Same drawing style as IMAGE 1. No text, no UI.
+
+REFS:
+asset_sources/stills-portrait-20261128/originals/cg_ch1_tournament_battle.webp
+remake/img/sprites/character_variants/new/hajime/chr_hajime_normal.webp
+remake/img/sprites/character_variants/new/hajime/chr_hajime_smile.webp

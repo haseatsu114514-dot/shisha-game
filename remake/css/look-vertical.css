@@ -133,6 +133,15 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-cg > i { position: absolute; inset: 0; background-repeat: no-repeat; }
 .vt-cg-fill { background-size: cover; background-position: center; filter: blur(calc(2.4 * var(--u))) brightness(0.55); transform: scale(1.1); }
 .vt-cg-art { background-size: contain; background-position: 50% 42%; }
+/* 縦に作り直したスチル（2:3・js/looks/vertical/stills.js）: 幅いっぱいに、上をそろえて置く。下は帯の下へ溶かす（VPT12） */
+.vt-cg.tall .vt-cg-art { background-size: cover; background-position: 50% 0%; -webkit-mask-image: linear-gradient(180deg, #000 0, #000 82%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 82%, transparent 100%); }
+/* 会話カットイン（VPT13）: 本編の帯の写しを、縦の絵の場所の大きさに縮めて置く（js/looks/vertical/talk.js の syncCutin） */
+.vt-cutin { position: absolute; inset: 0; pointer-events: none; z-index: 3; overflow: hidden; }
+.vt-cutin[hidden] { display: none; }
+.vt-cutin-band { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.vt-cutin-band > .vn-cutin { left: 0 !important; top: 0 !important; }
+.vt-cutin-dim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8, 3, 16, .5) 70%, transparent); animation: vn-cutin-fade .16s ease-out both; }
+.vt-cutin-dim.leave { animation: vn-cutin-fade-out .18s ease-in both; }
 
 /* ───────── テロップと操作（下から積む） ───────── */
 /* 上画面の下端にテロップ・札・返事、下画面に操作 */

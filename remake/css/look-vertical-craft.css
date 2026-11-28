@@ -383,22 +383,54 @@
 :is(.vtc-t-min, .vtc-t-sec) .vtc-ok-t { font-size: calc(var(--ok) * 0.32); margin-bottom: calc(var(--ok) * 0.12); }
 .vtc-t-start .vtc-ok-t { font-size: calc(var(--ok) * 0.16); letter-spacing: 0; margin-right: 0; white-space: nowrap; }
 
-/* ───────── 「?」の説明（本編の .bench-guide を写す。工程の初回の「操作の説明」も同じ） ───────── */
-.vtc-guide { position: absolute; z-index: 30; inset: 0; display: grid; place-items: center; padding: calc(1.6 * var(--u)) calc(1.4 * var(--u)) calc(1.6 * var(--u) + var(--safe-b)); background: #0b0812cc;
-  -webkit-backdrop-filter: blur(calc(0.4 * var(--u))); backdrop-filter: blur(calc(0.4 * var(--u))); animation: vtc-fade 0.25s ease-out; }
+/* ───────── スミさんの説明のスポットライト（チュートリアル・VPN32。js/looks/vertical/craft/tutorial.js）─────────
+   本編の「操作の説明」（工程の初回と「？」）が開いている間、画面全体を暗くし、スミさんの顔と吹き出しと、一言が指す所だけを明るく抜く。
+   抜く所（.vtc-tut-hole）は角丸の四角で、外側を大きな影で塗って暗くする。段が替わると抜く所が滑らかに動く。
+   見せ方は試作の店番のチュートリアル（floor.css の .fl-coach・やる所が光る fl-guide）を、作る場面の色にそろえたもの。 */
 @keyframes vtc-fade { from { opacity: 0; } }
-.vtc-guide-card { width: 100%; max-height: 100%; overflow-y: auto; display: grid; gap: calc(0.8 * var(--u)); padding: calc(1.6 * var(--u)) calc(1.8 * var(--u)) calc(1.8 * var(--u));
-  border: calc(0.12 * var(--u)) solid #f1d79a99; border-radius: calc(1.8 * var(--u)); background: #120c1df2; box-shadow: 0 var(--u) calc(2.4 * var(--u)) #000c; scrollbar-width: none; }
-.vtc-guide-card::-webkit-scrollbar { display: none; }
-.vtc-guide-card > b { font-size: calc(1.7 * var(--u)); letter-spacing: 0.06em; color: #ffe2a6; }
-.vtc-guide-text { display: grid; gap: calc(0.6 * var(--u)); font-size: calc(1.5 * var(--u)); line-height: 1.65; color: #f1ecf9; user-select: text; -webkit-user-select: text; }
-.vtc-guide-text :is(p, ul, ol) { margin: 0; }
-.vtc-guide-text :is(ul, ol) { display: grid; gap: calc(0.3 * var(--u)); padding-left: calc(1.8 * var(--u)); }
-.vtc-guide-text li b { margin-right: var(--u); color: #ffe2a6; }
-.vtc-guide-card > small { font-size: calc(1.25 * var(--u)); font-weight: 700; color: #ffffffa6; }
-.vtc-guide-close { min-height: calc(5.2 * var(--u)); margin-top: calc(0.4 * var(--u)); padding: calc(0.6 * var(--u)) calc(1.6 * var(--u)); border: calc(0.14 * var(--u)) solid var(--acc); border-radius: calc(2.6 * var(--u));
-  font-size: calc(1.74 * var(--u)); font-weight: 700; letter-spacing: 0.04em; color: var(--deep); background: var(--acc); box-shadow: 0 0 calc(1.6 * var(--u)) color-mix(in srgb, var(--acc) 45%, transparent); touch-action: manipulation; }
-.vtc-guide-close:active { transform: scale(0.98); }
+.vtc[data-tut="on"] .vtc-telop { visibility: hidden; } /* 下のいつもの一言は、説明の間は出さない（顔が2つにならないように） */
+.vtc-tut { position: absolute; z-index: 30; inset: 0; overflow: hidden; overflow: clip; cursor: pointer; animation: vtc-fade 0.3s ease-out; touch-action: manipulation; }
+.vtc-tut-hole { position: absolute; left: 50%; top: 50%; width: 0; height: 0; border-radius: calc(1.6 * var(--u)); pointer-events: none;
+  box-shadow: 0 0 0 calc(0.2 * var(--u)) var(--acc), 0 0 calc(2.4 * var(--u)) calc(0.3 * var(--u)) color-mix(in srgb, var(--acc) 50%, transparent), 0 0 0 300vmax #0b0812d6;
+  transition: left 0.45s var(--ease-out), top 0.45s var(--ease-out), width 0.45s var(--ease-out), height 0.45s var(--ease-out), border-radius 0.45s var(--ease-out); }
+.vtc-tut-hole::after { content: ""; position: absolute; inset: 0; border-radius: inherit; animation: vtc-tut-glow 1.2s ease-in-out infinite; }
+@keyframes vtc-tut-glow { 50% { box-shadow: 0 0 0 calc(0.5 * var(--u)) #fff8, 0 0 calc(2.6 * var(--u)) #fff; } }
+.vtc-tut-hole[data-empty="true"] { box-shadow: 0 0 0 300vmax #0b0812d6; }
+.vtc-tut-hole[data-empty="true"]::after { display: none; }
+.vtc-tut[data-snap] .vtc-tut-hole { transition: none; }
+.vtc-tut-coach { position: absolute; left: calc(1.2 * var(--u)); right: calc(1.2 * var(--u)); top: 0; display: flex; align-items: flex-end; gap: var(--u); }
+.vtc-tut-coach.pop { animation: vtc-tut-pop 0.35s var(--ease-out); }
+@keyframes vtc-tut-pop { from { opacity: 0; transform: translateY(calc(0.8 * var(--u))); } }
+.vtc-tut-coach > img { flex: none; width: calc(5.4 * var(--u)); height: calc(5.4 * var(--u)); border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 calc(0.18 * var(--u)) var(--acc), 0 calc(0.4 * var(--u)) var(--u) #000a; }
+.vtc-tut-coach.nudge > img { animation: vtc-tut-shake 0.4s linear; }
+@keyframes vtc-tut-shake { 20% { transform: translateX(calc(-0.5 * var(--u))); } 40% { transform: translateX(calc(0.5 * var(--u))); } 60% { transform: translateX(calc(-0.3 * var(--u))); } 80% { transform: translateX(calc(0.3 * var(--u))); } }
+.vtc-tut-card { flex: 1 1 auto; min-width: 0; display: grid; gap: calc(0.4 * var(--u)); padding: calc(0.9 * var(--u)) calc(1.4 * var(--u)) calc(0.7 * var(--u));
+  border: calc(0.12 * var(--u)) solid color-mix(in srgb, var(--acc) 45%, transparent); border-radius: calc(1.9 * var(--u)) calc(1.9 * var(--u)) calc(1.9 * var(--u)) calc(0.5 * var(--u));
+  background: linear-gradient(180deg, #2a2040f2, #120c1df2); box-shadow: 0 calc(1.2 * var(--u)) calc(2.4 * var(--u)) #000a, inset 0 calc(0.1 * var(--u)) 0 #ffffff3d; }
+.vtc-tut-say { margin: 0; font-size: calc(1.7 * var(--u)); line-height: 1.5; font-weight: 500; letter-spacing: 0.03em; color: #fff; }
+.vtc-tut-text { display: block; }
+.vtc-tut-text.small { font-size: 0.88em; }
+.vtc-tut-label { display: block; margin-bottom: calc(0.1 * var(--u)); font-size: calc(1.35 * var(--u)); font-weight: 700; letter-spacing: 0.06em; color: #ffe2a6; }
+.vtc-tut-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--u); min-height: calc(2.4 * var(--u)); }
+.vtc-tut-dots { display: flex; align-items: center; gap: calc(0.5 * var(--u)); }
+.vtc-tut-dots i { width: calc(0.8 * var(--u)); height: calc(0.8 * var(--u)); border-radius: calc(0.4 * var(--u)); background: #ffffff38; transition: width 0.3s var(--ease-out), background 0.3s; }
+.vtc-tut-dots i.done { background: color-mix(in srgb, var(--acc) 55%, transparent); }
+.vtc-tut-dots i.on { width: calc(2 * var(--u)); background: var(--acc); box-shadow: 0 0 calc(0.6 * var(--u)) var(--acc); }
+.vtc-tut button { outline: none; } /* 段を送ると次へ・やってみるへ目印を移す（キーで送れるように）。画面のどこを押しても進むので、枠は出さない */
+.vtc-tut-next { position: relative; width: calc(3.2 * var(--u)); height: calc(2.4 * var(--u)); margin-right: calc(-0.6 * var(--u)); padding: 0; border: 0; background: none; }
+.vtc-tut-next::before { content: ""; position: absolute; left: 50%; top: 50%; width: calc(0.9 * var(--u)); height: calc(0.9 * var(--u)); margin: calc(-0.7 * var(--u)) 0 0 calc(-0.45 * var(--u));
+  border: solid var(--acc); border-width: 0 calc(0.22 * var(--u)) calc(0.22 * var(--u)) 0; transform: rotate(45deg); animation: vtc-tut-bob 1.2s ease-in-out infinite; }
+@keyframes vtc-tut-bob { 50% { translate: 0 calc(0.35 * var(--u)); } }
+.vtc-tut-go { min-height: calc(4.4 * var(--u)); padding: 0 calc(2.4 * var(--u)); margin: calc(0.2 * var(--u)) calc(-0.6 * var(--u)) calc(0.2 * var(--u)) 0; border: calc(0.14 * var(--u)) solid var(--acc); border-radius: calc(2.2 * var(--u));
+  font-size: calc(1.7 * var(--u)); font-weight: 700; letter-spacing: 0.06em; color: var(--deep); background: var(--acc); box-shadow: 0 0 calc(1.6 * var(--u)) color-mix(in srgb, var(--acc) 50%, transparent); touch-action: manipulation; }
+.vtc-tut-go:active { transform: scale(0.97); }
+.vtc-tut-go.nudge { animation: vtc-tut-call 0.5s ease-out; }
+@keyframes vtc-tut-call { 40% { transform: scale(1.08); box-shadow: 0 0 calc(2.6 * var(--u)) #fff; } }
+@container vtshell (min-aspect-ratio: 39 / 71) {
+  .vtc-tut-say { font-size: calc(1.6 * var(--u)); }
+  .vtc-tut-coach > img { width: calc(4.8 * var(--u)); height: calc(4.8 * var(--u)); }
+  .vtc-tut-go { min-height: calc(4 * var(--u)); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .vtc *, .vtc *::before, .vtc *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }

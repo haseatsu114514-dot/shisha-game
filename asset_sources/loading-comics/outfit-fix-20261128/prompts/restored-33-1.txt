@@ -1,0 +1,8 @@
+Edit IMAGE 1, one panel of a two-panel gag comic shown on a game's loading screen. Change only what is listed below and keep everything else exactly the same: the composition and camera, every speech bubble with its exact Japanese text (same characters, same position, same font look), the background, the props, the lighting and colors, and every other person. Keep the same chibi comic style (2 to 3 heads tall, clean thick outlines, cel shading, warm colors). The other images are the official character sprites: use them only for the correct outfit and accessories, drawn in the comic's chibi style. Repaint the panel cleanly at full resolution (no blur, no jpeg noise). Fill the whole canvas with the panel edge to edge, no added border, frame, text or watermark.
+
+CHANGES:
+- Nothing about the people or the story changes. Repaint the whole panel cleanly at full resolution with crisp lines, keeping every detail as it is; the top-left corner had a small retouched patch, make it continue naturally.
+
+REFS:
+remake/img/loading/restored-33-1.webp
+remake/img/sprites/character_variants/new/kumicho/chr_kumicho_normal.webp

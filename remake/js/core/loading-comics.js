@@ -205,7 +205,7 @@ export const LOADING_COMICS = [
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2263:restored-15）",
     caption: "渋いムカイさん、実はかわいい物好き。",
     panels: [
-      { src: imgFileUrl("loading/restored-15-1.webp"), alt: "帽子を目深にかぶったムカイさんが渋く「いつものを。」。注文を取るはじめ「はい。」。" },
+      { src: imgFileUrl("loading/restored-15-1.webp"), alt: "茶色の帽子とスーツのムカイさんが渋く「いつものを。」。注文を取るはじめ「はい。」。" },
       { src: imgFileUrl("loading/restored-15-2.webp"), alt: "出てきたのはクマの顔のラテアート。ムカイさん「耳、大きめで。」。はじめはにこにこしている。" },
     ],
   },

@@ -25,3 +25,14 @@ remake/img/cgs/cg_ch5_adam_two_bowls.webp
 remake/img/sprites/character_variants/new/adam/chr_adam_serious.webp
 remake/img/sprites/character_variants/new/minto/chr_minto_normal.webp
 remake/img/sprites/character_variants/new/ageha/chr_ageha_normal.webp
+
+
+## 2026-11-28 アダムの服の色だけ直した編集（VPT06）
+
+入力は上の文面で生成して採用した絵。範囲指定（マスク）なしの images/edits。
+
+Edit IMAGE 1 only where needed: change ONLY the clothing of Adam (the man with short hair that is red on the screen-left side and green on the screen-right side) to match his official sprite in IMAGE 2: a plain WHITE short-sleeved crew-neck t-shirt instead of the black henley shirt, with his long BLACK waist apron tied at the waist over black trousers. Keep his face, hair, expression, pose, hands and body exactly as they are. Keep everything else exactly the same as IMAGE 1: the composition, framing, every other person, the hookahs and hoses, the table and props, the background blur, the lighting and the colors. Same drawing style as IMAGE 1 (clean dark outlines, two or three cel-shadow steps, matte, no glow). No text, no UI.
+
+IMAGE 1: cg_ch5_adam_two_bowls-01.png
+IMAGE 2: remake/img/sprites/character_variants/new/adam/chr_adam_normal.webp
+mask: なし

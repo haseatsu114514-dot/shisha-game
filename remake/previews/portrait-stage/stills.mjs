@@ -60,8 +60,51 @@ const STILLS = [
   ["cg_hiyori_confession", "love", "ひより・告白", "confession", "confession_hiyori_accept"],
   ["cg_samechan_confession", "love", "サメちゃん・告白", "confession", "confession_samechan_accept"],
   ["cg_ending_tonari_night", "love", "閉店後のtonari", "ending", "ending_start"],
-].map(([id, set, title, file, scene]) => ({ id, set, title, file, scene }));
-const SETS = { ch1: "第1章", ch2: "第2章", ch3: "第3章", ch4: "第4章", ch5: "第5章", love: "告白・結末" };
+  // ── 回想（VPT09。若いスミさん・若いシェイク・先代のマスター。本編の台本にはまだ show_cg を入れていない。at の台詞から出す） ──
+  ["cg_ch4_cigar_bar_friend", "memory", "葉巻のバーの異国の台", "ch4_main", "ch4_ending", { fresh: true, at: "若い頃、君の国の古い友の店へ", n: 4 }],
+  ["cg_ch4_sensu_first_shisha", "memory", "終電の晩の最初の一台", "ch4_main", "ch4_sensu_old_rival", { fresh: true, at: "前に話した、終電の晩の店だ", n: 4 }],
+  ["cg_ch4_master_keys", "memory", "預けられた鍵", "ch4_main", "ch4_sumi_training", { fresh: true, at: "マスターは、今は", n: 3 }],
+  // ── 追加の案（VPT10・VPT11。スチルの無かった場面。本編の台本にはまだ show_cg を入れていない） ──
+  ["cg_outing_rio_beans", "new", "凛想・豆屋の瓶", "ch1_events", "outing_rio_1", { fresh: true, at: "凛想さんは瓶を一つずつ開けて" }],
+  ["cg_hiyori_axe", "new", "ひより・青、入った", "hiyori", "hiyori_axe_reveal_close", { fresh: true, at: "よっしゃあああ" }],
+  ["cg_samechan_theater", "new", "サメちゃん・コロちゃんの盾", "samechan", "outing_samechan_1", { fresh: true, at: "そっと横を見ると、サメちゃんが" }],
+  ["cg_ch3_kuraudo_live", "new", "クラウド・拍手の前の三秒", "ch2_rei", "ch3_prep_kuraudo_live", { fresh: true, at: "最後の音が消えた" }],
+  ["cg_ch3_yoru_playlist", "new", "ヨルとムカイ・夜へ下りる曲順", "ch3_mukai", "ch3_mukai_yoru_playlist", { fresh: true, at: "曲の頭が鳴ると" }],
+  ["cg_ch3_steve_timer", "new", "スティーブ・起こしたタイマー", "ch3_rivals", "ch3_steve_watch", { fresh: true, at: "スティーブは伏せたタイマーを起こし" }],
+  ["cg_ch3_volk_jam", "bond", "ヴォルク・書かない時間", "ch3_volk", "ch3_volk_bond_finale", { fresh: true, at: "客の時間は書く。友人と過ごした時間は" }],
+  ["cg_ch3_emil_seal", "new", "エミル・継ぎ目に耳を寄せる", "ch3_rivals", "ch3_emil_workshop", { fresh: true, at: "エミルさんが継ぎ目に耳を寄せ" }],
+  ["cg_ch4_camel_watch", "new", "ファーリスとハリール・並走", "ch4_camel_race", "ch4_camel_watch", { fresh: true, at: "ファーリスが車のキーみたいな" }],
+  ["cg_ch4_longlong_pipe", "bond", "王煙楼・人に立ててもらった火", "ch4_longlong", "ch4_longlong_bond_finale", { fresh: true, at: "王煙楼は水煙袋を受け取り" }],
+  ["cg_ageha_shaky_hand", "new", "あげは・震えてる手", "tournament_dates", "tournament_date_ageha", { fresh: true, at: "差し出された手のひらに、スマホを向けた" }],
+  ["cg_ch5_tsumugi_chalkboard", "new", "つむぎ・黒板の猫", "ch5_main", "ch5_tsumugi_full_house", { fresh: true, at: "窓辺で眠る、葉っぱの耳の猫" }],
+  ["cg_ch5_tsumugi_sendoff", "new", "つむぎ・いってらっしゃい", "ch5_main", "ch5_match_day_arrival", { fresh: true, at: "表へ出ると、店先の黒板の前に" }],
+  ["cg_noor_confession", "new", "ヌール・告白", "confession", "confession_noor_accept", { fresh: true, at: "小指が、今度は迷わずに絡んだ" }],
+  ["cg_hiyori_lover_shoulder", "new", "ひより・肩を五分", "lover_events", "lover_hiyori_lv5", { fresh: true, at: "肩に、ひよりさんの頭の重みが乗った" }],
+  ["cg_minto_epilogue", "new", "栞・後日談", "ending", "epilogue_minto", { fresh: true, at: "味見用の皿を受け取ると" }],
+  ["cg_tsumugi_epilogue", "new", "つむぎ・後日談", "ending", "epilogue_tsumugi", { fresh: true, at: "閉じたスケッチブックの上に" }],
+  ["cg_rio_epilogue", "new", "凛想・後日談", "ending", "epilogue_rio", { fresh: true, at: "ショールームを閉めたあと" }],
+  ["cg_noor_epilogue", "new", "ヌール・後日談", "ending", "epilogue_noor", { fresh: true, at: "夕方のtonari。扉が開いて" }],
+  ["cg_ending_shutter", "new", "灯りを一つ残して", "ending", "ending_salaryman_name", { fresh: true, at: "つむぎが入口の灯りを一つだけ残して" }],
+  // ── 好感度イベントの締めくくり（VPT16・VPT17。19人。器を渡す場面ではなく、好感度ストーリーを象徴する場面。daily/bonds.js の BOND_FINALES。本編の台本にはまだ show_cg を入れていない） ──
+  ["cg_bond_sumi", "bond", "スミさん・入れ替わった客の席", "ch1_bonds", "ch1_sumi_bond_finale", { fresh: true, at: "……ほら、お前も吸え。自分の一台だろう", n: 2 }],
+  ["cg_bond_naru", "bond", "なる・対等の拳", "ch1_bonds", "ch1_naru_bond_finale", { fresh: true, at: "拳を合わせる。", n: 3 }],
+  ["cg_bond_adam", "bond", "アダム・同じ一個を反対の側から", "ch1_bonds", "ch1_adam_bond_finale", { fresh: true, at: "俺は奥から、お前は隣から", n: 3 }],
+  ["cg_bond_tsumugi", "bond", "つむぎ・抱えないタブレット", "ch1_bonds", "ch1_tsumugi_bond_finale", { fresh: true, at: "……いい絵だね。この子、ここで寝てるのが", n: 2 }],
+  ["cg_bond_minto", "bond", "栞・外で話す時間", "ch1_bonds", "ch1_minto_bond_finale", { fresh: true, at: "きみの一台を待つ時間とか", n: 3 }],
+  ["cg_bond_rio", "bond", "凛想・レポートじゃない話", "ch1_bonds", "ch1_rio_bond_finale", { fresh: true, at: "同じ話をもう一度すると", n: 3 }],
+  ["cg_bond_kumicho", "bond", "神崎・天井で混ざる二筋の煙", "ch2_kumicho", "ch2_kumicho_bond_finale", { fresh: true, at: "一口吸って返すと", n: 3 }],
+  ["cg_bond_kuraudo", "bond", "クラウド・練習じゃない顔", "ch2_rei", "ch2_kuraudo_bond_finale", { fresh: true, at: "……今の顔は、練習じゃない", n: 3 }],
+  ["cg_bond_samechan", "bond", "サメちゃん・座って見る店", "samechan", "samechan_bond_finale", { fresh: true, at: "座って見る店を教えてくれたのは", n: 3 }],
+  ["cg_bond_ageha", "bond", "あげは・言葉で当てた顔", "ch2_ageha_story", "ch2_ageha_bond_finale", { fresh: true, at: "っしゃ！ うち、言葉で当てたの", n: 3 }],
+  ["cg_bond_mashiro", "bond", "ましろ・多い、戻して", "ch3_mashiro", "ch3_mashiro_bond_finale", { fresh: true, at: "はじめくんの煙は、力を抜いた時が", n: 3 }],
+  ["cg_bond_ayatori", "bond", "綾取・客とは書かない欄", "ch3_rivals", "ch3_ayatori_bond_finale", { fresh: true, at: "やっぱり君、客じゃなくて友達の欄だね", n: 4 }],
+  ["cg_bond_steve", "bond", "スティーブ・新しい見張り役", "ch3_rivals", "ch3_steve_bond_finale", { fresh: true, at: "空いた棚に、スティーブは", n: 2 }],
+  ["cg_bond_hiyori", "bond", "ひより・崩れる儚い顔", "hiyori", "hiyori_bond_finale", { fresh: true, at: "……休演の日。儚くする元気もない日に", n: 3 }],
+  ["cg_bond_noor", "bond", "ヌール・二度の指切り", "ch4_desert", "ch4_noor_bond_finale", { fresh: true, at: "毎回、思い出しますよ", n: 3 }],
+  ["cg_bond_taiyo", "bond", "太陽・頼まれる前の水", "taiyo_bond", "ch5_taiyo_bond_finale", { fresh: true, at: "はい。椅子は、ちゃんと回しておきます", n: 3 }],
+  ["cg_bond_sheikh", "bond", "シェイク・君は、私の友人だ", "sheikh_bond", "ch5_sheikh_bond_finale", { fresh: true, at: "待つあいだ、シェイクは冷めた炭を", n: 6 }],
+].map(([id, set, title, file, scene, extra = {}]) => ({ id, set, title, file, scene, ...extra }));
+const SETS = { ch1: "第1章", ch2: "第2章", ch3: "第3章", ch4: "第4章", ch5: "第5章", love: "告白・結末", memory: "回想（案）", new: "追加の案", bond: "好感度の締めくくり（案）" };
 const STILL_IDS = new Set(STILLS.map((s) => s.id));
 
 // 帯の名前: 本編の realName（js/core/data.js）と同じ決め方で data/characters.json から作る（試作なので全員を名乗った後として出す）
@@ -78,9 +121,18 @@ const loadNames = () => namesOnce ??= fetch(new URL("../../../data/characters.js
   return names;
 }).catch(() => ({}));
 
-/** 台本の1場面から、そのスチルを出している間の台詞（show_cg の次から hide_cg まで）を取り出す */
-function linesFor(scene, id) {
+/** 台本の1場面から、そのスチルを出している間の台詞（show_cg の次から hide_cg まで）を取り出す。
+ *  新しく足したスチル（VPT07〜。本編の台本にまだ show_cg が無い）は、出す所の台詞 at から n 行 */
+function linesFor(scene, id, { at = null, n = 4 } = {}) {
   const all = [scene.lines, ...Object.values(scene.branches || {})].filter(Array.isArray);
+  const clean = (l) => ({ ...l, text: l.text.replace(/\[\/?[a-z]+\]/g, "") });
+  if (at) {
+    for (const lines of all) {
+      const from = lines.findIndex((l) => typeof l.text === "string" && l.text.includes(at));
+      if (from >= 0) return lines.slice(from).filter(isSpeech).slice(0, n).map(clean);
+    }
+    return [];
+  }
   for (const lines of all) {
     const at = lines.findIndex((l) => l.type === "show_cg" && l.cg_id === id);
     if (at < 0) continue;
@@ -154,7 +206,7 @@ export class StillsScene {
     const { REMAKE_IMG: IMG } = this.kit;
     refs.pic.src = `${IMG}cgs/portrait/${s.id}.webp`;
     refs.amb.src = refs.pic.src;
-    refs.old.src = `${IMG}cgs/${s.id}.webp`;
+    if (!s.fresh) refs.old.src = `${IMG}cgs/${s.id}.webp`;
     refs.title.textContent = s.title;
     refs.set.textContent = SETS[s.set];
     refs.count.textContent = `${this.i + 1} / ${STILLS.length}`;
@@ -162,7 +214,7 @@ export class StillsScene {
     refs.pic.classList.remove("in"); void refs.pic.offsetWidth; refs.pic.classList.add("in");
     this.telop.stop();
     let lines = [];
-    try { lines = linesFor(findDialogue(await loadDialogue(s.file), s.scene) || { lines: [] }, s.id); } catch (error) { console.warn(`${s.file}.json を読めませんでした:`, error); }
+    try { lines = linesFor(findDialogue(await loadDialogue(s.file), s.scene) || { lines: [] }, s.id, s); } catch (error) { console.warn(`${s.file}.json を読めませんでした:`, error); }
     if (gen !== this.gen || this.dead) return;
     if (!lines.length) { this.telop.say({ speaker: "", text: "（このスチルの台詞が台本に見つからない）" }, { wait: false }); return; }
     if (this.phone.fixed) { this.telop.say(lines[0], { wait: false }); return; }
@@ -176,10 +228,13 @@ export class StillsScene {
   step(d) { this.i = (this.i + d + STILLS.length) % STILLS.length; this.show(); }
 
   syncOld() {
-    this.refs.old.hidden = !this.showOld;
-    this.refs.pic.hidden = this.showOld;
-    this.refs.oldBtn.setAttribute("aria-pressed", String(this.showOld));
-    this.el.querySelector(".st-app")?.classList.toggle("old", this.showOld);
+    const fresh = !!this.still.fresh, old = this.showOld && !fresh; // 新しく足したスチルには横の元絵が無い
+    this.refs.old.hidden = !old;
+    this.refs.pic.hidden = old;
+    this.refs.oldBtn.disabled = fresh;
+    this.refs.oldBtn.textContent = fresh ? "新しいスチル" : "横の元絵";
+    this.refs.oldBtn.setAttribute("aria-pressed", String(old));
+    this.el.querySelector(".st-app")?.classList.toggle("old", old);
   }
 
   onClick(event) {

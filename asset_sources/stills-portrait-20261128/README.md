@@ -72,9 +72,68 @@ STILLS_WORK=/tmp/stills python3 generate.py adopt <cg_id> 01    # 採用: origin
 | `cg_ch5_sumi_pulls_chair` | 1→2 | スミさんの顔が帽子の影に隠れて見えない |
 | `cg_mashiro_double_apple` | 1→3 | 台が写り、吐いた煙もあった（上の節） |
 
+### アダムの服の色（VPT06・2026-11-28）
+
+オーナー「アダムの服の色だけ直して」。新バージョンの立ち絵のアダムは**白い半袖Tシャツ＋黒い長めの腰エプロン＋黒いズボン**だが、#3952 の場面文と `data/characters.json` の `visual_concepts`（旧い設定の文）が「黒いヘンリーシャツ」のままだったため、`cg_ch5_adam_two_bowls` と `cg_ch1_tournament_battle`（奥のアダム）が黒いシャツで描かれていた。
+採用した絵を入力にした images/edits（範囲指定なし）で、服の色だけを立ち絵に合わせた。ほかの人物・台・構図は変わっていない（並べて確認）。範囲指定（マスク）つきの編集は、指定の範囲の外まで描き直されて、はじめがアダムに置き換わったので使わなかった。以後の生成でも白いTシャツになるよう、`generate.py` の `OUTFITS` にアダムを足した。`data/characters.json` の文は正本の設定なので変えていない（食い違いはオーナー確認）。
+
 残っている小さな点（作り直していない）: 凛想の試香紙がやや太い（たばこには見えない）、あげはの豹柄が丸い花のような斑点に寄る（立ち絵の柄に近い）、`cg_ch5_adam_two_bowls` のタッパーの手書きのシールは読めない線だけ（保管シールの例外の範囲）。
+
+## 2026-11-28 追加分（VPT07〜VPT14）
+
+オーナー「最近追加したシーンはまだスチルがないのもあるので　ボリュームや頻度的に追加案とかもあれば作って　ヌールとか新目やキャラだったりつむぎのバイトとか」「恋愛描写でヒロインたちの可愛い姿をあと何枚か見たい」「15年前のスミさんが全然見た目若くない、あとは回想シーン用に若いシェイクとかスミさんとか先代のマスターとかは立ち絵ではなくスチルで描きたい　デザインは任せる　これは何枚か候補みたい」「スチルはたまにはじめの顔が変なのがあった」「縦画面でも会話中にカットインとかたまに入る演出復活させたい」。
+
+### 追加の案 22枚（`generate.py` の `new=True` の場面。元の横長の絵は無い）
+
+人物ごとのスチルの数（今の53枚）を数え、0〜1枚の人物と、ヌール・つむぎのバイト・恋愛の場面から選んだ。**本編の台本にはまだ `show_cg` を入れていない**（オーナーの採用後に入れる）。試作の「スチル」の場面（`&set=new`）で、出す台詞（本編の台本の行）つきで見られる。
+
+| cg_id | 人物 | 出す所（台本 / 場面 / 行の頭） |
+|---|---|---|
+| `cg_noor_confession` | ヌール（告白のスチルが無かった） | confession / confession_noor_accept /「小指が、今度は迷わずに絡んだ」 |
+| `cg_hiyori_lover_shoulder` | ひより（恋人） | lover_events / lover_hiyori_lv5 /「肩に、ひよりさんの頭の重みが乗った」 |
+| `cg_ageha_shaky_hand` | あげは（大会前夜・恋人） | tournament_dates / tournament_date_ageha /「差し出された手のひらに、スマホを向けた」 |
+| `cg_samechan_theater` | サメちゃん | samechan / outing_samechan_1 /「そっと横を見ると、サメちゃんが」 |
+| `cg_minto_epilogue`・`cg_tsumugi_epilogue`・`cg_rio_epilogue`・`cg_noor_epilogue` | 後日談 | ending / epilogue_<人> の該当行（`asset_sources/epilogue-cgs-20261111/` の横長の原案の中身を縦で描き直した） |
+| `cg_hiyori_axe` | ひより・マキ | hiyori / hiyori_axe_reveal_close /「よっしゃあああ」 |
+| `cg_noor_hagal` | ヌール | ch4_desert / ch4_noor_bond_finale /「包みをほどくと」 |
+| `cg_ch5_tsumugi_chalkboard`・`cg_ch5_tsumugi_sendoff`・`cg_ending_shutter` | つむぎ（バイト） | ch5_main / ch5_tsumugi_full_house・ch5_match_day_arrival（sendoff）、ending / ending_salaryman_name |
+| `cg_ch4_camel_watch` | ファーリス・ハリール | ch4_camel_race / ch4_camel_watch |
+| `cg_ch3_yoru_playlist` | ヨル・ムカイ | ch3_mukai / ch3_mukai_yoru_playlist |
+| `cg_ch3_steve_timer`・`cg_ch3_volk_jam`・`cg_ch3_emil_seal`・`cg_ch3_kuraudo_live` | スティーブ・ヴォルク・エミル・クラウド | ch3_rivals・ch3_volk・ch2_rei |
+| `cg_ch4_longlong_pipe` | 王煙楼 | ch4_longlong / ch4_longlong_bond_finale |
+| `cg_ch5_taiyo_chair` | 太陽 | taiyo_bond / ch5_taiyo_bond_finale |
+| `cg_outing_rio_beans` | 凛想 | ch1_events / outing_rio_1 |
+
+作り直し: ヌールの告白・つむぎの後日談（つないだ手が下3割に沈んでいた）、あげはの震えてる手（手が下の端）、エミル（空気漏れを確かめる場面なのに煙が出ていた・台が新しいステンレスだった）。
+
+### 回想 4枚と候補（VPT09。`candidates/`）
+
+若いスミさん・若いシェイク・先代のマスターは、立ち絵を作らずスチルで描いた。若い人物は、今の立ち絵を「顔の作りだけ」の参照に渡し、年齢・しわ・白髪・ひげ・眼鏡・帽子・服は写さないよう指示した（`generate.py` の `younger`）。色は少しだけ褪せた思い出の色（セピアや粒・ぼかしは使わない）。
+
+- `cg_ch4_young_sumi_water`（今のスチルの作り直し。オーナー「15年前のスミさんが全然見た目若くない」）・`cg_ch4_sensu_first_shisha`（終電の晩・若い千須）: **若いスミさんの3案**（A 眼鏡なし・ひげなし／B 眼鏡・無精ひげ／C バンダナ・無精ひげ）
+- `cg_ch4_cigar_bar_friend`（葉巻のバーに異国の台・若いシェイクと先代のマスター）・`cg_ch4_master_keys`（店を閉める夜に鍵を預かる）: **先代のマスターの3案**（A 白髪・丸眼鏡・蝶ネクタイ／B 坊主・口ひげ・革エプロン／C 白髪まじり・細い口ひげ・スーツ）
+
+12枚の候補は `candidates/<cg_id>-<a|b|c>.webp`（文面は同名の `.prompt.txt`）、見比べの図は `candidates/candidates.jpg`。
+
+**決定（2026-11-28 オーナー）**: マスターは「赤茶色のやつ」＝**案Cの顔（白髪まじりのオールバック・細い口ひげ）に、どの場面も赤茶のカーディガン**（確認の質問で「案Cの顔＋赤茶の服」）。若いスミさんは**案B（眼鏡）**のまま、「ちょっとだけ今のはじめに似てるのも良い」ので、はじめに少し似た髪と目元を許す一文を足した（`generate.py` の `YOUNG_SUMI_LOOK`）。葉巻のバー（`cg_ch4_cigar_bar_friend` の c2）と鍵の夜（`cg_ch4_master_keys` の c3）を、この決定で作り直して採用した。15年前の水と終電の晩は案Bのまま。回想の3枚（`cg_ch4_cigar_bar_friend` など）は本編の台本にまだ入れていない。
+
+### はじめの顔（VPT08）
+
+はじめの顔が写る2枚（`cg_ch1_tournament_battle`・`cg_minto_cheki`）が、立ち絵より目が細く鋭い・大人びた歯を見せる笑いになっていた。採用した絵を入力に、はじめの顔だけを立ち絵どおり（丸くやわらかい目・丸いあご）に描き直した（`generate.py edit <cg_id> hajime_face`。ほかの人物・台・構図はそのまま）。後ろ姿の5枚は顔が出ないので触っていない。
+
+### 本編の縦画面で使う（VPT12）
+
+本編の縦画面（`?look=vertical`）の会話で一枚絵が出たとき、縦に作り直した絵がある53枚は、横長の絵の代わりに縦の絵を幅いっぱいに出す（`remake/js/looks/vertical/stills.js`・`talk.js` の `syncCg`）。本編の横画面と旧版の見た目は今までどおり横長の絵。追加の案と回想の3枚は、台本に入れるまで本編には出ない。
+
+### 好感度の締めくくりを、ストーリーの場面に作り直し（VPT17・2026-11-28）
+
+オーナー「好感度イベントのスチルはハガルプレゼントじゃなくてストーリーのものを　好感度のストーリーにちなんだものを」。下の VPT16（器を渡す場面）をやめ、19人の♥1〜♥5と締めくくりを読み直して、**その関係を象徴する場面**を締めくくりの最後（台本の本筋の行）に出す形にした（`generate.py` の `BOND_STORY`。同じ `cg_bond_<人>` の名前で絵を差し替えた）。ヴォルク（`cg_ch3_volk_jam`・測らないジャム）と王煙楼（`cg_ch4_longlong_pipe`・はじめが立てた火種）は前の案のままストーリーの場面なので残した。贈り物の場面だったヌールのハガル（`cg_noor_hagal`）と太陽の椅子（`cg_ch5_taiyo_chair`）は外し、`cg_bond_noor`（二度の指切り）・`cg_bond_taiyo`（頼まれる前に注ぐ水）を作った。場面と出す行は試作の `stills.mjs`（`&set=bond`）と台帳 VPT17 にある。
+
+### 好感度イベントの締めくくり 19人（VPT16・2026-11-28）（↩️ VPT17 で場面を替えた）
+
+オーナー「好感度イベントの最後にみんなスチル欲しい　内容に合わせて」。締めくくり（`remake/js/daily/bonds.js` の `BOND_FINALES`）は19人。どの回も、その人が長く使った素焼きの器を渡す流れなので、器だけを描き（台・HMD・炭は描かない。`generate.py` の `BOWL_ONLY`）、人ごとに台本のいちばんその人らしい瞬間を選んで構図と小物を変えた。15枚を新しく作った（`cg_bond_<人>`）。ヴォルク・王煙楼・ヌール・太陽は、追加の案（`cg_ch3_volk_jam`・`cg_ch4_longlong_pipe`・`cg_noor_hagal`・`cg_ch5_taiyo_chair`）がそのまま締めくくりの場面なので、同じ区切りに並べた。スティーブとヴォルクには第5章の書き直し版（`ch5_steve_bond_finale`・`ch5_volk_bond_finale`）もあり、同じ絵を使える（同じ棚・同じジャムと紅茶の行がある）。出す行は試作の `stills.mjs`（`&set=bond`）に書いた。本編の台本にはまだ入れていない。
 
 ## まだやっていないこと
 
-- 本編（横画面）への組み込みと、縦画面を本編にした時のギャラリー・縮小画像は未着手（縦画面そのものが試作の段階のため）。
+- 本編の横画面への組み込みと、縦画面の時のギャラリー・縮小画像は未着手。追加の案・回想の台本への組み込み（`show_cg`）はオーナーの採用後。
 - オーナーの採用判断。試作の「スチル」の場面で53枚を順に見られ、下の「横の元絵」で今の横長と見比べられる。
