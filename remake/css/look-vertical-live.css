@@ -164,6 +164,45 @@ html body #viewport #stage[data-portrait-scene="steam"] #screen .bench .bench-wo
   #stage[data-portrait-scene] .bench .bench-heading { display: block !important; visibility: visible !important; }
   #stage[data-portrait-scene] .bench .bench-title { font-size: 25px !important; }
 }
+/* 初回制作の雑念回避。顔を上段に収め、残り時間とランクは温度計の左に置く。 */
+@layer portrait-bench {
+  body.craft-stage #stage[data-portrait-scene="steam"] .bench[data-chapter="1"][data-mode="tutorial"] {
+    background: linear-gradient(180deg, #0b0614d9, #0b061433 15%, #130b20e6 42%, #130b20f5) !important;
+  }
+  body.craft-stage #stage[data-portrait-scene="steam"] .bench[data-chapter="1"][data-mode="tutorial"] .bench-worker[data-scene="focus"] .bench-worker-stage {
+    inset: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    transform: none !important;
+    mask-image: linear-gradient(180deg, #000 0 70%, transparent) !important;
+    container-type: size;
+  }
+  body.craft-stage #stage[data-portrait-scene="steam"] .bench[data-chapter="1"][data-mode="tutorial"] .bench-worker[data-scene="focus"] .worker-actor {
+    /* 一言の札の分を引いた高さに、帽子から口元までが収まる大きさ。 */
+    --steam-actor-height: clamp(360px, calc((100cqh - 128px) * 5), 720px);
+    height: var(--steam-actor-height) !important;
+    width: auto !important;
+    inset: calc(12px - 0.13 * var(--steam-actor-height)) auto auto 31% !important;
+    translate: -58% 0;
+  }
+  body.craft-stage #stage[data-portrait-scene="steam"] .bench[data-chapter="1"][data-mode="tutorial"] .worker-sweat { top: 25%; left: 39%; }
+  body.craft-stage #stage[data-portrait-scene="steam"] .bench[data-chapter="1"][data-mode="tutorial"] .worker-breath { top: 41%; left: 35%; }
+  body.craft-stage #stage[data-portrait-scene="steam"] .bench[data-chapter="1"][data-mode="tutorial"] :is(.bench-top > .craft-rank, .steam-play > .dodge-timer) {
+    position: fixed !important;
+    left: auto !important;
+    right: 116px !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+  body.craft-stage #stage[data-portrait-scene="steam"] .bench[data-chapter="1"][data-mode="tutorial"] .steam-play > .dodge-timer { top: 108px !important; }
+  body.craft-stage #stage[data-portrait-scene="steam"] .bench[data-chapter="1"][data-mode="tutorial"] .bench-top > .craft-rank { top: 168px !important; }
+  body.craft-stage #stage[data-portrait-scene="steam"] .bench[data-chapter="1"][data-mode="tutorial"] .bench-right::after {
+    position: absolute !important;
+    inset: 0 !important;
+    background: url("../img/ui/craft-stage/counter-mat.webp") center bottom / 100% auto no-repeat !important;
+    mask-image: linear-gradient(180deg, transparent 25%, #000 70%);
+  }
+}
 #stage[data-portrait-scene="floor"] .tf-slip { width: 100%; padding: 58px 18px 18px; }
 #stage[data-portrait-scene="floor"] .tf-slip-body { grid-template-columns: 1fr; gap: 10px; }
 #stage[data-portrait-scene="floor"] .tf-slip > .tf-eyebrow { top: 0; }

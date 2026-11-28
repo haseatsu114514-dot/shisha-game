@@ -77,6 +77,7 @@ let cutin = null; // 会話カットイン（はじめの顔の帯。#2990・202
 let settingsReady = null;
 let openVnConfig = null;
 let running = null;     // 再生中の会話の状態
+export const activeDialogueId = () => running?.currentId || "";
 let autoMode = false;
 let skipMode = false;
 let autoFxGap = 0;
