@@ -246,7 +246,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "え、……はい"
+          "text": "え……はい"
         },
         {
           "speaker": "old_man",
@@ -1247,7 +1247,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あ、……それだと、意味がないですね"
+          "text": "あ……それだと、意味がないですね"
         },
         {
           "speaker": "master_cafe",
@@ -4115,12 +4115,12 @@
         {
           "speaker": "customer",
           "face": "surprise",
-          "text": "結局、林檎なんですね"
+          "text": "結局、ダブルアップルなんですね"
         },
         {
           "speaker": "adam",
           "face": "smile",
-          "text": "林檎は、甘いも軽いも持っている。それを、お前の今日に合わせる"
+          "text": "ダブルアップルは、甘いも軽いも持っている。それを、お前の今日に合わせる"
         },
         {
           "speaker": "",
@@ -4165,12 +4165,12 @@
         {
           "speaker": "adam",
           "face": "serious",
-          "text": "初めての客には、まず林檎の顔を見せる。ほかの顔は、そのあとでいい"
+          "text": "初めての客には、まずダブルアップルの顔を見せる。ほかの顔は、そのあとでいい"
         },
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "次に来て、自分から林檎を頼めば、それでいい。頼まなければ、桃を出す"
+          "text": "次に来て、自分からダブルアップルを頼めば、それでいい。頼まなければ、ピーチを出す"
         },
         {
           "speaker": "hajime",
@@ -4223,12 +4223,12 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "二つ目のKのとこだけ、消えててさ。「KEMURI USA」になってた"
+          "text": "Rのとこだけ、消えててさ。「KEMU IYA」になってた"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……アメリカに出店したみたいですね"
+          "text": "……『煙、嫌』って、シーシャ屋なのに"
         },
         {
           "speaker": "naru",
@@ -4238,7 +4238,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "なるは新しい電球をはめて、ゆっくり回した。暗かったKが、ぱっと灯った。"
+          "text": "なるは新しい電球をはめて、ゆっくり回した。暗かったRが、ぱっと灯った。"
         },
         {
           "speaker": "naru",
@@ -4308,7 +4308,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "アメリカ支店、閉店ですね"
+          "text": "煙嫌いのお店、閉店ですね"
         },
         {
           "speaker": "naru",
@@ -4318,7 +4318,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "店に入る前に、もう一度振り返った。看板の十文字は、一つも欠けずに灯っていた。"
+          "text": "店に入る前に、もう一度振り返った。看板の八文字は、一つも欠けずに灯っていた。"
         }
       ]
     },
@@ -5151,7 +5151,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "それ、……炭？"
+          "text": "それ……炭？"
         },
         {
           "speaker": "tsumugi",
@@ -5724,7 +5724,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "え、……ちょうどいいと思います"
+          "text": "え……ちょうどいいと思います"
         },
         {
           "speaker": "staff_choizap",
@@ -5852,7 +5852,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "え、……もうですか"
+          "text": "え……もうですか"
         },
         {
           "speaker": "staff_choizap",

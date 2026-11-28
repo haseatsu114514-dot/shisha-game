@@ -653,7 +653,7 @@
           "condition_type": "tournament_finished",
           "tournament_chapter": 3,
           "next_true": "taste_back",
-          "next_false": "taste_away"
+          "next_false": "taste_check_distant"
         },
         {
           "speaker": "kumicho",
@@ -718,6 +718,15 @@
         }
       ],
       "branches": {
+        "taste_check_distant": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_taste_distant",
+            "next_true": "taste_away",
+            "next_false": "taste_back"
+          }
+        ],
         "taste_away": [
           {
             "speaker": "",
@@ -943,7 +952,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "奥から、炭を組み直す小さな音が聞こえてきた。さっきより、ずっと落ち着いた手つきだった。"
+          "text": "奥から、炭を組み直す小さな音が聞こえてきた。さっきより、ずっと落ち着いた音だった。"
         },
         {
           "type": "remember",
