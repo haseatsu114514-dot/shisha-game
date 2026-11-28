@@ -36,3 +36,13 @@ Edit IMAGE 1 only where needed: change ONLY the clothing of Adam (the man with s
 IMAGE 1: cg_ch1_tournament_battle-02.png
 IMAGE 2: remake/img/sprites/character_variants/new/adam/chr_adam_normal.webp
 mask: なし
+
+
+## 編集（hajime_face）
+
+Edit IMAGE 1 only where needed: redraw ONLY the face of Hajime (the young man in the black cap with the white smoke-line emblem and the black zip hoodie) so that it is exactly the face of his official sprite in IMAGES 2 and 3: a gentle, youthful, ordinary 22-year-old face, large round soft dark-brown eyes with a calm gaze, a soft rounded jaw (not sharp or angular), a small nose, black hair whose bangs fall over one eye from under the cap. Expression: focused and a little tense, eyes looking down at the hose handle, lips closed; NOT scowling, NOT narrow sharp eyes. Keep his cap, hair outline, head angle, pose, hands, hoodie and size exactly as they are. Keep everything else exactly the same as IMAGE 1: every other person, the props, the background, the composition, the lighting and the colors. Same drawing style as IMAGE 1. No text, no UI.
+
+REFS:
+asset_sources/stills-portrait-20261128/originals/cg_ch1_tournament_battle.webp
+remake/img/sprites/character_variants/new/hajime/chr_hajime_normal.webp
+remake/img/sprites/character_variants/new/hajime/chr_hajime_smile.webp

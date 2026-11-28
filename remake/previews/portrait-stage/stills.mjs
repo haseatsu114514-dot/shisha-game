@@ -60,8 +60,35 @@ const STILLS = [
   ["cg_hiyori_confession", "love", "ひより・告白", "confession", "confession_hiyori_accept"],
   ["cg_samechan_confession", "love", "サメちゃん・告白", "confession", "confession_samechan_accept"],
   ["cg_ending_tonari_night", "love", "閉店後のtonari", "ending", "ending_start"],
+  // ── 回想（VPT09。若いスミさん・若いシェイク・先代のマスター。本編の台本にはまだ show_cg を入れていない。at の台詞から出す） ──
+  ["cg_ch4_cigar_bar_friend", "memory", "葉巻のバーの異国の台", "ch4_main", "ch4_ending", { fresh: true, at: "若い頃、君の国の古い友の店へ", n: 4 }],
+  ["cg_ch4_sensu_first_shisha", "memory", "終電の晩の最初の一台", "ch4_main", "ch4_sensu_old_rival", { fresh: true, at: "前に話した、終電の晩の店だ", n: 4 }],
+  ["cg_ch4_master_keys", "memory", "預けられた鍵", "ch4_main", "ch4_sumi_training", { fresh: true, at: "マスターは、今は", n: 3 }],
+  // ── 追加の案（VPT10・VPT11。スチルの無かった場面。本編の台本にはまだ show_cg を入れていない） ──
+  ["cg_outing_rio_beans", "new", "凛想・豆屋の瓶", "ch1_events", "outing_rio_1", { fresh: true, at: "凛想さんは瓶を一つずつ開けて" }],
+  ["cg_hiyori_axe", "new", "ひより・青、入った", "hiyori", "hiyori_axe_reveal_close", { fresh: true, at: "よっしゃあああ" }],
+  ["cg_samechan_theater", "new", "サメちゃん・コロちゃんの盾", "samechan", "outing_samechan_1", { fresh: true, at: "そっと横を見ると、サメちゃんが" }],
+  ["cg_ch3_kuraudo_live", "new", "クラウド・拍手の前の三秒", "ch2_rei", "ch3_prep_kuraudo_live", { fresh: true, at: "最後の音が消えた" }],
+  ["cg_ch3_yoru_playlist", "new", "ヨルとムカイ・夜へ下りる曲順", "ch3_mukai", "ch3_mukai_yoru_playlist", { fresh: true, at: "曲の頭が鳴ると" }],
+  ["cg_ch3_steve_timer", "new", "スティーブ・起こしたタイマー", "ch3_rivals", "ch3_steve_watch", { fresh: true, at: "スティーブは伏せたタイマーを起こし" }],
+  ["cg_ch3_volk_jam", "new", "ヴォルク・書かない時間", "ch3_volk", "ch3_volk_bond_finale", { fresh: true, at: "客の時間は書く。友人と過ごした時間は" }],
+  ["cg_ch3_emil_seal", "new", "エミル・継ぎ目に耳を寄せる", "ch3_rivals", "ch3_emil_workshop", { fresh: true, at: "エミルさんが継ぎ目に耳を寄せ" }],
+  ["cg_ch4_camel_watch", "new", "ファーリスとハリール・並走", "ch4_camel_race", "ch4_camel_watch", { fresh: true, at: "ファーリスが車のキーみたいな" }],
+  ["cg_noor_hagal", "new", "ヌール・父のハガル", "ch4_desert", "ch4_noor_bond_finale", { fresh: true, at: "包みをほどくと" }],
+  ["cg_ch4_longlong_pipe", "new", "王煙楼・人に立ててもらった火", "ch4_longlong", "ch4_longlong_bond_finale", { fresh: true, at: "王煙楼は水煙袋を受け取り" }],
+  ["cg_ageha_shaky_hand", "new", "あげは・震えてる手", "tournament_dates", "tournament_date_ageha", { fresh: true, at: "差し出された手のひらに、スマホを向けた" }],
+  ["cg_ch5_tsumugi_chalkboard", "new", "つむぎ・黒板の猫", "ch5_main", "ch5_tsumugi_full_house", { fresh: true, at: "窓辺で眠る、葉っぱの耳の猫" }],
+  ["cg_ch5_tsumugi_sendoff", "new", "つむぎ・いってらっしゃい", "ch5_main", "ch5_match_day_arrival", { fresh: true, at: "表へ出ると、店先の黒板の前に" }],
+  ["cg_ch5_taiyo_chair", "new", "太陽・回した椅子", "taiyo_bond", "ch5_taiyo_bond_finale", { fresh: true, at: "手拍子が速くなっていく" }],
+  ["cg_noor_confession", "new", "ヌール・告白", "confession", "confession_noor_accept", { fresh: true, at: "小指が、今度は迷わずに絡んだ" }],
+  ["cg_hiyori_lover_shoulder", "new", "ひより・肩を五分", "lover_events", "lover_hiyori_lv5", { fresh: true, at: "肩に、ひよりさんの頭の重みが乗った" }],
+  ["cg_minto_epilogue", "new", "栞・後日談", "ending", "epilogue_minto", { fresh: true, at: "味見用の皿を受け取ると" }],
+  ["cg_tsumugi_epilogue", "new", "つむぎ・後日談", "ending", "epilogue_tsumugi", { fresh: true, at: "閉じたスケッチブックの上に" }],
+  ["cg_rio_epilogue", "new", "凛想・後日談", "ending", "epilogue_rio", { fresh: true, at: "ショールームを閉めたあと" }],
+  ["cg_noor_epilogue", "new", "ヌール・後日談", "ending", "epilogue_noor", { fresh: true, at: "夕方のtonari。扉が開いて" }],
+  ["cg_ending_shutter", "new", "灯りを一つ残して", "ending", "ending_salaryman_name", { fresh: true, at: "つむぎが入口の灯りを一つだけ残して" }],
 ].map(([id, set, title, file, scene, extra = {}]) => ({ id, set, title, file, scene, ...extra }));
-const SETS = { ch1: "第1章", ch2: "第2章", ch3: "第3章", ch4: "第4章", ch5: "第5章", love: "告白・結末" };
+const SETS = { ch1: "第1章", ch2: "第2章", ch3: "第3章", ch4: "第4章", ch5: "第5章", love: "告白・結末", memory: "回想（案）", new: "追加の案" };
 const STILL_IDS = new Set(STILLS.map((s) => s.id));
 
 // 帯の名前: 本編の realName（js/core/data.js）と同じ決め方で data/characters.json から作る（試作なので全員を名乗った後として出す）
