@@ -373,32 +373,23 @@ html:root body:not(:root) #stage #modal > .modal-box.ts-contest-modal .modal-act
 .ent-card[data-art="classic"] .ent-portrait { height: 145%; bottom: -38%; }
 .entrance .ent-tag {
   position: relative; inset: auto; grid-column: 2; grid-row: 1; align-self: end; justify-self: start;
-  display: inline-grid; grid-template-columns: auto auto; align-items: center; column-gap: 12px;
-  padding: 0 60px 4px 12px; isolation: isolate; background: transparent;
-  transform: rotate(-3deg); transform-origin: 16% 70%;
+  display: grid; grid-template-columns: 30% 1fr; align-items: center;
+  width: 366px; aspect-ratio: 2136 / 612; padding: 0; isolation: isolate;
+  color: #fff1d4; background: #1a121a; transform: rotate(-2deg); transform-origin: 16% 70%;
 }
-.ent-tag::before, .ent-tag::after { content: ""; position: absolute; z-index: -1; pointer-events: none; }
-.ent-tag::before {
-  inset: 13% 0 3%;
-  background:
-    repeating-linear-gradient(120deg, transparent 0 7px, var(--entry-ink) 7px 11px) right 8% center / 26px 66% no-repeat,
-    linear-gradient(0deg, var(--entry-ink) 6%, #18111f 6% 90%, var(--entry-ink) 90%);
-  clip-path: polygon(5% 0, 100% 0, 94% 33%, 97% 33%, 85% 100%, 0 100%);
-}
-.ent-tag::after {
-  left: 4%; right: 17%; top: 100%; height: 5px; background: var(--entry-ink);
-  transform: skewX(-42deg);
+.entrance .ent-tag.printed { background: transparent; }
+.ent-tag > img, .ent-number > img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none;
 }
 .ent-tag-label {
-  grid-column: 2; grid-row: 1; display: grid; justify-items: start; padding-top: 4px;
-  font: 900 27px/1.08 var(--font); letter-spacing: .06em; color: #fff9e8;
+  grid-column: 2; grid-row: 1; display: grid;
+  font: 900 28px/1.05 var(--font); letter-spacing: .06em;
 }
-.ent-tag-label span:last-child { color: color-mix(in srgb, var(--entry-ink) 65%, #fff6e5); letter-spacing: .17em; }
+.ent-tag.printed > .ent-tag-label, .ent-number.printed { color: transparent; }
 .ent-number {
-  grid-column: 1; grid-row: 1; min-width: .75em; text-align: center;
-  font: 900 124px/.96 var(--font); font-variant-numeric: tabular-nums; color: #fff8e7;
-  -webkit-text-stroke: 7px #18111f; paint-order: stroke fill;
-  text-shadow: 3px 4px #18111f, 7px 8px var(--entry-ink); transform: skewX(-10deg);
+  position: relative; grid-column: 1; grid-row: 1; justify-self: center;
+  width: 83%; height: 80%; display: grid; place-items: center;
+  font: 900 78px/1 var(--font); color: #f9df98;
 }
 .entrance .ent-meta {
   grid-column: 2; grid-row: 2; max-width: 100%; min-width: 0;
