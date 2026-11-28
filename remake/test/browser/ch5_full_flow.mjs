@@ -244,7 +244,9 @@ await suite("ch5-full-flow", async check => {
     assert.equal((await get(page)).day, 55);
     await page.locator(dt("ch5-go-venue")).click();
     await page.locator(dt("ch5-venue-go")).click();
-    await page.locator(matchScene("ch5_match_day_arrival")).waitFor();
+    const matchDay = page.locator(matchScene("ch5_match_day_arrival"));
+    await matchDay.waitFor();
+    assert.equal(await matchDay.locator("h1").textContent(), "tonariの店長　はじめ");
     state = await get(page);
     assert.equal(state.flags._ch5.part, "match");
     assert.equal(state.flags._ch5_match_started, true);
@@ -1590,7 +1592,7 @@ await suite("ch5-full-flow", async check => {
       "スミさん。tonariって、どうしてこの名前なんですか", "客の隣に座れる店にしたかった……それだけだ",
       "別の日。閉店後、栞さんの部屋で遅い夕飯を作った。", "返事を聞きながら、もう一つボウルを出す。",
       "閉店の少し前。奥まった席に、いつもの鉄仮面さんが座った。",
-      "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。",
+      "客が帰ったあと、カウンターのいちばん古いトロフィーを拭いた。",
       "戸締まり、頼める？ 明日の朝、返して",
       "スミさんが、昔からそうしてきたように。",
       "手のひらの鍵束が、思ったより重かった。",

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// 起動時に 300 本超の ES モジュールを波状取得しないよう、本編の静的グラフを 1 本にまとめる（#3552）。
-// 動的 import も含めて 1 本にまとめる（初回の往復を減らす）。正本は remake/js/ の各ファイル。
+// 起動時に 300 本超のソースを取得しないよう、静的な依存をバンドルする。
+// 章やミニゲームの動的 import は、必要になった場面で同じ版のチャンクを読む。正本は remake/js/ の各ファイル。
 //
 //   node remake/tools/build_js_bundle.mjs           # 生成（公開の deploy-pages.yml が毎回実行する）
 //   node remake/tools/build_js_bundle.mjs --check   # 一時フォルダに作れるかだけ確かめる（CI）
@@ -14,7 +14,7 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 
 const TOOLS = fileURLToPath(new URL(".", import.meta.url));
 const REMAKE = path.resolve(TOOLS, "..");
@@ -51,11 +51,11 @@ const options = {
   absWorkingDir: REMAKE,
   entryPoints: [ENTRY],
   bundle: true,
-  splitting: false,
+  splitting: true,
   format: "esm",
   platform: "browser",
   target: "es2022",
-  outfile: path.join(OUTDIR, "main.js"),
+  chunkNames: "chunk-[hash]",
   sourcemap: false,
   legalComments: "none",
   // Only trim the generated download; keep identifiers and syntax unchanged.
@@ -64,31 +64,102 @@ const options = {
   banner: { js: banner },
 };
 
+// esbuild shares startup code with later chapters by extracting small files. Ship the
+// startup tree in one request. Later imports re-export its live bindings (including
+// mutable game state) from main.js, so opening a chapter never starts a second game.
+async function packInitial(dir, outputs, initial) {
+  const entry = path.relative(REMAKE, path.join(dir, "main.js"));
+  const exports = ['export * from "./main.js";'];
+  const facades = new Map();
+  let id = 0;
+  for (const file of initial) {
+    if (file === entry) continue;
+    const names = outputs[file].exports.map(name => ({ name, alias: `shared${id++}` }));
+    const fromChunk = names.map(({ name, alias }) => `${name} as ${alias}`);
+    const fromEntry = names.map(({ name, alias }) => `${alias} as ${name}`);
+    exports.push(`export { ${fromChunk.join(",")} } from "./${path.basename(file)}";`);
+    facades.set(file, `export { ${fromEntry.join(",")} } from "./main.js";\n`);
+  }
+  const packed = await esbuild.build({
+    ...options, entryPoints: [], splitting: false, write: false, metafile: true,
+    stdin: { contents: exports.join("\n"), resolveDir: dir, sourcefile: "boot-entry.js" },
+    plugins: [{ name: "keep-lazy-chunks", setup(build) {
+      build.onResolve({ filter: /^\.\// }, args => args.kind === "dynamic-import" ? { path: args.path, external: true } : null);
+    } }],
+  });
+  const [output] = packed.outputFiles;
+  const meta = Object.values(packed.metafile.outputs)[0];
+  if (packed.warnings.length || !meta.exports.includes("boot") || meta.imports.some(dep =>
+    dep.kind !== "dynamic-import" || !fs.existsSync(path.join(dir, dep.path)))) {
+    throw new Error("起動バンドルの export または遅延チャンクへの参照が不正です");
+  }
+  fs.writeFileSync(path.join(dir, "main.js"), output.contents);
+  for (const [file, code] of facades) fs.writeFileSync(path.resolve(REMAKE, file), code);
+
+  // Inline the re-export in its static callers, otherwise entering a chapter
+  // would fetch dozens of one-line files just to import the already loaded game state.
+  const lazy = Object.keys(outputs).filter(file => !initial.has(file));
+  if (!lazy.length) return;
+  const linked = await esbuild.build({
+    ...options, entryPoints: lazy.map(file => path.resolve(REMAKE, file)), outdir: dir, allowOverwrite: true, splitting: false,
+    plugins: [{ name: "link-boot-exports", setup(build) {
+      build.onResolve({ filter: /^\.\// }, args => {
+        if (args.kind === "entry-point") return;
+        const target = path.relative(REMAKE, path.resolve(args.resolveDir, args.path));
+        if (args.kind === "import-statement" && facades.has(target)) return;
+        return { path: args.path, external: true };
+      });
+    } }],
+  });
+  if (linked.warnings.length) throw new Error("遅延チャンクの結合時に警告が出ました");
+}
+
 async function buildTo(dir) {
   fs.rmSync(dir, { recursive: true, force: true });
   fs.mkdirSync(dir, { recursive: true });
-  const outfile = path.join(dir, "main.js");
-  const result = await esbuild.build({ ...options, outdir: undefined, outfile, metafile: true, write: true });
-  const files = fs.readdirSync(dir).sort();
-  return { files, result };
+  const result = await esbuild.build({ ...options, outdir: dir, metafile: true });
+  const outputs = result.metafile.outputs;
+  const initial = new Set();
+  function visit(file) {
+    if (initial.has(file)) return;
+    initial.add(file);
+    for (const dependency of outputs[file].imports) {
+      if (dependency.kind !== "dynamic-import") visit(dependency.path);
+    }
+  }
+  visit(path.relative(REMAKE, path.join(dir, "main.js")));
+  await packInitial(dir, outputs, initial);
+  return { files: fs.readdirSync(dir), result, initial };
 }
 
 if (CHECK) {
   const tmp = fs.mkdtempSync(path.join(fs.realpathSync("/tmp"), "js-bundle-"));
   try {
-    const { files, result } = await buildTo(tmp);
+    const { files, result, initial } = await buildTo(tmp);
     const problems = [];
     if (result.errors.length) problems.push(`esbuild のエラー ${result.errors.length} 件`);
     if (result.warnings.length) problems.push(`esbuild の警告 ${result.warnings.length} 件（直してから公開する）`);
-    if (files.join(",") !== "main.js") problems.push(`出力が main.js 1 本ではありません: ${files.join(", ")}`);
-    const code = fs.readFileSync(path.join(tmp, "main.js"), "utf8");
-    if (!/export\s*\{[^}]*\bboot\b[^}]*\}/.test(code)) problems.push("バンドルが boot を export していません（index.html の起動が失敗する）");
-    if (/\bimport\s*\(\s*["'`]\.{1,2}\//.test(code)) problems.push("相対パスの動的 import が残っています（bundle/ からだと読み先がずれる）");
+    const outputs = result.metafile.outputs;
+    const entry = path.relative(REMAKE, path.join(tmp, "main.js"));
+    if (!outputs[entry]?.exports.includes("boot")) problems.push("main.js が boot を export していません");
+    for (const [file, output] of Object.entries(outputs)) {
+      for (const dependency of output.imports) {
+        if (!outputs[dependency.path] || !files.includes(path.basename(dependency.path))) {
+          problems.push(`${file} の読み込み先がありません: ${dependency.path}`);
+        }
+      }
+    }
+    for (const file of initial) {
+      for (const source of ["js/chapters/ch1.js", "js/craft/session.js"]) {
+        if (outputs[file].inputs[source]?.bytesInOutput) problems.push(`起動時に ${source} を読み込んでいます`);
+      }
+    }
     if (problems.length) {
       for (const p of problems) console.error(p);
       process.exit(1);
     }
-    console.log(`js bundle ok (main.js ${(code.length / 1024).toFixed(0)} KB, ${Object.keys(result.metafile.inputs).length} modules)`);
+    const bytes = fs.statSync(path.join(tmp, "main.js")).size;
+    console.log(`js bundle ok (initial main.js, ${Math.round(bytes / 1024)} KiB, ${files.length} outputs)`);
   } finally {
     fs.rmSync(tmp, { recursive: true, force: true });
   }

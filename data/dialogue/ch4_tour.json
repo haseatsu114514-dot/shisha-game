@@ -192,6 +192,7 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余の領地ではない。だが、見る"
         }
       ]
@@ -309,6 +310,7 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余は、宿の廊下の視察に切り替える"
         }
       ]
@@ -938,6 +940,7 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余の冠より、大きい冠がある。けしからん"
         },
         {
@@ -977,6 +980,7 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "側近は、乗りたがっている"
         },
         {

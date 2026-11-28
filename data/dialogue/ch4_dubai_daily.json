@@ -112,7 +112,7 @@
         { "speaker": "", "face": "", "text": "ブースの脇の幕の陰で、太陽が一人で腰を下ろしていた。" },
         { "speaker": "", "face": "", "text": "汗を拭いて、水をゆっくり飲んでいる。舞台の上の顔とは、少し違って見えた。" },
         { "speaker": "", "face": "", "text": "目が合うと、太陽は口の前に指を立てて、片目をつぶった。" },
-        { "speaker": "da_silva", "face": "excited", "text": "よし、休憩終わり！　次の曲いくぞ！" },
+        { "speaker": "da_silva", "face": "excited", "text": "よし、休憩終わり！ 次の曲いくぞ！" },
         { "speaker": "", "face": "", "text": "太陽が幕の外へ出ると、手拍子がいっせいに戻った。" },
         { "speaker": "", "face": "", "text": "幕の陰には、半分残った水のボトルと、畳んだタオルが置いてあった。" }
       ]
@@ -123,7 +123,7 @@
       "lines": [
         { "speaker": "", "face": "", "text": "FESTAの前の方で、太陽が客席へ小さな筒を投げ入れていた。" },
         { "speaker": "", "face": "", "text": "振ると、中で豆のような音がする。" },
-        { "speaker": "da_silva", "face": "excited", "text": "受け取ったやつ、振れー！　手拍子の隣の音だ！" },
+        { "speaker": "da_silva", "face": "excited", "text": "受け取ったやつ、振れー！ 手拍子の隣の音だ！" },
         { "speaker": "", "face": "", "text": "一本が、こちらの膝に落ちてきた。拾い上げると、手の中で、しゃらっと鳴る。" },
         { "speaker": "shop_clerk", "face": "", "text": "ガンザっていう楽器です。振るだけで、ちゃんと音になりますよ" },
         { "speaker": "", "face": "", "text": "振ってみると、手拍子より半拍遅れた。" },
@@ -148,7 +148,7 @@
         { "speaker": "hajime", "face": "normal", "text": "シーシャの葉も、パッションフルーツが好きなんですか" },
         { "speaker": "shop_clerk", "face": "", "text": "好きどころか。「これが無いとフェスタが始まらない」って" },
         { "speaker": "", "face": "", "text": "店員はスプーンで果肉をすくい、氷の入ったグラスに落とした。種が、底で小さく鳴る。" },
-        { "speaker": "shop_clerk", "face": "", "text": "一つ、飲んでいきます？　割るのは、手伝ってもらいますけど" },
+        { "speaker": "shop_clerk", "face": "", "text": "一つ、飲んでいきます？ 割るのは、手伝ってもらいますけど" },
         { "speaker": "", "face": "", "text": "渡された実は、思ったより軽かった。皮が、しわしわにしぼんでいる。" },
         { "speaker": "hajime", "face": "normal", "text": "これ、古くないですか" },
         { "speaker": "shop_clerk", "face": "", "text": "しわしわの方が、中が甘いんです。太陽さんいわく「笑いじわと一緒」" },
@@ -180,17 +180,17 @@
       "comment": "FESTA再訪（#3097 PR-L・計画 4-5）。太陽との小会話。太陽がはじめに煙の輪の吐き方を教える。輪は吐いた本人には見えず、見るのは隣の客。初対面の ch4_festa の後なら成り立つ文にし、段階の会話（taiyo_bond.json）の名前・連絡先・休憩所を前提にしない（はじめを名前で呼ばない）。日本語は taiyo_bond.json の決まりどおり、助詞の抜けと短い区切りまで。審査員だと分かる言葉なし。大会・時間帯に触れない。",
       "lines": [
         { "speaker": "", "face": "", "text": "曲の切れ目に、太陽が舞台から客席の端へ降りてきた。こちらを見つけて、まっすぐ歩いてくる。" },
-        { "speaker": "da_silva", "face": "excited", "text": "よう、日本の！　ちゃんと、吸ってるか？" },
+        { "speaker": "da_silva", "face": "excited", "text": "よう、日本の！ ちゃんと、吸ってるか？" },
         { "speaker": "", "face": "", "text": "手元のホースを持ち上げてみせると、太陽は隣の椅子に、背もたれを抱えて座った。" },
         { "speaker": "da_silva", "face": "normal", "text": "お前、輪、吐けるか？" },
         { "speaker": "hajime", "face": "normal", "text": "……やったこと、ないです" },
-        { "speaker": "da_silva", "face": "surprise", "text": "ない！？　作る人なのに！" },
+        { "speaker": "da_silva", "face": "surprise", "text": "ない！？ 作る人なのに！" },
         { "speaker": "da_silva", "face": "smile", "text": "口、丸く。で、喉で……ポン、だ" },
         { "speaker": "", "face": "", "text": "言われたとおりに、口を丸くして吐いた。煙は輪にならず、顔の前でほどけた。" },
         { "speaker": "", "face": "", "text": "もう一度。いびつな輪が一つだけ浮かんで、すぐに崩れた。" },
         { "speaker": "", "face": "", "text": "隣の席の客が、それを見て吹き出した。小さな拍手まで付いた。" },
         { "speaker": "hajime", "face": "sad", "text": "……笑われました" },
-        { "speaker": "da_silva", "face": "excited", "text": "笑った！　いい輪だ！" },
+        { "speaker": "da_silva", "face": "excited", "text": "笑った！ いい輪だ！" },
         { "speaker": "da_silva", "face": "normal", "text": "輪はな、吐いたやつには、見えねえ。見るのは、隣だ" },
         { "speaker": "da_silva", "face": "smile", "text": "だから、いびつでいい。隣が笑えば、それでいい" },
         { "speaker": "", "face": "", "text": "太陽は自分でも一つ、きれいな輪を隣の客へ送った。客が、また手を叩いた。" },
@@ -207,12 +207,12 @@
         { "speaker": "hajime", "face": "normal", "text": "ここの温度と、お客さんが吸う速さです。癖で" },
         { "speaker": "da_silva", "face": "serious", "text": "……数字ばっかりだな" },
         { "speaker": "", "face": "", "text": "太陽は指でページを叩いて、下の空いたところを示した。" },
-        { "speaker": "da_silva", "face": "normal", "text": "ここ。今日、何が楽しかった？　書け" },
+        { "speaker": "da_silva", "face": "normal", "text": "ここ。今日、何が楽しかった？ 書け" },
         { "speaker": "hajime", "face": "surprise", "text": "楽しかったこと、ですか" },
         { "speaker": "da_silva", "face": "smile", "text": "数字は、明日も取れる。今日の楽しいは、今日だけ" },
         { "speaker": "", "face": "", "text": "ペンを持ったまま、しばらく考えた。手拍子。旗。隣の客の、小さな拍手。" },
         { "speaker": "", "face": "", "text": "結局、「隣の客が、笑った」と一行だけ書いた。" },
-        { "speaker": "da_silva", "face": "excited", "text": "いいメモだ！　それ、一番大事なやつ" },
+        { "speaker": "da_silva", "face": "excited", "text": "いいメモだ！ それ、一番大事なやつ" },
         { "speaker": "da_silva", "face": "normal", "text": "疲れた日に、読め。数字より、効くぞ" },
         { "speaker": "", "face": "", "text": "太陽は親指を立てて、舞台へ駆け戻っていった。" },
         { "speaker": "", "face": "", "text": "数字の並んだページの下で、その一行だけが、ほかの字より大きかった。" }
@@ -348,7 +348,7 @@
       "lines": [
         { "speaker": "", "face": "", "text": "宿のロビー。なるが、紙の舟に盛ったルカイマットを割っていた。" },
         { "speaker": "", "face": "", "text": "一つずつ、中をのぞいている。" },
-        { "speaker": "naru", "face": "normal", "text": "食うか？　割ったやつで悪いけど" },
+        { "speaker": "naru", "face": "normal", "text": "食うか？ 割ったやつで悪いけど" },
         { "speaker": "hajime", "face": "surprise", "text": "なんで割ってるの" },
         { "speaker": "naru", "face": "smile", "text": "中の気泡の大きさ。……揚げる前の生地、水が多めだな" },
         { "speaker": "naru", "face": "normal", "text": "外はかりっとしてんのに、中がこれだけ軽い。油の温度、相当高い" },
@@ -383,9 +383,9 @@
         { "speaker": "hajime", "face": "surprise", "text": "それ、よく着てたやつだよね" },
         { "speaker": "naru", "face": "sad", "text": "言うな。……温度の表示、読めなかったんだよ" },
         { "speaker": "hajime", "face": "smile", "text": "炭の温度は、いつも完璧なのに" },
-        { "speaker": "naru", "face": "normal", "text": "炭は、俺が見てる。乾燥機は、見てなかった、……同じ失敗だな" },
+        { "speaker": "naru", "face": "normal", "text": "炭は、俺が見てる。乾燥機は、見てなかった……同じ失敗だな" },
         { "speaker": "", "face": "", "text": "なるは縮んだTシャツをきれいに畳んで、鞄の底にしまった。" },
-        { "speaker": "naru", "face": "smile", "text": "捨てねえよ。帰ったら、店の雑巾にする、……ドバイの記念だ" }
+        { "speaker": "naru", "face": "smile", "text": "捨てねえよ。帰ったら、店の雑巾にする……ドバイの記念だ" }
       ]
     },
     {
@@ -405,7 +405,7 @@
         { "speaker": "hajime", "face": "normal", "text": "フロントの人、コーヒーと一緒に出してたよ。苦いのと交互に" },
         { "speaker": "naru", "face": "surprise", "text": "……そういうことか" },
         { "speaker": "", "face": "", "text": "なるはロビーのポットから小さなカップにコーヒーを注いで、デーツをもう一つ口に入れた。" },
-        { "speaker": "naru", "face": "smile", "text": "引いた後に、苦いのが来る。で、また甘いのが欲しくなる、……よくできてんな" },
+        { "speaker": "naru", "face": "smile", "text": "引いた後に、苦いのが来る。で、また甘いのが欲しくなる……よくできてんな" },
         { "speaker": "hajime", "face": "smile", "text": "帰ったら、店で試す？" },
         { "speaker": "naru", "face": "normal", "text": "試さねえよ、まだ。……これは、ここで食うからうまいんだ" },
         { "speaker": "", "face": "", "text": "そう言いながら、なるはスマホのメモに何か打ち込んでいた。画面は、こちらに向けなかった。" }
@@ -507,7 +507,7 @@
         { "speaker": "", "face": "", "text": "向かいの出展ブースの作り手は、水を入れたあと、ボトルの外側をタオルで拭いていた。" },
         { "speaker": "", "face": "", "text": "水滴が一つも残らなくなるまで、丁寧に。" },
         { "speaker": "hajime", "face": "normal", "text": "（冷えた水と冷房の部屋。……外に付いた水滴で、台の下が濡れるのか）" },
-        { "speaker": "", "face": "", "text": "まねをして、ボトルの肩から底まで拭いた。作り手が、こちらを見て小さくうなずいた。" },
+        { "speaker": "", "face": "", "text": "真似をして、ボトルの肩から底まで拭いた。作り手が、こちらを見て小さくうなずいた。" },
         { "speaker": "hajime", "face": "normal", "text": "（tonariでは、気にしたことがなかった。本番の台も、拭いてから出そう）" }
       ]
     },
@@ -637,7 +637,7 @@
       "comment": "ドバイDAY12の任意の前日リハーサル。本番と同じ一台と調整2回を操作する",
       "lines": [
         { "speaker": "", "face": "", "text": "宿のロビーの隅に、道具を並べた。なるが通りかかって、足を止める。" },
-        { "speaker": "naru", "face": "normal", "text": "本番の分、通すのか？　俺は見てるだけにしとく" },
+        { "speaker": "naru", "face": "normal", "text": "本番の分、通すのか？ 俺は見てるだけにしとく" },
         { "speaker": "hajime", "face": "normal", "text": "うん。調整まで、いつもどおりやってみる" },
         { "speaker": "", "face": "", "text": "ソファの脇の小さな卓に、ボウルとホースとトングを置く。冷房の風が弱く、葉の匂いが逃げずに残る。" },
         { "speaker": "naru", "face": "normal", "text": "手順の途中で声はかけない。気になったら、終わってから言う" },
@@ -721,7 +721,7 @@
       "dialogue_id": "ch4_dubai_taste_double_apple_again",
       "comment": "同じ一台を二度目からは短く。熟練度は付けない（初めての一台だけ metadata の flavor_lesson）。",
       "lines": [
-        { "speaker": "", "face": "", "text": "またダブルアップルを頼み、蒸らしの間水を飲んだ。" },
+        { "speaker": "", "face": "", "text": "またダブルアップルを頼み、蒸らしの間、水を飲んだ。" },
         { "speaker": "", "face": "", "text": "アニスの香りが、前より早く分かった。最初は、まっすぐ立っている。" },
         { "speaker": "", "face": "", "text": "吸い進めると、リコリスの甘苦さが前に出てきた。アニスは薄れず、奥へ引いていく。" },
         { "speaker": "hajime", "face": "smile", "text": "（吸い始めと吸い終わりで、同じ林檎の顔が違う。今日は、その切り替わりが見えた）" },
@@ -1034,7 +1034,7 @@
         { "speaker": "", "face": "", "text": "夜になると、路地裏のカフェには近所の常連がぽつぽつと集まってくる。" },
         { "speaker": "", "face": "", "text": "入ってきた客は、店員と「マルハバ」と短く言い交わして、いつもの席に座っていく。" },
         { "speaker": "", "face": "", "text": "奥の席で常連が新聞を広げ、店員が炭を並べ直す。" },
-        { "speaker": "", "face": "", "text": "まねをして「マルハバ」と言ってみた。倍の長さの返事が、早口で返ってきた。" },
+        { "speaker": "", "face": "", "text": "真似をして「マルハバ」と言ってみた。倍の長さの返事が、早口で返ってきた。" },
         { "speaker": "hajime", "face": "surprise", "text": "（……一語も、拾えなかった）" },
         { "speaker": "", "face": "", "text": "店員は手のひらで、空いた席を示した。そこだけは、分かった。" },
         { "speaker": "", "face": "", "text": "座ると、話し声が波のように寄せては引いた。" }
@@ -1118,7 +1118,7 @@
         { "speaker": "", "face": "", "text": "「もっと？」という顔らしい。うなずくと、酢漬けのきゅうりが倍になった。" },
         { "speaker": "", "face": "", "text": "薄いパンに肉を広げ、ソースと野菜を足して、くるりと巻く。" },
         { "speaker": "", "face": "", "text": "一口かじると、酸っぱさが先に来て、後から肉の脂が追いかけてくる。" },
-        { "speaker": "hajime", "face": "smile", "text": "（酸っぱいのが多いと、最後まで重くならない、……配合と同じだ）" }
+        { "speaker": "hajime", "face": "smile", "text": "（酸っぱいのが多いと、最後まで重くならない……配合と同じだ）" }
       ]
     },
     {
@@ -1174,7 +1174,7 @@
         {"speaker": "", "face": "", "text": "鍵の隣に小銭を重ねて、端をそろえた。"},
         {"speaker": "", "face": "", "text": "レシートを伸ばしかけて、手を止めた。買ったものは、もう鞄に入っている。"},
         {"speaker": "hajime", "face": "normal", "text": "（片づけは、少し寝てからにしよう）"},
-        {"speaker": "", "face": "", "text": "充電の線を、枕もとへ引き寄せた。"},
+        {"speaker": "", "face": "", "text": "充電の線を、枕元へ引き寄せた。"},
         {"speaker": "", "face": "", "text": "灯りを一段落とすと、冷房の低い音だけが残った。"},
         {"speaker": "", "face": "", "text": "鍵だけ取りやすい所に寄せた。枕に頬をつけると、廊下の話し声が遠くなった。"}
       ]
@@ -1242,14 +1242,14 @@
         { "speaker": "hajime", "face": "normal", "text": "これ、ラクダですか" },
         { "speaker": "sumi", "face": "normal", "text": "ラクダだと。……耳から、葉っぱが生えてる" },
         { "speaker": "", "face": "", "text": "ラクダの尻尾は煙になって、黒板の上を伸びていた。途中で、猫の尻尾と一本に混ざっている。" },
-        { "speaker": "hajime", "face": "smile", "text": "（……つむぎの描く生き物だ）" },
+        { "speaker": "hajime", "face": "smile", "text": "（……つむぎちゃんの描く生き物だ）" },
         { "speaker": "sumi", "face": "normal", "text": "閉める前に、札まで裏返していった。頼んでねえのに" },
         { "speaker": "sumi", "face": "thinking", "text": "グラスも、流しの横に重ねてあった。客にやらせることじゃねえ" },
         { "speaker": "hajime", "face": "normal", "text": "つむぎちゃん、何て言ってました？" },
         { "speaker": "sumi", "face": "normal", "text": "気になると、線が引けないんです、だと" },
         { "speaker": "", "face": "", "text": "画面が揺れて、黒板からスミさんの顔に戻った。眉間のしわが、いつもより浅い。" },
         { "speaker": "sumi", "face": "normal", "text": "このラクダ、笑ってるのか" },
-        { "speaker": "hajime", "face": "smile", "text": "笑ってますね、……たぶん" },
+        { "speaker": "hajime", "face": "smile", "text": "笑ってますね……たぶん" },
         { "speaker": "sumi", "face": "smile", "text": "……そう伝えとく" },
         { "speaker": "", "face": "", "text": "通話が切れたあとも、笑っているらしいラクダの顔が、まぶたの裏に残っていた。" }
       ]
@@ -1405,10 +1405,10 @@
         { "speaker": "", "face": "", "text": "目を開けると、肩に見覚えのある上着が掛かっていた。" },
         { "speaker": "", "face": "", "text": "向かいのソファで、なるが知らない国の新聞を広げていた。逆さまだった。" },
         { "speaker": "hajime", "face": "normal", "text": "……なる、それ、逆" },
-        { "speaker": "naru", "face": "surprise", "text": "知ってる、……読んでねえからな" },
+        { "speaker": "naru", "face": "surprise", "text": "知ってる……読んでねえからな" },
         { "speaker": "hajime", "face": "smile", "text": "上着、ありがとう" },
         { "speaker": "naru", "face": "normal", "text": "冷房の真下で寝るやつがあるか。風邪ひいたら、全部ふいになるぞ" },
-        { "speaker": "", "face": "", "text": "なるは新聞をたたんで、上着を取り返した。" },
+        { "speaker": "", "face": "", "text": "なるは新聞を畳んで、上着を取り返した。" },
         { "speaker": "", "face": "", "text": "それから、ソファの上の冷房の吹き出し口を見上げて、羽根の向きを黙って一つ変えていった。" },
         { "speaker": "hajime", "face": "smile", "text": "（文句を言いながら、風の向きまで直していくんだ）" }
       ]
@@ -1421,7 +1421,7 @@
         { "speaker": "naru", "face": "surprise", "text": "……おい。これ、日本のカップ麺だ" },
         { "speaker": "", "face": "", "text": "見慣れた容器に、知らない文字の値札が貼ってある。日本で買う値段の、ちょうど三倍だった。" },
         { "speaker": "hajime", "face": "normal", "text": "高いね" },
-        { "speaker": "naru", "face": "serious", "text": "高い、……高いけど" },
+        { "speaker": "naru", "face": "serious", "text": "高い……高いけど" },
         { "speaker": "", "face": "", "text": "二人で値札を見つめたまま、しばらく黙った。" },
         { "speaker": "hajime", "face": "smile", "text": "一個だけ買って、半分ずつにする？" },
         { "speaker": "naru", "face": "smile", "text": "それだ" },
@@ -1490,7 +1490,7 @@
         { "speaker": "", "face": "", "text": "受付で切手を頼むと、係の人がアプリに打ち込んで、画面を見せてくれた。「届くのは、二週間後くらい」" },
         { "speaker": "hajime", "face": "surprise", "text": "……俺の方が、先に帰ってますね" },
         { "speaker": "", "face": "", "text": "係の人は笑って、それでも丁寧に、はがきを郵便の箱へ入れてくれた。" },
-        { "speaker": "hajime", "face": "smile", "text": "（帰ってから、自分の書いたはがきを店で読むのか、……それも悪くない）" }
+        { "speaker": "hajime", "face": "smile", "text": "（帰ってから、自分の書いたはがきを店で読むのか……それも悪くない）" }
       ]
     },
     {
@@ -1551,7 +1551,7 @@
         { "speaker": "hajime", "face": "normal", "text": "（考える間に吸う人だ。炭は、遠めでいい）" },
         { "speaker": "", "face": "", "text": "常連は半分ほど吸ってから、盤の駒を並べ直した。" },
         { "speaker": "old_man", "face": "", "text": "もう一局。負けたら、また作れ" },
-        { "speaker": "hajime", "face": "smile", "text": "（勝てる気はしない、……でも、作れるなら悪くない）" }
+        { "speaker": "hajime", "face": "smile", "text": "（勝てる気はしない……でも、作れるなら悪くない）" }
       ]
     },
     {

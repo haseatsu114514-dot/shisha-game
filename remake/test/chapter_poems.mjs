@@ -25,10 +25,7 @@ const MAX_COLUMN = 16;
 // 長さ: 本家の巻頭詩は1行の言い切りから約200字の独白まで幅がある（中央値は空白を除いて約40〜50字。brand/chant_poems.md §2）。
 // 章ごとに長短を散らすが、読ませる画面で間延びしないよう上限を置く。
 const MAX_CHARS = 110;
-const LINES = [3, 12];
-const MAX_LINES_PER_PAGE = 7; // 縦書きの1場面に並べる列の数
-// 場面（連）の数。どの章も2場面（brand/chant_poems.md §4）。
-const PAGES = { poem_ch1: 2, poem_ch2: 2, poem_ch3: 2, poem_ch4: 2, poem_ch5: 2 };
+const LINES = [3, 7]; // 縦画面でも全文の列を一画面に収める
 
 // 1) 台本の形 --------------------------------------------------------------
 const data = JSON.parse(read("data/dialogue/chapter_poems.json"));
@@ -45,13 +42,7 @@ for (const dialogue of data.dialogues) {
   const chars = dialogue.lines.reduce((n, line) => n + [...plain(line.text).replaceAll(" ", "")].length, 0);
   assert.ok(chars <= MAX_CHARS, `${id}: ${chars}字は長い（空白を除いて${MAX_CHARS}字以内）`);
   assert.equal(dialogue.lines[0].gap, undefined, `${id}: 最初の行に gap は付けない`);
-  const pageCount = dialogue.lines.filter((line) => line.gap === true).length + 1;
-  assert.equal(pageCount, PAGES[id], `${id}: 場面（連）は${PAGES[id]}つ（${pageCount}）`);
-  let run = 0;
-  for (const line of dialogue.lines) {
-    run = line.gap ? 1 : run + 1;
-    assert.ok(run <= MAX_LINES_PER_PAGE, `${id}: 1場面に${run}列は多い（${MAX_LINES_PER_PAGE}列まで）`);
-  }
+  assert.equal(dialogue.lines.filter((line) => line.gap === true).length, 1, `${id}: 連の区切りは1つ`);
   for (const [index, line] of dialogue.lines.entries()) {
     const where = `${id}[${index}]`;
     assert.equal(line.speaker, "", `${where}: 地の文（話者なし）`);
@@ -140,10 +131,10 @@ const module = read("remake/js/scenes/chapter-poem.js");
 for (const [id] of EXPECTED) assert.ok(module.includes(`"${id}"`), `chapter-poem.js に ${id} がない`);
 assert.match(module, /vnTest\.turbo/, "テストの自動送り（vnTest.turbo）に従う");
 assert.match(module, /reducedMotion\(\)/, "動き軽減に従う");
-assert.match(module, /export function poemPages/, "連ごとに場面を分ける");
+assert.match(module, /line\.gap \? "p\.cp-line\.stanza-start"/, "連の区切りに余白を入れる");
 assert.match(module, /panelUrl/, "コマ絵の読み込みがある");
 assert.match(read("remake/css/motions/chapter-poem.css"), /\.cp-panel/, "コマ絵のスタイルがある");
-assert.match(read("remake/css/motions/chapter-poem.css"), /\.cp-page\.now/, "場面の切り替えのスタイルがある");
+assert.match(read("remake/css/motions/chapter-poem.css"), /\.cp-body\.on/, "全文に共有のフェードがある");
 
 function indexesOf(source, needle) {
   const found = [];

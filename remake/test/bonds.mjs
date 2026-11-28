@@ -70,7 +70,7 @@ try {
         const node = document.querySelector(selector);
         if (node) return node;
         // 作業台の準備中に出るロード漫画は、読み終えたらタップで進む（0a8fad53）。プレイヤーと同じく一度タップする
-        document.querySelector(".loading-gate.is-ready")?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+        document.querySelector(".loading-gate.is-ready")?.click();
         await new Promise((resolve) => setTimeout(resolve, 20));
       }
       throw Error(`Control did not appear: ${selector}`);

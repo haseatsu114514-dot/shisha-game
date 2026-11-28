@@ -3,7 +3,6 @@
   position: fixed; z-index: 991; inset: 0; overflow: hidden; touch-action: none;
 }
 .vt-resume-smoke .wipe-smoke { background: radial-gradient(ellipse at 50% 60%, #1a1424, #0a0710 70%); }
-body:has(.vt-resume-smoke:not(:empty)) > :is(.loading-gate, .loading-exit-haze).is-viewport { z-index: 992; }
 
 /* 大会 CONTINUE。幅640の紙面。上の2:3を顔と吹き出しに使い、残りは親指で押す選択コマ。
    .gameover は #screen に残す。入力・期限・読み上げ・反応の所有者を替えない。 */

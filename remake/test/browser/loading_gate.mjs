@@ -33,7 +33,11 @@ await suite("loading-gate", async check => {
       assert.equal(await page.locator('.loading-proceed').evaluate(node => getComputedStyle(node).opacity !== '0'), true, 'The reading prompt appears');
       assert.equal(await page.locator('.loading-status').innerText(), '準備完了', 'The status says loading has finished');
       assert.equal(await page.locator('.loading-proceed').innerText(), 'タップで進む', 'The prompt names no keyboard key, on any screen');
-      await page.locator('.loading-status').click();
+      const target = await page.locator('.loading-status').boundingBox();
+      await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2);
+      await page.mouse.down();
+      assert.equal(await page.locator('.loading-gate.is-ready').count(), 1, 'Keep the gate under the finger until release');
+      await page.mouse.up();
       await page.locator('.loading-gate').waitFor({ state: 'detached' });
       assert.equal(await page.locator('#underlying').evaluate(node => node.closest('.demo-scene').inert), false);
       assert.match(await page.locator('#result').textContent(), /準備完了/);
@@ -121,7 +125,7 @@ await suite("loading-gate", async check => {
         const status = gate.querySelector('.loading-status').innerText;
         if (gate.classList.contains('is-ready')) return { skipped: false, taps, heldMs: performance.now() - releasedAt, status };
         if (status !== 'LOADING…') return { skipped: false, taps, early: status };
-        gate.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+        gate.click();
         taps++;
         await new Promise(resolve => setTimeout(resolve, 20));
       }
@@ -275,7 +279,7 @@ await suite("loading-gate", async check => {
       const src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"/>';
       const comic = id => ({ id, title: id, minChapter: 1, panels: [{ src, alt: 'one' }, { src, alt: 'two' }] });
       const ready = () => new Promise(resolve => { const poll = () => host.querySelector('.loading-gate.is-ready') ? resolve() : setTimeout(poll, 20); poll(); });
-      const tap = () => host.querySelector('.loading-gate').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      const tap = () => host.querySelector('.loading-gate').click();
       // A soft wait while a gate is open only waits for its own work.
       let release;
       const outer = withLoading(() => new Promise(resolve => { release = resolve; }), { host, delayMs: 0, comics: [comic('outer')] });
@@ -338,13 +342,13 @@ await suite("loading-gate", async check => {
       const pending = gate(300);
       await new Promise(resolve => { const poll = () => host.querySelector('.loading-gate.is-ready') ? resolve() : setTimeout(poll, 20); poll(); });
       const beforeProceed = calls.length;
-      host.querySelector('.loading-gate').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      host.querySelector('.loading-gate').click();
       await pending;
       const afterProceed = calls.join();
       // A failing record must not break the gate.
       const throwing = gate(300, { onRead: () => { throw new Error('storage full'); } });
       await new Promise(resolve => { const poll = () => host.querySelector('.loading-gate.is-ready') ? resolve() : setTimeout(poll, 20); poll(); });
-      host.querySelector('.loading-gate').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      host.querySelector('.loading-gate').click();
       const survived = await throwing.then(() => true, () => false);
       // Leaving the scene during the reading hold is not a read.
       const controller = new AbortController();
@@ -383,7 +387,7 @@ await suite("loading-gate", async check => {
         onRead: comic => calls.push('read:' + comic.id), onProceed: () => calls.push('proceed') });
       await ready();
       const holding = !!host.querySelector('.loading-panels img') && calls.length === 0;
-      host.querySelector('.loading-gate').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      host.querySelector('.loading-gate').click();
       const value = await first;
       // A fixed point right after a read comic (a LOAD that reloads and resumes) does not stack a second one.
       shown = false;
@@ -416,7 +420,7 @@ await suite("loading-gate", async check => {
         let ready = false;
         const observer = new MutationObserver(() => {
           const gate = host.querySelector('.loading-gate.is-ready');
-          if (gate && !ready) { ready = true; gate.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); }
+          if (gate && !ready) { ready = true; gate.click(); }
         });
         observer.observe(host, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
         const started = performance.now();
@@ -446,7 +450,7 @@ await suite("loading-gate", async check => {
         await new Promise(resolve => { const poll = () => host.querySelector('.loading-gate.is-ready') ? resolve() : setTimeout(poll, 20); poll(); });
         const title = host.querySelector('.loading-comic-title')?.textContent;
         const images = [...host.querySelectorAll('.loading-panels img')];
-        host.querySelector('.loading-gate').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+        host.querySelector('.loading-gate').click();
         await gate;
         return { title, reads: reads.join(), images };
       };

@@ -860,12 +860,15 @@ await suite("trpg-main", async check => {
       await page.locator("#trpg-app [data-test]").first().waitFor();
       assert(new URL(page.url()).pathname.endsWith("/" + file), "The checks keep using the page itself");
     }
-    // 人のブラウザ（自動操作の印が無い）として開き直す。
+    // プレイヤーの縦画面で起動漫画を読み、転送先のボドゲカフェの卓を開く。
     await page.addInitScript(() => Object.defineProperty(Navigator.prototype, "webdriver", { get: () => false }));
+    await page.setViewportSize({ width: 390, height: 844 });
     for (const file of ["trpg-preview.html?scenario=ordinary-cup", "trpg-campaign-preview.html"]) {
       await page.goto(new URL(file, baseURL).href);
       await page.waitForURL(url => url.pathname.endsWith("/index.html") && url.searchParams.get("trial") === "trpg");
-      await button(page, "trpg-campaign-notice").waitFor({ timeout: 30000 });
+      await page.locator('#stage[data-portrait-scene="trpg"]').waitFor({ timeout: 30000 });
+      await button(page, "trpg-bookshelf-open").click();
+      await button(page, "trpg-bookshelf").waitFor();
       assert.equal(await page.evaluate(() => document.body.dataset.screen), "trpg");
     }
     await page.goto(new URL("trpg-campaign-preview.html?harness=1", baseURL).href);

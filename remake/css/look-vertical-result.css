@@ -196,3 +196,47 @@ dialog.review .tournament-result-reason { margin-top: 16px; color: #f5ead7; font
   #stage .rt-name { font-size: 16px; }
 }
 }
+
+/* 第1章クリア。本文だけがスクロールし、既存の章移動・保存ボタンは常に画面内に残る。 */
+:root[data-vt-clear] #stage {
+  width: min(100vw, 480px);
+  height: 100dvh;
+  transform: translate(-50%, -50%);
+  --stage-gutter: 0px;
+
+  .end-screen.clear {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    justify-content: stretch;
+    align-items: stretch;
+    gap: clamp(6px, 1.4dvh, 14px);
+    padding: max(16px, env(safe-area-inset-top)) 18px max(12px, env(safe-area-inset-bottom));
+    background: linear-gradient(170deg, #201527e8, #110d1be6 45%, #0c0913f5);
+  }
+  .end-title { font-size: clamp(28px, 8vw, 42px); line-height: 1.2; }
+  .end-sub { font-size: 15px; line-height: 1.5; letter-spacing: .03em; }
+  .end-body {
+    display: flex; flex-direction: column; align-items: stretch;
+    margin: 0; padding: 12px 14px; gap: 10px; overflow-y: auto; overscroll-behavior: contain;
+    border-block: 1px solid #e2c28a60; background: #221a2b94; scrollbar-width: thin;
+  }
+  .end-radar { flex: none; margin: auto; }
+  .end-radar .radar { display: block; width: clamp(202px, 31dvh, 280px); max-width: 100%; height: auto; }
+  .end-notes { width: auto; margin-block: 0 auto; font-size: 16px; line-height: 1.6; color: #e3d9e6; }
+  .end-notes p { margin: 0; }
+  .next-teaser { gap: 2px; padding: 8px 12px; margin-top: 12px; }
+  .next-teaser small { font-size: 12px; }
+  .next-teaser b { font-size: 22px; }
+  .next-teaser span { font-size: 14px; }
+  .clear-last-line { text-align: center; font-size: 15px; }
+  .end-screen.clear .end-actions {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-self: stretch;
+    margin: 0; gap: 6px;
+  }
+  .end-actions .btn { min-width: 0; min-height: 44px; padding: 6px; font-size: 15px; }
+  .end-actions .primary { grid-column: 1 / -1; font-size: 18px; }
+}
+
+@media (max-height: 680px) {
+  :root[data-vt-clear] #stage .end-notes { order: -1; }
+}

@@ -110,21 +110,29 @@ async function assertFits(page, label) {
 /**
  * 土台の配置（VPN09・VPN16）: 下画面の高さと十字キー・丸ボタンの大きさと位置は、試作の会話画面と同じ（幅 39 に対して下画面 30.2・
  * 補助ボタンの段の下 8.2 から十字キー 20.4・丸ボタン 14.6。背の低い画面は試作と同じ段階で縮む）。
- * 十字キーと丸ボタンは場面が替わっても同じ位置（指を置いたまま遊べる）。最初に測った位置を覚え、以後の場面で同じ位置か確かめる。
+ * 十字キーと丸ボタンは同じ配置の場面で同じ位置（指を置いたまま遊べる）。最初に測った位置を覚え、以後の場面で同じ位置か確かめる。
  */
 async function assertPadHome(page, label, home = null) {
   const box = await page.evaluate(() => {
     const r = (selector) => { const b = document.querySelector(selector).getBoundingClientRect(); return [b.left, b.top, b.width, b.height].map((v) => Math.round(v)); };
     const shell = document.querySelector(".vt-shell").getBoundingClientRect(), ctrl = document.querySelector(".vt-ctrl").getBoundingClientRect();
     const u = shell.width / 39, tall = shell.height / u;
-    const size = tall > 80 ? [30.2, 8.2, 20.4, 14.6] : tall > 71 ? [27.2, 7.4, 18.2, 13.2] : [23.6, 6.5, 15.4, 11.2];
+    let size = tall > 80 ? [30.2, 8.2, 20.4, 14.6] : tall > 71 ? [27.2, 7.4, 18.2, 13.2] : [23.6, 6.5, 15.4, 11.2];
+    if (document.querySelector(".vt-shell").dataset.scene === "vn") {
+      const chips = document.querySelector(".vt-chips").getBoundingClientRect();
+      const safe = parseFloat(getComputedStyle(document.querySelector(".vt-shell")).getPropertyValue("--safe-b"));
+      const gap = Math.max(.6, safe * 2 / (3 * u));
+      const padTop = chips.height / u + gap;
+      const ring = size[2] * .87;
+      size = [padTop + ring + gap, padTop, ring, size[3]];
+    }
     return { u, size, ctrlH: ctrl.height, ctrlBottom: shell.bottom - ctrl.bottom, padTop: document.querySelector(".vt-dpad").getBoundingClientRect().top - ctrl.top,
       panel: getComputedStyle(document.querySelector(".vt-ctrl")).backgroundImage, dpad: r(".vt-dpad"), a: r(".vt-a"),
       aShown: getComputedStyle(document.querySelector(".vt-a")).display !== "none", dpadShown: getComputedStyle(document.querySelector(".vt-dpad")).display !== "none" };
   });
   const [ctrlH, padTop, ring, a] = box.size.map((n) => n * box.u);
-  assert(Math.abs(box.ctrlH - ctrlH) <= 2 && Math.abs(box.ctrlBottom) <= 1, `${label}: the lower screen is as tall as the prototype's ${JSON.stringify(box)}`);
-  assert(Math.abs(box.padTop - padTop) <= 2 && Math.abs(box.dpad[2] - ring) <= 2 && Math.abs(box.a[2] - a) <= 2, `${label}: the pad sits right under the chips like the prototype ${JSON.stringify(box)}`);
+  assert(Math.abs(box.ctrlH - ctrlH) <= 2 && Math.abs(box.ctrlBottom) <= 1, `${label}: the lower screen is as tall as the scene requires ${JSON.stringify(box)}`);
+  assert(Math.abs(box.padTop - padTop) <= 2 && Math.abs(box.dpad[2] - ring) <= 2 && Math.abs(box.a[2] - a) <= 2, `${label}: the pad fits below the chips ${JSON.stringify(box)}`);
   assert.equal(box.panel, "none", `${label}: no board under the pad (the scene shows through like the prototype)`);
   assert(box.aShown && box.dpadShown, `${label}: the pad and the round button stay on screen`);
   if (home) {
@@ -171,6 +179,33 @@ const manual = (page) => page.evaluate(async () => {
 const typed = (page) => page.waitForFunction(() => document.querySelector("#vn .vn-next")?.classList.contains("show") || document.querySelector("#vn .vn-choices.show"));
 
 await suite("look_vertical", async (check) => {
+  await check("exhibition-audience-vote-details-and-next", async page => {
+    await seedChapterFive(page);
+    await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      Object.assign(state, { phase: "tournament", day: 52 });
+      Object.assign(state.flags, { _ch5_match_started: true, _ch5_match_scheduled: true });
+      const progress = state.flags._ch5;
+      Object.assign(progress, { part: "match", scheduleDecision: "decide" });
+      for (const id of ["ch5_schedule_contact", "ch5_match_day_arrival", "ch5_copy_first_cup", "ch5_relationship_before_second_cup"]) progress.read[id] = true;
+      await (await import("./js/chapters/ch5.js")).resumeChapterFive();
+    });
+    await waitScene(page, "tournament");
+    const first = page.locator(t("ch5-second-cup"));
+    assert.match(await first.innerText(), /はじめ 19／9000 21/);
+    await page.locator(t("ch5-second-cup-start")).tap({ trial: true });
+    await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      state.flags._ch5.secondCup = { total: 90, category: "steady", votes: { hajime: 26, machine: 14 } };
+      await (await import("./js/chapters/ch5.js")).resumeChapterFive();
+    });
+    const panel = page.locator(t("ch5-match"));
+    await panel.locator("summary").tap();
+    assert.match(await panel.locator("details[open]").innerText(), /合計 はじめ 45／9000 35/);
+    await page.locator(t("ch5-continue")).tap();
+    await waitScene(page, "vn");
+  }, { ...SHORT, pageEntry: entry });
+
   await check("tournament-live-frame-survives-rotation", async (page) => {
     await page.evaluate(() => { void window.__remake.dev.show("interval"); });
     await waitScene(page, "tournament");
@@ -193,7 +228,9 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "tournament");
     const next = page.locator(t("standings-next"));
     assert(await next.isDisabled());
-    await page.locator(".standings .sd-row").first().tap();
+    // 入場中の行へ自動スクロールすると舞台が横へずれる。画面に見えている順位行を指で押す。
+    const row = await page.locator(".standings .sd-row").first().boundingBox();
+    await page.touchscreen.tap(row.x + row.width / 2, row.y + row.height / 2);
     await next.and(page.locator(":enabled")).waitFor();
     assert.equal(await page.locator(".sd-row").count(), 4);
     const board = page.locator(".standings");
@@ -266,9 +303,62 @@ await suite("look_vertical", async (check) => {
     assert(await page.locator(".loading-gate").evaluate(gate => gate.contains(document.elementFromPoint(innerWidth / 2, innerHeight / 2))));
     await page.waitForTimeout(800); // 通常の未対応場面の猶予（600ms）より長く待つ
     await page.evaluate(() => { window.finishLoad(); return window.loadingRun; });
+    await page.waitForFunction(() => !document.documentElement.hasAttribute("data-vt-loading"));
     await waitScene(page, "title");
     assert.equal(await page.evaluate(() => { cancelAnimationFrame(window.sampleFrame); return window.landscapeFrames; }), 0);
   }, { ...TALL, pageEntry: entry });
+
+  await check("boot-fades-onto-portrait-title", async (page) => {
+    // 通常の検査は #boot が消えてから始まる。開き直してフェード中も1フレームずつ調べる。
+    await page.addInitScript(() => {
+      window.wideTitleFrames = 0;
+      const sample = () => {
+        const boot = document.getElementById("boot");
+        if (document.querySelector("#screen > .title") && (!boot || Number(getComputedStyle(boot).opacity) < 0.98)
+          && Number(getComputedStyle(document.getElementById("viewport")).opacity) > 0) window.wideTitleFrames++;
+        if (boot || !document.querySelector('[data-test="vt-title-new"]')) requestAnimationFrame(sample);
+      };
+      requestAnimationFrame(sample);
+    });
+    await page.reload();
+    await page.locator("#boot").waitFor({ state: "detached" });
+    await waitScene(page, "title");
+    assert.equal(await page.evaluate(() => window.wideTitleFrames), 0);
+
+    // ロード画面の「進む」にタップが届き、閉じるとすぐにタイトルに戻る。
+    await page.evaluate(async () => {
+      const { withLoading } = await import("./js/core/loading.js");
+      window.gateTest = withLoading(() => new Promise(resolve => { window.finishGate = resolve; }),
+        { delayMs: 0, comics: [] });
+    });
+    await page.locator(".loading-gate:not(.is-preparing)").waitFor();
+    assert(await page.evaluate(() => {
+      const button = document.querySelector(".loading-gate .loading-proceed").getBoundingClientRect();
+      return !!document.elementFromPoint(button.x + button.width / 2, button.y + button.height / 2)?.closest(".loading-gate");
+    }));
+    await page.waitForFunction(() => typeof window.finishGate === "function");
+    await page.evaluate(() => { window.finishGate(); return window.gateTest; });
+    await page.locator(t("vt-title-config")).tap();
+    await waitScene(page, "sheet");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("first-rotation-waits-for-portrait-styles", async (page) => {
+    let release;
+    const paused = new Promise(resolve => { release = resolve; });
+    await page.route("**/css/look-vertical.css*", async route => { await paused; await route.continue(); });
+    const request = page.waitForRequest("**/css/look-vertical.css*");
+    await page.setViewportSize(TALL.viewport);
+    await request;
+    try {
+      assert.equal(await page.locator("#viewport").isVisible(), false);
+      await page.setViewportSize(WIDE.viewport);
+      await page.locator(t("title-new")).waitFor();
+      await page.setViewportSize(TALL.viewport);
+    } finally { release(); }
+    await waitScene(page, "title");
+    await page.locator(t("vt-title-config")).tap();
+    await waitScene(page, "sheet");
+  }, { ...WIDE, pageEntry: entry });
 
   await check("title-and-conversation-in-two-line-pages", async (page) => {
     await waitScene(page, "title");
@@ -330,7 +420,7 @@ await suite("look_vertical", async (check) => {
       mine: [...document.querySelectorAll(".vt-pin")].map((pin) => pin.dataset.spot).sort(),
     }));
     assert.deepEqual(pins.mine, pins.live, "one pin per destination");
-    const home = await assertPadHome(page, "map");
+    await assertPadHome(page, "map");
     // 看板（VPN10）: 元の地図と同じ店のロゴ・施設の絵を、地図の中に小さく出す
     const signs = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll(".vt-pin")].map((pin) => {
       const art = pin.querySelector(".vt-pin-art > *"), live = document.querySelector(`#screen > .map:not(.done) .spot-pin[data-spot="${pin.dataset.spot}"] .ico > :is(.store-logo, .facility-icon)`);
@@ -373,7 +463,7 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "vn", 30000);
     await page.locator(".vt-actor").first().waitFor({ state: "attached", timeout: 20000 });
     assert.match(await page.locator(".vt-where b").textContent(), /PEPPERMINT/);
-    await assertPadHome(page, "conversation in the shop", home);
+    const talkHome = await assertPadHome(page, "conversation in the shop");
     // 返事まで送る → 十字キーの下で次の札へ、決定で本編の選択肢を押す
     for (let i = 0; i < 30 && !(await page.locator(".vt-choice").count()); i++) {
       await typed(page);
@@ -384,7 +474,7 @@ await suite("look_vertical", async (check) => {
     const choices = await page.locator(".vt-choice").allTextContents();
     assert(choices.length >= 2, `the reply cards mirror the engine's choices ${JSON.stringify(choices)}`);
     await assertFits(page, "choice");
-    await assertPadHome(page, "choice", home);
+    await assertPadHome(page, "choice", talkHome);
     await pad(page, "down");
     assert.equal(await page.locator('.vt-choice[aria-current="true"]').getAttribute("data-index"), "1");
     // 本編の2番目の選択肢が押されること（決定は本編のボタンへの click として中継する）
@@ -428,9 +518,10 @@ await suite("look_vertical", async (check) => {
     for (const [i, name] of ["なる", "アダム", "みんと", "はじめ"].entries()) {
       const card = page.locator(".ent-card.in").filter({ has: page.locator(".ent-name", { hasText: name }) });
       await card.waitFor();
-      assert.equal(await card.locator(".ent-tag").textContent(), `エントリーナンバー${i + 1}`);
+      const folio = String(i + 1).padStart(2, "0");
+      assert.equal(await card.locator(".ent-tag").textContent(), `エントリーナンバー${folio}`);
       await card.locator(".ent-tag.printed > img").waitFor();
-      assert.equal(await card.locator(".ent-number.printed > img").getAttribute("src"), `img/ui/tournament-show/entry-digit-${i + 1}.webp`);
+      assert.equal(await card.locator(".ent-number.printed > img").getAttribute("src"), `img/ui/tournament-show/entry-number-${folio}.webp`);
       assert.equal(await card.locator(".ent-name").textContent(), name);
       const id = ["naru", "adam", "minto", "hajime"][i];
       for (const [selector, stem] of [[".ent-portrait", id], [".ent-backdrop", "bg_" + id]]) {
@@ -438,7 +529,7 @@ await suite("look_vertical", async (check) => {
         assert((await image.getAttribute("src")).includes(`/character_intros/graphic/${stem}.webp`));
         assert(await image.evaluate(img => img.complete && img.naturalWidth > 0));
       }
-      assert.equal(await card.locator(".ent-speaker").textContent(), "スミ");
+      assert.equal(await card.locator(".ent-speaker").textContent(), "はじめ");
       const ordered = await card.evaluate(node => {
         const box = selector => node.querySelector(selector).getBoundingClientRect();
         return box(".ent-ring").bottom <= box(".ent-name").top + 1 &&
@@ -454,6 +545,23 @@ await suite("look_vertical", async (check) => {
     assert.deepEqual(await page.locator(t("vt-dpad")).boundingBox(), padBox);
     await pad(page, "down");
     await page.locator(t("vt-row-minto")).waitFor();
+  }, { ...SHORT, pageEntry: entry });
+
+  await check("national-entrant-title-on-portrait-poster", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      const { ENTRANCE_CARDS, playEntrance } = await import("./js/chapters/tournament-entrance.js");
+      state.chapter = 3;
+      window.sequence = playEntrance([ENTRANCE_CARDS[3].at(-1)], { auto: false });
+    });
+    await waitScene(page, "interlude");
+    const card = page.locator(".ent-card.in");
+    assert.equal(await card.locator(".ent-ring").innerText(), "A県を背負う職人");
+    const name = await card.locator(".ent-name").boundingBox();
+    const portrait = await card.locator(".ent-portrait").boundingBox();
+    assert(portrait.y < name.y && portrait.width > SHORT.viewport.width * .9, "national entrant uses the full-width portrait composition");
+    await page.evaluate(() => window.sequence);
   }, { ...SHORT, pageEntry: entry });
 
   await check("tonari-menu-lime-and-menu-sheets", async (page) => {
@@ -699,6 +807,8 @@ await suite("look_vertical", async (check) => {
       (await import("./js/core/ui.js")).clearScreen();
       const cs = (await import("./js/craft/practice.js")).newCarePracticeSession("rehearsal");
       cs.practiceKind = "midcheck";
+      cs.holes.score = 93;
+      cs.heat.score = 93;
       (await import("./js/craft/session.js")).openBench(cs, {});
       const { runCare } = await import("./js/craft/pull.js");
       window.careRun = (async () => {
@@ -709,6 +819,15 @@ await suite("look_vertical", async (check) => {
     for (const round of [1, 2]) {
       await page.locator(t("vt-care-place-std")).tap();
       await page.locator(t("vt-care-coal-1")).tap();
+      if (round === 1) {
+        await page.evaluate(async () => (await import("./js/core/ui.js")).toast("なる「……っし、出した。お前は？」", { ms: 3200 }));
+        const notice = page.locator(".vt-notice").filter({ hasText: "お前は？" });
+        await notice.waitFor();
+        const meter = await page.locator(".vtc-rank-meter").boundingBox();
+        const card = await notice.boundingBox();
+        assert(meter?.width > 0 && card.x + card.width <= meter.x, "Naru's whole notice fits beside the visible rank meter");
+        assert(await notice.evaluate(el => el.scrollWidth <= el.clientWidth && el.scrollHeight <= el.clientHeight));
+      }
       await page.locator(t("vt-pull-stop")).tap();
       await page.locator(t("vt-pull-serve")).tap();
       await page.locator(t("vt-craft-result-next")).tap();
@@ -718,21 +837,60 @@ await suite("look_vertical", async (check) => {
     assert.deepEqual(history.map(({ count, place }) => [count, place]), [[1, "std"], [1, "std"]]);
   }, { ...TALL, pageEntry: entry });
 
+  await check("portrait-transitions-keep-the-rotate-hint-hidden", async (page) => {
+    await waitScene(page, "title");
+    await page.evaluate(async () => {
+      const { newGame } = await import("./js/core/state.js");
+      Object.assign(newGame(), { chapter: 1, day: 8, slot: 2, phase: "daily" });
+      const { tonariMenu } = await import("./js/daily/tonari.js");
+      void tonariMenu();
+    });
+    await waitScene(page, "menu");
+    await page.evaluate(() => {
+      window.rotateFlashes = [];
+      document.addEventListener("rotateguardchange", () => {
+        if (document.documentElement.dataset.rotateGuard) window.rotateFlashes.push(document.body.dataset.screen);
+      });
+    });
+    await page.locator(t("vt-chip-back")).tap();
+    await page.locator("#screen > .sub-menu.done").waitFor({ state: "attached" });
+    await page.waitForTimeout(3500); // 次の場面の素材を待つ。旧版では3秒で回転案内が出た。
+    await page.evaluate(async () => {
+      const { newSession, openBench } = await import("./js/craft/session.js");
+      const { stepVent } = await import("./js/craft/steps.js");
+      const cs = newSession("practice");
+      openBench(cs, {});
+      window.chooseVent = stepVent(cs);
+    });
+    await page.locator(t("opt-closed")).tap();
+    await page.evaluate(async () => {
+      await window.chooseVent;
+      (await import("./js/core/ui.js")).retireScreen();
+    });
+    await waitScene(page, "cover");
+    await page.evaluate(async () => { void (await import("./js/daily/tonari.js")).tonariMenu(); });
+    await waitScene(page, "menu");
+    assert.deepEqual(await page.evaluate(() => window.rotateFlashes), []);
+  }, { ...TALL, pageEntry: entry });
+
   await check("unsupported-scenes-show-the-rotate-hint", async (page) => {
     await waitScene(page, "title");
     await page.evaluate(async () => {
-      const core = await import("./js/core/state.js");
-      const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 1, day: 2, slot: 0 });
-      (await import("./js/core/ui.js")).clearScreen();
-      const { newSession, openBench } = await import("./js/craft/session.js");
-      const { stepPlace } = await import("./js/craft/steps.js");
-      const cs = newSession("tutorial"); openBench(cs, {}); window.placeRun = stepPlace(cs);
+      const { runIchidai } = await import("./js/minigames/ichidai.js");
+      window.stopCards = new AbortController();
+      void runIchidai({ signal: window.stopCards.signal });
     });
     await page.waitForFunction(() => getComputedStyle(document.getElementById("rotate-hint")).display !== "none", null, { timeout: 10000 });
     assert.equal(await scene(page), "");
     const hint = await page.evaluate(() => document.getElementById("rotate-hint").innerText.replace(/\s+/g, " "));
     assert(hint.includes("この場面は横向きで遊びます"), hint);
     await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true");
+    await page.setViewportSize(WIDE.viewport);
+    await page.locator("#rotate-hint").waitFor({ state: "hidden" });
+    await page.locator(t("ichi-help")).tap();
+    await page.locator(t("ichi-help-close")).tap();
+    await page.evaluate(() => window.stopCards.abort());
+    await page.locator("#rotate-hint .portrait-required").waitFor();
   }, { ...TALL, pageEntry: entry });
 
   await check("craft-pack-and-steam-timer-in-the-shell", async (page) => {
@@ -1236,12 +1394,16 @@ await suite("look_vertical", async (check) => {
     await assertPadHome(page, "short map");
   }, { ...SHORT, pageEntry: entry });
 
-  await check("landscape-uses-the-current-screen", async (page) => {
-    // 横持ち: 外枠を出さず、本編の画面のまま
-    await page.locator(t("title-new")).waitFor();
-    await page.waitForTimeout(400);
-    const state = await page.evaluate(() => ({ shell: !!document.querySelector(".vt-shell"), vt: document.documentElement.dataset.vt || "", opacity: getComputedStyle(document.getElementById("viewport")).opacity }));
-    assert.deepEqual(state, { shell: false, vt: "", opacity: "1" });
+  await check("landscape-blocks-title-input", async (page) => {
+    await page.locator("#rotate-hint .portrait-required").waitFor();
+    await page.locator(t("title-config")).focus();
+    await page.keyboard.press("Enter");
+    const box = await page.locator(t("title-config")).boundingBox();
+    await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+    assert.equal(await page.locator("#modal.show").count(), 0);
+    await page.setViewportSize(TALL.viewport);
+    await page.locator(t("vt-title-config")).tap();
+    await waitScene(page, "sheet");
   }, { ...WIDE, pageEntry: entry });
 
   await check("switching-looks-leaves-no-trace", async (page) => {

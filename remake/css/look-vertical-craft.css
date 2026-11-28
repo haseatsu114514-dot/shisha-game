@@ -45,8 +45,10 @@
 .vtc-steps li.now { width: calc(3.8 * var(--u)); height: calc(3 * var(--u)); font-size: calc(1.9 * var(--u)); color: var(--deep); background: var(--acc); box-shadow: 0 0 calc(1.6 * var(--u)) color-mix(in srgb, var(--acc) 55%, transparent); }
 
 /* 制作ランク（試作の案D の置き場所: 右上。絵は本編の D〜SSS） */
+.vt-shell[data-scene="craft"] { --vtc-rank-width: calc(11.2 * var(--u)); }
+.vt-shell[data-scene="craft"]:has(.vtc-rank:not([hidden])) .vt-notices { right: calc(var(--vtc-rank-width) + 1.9 * var(--u)); }
 .vtc-rank { position: absolute; z-index: 5; right: calc(0.9 * var(--u)); top: max(calc(0.6 * var(--u)), calc(env(safe-area-inset-top, 0px) - 0.6 * var(--u))); pointer-events: none; }
-.vtc-rank-box { position: relative; display: block; width: calc(11.2 * var(--u)); height: calc(8.35 * var(--u)); filter: drop-shadow(0 calc(0.3 * var(--u)) calc(0.6 * var(--u)) #000b); }
+.vtc-rank-box { position: relative; display: block; width: var(--vtc-rank-width); height: calc(8.35 * var(--u)); filter: drop-shadow(0 calc(0.3 * var(--u)) calc(0.6 * var(--u)) #000b); }
 .vtc-rank-box img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .vtc-rank-meter { position: relative; display: block; width: calc(8.6 * var(--u)); height: calc(0.85 * var(--u)); margin: calc(0.1 * var(--u)) auto 0; border: calc(0.1 * var(--u)) solid #ffffff2e; border-radius: var(--u); overflow: hidden;
   background: #0b081299; box-shadow: inset 0 calc(0.1 * var(--u)) calc(0.3 * var(--u)) #000c, 0 calc(0.2 * var(--u)) calc(0.6 * var(--u)) #000a; }

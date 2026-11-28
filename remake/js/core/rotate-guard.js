@@ -10,7 +10,7 @@ export function rotateHintVisible() {
   return !!hint && getComputedStyle(hint).display !== "none";
 }
 
-function sync() {
+export function syncRotateGuard() {
   const next = rotateHintVisible();
   if (next === guarded) return;
   guarded = next;
@@ -26,9 +26,19 @@ export const rotateGuarded = () => guarded;
 export function installRotateGuard() {
   if (installed) return;
   installed = true;
-  window.addEventListener("resize", sync);
-  window.addEventListener("orientationchange", sync);
-  window.visualViewport?.addEventListener("resize", sync);
-  window.matchMedia?.("(orientation: portrait)").addEventListener?.("change", sync);
-  sync();
+  window.addEventListener("resize", syncRotateGuard);
+  window.addEventListener("orientationchange", syncRotateGuard);
+  window.visualViewport?.addEventListener("resize", syncRotateGuard);
+  window.matchMedia?.("(orientation: portrait)").addEventListener?.("change", syncRotateGuard);
+  // 横持ちの案内で、フォーカス済みのボタン・キー送り・背後の dialog も止める。
+  const blockLandscapeInput = event => {
+    if (document.documentElement.dataset.look !== "vertical" || !window.matchMedia("(orientation: landscape)").matches ||
+        !rotateHintVisible()) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  };
+  for (const type of ["keydown", "keyup", "click", "pointerdown", "pointerup", "touchstart", "touchend", "cancel"]) {
+    window.addEventListener(type, blockLandscapeInput, { capture: true, passive: false });
+  }
+  syncRotateGuard();
 }

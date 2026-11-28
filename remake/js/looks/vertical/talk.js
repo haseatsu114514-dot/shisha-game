@@ -2,7 +2,7 @@
 // 送る・選ぶは本編の会話へ中継する（進行・判定・報酬・既読・LOG は本編のまま）。
 // 本文は本編の会話エンジンが、縦のテロップと同じ字数の幅で2行ずつにページを分ける（css/look-vertical.css が、縦画面の間だけ
 // 本編の .vn-text をテロップと同じ比の幅・字の大きさにする）。ここでは本編が今出しているページをそのまま写す。
-// 立ち位置は試作（VPL05）と同じ: 1人は中央で少し寄り（身長差は半分だけ）、2人は左右（27%・73%）で身長差そのまま、話す側が手前で明るい。
+// 立ち位置: 1人は中央で少し寄り（身長差は半分だけ）、2人は左右（24%・76%）で身長差そのまま、話す側が手前で明るい。
 import { el } from "../../core/util.js";
 import { DB, portraitInfo } from "../../core/data.js";
 import { icon, mirrorBackground, textOf, cssUrl, placeOf } from "./frame.js";
@@ -85,7 +85,7 @@ export function createTalkScene(frame) {
       const content = body * scale, imgH = content / c.h, imgW = imgH * aspect;
       const head = Math.max(safeTop, feet - content);
       const top = head - (1 - c.b - c.h) * imgH;
-      const slot = pair ? (index === 0 ? 0.27 : 0.73) : 0.5;
+      const slot = pair ? (index === 0 ? 0.24 : 0.76) : 0.5;
       let img = actors.querySelector(`img[data-id="${id}"]`);
       const src = source.currentSrc || source.src;
       if (!img) {

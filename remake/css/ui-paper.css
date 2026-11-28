@@ -78,7 +78,7 @@ html:root[data-ui-theme="paper"] body:not(:root) .vn-box:is(.narration, .thought
 }
 /* スマホは操作が窓の外にあるため、本文上の罫線だけを消す。紙の原画（2464×384）の
    罫線 y=102–109 に、同じ絵のすぐ下の紙肌を重ねる。外枠・煙・PC の描画は変えない。 */
-html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) .vn-box::after {
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) .vn-box::after {
   content: "";
   position: absolute;
   inset: -8px;
@@ -145,7 +145,7 @@ html:root[data-ui-theme="paper"] .vn-box .tx-hint { color: #2f6f99; }
 html:root[data-ui-theme="paper"] .vn-box :is(.tx-warn, .tx-red) { color: #b83a3a; }
 html:root[data-ui-theme="paper"] .vn-box .tx-blue { color: #3b5ea8; }
 html:root[data-ui-theme="paper"] .vn-box .tx-sub { color: var(--paper-muted); }
-html:root[data-ui-theme="paper"] .vn-box .tx-voice { color: #6f6a80; }
+html:root[data-ui-theme="paper"] .vn-box .tx-voice { color: #4d425e; }
 html:root[data-ui-theme="paper"] .vn-log .log-row b { color: var(--lavender); }
 
 /* 紙の上で読めるよう、暗い面向けに明るく作られた色を濃くする。 */

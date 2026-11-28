@@ -71,9 +71,10 @@ function ensureChromeAssets() {
     };
     const bg = bootAssets?.bg ? { img: bootAssets.bg, ready: bootAssets.ready } : decode(new URL("../../img/ui/loading/loading_bg.webp", import.meta.url).href);
     const logo = bootAssets?.logo ? { img: bootAssets.logo, ready: bootAssets.ready } : decode(new URL("../../img/ui/ui_title_logo_rich.webp", import.meta.url).href);
+    const font = bootAssets ? "Suien Title" : "Suien Gothic";
     const fonts = typeof document !== "undefined" && document.fonts
       ? Promise.race([
-          Promise.all(["500", "700", "900"].map(w => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線似顔絵LOADING…準備完了クリックタップで進む"))),
+          Promise.all(["500", "700"].map(w => document.fonts.load(`${w} 20px "${font}"`, "水煙前線似顔絵LOADING…準備完了クリックタップで進む"))),
           new Promise(resolve => setTimeout(resolve, REQUIRED_ART_TIMEOUT_MS)),
         ]).catch(() => {})
       : Promise.resolve();
@@ -252,7 +253,8 @@ export async function withLoading(prepare, {
   for (const type of ["pointerdown", "pointerup", "click"]) {
     overlay.addEventListener(type, event => {
       event.stopPropagation();
-      if (awaitingProceed && type === "pointerdown") proceedNow();
+      // 指が離れた後の click をここで受け取ってから閉じる。同じタップを次の画面に渡さない。
+      if (awaitingProceed && type === "click") proceedNow();
     });
   }
   let comic;

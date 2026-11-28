@@ -1,0 +1,323 @@
+/* 縦画面の MENU・LIME・小窓の共通部品。 */
+.vt-sheet-host[hidden], .vt-sheet-host [hidden] { display: none !important; }
+.vt-sheet-host *, .vt-sheet-host *::before, .vt-sheet-host *::after { box-sizing: border-box; }
+.vt-sheet-host button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: inherit;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.vt-sheet-host button:focus-visible { outline: calc(var(--d) * 2) solid #ffffff; outline-offset: calc(var(--d) * 1); }
+
+.vt-sheet-pane {
+  display: flex;
+  flex-direction: column;
+  color: var(--r-text);
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 15);
+  overflow-wrap: anywhere;
+}
+/* 上画面と下画面をつないだ縦長のシート（LIME・小窓・LOG）。位置と大きさは sheet.js が画面の位置から置く */
+.vt-sheet-pane[data-tall="true"] {
+  z-index: 2;
+  background-color: #2b1c44;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%232b1c44'/%3E%3Crect width='2' height='2' fill='%2333224f'/%3E%3Crect x='2' y='2' width='2' height='2' fill='%2333224f'/%3E%3C/svg%3E");
+  background-size: calc(var(--d) * 4) calc(var(--d) * 4);
+  box-shadow: 0 0 0 calc(var(--d) * 1.6) var(--r-black), 0 0 0 calc(var(--d) * 3) var(--r-edge);
+}
+.vt-sheet-pane .rs-region { flex: none; }
+.vt-sheet-pane .rs-head {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--d) * 6);
+  min-height: calc(var(--d) * 26);
+  padding: calc(var(--d) * 3) calc(var(--d) * 6);
+  background: var(--r-deep);
+  border-bottom: calc(var(--d) * 1) solid var(--r-lilac);
+}
+.vt-sheet-pane .rs-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--d) * 4);
+  padding: calc(var(--d) * 5) calc(var(--d) * 6) calc(var(--d) * 8);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: none;
+}
+.vt-sheet-pane .rs-body::-webkit-scrollbar { display: none; }
+.vt-sheet-pane .rs-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--d) * 4);
+  padding: calc(var(--d) * 4) calc(var(--d) * 6) calc(var(--d) * 5);
+  background: var(--r-deep);
+  border-top: calc(var(--d) * 1) solid var(--r-line);
+}
+.vt-sheet-pane .rs-foot > * { flex: 1 1 100%; }
+.vt-sheet-host .vt-sheet-pane .rs-foot > .rs-btn { flex: 1 1 0; justify-content: center; align-items: center; text-align: center; }
+.vt-sheet-host .vt-sheet-pane[data-kind="lime"] .rs-foot > .rs-btn { flex: 1 1 100%; justify-content: flex-start; align-items: flex-start; text-align: left; }
+.vt-sheet-pane .rs-row { display: flex; flex-wrap: wrap; align-items: center; gap: calc(var(--d) * 3) calc(var(--d) * 6); }
+.vt-sheet-pane .rs-col { display: flex; flex-direction: column; gap: calc(var(--d) * 3); }
+.vt-sheet-pane .rs-inline { display: inline-flex; }
+.vt-sheet-pane .rs-row > .rs-inl { flex: 0 1 auto; min-width: 0; }
+.vt-sheet-pane .rs-h { color: var(--r-gold); }
+.vt-sheet-pane .rs-h1, .vt-sheet-pane .rs-h2 { font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); }
+.vt-sheet-pane .rs-h3, .vt-sheet-pane .rs-h4 { font-size: calc(var(--d) * 12); line-height: calc(var(--d) * 15); }
+.vt-sheet-pane img { display: block; max-width: 100%; height: auto; }
+/* ボタン（元のボタン・タブ・行） */
+.vt-sheet-host .vt-sheet-pane .rs-btn,
+.vt-sheet-host .vt-sheet-pane .rs-check {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: calc(var(--d) * 3) calc(var(--d) * 6);
+  min-height: calc(var(--d) * 22);
+  padding: calc(var(--d) * 3) calc(var(--d) * 6);
+  background: var(--r-panel);
+  border: calc(var(--d) * 1) solid var(--r-line);
+  box-shadow: calc(var(--d) * 2) calc(var(--d) * 2) 0 var(--r-black);
+  color: var(--r-text);
+  text-align: left;
+}
+.vt-sheet-host .vt-sheet-pane .rs-btn.rs-row { flex-wrap: wrap; }
+.vt-sheet-host .vt-sheet-pane .rs-btn.rs-col { flex-direction: column; align-items: stretch; }
+.vt-sheet-host .vt-sheet-pane .rs-btn:active:not([disabled]),
+.vt-sheet-host .vt-sheet-pane .rs-check:active:not([disabled]) { transform: translate(calc(var(--d) * 1), calc(var(--d) * 1)); box-shadow: calc(var(--d) * 1) calc(var(--d) * 1) 0 var(--r-black); }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-primary { background: var(--r-gold); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.vt-sheet-host .vt-sheet-pane .rs-btn:is([aria-pressed="true"], [aria-checked="true"], [aria-selected="true"], .s-on),
+.vt-sheet-host .vt-sheet-pane .rs-check[aria-checked="true"] { background: var(--r-gold); border-color: var(--r-ink); color: var(--r-ink); }
+.vt-sheet-host .vt-sheet-pane .rs-btn[aria-expanded="true"] { border: calc(var(--d) * 2) solid var(--r-gold); }
+.vt-sheet-host .vt-sheet-pane :is(.rs-btn, .rs-check)[disabled] { background: var(--r-deep); border-color: var(--r-line); box-shadow: none; color: var(--r-dim); cursor: default; }
+.vt-sheet-host .vt-sheet-pane .rs-check { justify-content: center; min-width: calc(var(--d) * 44); }
+.vt-sheet-pane .rs-select { display: flex; flex-wrap: wrap; gap: calc(var(--d) * 3); }
+.vt-sheet-pane .rs-range { width: 100%; height: calc(var(--d) * 22); margin: 0; accent-color: var(--r-gold); }
+/* 量の帯・段の印・ハート */
+.vt-sheet-pane .rs-gauge { position: relative; display: block; flex: 1 1 calc(var(--d) * 60); min-width: calc(var(--d) * 40); height: calc(var(--d) * 6); background: var(--r-black); border: calc(var(--d) * 1) solid var(--r-line); }
+.vt-sheet-pane .rs-col > .rs-gauge { flex: none; width: 100%; }
+.vt-sheet-pane .rs-meter { position: relative; display: block; flex: 1 1 calc(var(--d) * 60); min-width: calc(var(--d) * 40); height: calc(var(--d) * 6); background: var(--r-black); border: calc(var(--d) * 1) solid var(--r-line); }
+.vt-sheet-pane .s-flavor-axis { display: grid; grid-template-columns: calc(var(--d) * 60) 1fr; align-items: center; gap: calc(var(--d) * 6); }
+.vt-sheet-pane .s-flavor-guide-tags { gap: calc(var(--d) * 3); }
+.vt-sheet-pane .s-flavor-guide-tags > .rs-inl { padding: 0 calc(var(--d) * 3); border: calc(var(--d) * 1) solid var(--r-line); color: var(--r-lilac); }
+.vt-sheet-pane .s-flavor-guide-caption { color: var(--r-dim); }
+.vt-sheet-pane .rs-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--r-lilac); }
+.vt-sheet-pane .rs-fill.s-today { background: var(--r-violet); }
+.vt-sheet-pane .rs-pips { display: inline-flex; align-items: center; gap: calc(var(--d) * 1); }
+.vt-sheet-pane .rs-pip { display: block; width: calc(var(--d) * 4); height: calc(var(--d) * 4); background: var(--r-line); }
+.vt-sheet-pane .rs-pip.on { background: var(--r-gold); }
+.vt-sheet-pane .rs-pip.heart { width: auto; height: auto; background: none; font-style: normal; }
+.vt-sheet-pane .rs-pip.heart::before { content: "\2661"; color: var(--r-dim); }
+.vt-sheet-pane .rs-pip.heart.on::before { content: "\2665"; color: #ff8fb4; }
+
+/* MENU（下画面）: 上の帯の要約・見出し・札・行 */
+.vt-sheet-pane[data-kind="menu"] .rs-body { padding: calc(var(--d) * 4) calc(var(--d) * 5) calc(var(--d) * 8); }
+.vt-sheet-pane .s-dm-summary { padding: calc(var(--d) * 3) calc(var(--d) * 5); background: var(--r-deep); border: calc(var(--d) * 1) solid var(--r-line); gap: calc(var(--d) * 2) calc(var(--d) * 8); }
+.vt-sheet-pane .s-dm-sum { display: inline-flex; gap: calc(var(--d) * 3); align-items: center; }
+.vt-sheet-pane .s-dm-sum :is(.rs-blk, .rs-inl) { display: inline; }
+.vt-sheet-pane .s-dm-sum > .rs-inl:first-child { color: var(--r-lilac); }
+.vt-sheet-pane .s-dm-amber { color: var(--r-gold); }
+.vt-sheet-pane .s-dm-heading { justify-content: space-between; }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-dm-help { min-width: calc(var(--d) * 22); justify-content: center; padding: calc(var(--d) * 3) 0; }
+.vt-sheet-pane .s-dm-tab-help, .vt-sheet-pane .s-dm-health-tip, .vt-sheet-pane .s-dm-note { padding: calc(var(--d) * 3) calc(var(--d) * 5); background: var(--r-deep); border: calc(var(--d) * 1) solid var(--r-lilac); }
+.vt-sheet-pane .s-dm-card { padding: calc(var(--d) * 4); background: rgba(10, 6, 18, 0.55); border: calc(var(--d) * 1) solid var(--r-line); }
+.vt-sheet-pane .s-dm-card-head, .vt-sheet-pane .s-dm-strong { color: var(--r-gold); }
+.vt-sheet-pane .s-dm-chip { padding: 0 calc(var(--d) * 3); border: calc(var(--d) * 1) solid var(--r-line); color: var(--r-lilac); }
+.vt-sheet-pane .s-dm-chip.s-on { border-color: var(--r-gold); color: var(--r-gold); }
+.vt-sheet-pane .s-dm-face, .vt-sheet-pane .s-ss-face { flex: none; width: calc(var(--d) * 24); height: calc(var(--d) * 24); object-fit: cover; }
+.vt-sheet-pane .s-dm-face.s-ph { display: grid; place-items: center; background: var(--r-ink); color: var(--r-lilac); }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-dm-person { width: 100%; }
+.vt-sheet-pane .s-dm-person-item { gap: calc(var(--d) * 2); }
+.vt-sheet-pane .s-dm-person-detail { padding: calc(var(--d) * 3) calc(var(--d) * 6); background: var(--r-deep); border-left: calc(var(--d) * 2) solid var(--r-gold); }
+.vt-sheet-pane .s-dm-system { display: flex; flex-direction: column; align-items: stretch; gap: calc(var(--d) * 4); }
+.vt-sheet-host .vt-sheet-pane .s-dm-system > .rs-btn { justify-content: center; align-items: center; text-align: center; }
+.vt-sheet-pane .s-dm-keepsake img { width: calc(var(--d) * 48); }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-keepsake-viewer { flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+/* チェキの拡大: 絵は上画面に大きく出すので、下画面は「タップで閉じる」だけ */
+.vt-sheet-pane .s-keepsake-viewer img { display: none; }
+.vt-sheet-pane .s-dm-lv { display: inline-flex; flex-direction: row; gap: calc(var(--d) * 3); align-items: baseline; }
+.vt-sheet-pane .s-dm-big, .vt-sheet-pane .s-dm-lv > b { font-size: calc(var(--d) * 16); }
+
+/* LIME（縦長のシート）: 見出し・トーク一覧・吹き出し・返信の選択肢 */
+.vt-sheet-pane[data-kind="lime"] .rs-head { color: var(--r-text); }
+.vt-sheet-pane .s-lime-logo { color: #8fe3a8; }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-lime-back { min-width: calc(var(--d) * 26); justify-content: center; }
+.vt-sheet-pane .s-lime-face { flex: none; width: calc(var(--d) * 22); height: calc(var(--d) * 22); object-fit: cover; }
+.vt-sheet-pane .s-lime-face.s-blank { display: grid; place-items: center; background: var(--r-ink); color: var(--r-lilac); }
+.vt-sheet-pane[data-kind="lime"] .rs-body { gap: calc(var(--d) * 5); }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-lime-chat-row { flex-wrap: nowrap; width: 100%; }
+.vt-sheet-pane .s-lcr-face { position: relative; flex: none; }
+.vt-sheet-pane .s-lcr-dot { position: absolute; right: calc(var(--d) * -2); top: calc(var(--d) * -2); width: calc(var(--d) * 6); height: calc(var(--d) * 6); background: #ff5a6e; border: calc(var(--d) * 1) solid var(--r-black); }
+.vt-sheet-pane .s-lcr-main { flex: 1 1 auto; min-width: 0; }
+.vt-sheet-pane .s-lcr-name { color: var(--r-gold); }
+.vt-sheet-pane .s-lcr-preview { color: var(--r-lilac); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vt-sheet-pane .s-lcr-side { flex: none; align-items: flex-end; color: var(--r-dim); }
+.vt-sheet-pane .s-lcr-tag { padding: 0 calc(var(--d) * 2); background: var(--r-gold); color: var(--r-ink); }
+.vt-sheet-pane .s-lime-row { flex-wrap: nowrap; align-items: flex-start; gap: calc(var(--d) * 4); }
+.vt-sheet-pane .s-lime-row.s-me { flex-direction: row-reverse; }
+.vt-sheet-pane .s-lime-bubble, .vt-sheet-pane .s-lime-media {
+  max-width: 78%;
+  padding: calc(var(--d) * 4) calc(var(--d) * 6);
+  background: var(--r-paper);
+  border: calc(var(--d) * 1) solid var(--r-ink);
+  box-shadow: calc(var(--d) * 2) calc(var(--d) * 2) 0 var(--r-black);
+  color: var(--r-ink);
+}
+.vt-sheet-pane .s-lime-row.s-me .s-lime-bubble { background: #bfe8b0; }
+.vt-sheet-pane .s-typing .s-lime-bubble::after { content: "…"; }
+.vt-sheet-pane .s-lime-note { align-self: center; color: var(--r-dim); text-align: center; }
+.vt-sheet-pane .s-lime-note.s-day { padding: 0 calc(var(--d) * 6); border: calc(var(--d) * 1) solid var(--r-line); }
+.vt-sheet-pane .s-lime-tip, .vt-sheet-pane .s-lime-hint { padding: calc(var(--d) * 3) calc(var(--d) * 5); background: var(--r-deep); border: calc(var(--d) * 1) solid var(--r-lilac); }
+.vt-sheet-pane .s-lime-empty { color: var(--r-dim); text-align: center; }
+.vt-sheet-pane .s-lime-actions { gap: calc(var(--d) * 4); }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-lime-reply { width: 100%; background: var(--r-paper); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-lime-reply.s-ghost { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); color: var(--r-text); justify-content: center; }
+/* LIME は実際のスマホのメッセージアプリをまねた見た目（台帳 DUI06・LK20）。わざと紫にしない画面なので、ドット調のまま
+   緑の見出し・白いトーク一覧・青みがかった灰のトーク・緑の自分の吹き出しにする（横長の画面の LIME と同じ色の役割）。 */
+.vt-sheet-pane[data-kind="lime"][data-tall="true"] {
+  background-color: #8fa6c5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%238fa6c5'/%3E%3Crect width='2' height='2' fill='%23889fbf'/%3E%3Crect x='2' y='2' width='2' height='2' fill='%23889fbf'/%3E%3C/svg%3E");
+}
+.vt-sheet-pane[data-kind="lime"][data-tall="true"]:has(.s-lime-chat-row, .s-lime-empty) { background-color: #fbf9f4; background-image: none; }
+.vt-sheet-pane[data-kind="lime"] .rs-head { color: #fff; background: #1fa64a; border-bottom-color: #14803a; }
+.vt-sheet-pane[data-kind="lime"] .rs-head .s-lime-logo { padding: 0 calc(var(--d) * 3); color: #1fa64a; background: #fff; }
+.vt-sheet-host .vt-sheet-pane[data-kind="lime"] .rs-head .rs-btn { color: #fff; background: #178a3c; border-color: #bfe8c9; box-shadow: none; }
+.vt-sheet-host .vt-sheet-pane[data-kind="lime"] .rs-btn.s-lime-chat-row { color: #2a1d3a; background: #fff; border: 0; border-bottom: calc(var(--d) * 1) solid #d9d3e0; box-shadow: none; }
+.vt-sheet-pane[data-kind="lime"] .s-lcr-name { color: #2a1d3a; }
+.vt-sheet-pane[data-kind="lime"] .s-lcr-preview { color: #6f6580; }
+.vt-sheet-pane[data-kind="lime"] .s-lcr-side { color: #8a7f96; }
+.vt-sheet-pane[data-kind="lime"] .s-lcr-dot { border-color: #fff; }
+.vt-sheet-pane[data-kind="lime"] .s-lime-bubble, .vt-sheet-pane[data-kind="lime"] .s-lime-media { background: #fff; border-color: #5b6f8c; box-shadow: calc(var(--d) * 2) calc(var(--d) * 2) 0 #6f86a6; }
+.vt-sheet-pane[data-kind="lime"] .s-lime-row.s-me .s-lime-bubble { background: #8fe26a; border-color: #3f8a2c; }
+.vt-sheet-pane[data-kind="lime"] .s-lime-note { padding: 0 calc(var(--d) * 6); color: #fff; background: #6f86a6; }
+.vt-sheet-pane[data-kind="lime"] .s-lime-note.s-day { border: 0; }
+.vt-sheet-pane[data-kind="lime"] .s-lime-tip, .vt-sheet-pane[data-kind="lime"] .s-lime-hint { color: #2a1d3a; background: #eaf7ee; border-color: #1fa64a; }
+.vt-sheet-pane[data-kind="lime"] .s-lime-empty { color: #8a7f96; }
+.vt-sheet-pane[data-kind="lime"] .rs-foot { background: #fff; border-top-color: #d9d3e0; }
+.vt-sheet-host .vt-sheet-pane[data-kind="lime"] .rs-btn.s-lime-reply { background: #fff; border: calc(var(--d) * 2) solid #1fa64a; color: #2a1d3a; box-shadow: none; }
+.vt-sheet-host .vt-sheet-pane[data-kind="lime"] .rs-btn.s-lime-reply.s-ghost { color: #fff; background: #1fa64a; border: calc(var(--d) * 1) solid #14803a; }
+
+/* 小窓（縦長のシート）: 設定の行・セーブの枠・用語集・規則の紙 */
+.vt-sheet-pane[data-kind="modal"] .rs-head .rs-h, .vt-sheet-pane[data-kind="log"] .rs-head { font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); color: var(--r-gold); }
+.vt-sheet-pane .s-modal-body { gap: calc(var(--d) * 5); }
+.vt-sheet-pane .s-modal-actions { gap: calc(var(--d) * 4); }
+.vt-sheet-pane .s-modal-actions > .rs-btn { flex: 1 1 0; justify-content: center; }
+.vt-sheet-pane .s-cfg { gap: calc(var(--d) * 6); }
+.vt-sheet-pane .s-cfg-row { display: flex; flex-direction: column; align-items: stretch; gap: calc(var(--d) * 3); padding-bottom: calc(var(--d) * 5); border-bottom: calc(var(--d) * 1) solid var(--r-line); }
+.vt-sheet-pane .s-cfg-row > .rs-inl:first-child { color: var(--r-lilac); }
+.vt-sheet-pane .s-cfg-seg { gap: calc(var(--d) * 3); }
+.vt-sheet-pane .s-cfg-seg > .rs-btn { flex: 1 1 0; justify-content: center; }
+.vt-sheet-pane .s-xfer-btns { display: flex; flex-wrap: wrap; gap: calc(var(--d) * 3); }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-save-slot { flex-direction: column; align-items: stretch; width: 100%; }
+.vt-sheet-pane .s-ss-label { color: var(--r-gold); }
+.vt-sheet-pane .s-ss-chapter, .vt-sheet-pane .s-ss-phase { color: var(--r-gold); font-style: normal; }
+.vt-sheet-pane .s-ss-faces { display: flex; flex-wrap: wrap; gap: calc(var(--d) * 2); }
+.vt-sheet-pane .s-ss-faces .s-ss-face { width: calc(var(--d) * 18); height: calc(var(--d) * 18); }
+.vt-sheet-pane .s-ss-stat { display: inline-flex; align-items: center; gap: calc(var(--d) * 2); }
+.vt-sheet-pane .s-gl-tabs { gap: calc(var(--d) * 3); }
+.vt-sheet-pane .s-gl-term { padding-bottom: calc(var(--d) * 4); border-bottom: calc(var(--d) * 1) solid var(--r-line); }
+.vt-sheet-pane .s-gl-term > .rs-inl:first-child { color: var(--r-gold); }
+.vt-sheet-pane .s-rule-sheet { gap: calc(var(--d) * 6); }
+.vt-sheet-pane .s-rule-sheet-eyebrow, .vt-sheet-pane .s-rule-sheet-foot { color: var(--r-lilac); }
+.vt-sheet-pane .s-rule-article { padding: calc(var(--d) * 4) calc(var(--d) * 6); background: var(--r-paper); color: var(--r-ink); }
+.vt-sheet-pane .s-rule-article .rs-h { color: var(--r-violet); }
+
+/* 切り抜きの絵（商品の絵・店のロゴ）: 元の窓の比率で、高さを決めて写す */
+.vt-sheet-pane .rs-crop { position: relative; display: block; flex: none; height: calc(var(--d) * 36); overflow: hidden; }
+.vt-sheet-pane .rs-crop > img { position: absolute; display: block; max-width: none; height: auto; }
+.vt-sheet-pane [data-errand-target="true"] { outline: calc(var(--d) * 2) solid var(--r-gold); outline-offset: calc(var(--d) * 1); }
+/* 文字の入力欄（セーブの引っ越し） */
+.vt-sheet-pane .rs-area {
+  width: 100%;
+  min-height: calc(var(--d) * 60);
+  padding: calc(var(--d) * 3) calc(var(--d) * 5);
+  background: var(--r-paper);
+  border: calc(var(--d) * 1) solid var(--r-ink);
+  border-radius: 0;
+  color: var(--r-ink);
+  font: inherit;
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 15);
+  resize: vertical;
+  overflow-wrap: anywhere;
+}
+
+/* 店（縦長のシート）: 見出しの店名・所持金、種類の絞り込み、商品の行、下の合計と購入 */
+.vt-sheet-pane[data-kind="shop"] .rs-head { flex-direction: column; align-items: stretch; gap: calc(var(--d) * 4); }
+.vt-sheet-pane .s-shop-head { justify-content: space-between; gap: calc(var(--d) * 2) calc(var(--d) * 6); }
+.vt-sheet-pane .s-shop-head .rs-h { color: var(--r-gold); font-size: calc(var(--d) * 12); }
+.vt-sheet-pane .s-shop-brand { display: flex; flex-direction: row; align-items: center; gap: calc(var(--d) * 4); }
+.vt-sheet-pane .s-store-logo.rs-crop { height: calc(var(--d) * 18); }
+.vt-sheet-pane .s-shop-sub { color: var(--r-lilac); }
+.vt-sheet-pane .s-shop-money { display: inline-flex; flex-direction: row; gap: calc(var(--d) * 4); align-items: baseline; color: var(--r-gold); }
+.vt-sheet-pane .s-shop-money > :first-child { color: var(--r-lilac); }
+.vt-sheet-pane .s-shop-errand { padding: calc(var(--d) * 3) calc(var(--d) * 5); background: var(--r-paper); color: var(--r-ink); border: calc(var(--d) * 1) solid var(--r-gold); }
+.vt-sheet-pane .s-shop-filters { gap: calc(var(--d) * 3); }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-shop-filter { min-height: calc(var(--d) * 22); padding: calc(var(--d) * 2) calc(var(--d) * 5); }
+.vt-sheet-pane .s-shop-filters > .rs-inl { color: var(--r-dim); }
+.vt-sheet-pane[data-kind="shop"] .rs-body { gap: calc(var(--d) * 5); }
+.vt-sheet-pane .s-shop-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: calc(var(--d) * 3) calc(var(--d) * 6);
+  padding: calc(var(--d) * 3);
+  background: rgba(10, 6, 18, 0.55);
+  border: calc(var(--d) * 1) solid var(--r-line);
+}
+.vt-sheet-pane .s-shop-row.s-selected { border-color: var(--r-gold); }
+.vt-sheet-pane .s-shop-row.s-errand { border: calc(var(--d) * 2) solid var(--r-gold); }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-shop-product { grid-column: 1 / -1; flex-wrap: nowrap; flex-direction: row; align-items: center; background: none; border: 0; box-shadow: none; padding: 0; }
+.vt-sheet-pane .s-shop-product .s-shop-product-art.rs-crop { height: calc(var(--d) * 40); }
+.vt-sheet-pane .s-shop-main { display: flex; flex-direction: column; gap: calc(var(--d) * 2); min-width: 0; }
+.vt-sheet-pane .s-shop-main > .rs-inl:first-child { color: var(--r-text); }
+.vt-sheet-pane .s-shop-feature-tags { color: var(--r-lilac); }
+.vt-sheet-pane .s-shop-stock { display: inline-flex; flex-direction: row; gap: calc(var(--d) * 3); color: var(--r-dim); }
+.vt-sheet-pane .s-shop-price { color: var(--r-gold); text-align: right; }
+.vt-sheet-pane .s-shop-quantity { display: inline-flex; flex-direction: row; align-items: center; gap: calc(var(--d) * 4); grid-column: 1 / -1; justify-self: end; }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-shop-step { min-width: calc(var(--d) * 28); justify-content: center; align-items: center; }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-shop-step.s-plus:not([disabled]) { background: var(--r-gold); color: var(--r-ink); border-color: var(--r-ink); }
+.vt-sheet-pane .s-shop-quantity > .rs-inl { min-width: calc(var(--d) * 18); text-align: center; }
+.vt-sheet-pane .s-shop-owned { color: var(--r-lilac); grid-column: 1 / -1; justify-self: end; }
+.vt-sheet-pane[data-kind="shop"] .rs-foot { display: grid; grid-template-columns: auto 1fr; gap: calc(var(--d) * 4); }
+.vt-sheet-host .vt-sheet-pane[data-kind="shop"] .rs-foot > .rs-btn { flex: none; }
+.vt-sheet-host .vt-sheet-pane[data-kind="shop"] .rs-foot > .s-shop-checkout { grid-column: 1 / -1; }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-shop-summary { justify-content: space-between; }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-shop-checkout:not([disabled]) { background: var(--r-gold); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.vt-sheet-pane .s-shop-floors { display: flex; flex-direction: column; gap: calc(var(--d) * 5); }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-shop-floor { flex-direction: column; align-items: stretch; width: 100%; padding: calc(var(--d) * 3); }
+.vt-sheet-pane .s-shop-floor-picture { position: relative; display: block; }
+.vt-sheet-pane .s-shop-floor-picture img { width: 100%; height: calc(var(--d) * 70); object-fit: cover; }
+.vt-sheet-pane .s-shop-floor-number { position: absolute; left: calc(var(--d) * 3); top: calc(var(--d) * 3); padding: 0 calc(var(--d) * 4); background: var(--r-gold); color: var(--r-ink); }
+.vt-sheet-pane .s-shop-floor-caption { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: calc(var(--d) * 3) calc(var(--d) * 8); }
+.vt-sheet-pane .s-shop-floor-arrow { display: none; }
+.vt-sheet-pane .s-shop-detail { gap: calc(var(--d) * 5); }
+.vt-sheet-pane .s-shop-detail > .s-shop-product-art.rs-crop { height: calc(var(--d) * 72); align-self: center; }
+.vt-sheet-pane .s-kuji-row { padding: calc(var(--d) * 3); background: rgba(10, 6, 18, 0.55); border: calc(var(--d) * 1) solid var(--r-line); }
+
+/* LIME の初回の案内・章のクリア（縦長のシート）。その場のレベルアップは上画面の知らせに文字で出る（SBD122） */
+.vt-sheet-pane[data-kind="coach"] .rs-body { justify-content: center; }
+.vt-sheet-host .vt-sheet-pane .rs-btn.s-lc-bubble { flex-direction: column; align-items: stretch; padding: calc(var(--d) * 6) calc(var(--d) * 8); background: var(--r-paper); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.vt-sheet-pane .s-lc-bubble > .rs-inl:first-child { color: var(--r-violet); font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); }
+.vt-sheet-pane[data-kind="end"] .rs-head { flex-direction: column; align-items: flex-start; gap: calc(var(--d) * 2); }
+.vt-sheet-pane .s-end-title { color: var(--r-gold); font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); }
+.vt-sheet-pane .s-end-sub, .vt-sheet-pane .s-clear-last-line { color: var(--r-lilac); }
+.vt-sheet-pane .s-next-teaser { padding: calc(var(--d) * 4) calc(var(--d) * 6); border: calc(var(--d) * 1) solid var(--r-gold); }
+.vt-sheet-pane .rs-svg { display: block; align-self: center; width: 100%; max-width: calc(var(--d) * 180); }
+.vt-sheet-pane .rs-svg > svg { display: block; width: 100%; height: auto; }
+
+/* 会話の LOG（縦長のシート） */
+.vt-sheet-pane .s-log-head { justify-content: space-between; }
+.vt-sheet-pane[data-kind="log"] .rs-head { justify-content: space-between; }
+.vt-sheet-pane .s-log-row { padding-bottom: calc(var(--d) * 4); border-bottom: calc(var(--d) * 1) solid var(--r-line); }
+.vt-sheet-pane .s-log-row > .rs-inl:first-child { color: var(--r-gold); }
+.vt-sheet-pane .s-log-inner { color: var(--r-lilac); }
