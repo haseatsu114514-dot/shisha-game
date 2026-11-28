@@ -7,7 +7,7 @@
 import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, mkdirSync } from "node:fs";
 import { isAbsolute, relative, resolve, sep } from "node:path";
-import { loadManifest, ROOT } from "./lib.mjs";
+import { estimatedMinutes, loadManifest, ROOT } from "./lib.mjs";
 
 const args = process.argv.slice(2);
 const arg = (name) => {
@@ -266,7 +266,7 @@ const table = [
   "",
   "| suite | result | minutes | estimate | attempts |",
   "| --- | --- | --- | --- | --- |",
-  ...results.map((r) => `| ${r.suite.id} | ${icons[r.status]} | ${r.minutes.toFixed(1)} | ${r.suite.weight ?? "-"} | ${r.attempts.length} |`),
+  ...results.map((r) => `| ${r.suite.id} | ${icons[r.status]} | ${r.minutes.toFixed(1)} | ${estimatedMinutes(r.suite) ?? "-"} | ${r.attempts.length} |`),
   "",
   ...failed.flatMap((r) => [
     `**${r.suite.id}** failed:`,
