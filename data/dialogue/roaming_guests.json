@@ -1,5 +1,5 @@
 {
-  "comment": "よその店にふらっと居合わせる人（2026-11-02 オーナー「ひよりみたいに別スポットに現れるキャラを他にも」「女性ももう少し。店を持っていない人」）。daily/roamers.js が、時間帯の4回に1回ほど、一人をどこかの店に置く。来店の一服の後に roam_<id>_first → _a → _b → _c → _a … の順で読む。どの店でも成り立つよう店名を出さない（上園・つむぎは喫茶こはくにもいるので、ホース・炭を前提にしない）。審査員は大会で名前を知るまで met で分岐し、名前を出さない（上園・博士・千須は第1章、エミルは第3章の全国大会）。第3章の東京ではヴォルク・ましろちゃん・エミルが東京の店にいる。好感度（アダム・凛想・つむぎ）と回数はコードが付ける。 てつこ（mukai の看板猫）は、裏口で一度構った後、東京の公園やよその店の帰り道で見かける。",
+  "comment": "よその店にふらっと居合わせる人（2026-11-02 オーナー「ひよりみたいに別スポットに現れるキャラを他にも」「女性ももう少し。店を持っていない人」）。daily/roamers.js が、時間帯の4回に1回ほど、一人をどこかの店に置く。来店の一服の後に roam_<id>_first → _a → _b → _c → _a … の順で読む。どの店でも成り立つよう店名を出さない（上園・つむぎは喫茶こはくにもいるので、ホース・炭を前提にしない）。審査員は大会で名前を知るまで met で分岐し、名前を出さない（上園・博士・千須は第1章、エミルは第3章の全国大会）。第3章の東京ではヴォルク・ましろちゃん・エミルが東京の店にいる。好感度（アダム・凛想・つむぎ）と回数はコードが付ける。 てつこ（mukai の看板猫）は、裏口で一度構った後、東京の公園やよその店の帰り道で見かける。 第1・2章のライバル店主（アダム・なる・みんと・サメちゃん・あげは・神崎・クラウド）は、自分の店が休みの日か早じまいした夜にだけ居合わせ、会話の途中の roam_reason 条件で、早じまいの夜（early）と店休み（closed＝定休日・臨時休業のどちらにも合う言い方）を2〜3行出し分けてから共通の行へ続く。みんとは正体がつながった後の私服のお忍び（private_scene・ura_*、名前は台詞・地の文に出さない）、なるは喫茶こはくでも読めるよう機材を前提にせず、♥5や恋人の前後どちらでも読めるよう神崎の「あんちゃん／兄弟」・クラウドの「同士」・あげはへのはじめの敬語／タメ口は使わない。 第3章の東京のライバル（綾取・スティーブ・ヴォルク）も、東京の店の定休日・臨時休業の日か早じまいした夜にだけ、自分の店以外の東京の店（mukai・煙幕・Smoke & Glory・鉄の煙）に居合わせ、同じ roam_reason で理由を出し分ける（大会の前後どちらでも読めるよう大会・煙幕の延長には触れず、綾取は mukai に居合わせても、ましろちゃんがいる／いないを決めつけない）。",
   "dialogues": [
     {
       "dialogue_id": "roam_uezono_first",
@@ -1388,7 +1388,19 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "おお、お前か。よその店のダブルアップルは、俺を映す鏡だ"
+          "text": "おお、お前か"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "よその店のダブルアップルは、俺を映す鏡だ"
         },
         {
           "speaker": "adam",
@@ -1410,7 +1422,33 @@
           "face": "",
           "text": "隣の席では、知らない客がアニスの煙を吐いて、不思議そうに首をかしげていた。"
         }
-      ]
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "今夜は早じまいだ。最後の客が、早めに帰ったのでな"
+          },
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "炭を落としたら、手が他人のダブルアップルを求めた"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "今日は店を休みにしている"
+          },
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "休みの日にしか、よその一台は確かめに行けぬ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "roam_adam_a",
@@ -1434,6 +1472,18 @@
           "speaker": "adam",
           "face": "normal",
           "text": "無論。品数より先に、そこを見る。それで店の構えが分かる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "EDENの方は、いいんですか？"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
         },
         {
           "speaker": "",
@@ -1460,7 +1510,33 @@
           "face": "normal",
           "text": "（店員さん、さっきより真剣な顔になってる）"
         }
-      ]
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "今夜は早じまいだ。封を切った葉の湿り気が、俺の基準に届かなかった"
+          },
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "届かぬ一台を、客に出すわけにはいかぬ"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "今日は店を休みにしている"
+          },
+          {
+            "speaker": "adam",
+            "face": "smile",
+            "text": "よその店のメニューを端から読む。それが、休みの日の楽しみだ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "roam_adam_b",
@@ -1506,11 +1582,54 @@
           "text": "（押しつけてるようで、ちゃんと逃げ道も残してる）"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そういえば、今日はお店は？"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
           "speaker": "adam",
           "face": "smile",
           "text": "ふっ……今日もまた一人、原点に触れた"
         }
-      ]
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "今夜は早じまいだ。……ダブルアップルが、本当に在庫切れになった"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "EDENで、ですか"
+          },
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "十種すべてだ。……明日には、また原点が届く"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "今日は休みだ"
+          },
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "店が休みでも、原点の道は休まぬ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "roam_adam_c",
@@ -1543,6 +1662,18 @@
         {
           "speaker": "hajime",
           "face": "normal",
+          "text": "その格好で、お店に立ってたんですか？"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
           "text": "一口ごとに目を閉じてましたけど、何をしてたんですか？"
         },
         {
@@ -1565,7 +1696,33 @@
           "face": "smile",
           "text": "……シャツは、帰ってから直す"
         }
-      ]
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "今夜は早じまいした。客がみな、俺の首の後ろばかり見ていてな"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "落ち着かぬので、閉めた。……理由が、今分かった"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "今日は店を休みにしている。誰にも見られてはおらぬ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（今、俺が見てるけど）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "roam_rio_first",
@@ -1978,6 +2135,1959 @@
       ]
     },
     {
+      "dialogue_id": "roam_naru_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えて顔を上げると、壁際の席でなるがノートを広げていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "surprise",
+          "text": "お、はじめ。……こんなとこで会うとはな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "なるさん。今日は客ですか？ 偵察ですか？"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "それ、俺が言うやつだろ。まあ、半分ずつだな"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "よその椅子に座るとさ、自分の店の癖がよく見えるんだよ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "メニューの並べ方とか、注文してから最初の一口までの間とか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートには、短い感想が何行も並んでいた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "お前も、何か気づいたら教えてくれよ。客の目は、いくつあってもいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（店の外でも、ずっと店のことを考えてるんだな）"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "今夜は早じまい。客が早めに引けて、片づけも済んだからさ"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "閉めた後って、まっすぐ帰る気にならねえんだよな"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "今日は店休み。休みの日は、よその店に座るって決めてんだ"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "家にいると、結局ずっと仕込みのこと考えちまうからさ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_naru_a",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるがメニューを開いたまま、小さな紙に何か書きつけていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なるさん？ 何を書いてるんですか"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "お、はじめか。頼む前に、名前だけで味を当てる遊び"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "思い浮かべた味を書いとくんだ。出てきたら、答え合わせ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お店の方は、いいんですか？"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "頼んだものが届くと、なるは一口目で、紙の字をひとつ線で消した。"
+        },
+        {
+          "speaker": "naru",
+          "face": "surprise",
+          "text": "……外れた。名前ほど甘くねえ。後から、香ばしさが来る"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "でも、こっちの方がいいな。外れた時の方が、覚えてられるんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（当たった時より、外れた時の方が楽しそうだ）"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "今夜は早めに閉めた。明日の朝、仕入れが早くてさ"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "寝る前に、ちょっとだけ甘いもんの勉強"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "今日は店休み。家にいても、どうせノート開くだけだからな"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "なら、よその店で開いた方が身になる"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_naru_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席で、なるが知らない客と楽しそうに話していた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ありがとね。おかげで、迷わず頼めたよ"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "おう。口に合わなかったら、次は逆のやつな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客が自分の席に戻ると、なるはこちらに気づいて手を上げた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "今の人、知り合いですか？"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "いや、さっき隣になっただけ。メニューの前で、ずっと固まってたからさ"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "……なんだよ。俺がなんでここにいるのか、って顔だな"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "で、座ってると、つい隣が気になっちまうんだよな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "さっきの人、楽しそうでしたよ"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "今夜はバニラが切れてさ。看板の味がない夜に、店は開けてらんねえよ"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "次の便を待つ間に、よそで甘いもん探しってわけ"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "今日は店休み。休みの日くらい、人が作ったもんを味わいたくてさ"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "作る側ばっかりだと、舌が客の気持ちを忘れちまうんだよ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_naru_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の席で、なるが紙袋の口を折り返していた。こちらに気づいて、顔を上げる。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "よう、ちょうどよかった。これ、持ってけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、何ですか、これ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "試作の焼き菓子。余ったから、家で食え。ここで開けるなよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。……でも、なんで持ち歩いてたんですか"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "食ったら、感想くれ。遠慮なしのやつな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。……ちゃんと、遠慮なしで言います"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "おう。うまい、だけで終わらせんなよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙袋から、バターの甘い匂いがした。"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "今夜は早めに閉めて、店で焼いてたんだ。閉めた後じゃないと焼けねえから"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "焼けたら、誰かに食わせたくなってさ。で、ふらっと出てきた"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "今日は店休み。休みの日は、朝から家で焼いてるんだ"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "一人じゃ食いきれねえから、誰かに会えたら渡そうと思ってた"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_minto_first",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隅の席で、ベージュのカーディガンの人が、静かに煙を吐いていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "振り向いた横顔に、見覚えがある。長い黒髪に、角も羽の飾りもない。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_surprise",
+          "text": "……あ、はじめくん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は、口元にそっと人差し指を当てた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……ここでは、ないしょね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "分かった。声、小さくするね"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "……ここだと、誰も私に気づかないの。それが、ちょっと楽"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺は、すぐ分かったけど"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_surprise",
+          "text": "……え。それ、ずるい"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……今夜は、早めに閉めたの。予約のお客さんが、来られなくなって"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "着替えたら、まっすぐ帰るのが、もったいなくなっちゃった"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……今日は、お店お休み。休みの日に、よそのお店に座るの、好きなの"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "作る側じゃなくて、ただのお客さんでいられるから"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_minto_a",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隅の席で、私服の彼女が、店の中をゆっくり見回していた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "目が向いているのは、席と席の間や、入口の段差。煙より、店の方を見ている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何か、気になる？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_surprise",
+          "text": "……あ。……ごめん、つい。通路の幅とか、灯りの高さとか、見ちゃうの"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "あの席、灯りが少しだけ低いでしょ。……顔が、やさしく見えるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ほんとだ。座ってる人、みんな落ち着いて見える"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……ふふ。いいところは、こっそりもらって帰るの"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "……今の、ないしょだよ"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……今夜は、早じまいしたの。棚を、全部拭き直したくなって"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "思ったより早く終わって、……気づいたら、ここに座ってた"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……今日はお休みなのに、ね。お店を見ると、勝手に目が動くの"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "……休みの日くらい、置いておけばいいのにね"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_minto_b",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "席を立つと、私服の彼女が、入口のそばでスマホの地図を何度も回していた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_surprise",
+          "text": "……あ、はじめくん。よかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "道、分からなくなった？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "……ここに来るまでに、同じ角を二回曲がったの。帰りも、たぶん曲がる"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "大通りまで、一緒に歩こうか"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……うん。大通りからなら、一人で帰れると思う"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店を出ると、彼女は迷わず、反対の方向へ一歩踏み出した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そっちじゃないよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "……今のは、確かめただけ"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……今夜は、早めに閉めたの。看板の電球が、一つ切れちゃって"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "替えの電球を買いに出たら、……知らない道に出ちゃった"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……今日はお休みだから、知らない道を歩いてみたくて"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "……知らない道は、やっぱり知らなかった"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_minto_c",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隅の席の彼女の前に、すっとした香りの一台が置いてあった。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……はじめくん。こっち、座る？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ、ミント？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……うん。よそのお店のミント、どんな味なのかなって"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口吸って、彼女は少しだけ目を細めた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……やさしいミント。私のより、ずっと静か"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "強いのが好きなんだと思ってた"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……好きだよ。でも、たまにこういうのを吸うと、自分のが分かるの"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "……帰ったら、もっと強くしちゃうかも"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……今夜は、早めに閉めたの。喉が、ちょっとだけかすれてて"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "……お店の声は、今夜はお休み"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……今日はお休み。お休みの日は、人のミントを吸いに来るの"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "自分のだと、つい直したくなっちゃうから"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_samechan_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えて顔を上げると、奥の席にサメのフードが見えた。右手には、もちろんコロちゃん。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんは背筋を伸ばして座り、入口から席までの通路を、じっと目で測っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……あれ？ ここで会うとは思いませんでした"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "……お主か！ 驚かすでない。今、大事な所だったのじゃ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "客として座るとな、わしの店の足りぬ所が、よう見えるのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、入口で三度会釈した。誰もいない方へもだ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……それは、わしが言う。……よその店は、緊張するのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "自分の店では、あんなに堂々としてるのに"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "王国の外では、わしもただの客じゃからのう"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "今夜は早う閉めたのじゃ。客がみな早めに帰っての、片づけも済んでしもうた"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "余った時間で、よその店の客席を見に来たのじゃ"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "今日は、店を休みにしたのじゃ。換気扇の点検で、業者が入っておる"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "わしがおっても邪魔になるだけじゃ。よその客席を見に来たのじゃ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_samechan_a",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんが、席を立つ客の背中を、真剣な顔で見送っていた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……やはりじゃ。椅子を引く前に、みな一度、後ろを振り向く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "後ろに人がいないか、確かめてるんですね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "うむ。わしの店は、あそこが少し狭い。客を振り向かせてしまっておるのじゃ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者はじめよ。側近はここに来てから、十人の客の背を見送った",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "うむ、それはよい数じゃ。十人見れば、癖が見えるからのう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "新しい椅子、今度座りに行きますね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "うむ。お主が振り向かずに立てたら、合格じゃ"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "今夜は早う閉めたのじゃ。明日、新しい椅子が届くゆえ、古いのを片づけての"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "思うたより早う済んでの。気づけば、よその椅子を見に来ておった"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "今日は店を休みにしたのじゃ。新しい椅子が届くゆえ、床を直しておっての"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "業者に任せて、わしは、よその椅子を見に来たのじゃ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_samechan_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんが、テーブルに映画のチラシを広げて、深いため息をついていた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……お主か。聞いてくれるか。わしは今日、大事なものを逃したのじゃ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、映画館の前で五分立ち尽くした",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "…コロちゃん！ 三分じゃ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "次の上映は、いつなんですか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……来週も、まだやっておる。じゃが、今日の気持ちで観たかったのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "来週観ても、サメはきっと同じくらい怖いですよ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "…怖くはない！ わしは、演出を確かめておるだけじゃ"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "今夜は早う閉めたのじゃ。サメ映画の、最後の上映に間に合わせようと思うての"
+          },
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "……走ったが、間に合わなんだ。上映は、もう始まっておった"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "今日は店を休みにしたのじゃ。看板のサメの歯が、一本取れかけておっての"
+          },
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "直るのを待つうちに、観たかった上映の時間が、過ぎてしもうた"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_samechan_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席で、サメちゃんがコロちゃんを膝に下ろし、ぼんやり煙を眺めていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……今日は、静かですね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "…お主か。うむ、今日は何もせんと決めて、座っておるのじゃ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "休息も王命である。側近は、ようやく従った",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……コロちゃんの言う通りにするのは、なんだか癪じゃがの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "たまには、王様に従ってもいいと思いますよ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……うむ。では今日は、王命に従うとしよう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そう言いながら、サメちゃんの目は、隣の席の炭の具合をちらりと確かめていた。"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "今夜は早う閉めたのじゃ。……わしの手が、先にくたびれてしもうてな"
+          },
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "くたびれた手で炭を扱うては、客に悪いからのう"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "今日は店を休みにしたのじゃ。水道の工事で、水が出ぬのじゃ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "水の出ぬ日に店を開けても、一台も作れんからのう"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_ageha_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えて顔を上げると、奥の席で、買い物袋に囲まれた人がデコケータイを振っていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち！ こっちこっち"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……えっ、ここで？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ねえ、ウケる。よその店で会うとか、思わないじゃん"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "人に作ってもらうの、ガチで久しぶり。超ラク〜"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そう言いながら、あげはの目は、入ってきたばかりの客の手元を追っていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……あの人、たぶん甘いの頼む。なんか、そういう顔"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "……待って、顔じゃない。肩だ。鞄を下ろした時、ふーって息してた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（店の外でも、ちゃんとお客さんを見てる）"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "今夜は早じまい！ 予約の子たちが、みんな早めに帰っちゃってさ"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "閉めたら、なんか吸いたくなっちゃって"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "今日は店お休み〜。プリ機の点検で、業者さんが来てんの"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "うちがいても邪魔だし。たまには、作ってもらう側"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_ageha_a",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはが、デコケータイを高く掲げて、天井の灯りを何度も撮り直していた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、見て。ここの灯り、ガチで盛れる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（自分じゃなくて、灯りを撮ってる）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "上からじゃなくて、横から当たってんの。顔の影が、ふわってなる"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "うちの店の奥の席、ちょい暗いんだよね。ここの当て方、まねしたい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ただ撮ってるんじゃない。……座る人の顔を、明るくしたいんだ）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "はい、ハジメっちも入って。灯りの確認だから、変顔禁止ね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面の中で、二人の顔の影が、ちゃんとふわっとしていた。"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "今夜はギャル友とカラオケの予定で、早じまいしたの"
+          },
+          {
+            "speaker": "ageha",
+            "face": "sad",
+            "text": "なのに、全員ドタキャン！ ……だから一人で、灯りの研究"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "今日は店お休み。エアコンの工事で、中がサウナ状態なんだって"
+          },
+          {
+            "speaker": "ageha",
+            "face": "sad",
+            "text": "家でじっとしてんの無理だし。……だから一人で、灯りの研究"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_ageha_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはが、小さな袋から白いグミを一粒ずつ出して、テーブルに並べていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、ちょうどいいとこ！ はい、しろくまグミ。一個あげる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いただきます"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "吸う前に一個、吸った後に一個。それが、うちのルール"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "白いグミを一粒つまむと、あげはは、ふっと肩の力を抜いた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……これ食べるとさ、なんか落ち着くんだよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……やわらかい。噛むと、ふわっと甘い"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "でしょ〜！ うちの二個目は、吸った後ね。ルールだから"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "今夜は早じまい。常連の子が誕生日でさ、みんなでお祝い行っちゃった"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "うちは顔だけ出して、ケーキだけ撮ってきた。で、ここ"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "今日は店お休み〜。床のワックスがけで、業者さんが入ってんの"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "乾くまで入れないし。だから、グミ持ってここ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_ageha_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "席を立とうとすると、隣から、豹柄の袖がひらひらと振られた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、待って待って。ちょい座ってこ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……さっきのハジメっち、なんか、一口目で眉がきゅってなってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……見られてた）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "うち今、ずーっとお客さん側だから。人の顔、見放題なの"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "でさ。眉がきゅってなったのは、たぶん一口目がちょい熱かったから"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "二口目から、ふわってほどけた。……あ、今の、うまく言えた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……当たってる"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "でしょ！ 答え合わせ、うちの勝ち〜"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "今夜は早じまい。店のスピーカー、急に鳴んなくなっちゃって"
+          },
+          {
+            "speaker": "ageha",
+            "face": "sad",
+            "text": "音のないMELTY PUFFとか、ありえないじゃん。だから閉めた"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "今日は店お休み。スピーカーの修理で、音が出せないんだって"
+          },
+          {
+            "speaker": "ageha",
+            "face": "sad",
+            "text": "音のないMELTY PUFFとか、ありえないし"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_kumicho_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えて顔を上げると、奥の席に白いチェックのスーツが見えた。神崎さんだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは背筋を伸ばし、膝の上で両手をそろえて座っていた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "surprise",
+          "text": "……おう。妙な所で会いやすね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "神崎さんも、一服ですか"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "よその店じゃ、俺はただの客でさ。礼儀は、火の前と同じなんですわ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水を運んできた人に、神崎さんは深々と頭を下げた。相手の肩が、びくっと跳ねた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "sad",
+          "text": "……どうも、顔で損をしやすね、俺は"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "礼儀正しすぎるのも、ちょっと迫力があるかもしれません"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "……違えねえ。次は、もうちっと浅く頭を下げやしょう"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "今夜は早じまいでさ。若えのが、やけに手際よく片づけちまいやしてね"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "smile",
+            "text": "閉めた店に一人で座ってても、しょうがねえでしょう"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "今日は店休みでさ。休みの日ぐらい、火の番を他人に任せてえんで"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "smile",
+            "text": "自分で炭を触らねえ一服ってのも、いいもんでさ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_kumicho_a",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんが、メニューを顔から少し離して、端から順に指でなぞっていた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……ありやした。ドラゴンフルーツ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "まず、そこを探すんですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "惚れた味は、どこの店でも気になるもんでさ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "届いた一台を、神崎さんは吸う前に、しばらく黙って眺めていた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……俺のより、甘さが先に来る。炭を、ちいと近くに置いてやすね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "勉強になりやす。……真似はしねえが、覚えときやしょう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（真似はしないのに、ちゃんと覚えて帰るんだ）"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "今夜は早じまいでね。仕入れの炭が、明日の朝早くに届くんでさ"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "寝る前に一台、他人の作ったのを吸っときてえと思いやして"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "今日は店休みでね。休みの日にしか、よその一台は吸えやせんから"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "自分の店の味ばっかりだと、舌が慣れちまうんでさ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_kumicho_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の席の客が、ハンカチを床に落とした。拾うより早く、大きな手が伸びた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……落としなすったぜ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出されたハンカチを、客は固まったまま、両手で受け取った。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "……ありがとう、ございます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客はそのまま、そっと一つ向こうの席へ移っていった。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "sad",
+          "text": "……また、怖がらせちまいやした"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ちゃんと、お礼は言ってましたよ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "……まあ、ハンカチが無事なら、それでいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（拾った時の手つき、炭を扱う時と同じくらい丁寧だった）"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "今夜は早じまいでさ。常連が、そろって夜釣りに出ちまいやして"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "smile",
+            "text": "誰も来ねえ店に、灯りだけ点けとくのもね"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "今日は店休みでさ。たまの休みぐらい、静かに客をやりてえんですが"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "sad",
+            "text": "……どうも、静かにしてても目立つみてえで"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_kumicho_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんの隣の椅子に、和菓子屋の紙袋がきちんと置かれていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その紙袋、お土産ですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……おう。店の若えのに、でさ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "どら焼きと大福で、半刻迷いやしてね。……結局、両方買っちまった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "両方なら、好きな方を選んでもらえますね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "surprise",
+          "text": "……そうか。選ばせりゃ、いいのか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "迷ったのも、無駄じゃなかったってこってすね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは、紙袋の口を丁寧に折り直した。"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "今夜は早じまいでね。閉めの片づけを、若えのに任せて出てきたんでさ"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "smile",
+            "text": "任せた礼に、甘えもんの一つも買ってかねえと"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "今日は店休みでね。若えのも、今日は休ませてありやす"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "smile",
+            "text": "明日、顔を見た時に渡すつもりでさ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_kuraudo_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えて顔を上げると、カウンターの端に、黒いロングコートの背中があった。クラウドだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "膝の上には、CDショップの小さな袋。クラウドは、それを両手で大事そうに押さえていた。"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "surprise",
+          "text": "……あ。キミか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "クラウドさん？ 奇遇ですね"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ここで聴くんですか？"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……聴かない。最初の一回は、うちのプレイヤーでって決めてる"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "smile",
+          "text": "でも、帰るまで待てなくて。袋だけ、見てた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（封も開けずに、ずっと袋を押さえてる）"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "kuraudo",
+            "face": "normal",
+            "text": "……今夜は、早く閉めた。好きな人たちの新しいCDが、今日出たから"
+          },
+          {
+            "speaker": "kuraudo",
+            "face": "normal",
+            "text": "店が終わってからだと、もう売り切れてる気がして"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "kuraudo",
+            "face": "normal",
+            "text": "……今日は、店、休み。好きな人たちの新しいCDが、出たから"
+          },
+          {
+            "speaker": "kuraudo",
+            "face": "normal",
+            "text": "朝から並んだ。いちばんだった"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_kuraudo_a",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隅の席で、クラウドがメニューを開いたまま、じっと固まっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "クラウドさん？ 何にするか、迷ってるんですか"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "sad",
+          "text": "……決まってる。まだ、頼めてないだけ"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "自分の店だと平気なのに。よその店だと、声をかける間が分からない"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "手を上げたら、きっと気づいてもらえますよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドは少し迷ってから、肩の高さまで、そっと手を上げた。"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "smile",
+          "text": "……通じた。キミがいて、よかった"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……次は、一人で上げてみる"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "kuraudo",
+            "face": "normal",
+            "text": "……今夜は、早じまいした。照明のろうそくが、切れて"
+          },
+          {
+            "speaker": "kuraudo",
+            "face": "normal",
+            "text": "うちは、あの暗さじゃないと、違う店になるから"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "kuraudo",
+            "face": "normal",
+            "text": "今日は、店、休み。休みの日は、よその店の音を聴きに来る"
+          },
+          {
+            "speaker": "kuraudo",
+            "face": "normal",
+            "text": "……来るのは、平気。頼むのが、平気じゃない"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_kuraudo_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドが、テーブルに薄い冊子を広げて、ペンで何か書き込んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ、何ですか"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……このあとの、卓の準備。今日は、俺が進める番"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "卓って、TRPGですか"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "smile",
+          "text": "そう。始まるまで、少し時間がある"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "serious",
+          "text": "……練習。「キミたちの前に、古い扉がある」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ちょっと、ぞくっとしました"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "smile",
+          "text": "……よかった。今日の扉は、開けると煙が出る"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "kuraudo",
+            "face": "normal",
+            "text": "……今夜は、早く閉めた。卓の日は、いつもそう"
+          },
+          {
+            "speaker": "kuraudo",
+            "face": "normal",
+            "text": "店で読むと、店のことが気になる。だから、よそで読む"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "kuraudo",
+            "face": "normal",
+            "text": "……今日は、店、休み。卓のある日に、休みを合わせてる"
+          },
+          {
+            "speaker": "kuraudo",
+            "face": "normal",
+            "text": "家で読むと、つい寝る。だから、よそで読む"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_kuraudo_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "席を立とうとすると、カウンターの端から、クラウドが小さく手を上げた。"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……さっきの一服、聞こえてた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "音まで、聞こえてたんですか"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "泡の音が、ずっと同じ速さだった。……落ち着いてる時の音"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "自分じゃ、全然気にしてなかったです"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "smile",
+          "text": "……キミの音、急いでなかった。いい一服だったと思う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "クラウドさんに言われると、なんだかうれしいです"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……そうか。なら、次も聴く"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "surprise",
+          "text": "……いや。聴かれてると、吸いにくいか。たまにだけにする"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "kuraudo",
+            "face": "normal",
+            "text": "……今夜は、早く閉めた。煙の上がり方が、うまくそろわなくて"
+          },
+          {
+            "speaker": "kuraudo",
+            "face": "normal",
+            "text": "そろわない夜は、無理に続けない。よその音を聴いて、戻す"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "kuraudo",
+            "face": "normal",
+            "text": "……今日は、店、休み。休みの日は、人の吸う音を聴きに来る"
+          },
+          {
+            "speaker": "kuraudo",
+            "face": "normal",
+            "text": "自分の店だと、聴いてるうちに手が動く。ここなら、聴くだけ"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "roam_volk_first",
       "lines": [
         {
@@ -1999,6 +4109,18 @@
           "speaker": "volk",
           "face": "normal",
           "text": "市場調査だ。店の許しは取ってある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "鉄の煙の方は、いいんですか"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
         },
         {
           "speaker": "volk",
@@ -2030,7 +4152,33 @@
           "face": "normal",
           "text": "そうか。なら、この店の火のせいではない。書かないでおく"
         }
-      ]
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "今夜は早く閉めた。この時間の、よその部屋が見たかった"
+          },
+          {
+            "speaker": "volk",
+            "face": "serious",
+            "text": "閉めた後に来ても、混む時間の客席は見られない"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "今日は店を閉めている"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "休みの日は、よその部屋を見て回る。向こうでも、そうしていた"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "roam_volk_a",
@@ -2073,6 +4221,18 @@
         {
           "speaker": "hajime",
           "face": "normal",
+          "text": "それを確かめに、今日はここへ？"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
           "text": "（次は、奥の席で吸ってみよう。炭の減り方、比べたい）"
         },
         {
@@ -2080,7 +4240,33 @@
           "face": "",
           "text": "ヴォルクさんはノートに、席の並びを小さく描き足した。"
         }
-      ]
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "今夜は早く閉めた。外が、急に冷えた"
+          },
+          {
+            "speaker": "volk",
+            "face": "serious",
+            "text": "冷えた夜に、扉の近い席がどうなるか。よその店で見ておきたかった"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "今日は店を閉めている"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "休みの日は、客の席から店を見る。うちの店では、座れない側だ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "roam_volk_b",
@@ -2122,6 +4308,18 @@
         },
         {
           "speaker": "hajime",
+          "face": "normal",
+          "text": "ヴォルクさんも、今日はお店、休みですか"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "hajime",
           "face": "smile",
           "text": "俺、ヴォルクさんのノートに、けっこう載ってそうですね"
         },
@@ -2135,7 +4333,33 @@
           "face": "smile",
           "text": "（端の一行。……それはそれで、少しうれしい）"
         }
-      ]
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "休みではない。今夜は早く閉めた。HMDに当てる温度計の先が、曲がった"
+          },
+          {
+            "speaker": "volk",
+            "face": "serious",
+            "text": "替えは明日届く。測らずに決めた火は、俺の火ではない"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "そうだ。今日は店を閉めている"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "うちの店も、今日は「休憩」だ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "roam_volk_c",
@@ -2181,11 +4405,818 @@
           "text": "測ってはいない。……足りない日は、二杯目を頼む"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、ゆっくりしていけるんですか"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "ヴォルクさんは温度計を鞄にしまい、店員さんに二杯目を頼んだ。"
         }
-      ]
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "今夜は早く閉めた。本部へ送る報告を、今夜のうちに書く"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "書く前に、紅茶が要る。店の缶は、昨日空けた"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "今日は店を閉めている"
+          },
+          {
+            "speaker": "volk",
+            "face": "smile",
+            "text": "休みの日は、紅茶が一杯多い。その一杯も、測らない"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_ayatori_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えて顔を上げると、カウンターの端で、綾取がノートを広げていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "綾取さん？ ここで会うとは思いませんでした"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "surprise",
+          "text": "あれ、君だ。……ここで会うのは、僕も予想してなかったな"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smug",
+          "text": "せっかくだし、一つ当てていい？ 君、次は水を頼む"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……今、頼もうとしてました"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "sad",
+          "text": "当たっちゃった。……当たると、ちょっとつまんないんだよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "当たったのに、残念そうですね"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "外れたら、君の続きが聞けたのに"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取はノートに一行だけ書いて、ペンを置いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（客の席に座っても、ノートは開いたままなんだ）"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smug",
+          "text": "よその店で客をやってたって噂は、僕が自分で流すから。君は黙っててね"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "ayatori",
+            "face": "smug",
+            "text": "今夜は早じまい。組織の幹部会があってね"
+          },
+          {
+            "speaker": "ayatori",
+            "face": "smile",
+            "text": "……っていうのは嘘。仕込んだ葉が、思ったより早くはけちゃったの"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "ayatori",
+            "face": "smug",
+            "text": "今日は煙幕、お休み。組織の幹部が、そろって休暇中でね"
+          },
+          {
+            "speaker": "ayatori",
+            "face": "smile",
+            "text": "……幹部は僕一人だけど。一人で回してると、休む日も要るんだ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_ayatori_a",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓際の席で、綾取がメニューを手で覆っていた。味の名前を、隠すように。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "綾取さん？ 何してるんですか"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "名前を伏せて頼む練習。いつもは、僕が伏せる側だから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "煙幕の方は、今日は？"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "nervous",
+          "text": "指の下に何があるか分からないって、けっこう怖いね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "伏せる方を選ぶお客さんも、同じ気持ちなんですね"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "うん。その怖さ、たまに思い出さないと、僕が忘れちゃう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取は目を閉じて、手のひらの下の一行を指で押さえた。"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "これにする。何の味かは、届いてから知る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "苦手な味だったら、どうするんですか"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "serious",
+          "text": "最後まで吸うよ。伏せる方を選んだのは、僕だから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（伏せる側の人が、今日は伏せられる側に座ってる）"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "ayatori",
+            "face": "normal",
+            "text": "今夜は早じまい。予想が、三回続けて当たっちゃって"
+          },
+          {
+            "speaker": "ayatori",
+            "face": "smile",
+            "text": "当たる日は、僕の頭が固い日。よその煙で、ほぐしに来たの"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "ayatori",
+            "face": "normal",
+            "text": "今日はお休み。休みの日じゃないと、客の席には座れないからね"
+          },
+          {
+            "speaker": "ayatori",
+            "face": "smile",
+            "text": "自分の店だと、どうしても伏せる側の手が動いちゃう"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_ayatori_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えると、綾取がペンを持ったまま、隣のテーブルをじっと見ていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の客が煙を吐いて、連れに言った。「これ、なんか夏休みの匂いがする」"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "surprise",
+          "text": "……聞いた？ 夏休みだって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "書かないんですか、それ"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "nervous",
+          "text": "書きたい。すごく書きたい。でも、書かない"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "serious",
+          "text": "あの答えは、この店の一台に返ってきたもの。僕のノートに持って帰る分じゃない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取はペンを置いて、ノートを閉じた。表紙の上に、そっと手を重ねている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、ノートもお店もお休みですか"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "煙幕で同じ答えをもらったら、その時は急いで書く。字が乱れるくらい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（店の外では、ちゃんと線を引いてるんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の席では、さっきの客がもう一口吸って、連れと笑っていた。"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "ayatori",
+            "face": "normal",
+            "text": "お店は、今夜は早じまい。仕切りの布が、留め具ごと落ちちゃって"
+          },
+          {
+            "speaker": "ayatori",
+            "face": "smile",
+            "text": "奥まで丸見えの煙幕なんて、ただの普通の店でしょ。明日、吊り直す"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "ayatori",
+            "face": "normal",
+            "text": "うん。今日は煙幕、お休み。休む日は、店を貸してくれた人と決めてるの"
+          },
+          {
+            "speaker": "ayatori",
+            "face": "smile",
+            "text": "借りた店だから、休みも半分は借り物。……今の、ちょっとうまかった？"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_ayatori_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えると、綾取が白紙の札に、小さな字で何か書いていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その札、煙幕のですよね"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "うん。胸ポケットに、いつも何枚か入れてるんだ。今日は、僕が書く番"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "書く番、ですか"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "今の一台の、僕の答え。……君になら、見せてもいいよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "札には、「縁側の、午後」とだけあった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "これ、何の葉だったんですか"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "smile",
+          "text": "知らない。今日は、聞かずに帰る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "綾取さんが、種を聞かないんですか"
+        },
+        {
+          "speaker": "ayatori",
+          "face": "normal",
+          "text": "聞いたら、答え合わせになるでしょ。今日の一口は、外れてても僕のもの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……今日、何かあったんですか"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取は札を二つに折って、ノートには挟まずに、胸ポケットへ戻した。"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "ayatori",
+            "face": "nervous",
+            "text": "今夜は早じまい。お客さんに「店主さん、今日は元気ないね」って当てられて"
+          },
+          {
+            "speaker": "ayatori",
+            "face": "smile",
+            "text": "当てられる側は、慣れてないんだよね。だから今夜は、当てない側でいたいの"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "ayatori",
+            "face": "normal",
+            "text": "何もないよ。今日は煙幕がお休みで、福岡のバイトの子と電話してただけ"
+          },
+          {
+            "speaker": "ayatori",
+            "face": "smile",
+            "text": "棚の並べ替えを頼まれてたの。早く済んだから、答え合わせも休み"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_steve_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えて顔を上げると、奥の席に、柄シャツの大きな背中があった。スティーブだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "テーブルには、キッチンタイマーが一つ。数字は合わせてあるのに、まだ押していない。"
+        },
+        {
+          "speaker": "steve",
+          "face": "surprise",
+          "text": "……ヘイ、ハジメ。こんな所で会うとはな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "スティーブさんも、ここで一服ですか"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そのタイマー、押さないんですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "迷ってる。人の台で押したら、この店の秒数を盗むみたいだろ"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "ノー、ノー。……今日は客だ。数えない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブはタイマーを、胸のポケットにしまった。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "代わりに、ハジメ。俺が今から吸う。二口目の顔、見ててくれ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブがホースを取る。二口目の煙を吐いたところで、肩がふっと下がった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今、肩が下がりました"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "オーケー。自分の顔は、自分じゃ見えないからな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブはレシピカードの余白に、「肩」とだけ書き足した。"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "steve",
+            "face": "normal",
+            "text": "今夜は早じまいだ。炭の箱が、雨で湿っててな"
+          },
+          {
+            "speaker": "steve",
+            "face": "serious",
+            "text": "残りは、棚で寝かせてる箱だけだ。……あれは、明日まで待つ"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "steve",
+            "face": "normal",
+            "text": "今日は、店は休みだ。休みの日は、人の作った一台を吸う"
+          },
+          {
+            "speaker": "steve",
+            "face": "smile",
+            "text": "自分で作ると、タイマーから目が離れないからな"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_steve_a",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えると、窓際の席で、スティーブが背もたれへ深く寄りかかっていた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、ハジメ。人の台は、楽だな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "楽、ですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "熱が急いでも、待ちすぎても、俺のせいじゃない。そう思うと、肩が軽い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "Smoke & Gloryは、今日は？"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "頼んだのは、レモン系ですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "ノー、ノー。よその店では、レモンライムは頼まない。比べちまうからな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そう言うスティーブの右手は、膝の上で、何もない所をつまむ形になっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "スティーブさん、手がトングの形になってます"
+        },
+        {
+          "speaker": "steve",
+          "face": "surprise",
+          "text": "……ヘイ。言うな。今、ほどいてるところだ"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "楽なのは、頭だけだったらしい。手は、まだ店にいる"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "steve",
+            "face": "normal",
+            "text": "今夜は早じまいだ。眼鏡のつるが、ぽっきり折れてな"
+          },
+          {
+            "speaker": "steve",
+            "face": "serious",
+            "text": "テープで留めたけど、少し傾く。数ミリがずれて見える夜は、店に立てない"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "steve",
+            "face": "normal",
+            "text": "今日は休みだ。店のシャツを、七枚まとめて洗う日にしてた"
+          },
+          {
+            "speaker": "steve",
+            "face": "smile",
+            "text": "洗濯機が回ってる間は、俺がすることはない。だから、人の台に座る"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_steve_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えると、カウンターの端で、スティーブがレシピカードとにらめっこしていた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、ハジメ。ちょうどいい。日本語の先生が来た"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "先生じゃないですよ。何て書きたいんですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "「さわやか」だ。この店の一台の二口目を、そう書きたい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カードの端に、俺が「爽」と書いてみせた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "surprise",
+          "text": "……ノー、ノー。バツが四つもあるぞ"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "褒める字に、バツを四つも入れるのか。日本語は、分からないな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "言われてみると、そうですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、お店はお休みですか"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブは大きな手で細いペンを持ち、バツを一つずつ、ゆっくり書いていった。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "書けた。……四つとも、いいバツだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（バツを、褒めてる……）"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "steve",
+            "face": "normal",
+            "text": "ノー。今夜は早じまいだ。予約が、まとめて明日にずれた"
+          },
+          {
+            "speaker": "steve",
+            "face": "serious",
+            "text": "客のいない店で炭を見てると、俺は足したくなる。だから閉めた"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "steve",
+            "face": "normal",
+            "text": "イエス。今日は休みだ。レシピカードを書き直す日にしてた"
+          },
+          {
+            "speaker": "steve",
+            "face": "smile",
+            "text": "書いてたら、よその二口目も書きたくなってな"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_steve_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えると、隣の席で、スティーブが目を閉じて煙を吐いていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "テーブルの上に、タイマーはない。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "……ヘイ、ハジメ。今の一口、見てたか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "見てました。今日はタイマー、置いてないんですね"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "early",
+          "next_true": "early",
+          "next_false": "closed"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "それで、今日はレモンを頼んだ。よその店では、いつもは頼まないんだけどな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "比べちゃうから、ですよね"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "イエス。……でも、秒数が分からないと、比べようがない"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "熱が何秒で来たのか、知らない。なのに、二口目がうまい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "それ、カードに書きますか"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "書く。秒数の欄は空けて、「うまい」だけな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブはレシピカードを一枚裏返し、大きな字で一言だけ書いた。"
+        }
+      ],
+      "branches": {
+        "early": [
+          {
+            "speaker": "steve",
+            "face": "normal",
+            "text": "今夜は早じまいだ。地元の友だちと、電話の約束があってな"
+          },
+          {
+            "speaker": "steve",
+            "face": "smile",
+            "text": "向こうは朝だ。待つ間に一服と思って、……タイマーを店に忘れた"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "steve",
+            "face": "normal",
+            "text": "今日は、店は休みだ。タイマーも、店で休ませてる"
+          },
+          {
+            "speaker": "steve",
+            "face": "smile",
+            "text": "あいつにも、休みの日がいるからな"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "roam_mashiro_first",

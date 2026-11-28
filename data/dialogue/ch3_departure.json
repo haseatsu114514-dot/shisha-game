@@ -74,6 +74,11 @@
           "text": "猫……"
         },
         {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "皿洗いから入れてもらえ。向こうの客の顔は、洗い場からがよく見える"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（東京まで、あと三日。会っておきたい人の顔が、順に浮かんだ）"
@@ -198,6 +203,26 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは、自分用の一台を作らずに湯を沸かした。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "今日は吸うな。茶にしとけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "湯飲みを両手で包む。味は遠くても、温かさは指まで来た。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（吸わない夜に、ここへ座ったのは初めてかもしれない）"
         },
         {
           "speaker": "sumi",

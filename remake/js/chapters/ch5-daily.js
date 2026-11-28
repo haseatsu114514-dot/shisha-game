@@ -69,7 +69,7 @@ export const CH5_CALL_SPOT = Object.freeze({
 });
 
 // 第1章の店そのものは地図に出さない行き先。第1・2章の物語の続きが流れるため。
-//   naru（KEMURIKUSA）・c_station: 第5章の通いの小会話だけで出す（chapters/ch5-shops.js。#2033 F）
+//   naru（KEMURIYA）・c_station: 第5章の通いの小会話だけで出す（chapters/ch5-shops.js。#2033 F）
 //   minto（PEPPERMINT）/ shishark（SHISHARK）: ヒロインの店も同じく通いの小会話で出す（恋人でも友人でも自然な会話）
 //   trpg_bar: 柚ヶ谷の店（隣町の地域で出す）
 // 占い師は第5章にも現れる（章で1〜2回・予定の無い昼か夜。daily/fortune-schedule.js）。
@@ -184,7 +184,7 @@ const currentRegion = () => ["widehanga", TOKYO, DUBAI].includes(state.flags._ch
 
 /**
  * 東京の行き先（スティーブ・ヴォルクの店は会ったことがあれば。帰りの配送便は昼だけ）。
- * CHOI-ZAP は会員の時だけ、クラブSEAM は夜だけ（第3章の東京と同じ）。クラブは店主に会う前も「地下の店」として出す（unknownLabel）。
+ * サクッとジム は会員の時だけ、クラブSEAM は夜だけ（第3章の東京と同じ）。クラブは店主に会う前も「地下の店」として出す（unknownLabel）。
  */
 // 占い師は東京にも現れる（理由は語らない・台帳 URA）。
 export const chapterFiveTokyoSpots = () => [...tokyoSpotsNow().filter(spot => (!spot.charId || spot.unknownLabel || state.met?.[spot.charId])

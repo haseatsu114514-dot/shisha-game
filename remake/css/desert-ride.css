@@ -737,11 +737,9 @@ html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier { min-height: 96px; gap
 .dr-tier[data-tier="hard"] .dr-tier-stars::before { content: "★★★"; }
 .dr-tier[data-state="chosen"] .dr-tier-stars { color: #fff6c8; }
 .dr-tier:disabled .dr-tier-stars { color: #7d6a58; text-shadow: none; }
-/* 印で見せる一言（段の手触り・クリア済み・開いた！）と、初級の長い注記は字を出さない */
-html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier small:is([data-kind="word"], [data-kind="cleared"], [data-kind="fresh"], [data-kind="easy"]) { position: absolute; left: 4px; top: 4px; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* 印で見せる一言（段の手触り・クリア済み・開いた！）は字を出さない。初級の「報酬対象外」の注記は 2026-11-27 に外した（システム的な説明は載せない） */
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier small:is([data-kind="word"], [data-kind="cleared"], [data-kind="fresh"]) { position: absolute; left: 4px; top: 4px; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier small[data-kind="note"] { color: #ffe27a; opacity: 1; }
-.dr-tier-flag { display: block; padding: 1px 8px 2px; font-size: 14px; font-style: normal; font-weight: 800; line-height: 1.25; letter-spacing: .02em; color: #e6d2b4; background: rgba(0, 0, 0, .32); border-radius: 999px; text-shadow: none; }
-.dr-tier[data-state="chosen"] .dr-tier-flag { color: #fff2d8; background: rgba(90, 28, 4, .45); }
 /* 閉じた段: 錠の印（名前の左） */
 html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier:disabled b::before { content: ""; display: inline-block; width: .62em; height: .72em; margin-right: .22em; vertical-align: -.04em; background: currentColor;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24'%3E%3Cpath d='M10 1a6 6 0 0 0-6 6v3H3a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V7a6 6 0 0 0-6-6zm-3 9V7a3 3 0 0 1 6 0v3H7z'/%3E%3C/svg%3E") center / contain no-repeat;
@@ -771,5 +769,53 @@ html:root .desert-ride .dr-card.dr-menu .dr-actions .dr-button.dr-button { flex-
 .dr-menu .dr-actions .dr-act-vs::before { content: "VS"; width: auto; height: auto; background: none; -webkit-mask: none; mask: none; font-style: italic; font-size: .92em; letter-spacing: .02em; color: #ffd76a; }
 html:root[data-density="phone"] .desert-ride .dr-card.dr-menu .dr-tier.dr-tier { min-height: max(var(--phone-tap, 84px), 104px); }
 html:root[data-density="phone"] .desert-ride .dr-tier-stars { height: 26px; font-size: 24px; line-height: 26px; }
-html:root[data-density="phone"] .desert-ride .dr-tier-flag { font-size: 24px; }
 html:root[data-density="phone"] .desert-ride .dr-tier[data-cleared="true"]::after, html:root[data-density="phone"] .desert-ride .dr-tier[data-fresh="true"]:not([data-cleared="true"])::after { font-size: 18px; }
+
+/* ---- なるの札（DSR107・2026-11-27 オーナー「なると勝負は上級まで全部やると級みたいに解放される完じ」「なるは？？？にしといて開放までは」）:
+   段の札の4枚目。開くまでは「？？？」と錠（名前・顔・開き方の文は出さない）、開いたら名前と顔（星の代わり）。札は4枚を1列に並べる。
+   開いたなるの札は、ほかの段と見分けやすいよう、なるのオーラと同じ紫の地（選ぶとほかの段と同じ橙） ---- */
+html:root .desert-ride .dr-card.dr-menu .dr-tiers[data-slots="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+html:root .desert-ride .dr-card.dr-menu .dr-tiers[data-slots="4"] .dr-tier.dr-tier b { font-size: 26px; letter-spacing: .06em; white-space: nowrap; }
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier-naru b { letter-spacing: 0; }
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier-naru:not(:disabled):not([data-state="chosen"]) { color: #f3e6ff; border-color: #9a7ac8; background: linear-gradient(180deg, #44305a, #241634); }
+html:root .desert-ride .dr-card.dr-menu .dr-tier.dr-tier-naru:disabled b { color: #b9a58e; }
+.dr-tier-face { display: block; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #c9a6ff; background: #3a2448; box-shadow: 0 2px 0 rgba(30, 10, 4, .55); }
+.dr-tier-naru[data-state="chosen"] .dr-tier-face { border-color: #fff6c8; }
+html:root[data-density="phone"] .desert-ride .dr-card.dr-menu .dr-tiers[data-slots="4"] .dr-tier.dr-tier b { font-size: 30px; }
+html:root[data-density="phone"] .desert-ride .dr-tier-face { width: 46px; height: 46px; }
+
+/* ---- 結果のメダルと札を、ランクごとの絵に（2026-11-27 オーナー「メダルのデザインがなんか合成感すごい　ちゃんとランクごとのメダルを生成で作ってあげて　CSS感がある部分は綺麗にしたい」・DSR106）----
+   メダルは S・A・B・C の4枚を、字を金属の浮き彫りとして描き込んだ絵にした（gpt-image-2.6-sunburst。asset_sources/ui/minigame-visuals-20261127/desert/）。
+   それまでの「空いた円盤の絵＋コードで描いた字」は使わない（字は読み上げ用に DOM に残し、見えなくする）。
+   ランクの名前（「最高の一本」など）は革の名札の絵、自己ベスト更新は赤い漆の札の絵の上に字を置く（四角い CSS の箱をやめる）。段の札（「中級」など）も革の名札にする ---- */
+.dr-result .dr-rank { --coin: calc(var(--medal-w) * .6); --coin-y: 42%; background-image: url("../img/ui/desert_ride_result/rank_s.webp"); }
+.dr-result[data-rank="S"] .dr-rank { background-image: url("../img/ui/desert_ride_result/rank_s.webp"); }
+.dr-result[data-rank="A"] .dr-rank { background-image: url("../img/ui/desert_ride_result/rank_a.webp"); }
+.dr-result[data-rank="B"] .dr-rank { background-image: url("../img/ui/desert_ride_result/rank_b.webp"); }
+.dr-result[data-rank="C"] .dr-rank { background-image: url("../img/ui/desert_ride_result/rank_c.webp"); }
+.dr-result .dr-rank b { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; -webkit-text-stroke: 0; filter: none; }
+/* 絵に光の筋が描いてある S だけは、回る光の筋を重ねない（二重になる） */
+.dr-result[data-rank="S"] .dr-rank-rays { display: none; }
+/* ランクの名前: リボンの下に、革の名札（720×150 の絵。字は名札の革の面の中） */
+.dr-result .dr-rank span { top: auto; bottom: -2%; min-width: 64%; padding: 10px 34px 12px; box-sizing: border-box; text-align: center; border-radius: 0; box-shadow: none;
+  color: #ffeec8; text-shadow: 0 2px 0 rgba(30, 10, 4, .8); background: transparent url("../img/ui/desert_ride_result/plate_rank.webp") center / 100% 100% no-repeat; }
+/* B・C は元の節（ランクごとの名札の色）が background をまとめて指定しているので、大きさと位置もここで上書きする（でないと絵が原寸で欠ける） */
+.dr-result[data-rank] .dr-rank span { background: transparent url("../img/ui/desert_ride_result/plate_rank.webp") center / 100% 100% no-repeat; }
+/* 自己ベスト更新: 赤い漆の札（900×234 の絵）の上に字。札ごと少し傾けて押す */
+.dr-result .dr-best[data-new="true"] { padding: 14px 52px 16px; border: 0; border-radius: 0; box-shadow: none; background: transparent url("../img/ui/desert_ride_result/stamp_best.webp") center / 100% 100% no-repeat;
+  color: #fff8e8; text-shadow: 0 2px 0 rgba(90, 10, 4, .8), 0 0 10px rgba(255, 200, 120, .4); letter-spacing: .08em; white-space: nowrap; }
+/* 横スマホは結果の左の列が細いので、札の余白を詰めて1行に収める */
+html:root[data-density="phone"] .desert-ride .dr-result .dr-best[data-new="true"] { padding: 6px 26px 8px; letter-spacing: .02em; }
+/* 段の札（初級・中級・上級）: 革の名札 */
+.dr-result-tier, .dr-result-tier[data-tier] { padding: 6px 22px 8px; border-radius: 0; box-shadow: none; color: #ffeec8; text-shadow: 0 2px 0 rgba(30, 10, 4, .8);
+  background: transparent url("../img/ui/desert_ride_result/plate_rank.webp") center / 100% 100% no-repeat; }
+
+/* ---- 入口の題字をロゴの絵に（2026-11-27 オーナー「各ミニゲームのタイトルは生成して　今なんかデザートライドとかダサいしロゴ」・DSR108）----
+   それまでの「CSS の金のグラデーションの字」と英字の帯（DUBAI · SAND DUNES）をやめ、生成したロゴ（img/ui/desert_ride/logo.webp。夕日・砂丘・砂を切る板）を置く。
+   字は読み上げ用に残して見えなくする。練習のおわりの題（「練習おわり」）は字のまま */
+.desert-ride .dr-menu[data-kind="title"] .dr-kicker { display: none; }
+.desert-ride .dr-menu[data-kind="title"] .dr-title { width: 470px; max-width: none; aspect-ratio: 900 / 605; padding: 0; transform: rotate(-2deg); transform-origin: 50% 50%;
+  font-size: 0; line-height: 0; color: transparent; -webkit-text-fill-color: transparent;
+  background: url("../img/ui/desert_ride/logo.webp") center / contain no-repeat; -webkit-background-clip: border-box; background-clip: border-box;
+  filter: drop-shadow(0 10px 14px rgba(60, 20, 0, .45)); }
+.desert-ride .dr-menu[data-kind="title"] .dr-menu-head { top: 20px; }

@@ -5,7 +5,9 @@ import { buyKeepsake } from "../core/keepsakes.js";
 import { addMoney } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { DB, displayName } from "../core/data.js";
-import { stickerPhoto } from "../core/purikura-photo.js";
+import { chooseBooth, finishBooth, receivePrint } from "../core/purikura-doodle.js";
+import { printedPurikura } from "../core/purikura-photo.js";
+import { PURIKURA_PHOTOS } from "../core/purikura-data.js";
 import { modal } from "../core/ui.js";
 import { spotPeople } from "../daily/spot-people.js";
 import { play } from "../vn/engine.js";
@@ -15,7 +17,8 @@ const active = new WeakSet();
 const visitStamp = () => `${state.chapter}:${state.day}:${state.slot}`;
 
 // 店の初回だけ無料。モード・相手で無料枠を作り直さず、行動消費は増やさない。
-export async function offerAgehaPurikura(background, spot = { id: "ch2_ageha", kind: "rival", charId: "ageha" }, { signal } = {}) {
+// guests: 来店の中で先に話した、居合わせた人（daily/roamers.js）。会った後は地図の在店から外れるので、ここで渡す。
+export async function offerAgehaPurikura(background, spot = { id: "ch2_ageha", kind: "rival", charId: "ageha" }, { signal, guests = [] } = {}) {
   const owner = state, stamp = visitStamp(), phase = state.phase;
   if (signal?.aborted || active.has(owner)) return false;
   const live = () => state === owner && visitStamp() === stamp && state.phase === phase && !signal?.aborted;
@@ -36,7 +39,7 @@ export async function offerAgehaPurikura(background, spot = { id: "ch2_ageha", k
       state.flags._kuraudo_melty_greeting = state.day;
       save();
     }
-    if (state.flags._ageha_first_purikura) return await revisitPurikura(background, spot, { live, read, stamp });
+    if (state.flags._ageha_first_purikura) return await revisitPurikura(background, spot, { live, read, stamp, signal, extra: guests });
     if (!await read("remake_ch2_ageha_purikura")) return false;
     if (!buyKeepsake("ageha_first_purikura")) return false;
     state.flags._ageha_first_purikura = true;
@@ -46,10 +49,39 @@ export async function offerAgehaPurikura(background, spot = { id: "ch2_ageha", k
   } finally { active.delete(owner); }
 }
 
-export const purikuraGuests = spot => spotPeople(spot).filter(person => person.role === "guest" && person.known
-  && person.id !== "ageha" && !!DB.characters[person.id]);
+/**
+ * 撮った相手の写真（core/purikura-data.js）から、まだ撮っていない1枚。そろった後は同じ相手の写真から（PFC18）。
+ * 恋人と撮る時は恋人の距離感の写真（lover）から、それ以外は友達の写真から選ぶ。恋人の写真がまだ無い相手は友達の写真（PFC19）。
+ * 絵の無い相手（審査員など）は null で、立ち絵の顔を並べた写真のまま。撮った絵は履歴の cg に残り、ギャラリーにも出る。
+ */
+export function pickPurikuraPhoto(partner, { rand = Math.random, save: s = state } = {}) {
+  const all = PURIKURA_PHOTOS.filter(p => p.with === partner && (p.slot === undefined || p.slot === s.slot));
+  const lover = partner !== "solo" && Array.isArray(s.lovers) && s.lovers.includes(partner);
+  const pool = lover && all.some(p => p.lover) ? all.filter(p => p.lover) : all.filter(p => !p.lover);
+  if (!pool.length) return null;
+  const taken = new Set((s.flags?._ageha_purikura_history || []).map(h => h?.cg).filter(Boolean));
+  const fresh = pool.filter(p => !taken.has(p.cg));
+  // その相手と初めて撮る一枚（ソロの「一人で初挑戦！」）は、最初に必ず出す
+  const first = fresh.filter(p => p.first);
+  const from = first.length ? first : fresh.length ? fresh : pool;
+  return from[Math.min(from.length - 1, Math.floor(rand() * from.length))];
+}
 
-async function revisitPurikura(background, spot, { live, read, stamp }) {
+// 審査員（characters.json の role が judge…。上園・千須会長・チャコール博士など）はプリクラの対象外（PFC22 オーナー）。
+const purikuraJudge = id => /^judge/.test(DB.characters[id]?.role || "");
+export function purikuraGuests(spot, extra = []) {
+  const people = spotPeople(spot);
+  for (const id of extra) if (id && !people.some(person => person.id === id)) people.push({ id, known: true, role: "guest", name: displayName(id, state) });
+  return people.filter(person => person.role === "guest" && person.known
+    && person.id !== "ageha" && !!DB.characters[person.id] && !purikuraJudge(person.id));
+}
+
+function recordPhoto(photo) {
+  const history = state.flags._ageha_purikura_history ||= [];
+  history.push({ chapter: state.chapter, day: state.day, chapterDay: chapterDay(state), slot: state.slot, ...photo });
+}
+
+async function revisitPurikura(background, spot, { live, read, stamp, signal, extra = [] }) {
   if (state.flags._ageha_purikura_offer === stamp) return true;
   // 呼出し元は写真の後に店代を確定する。帰りの運賃と、その店代は写真に使わない。
   const available = () => Math.max(0, spendableMoney(state) - Math.max(0, Number(spot.cost) || 0));
@@ -62,41 +94,63 @@ async function revisitPurikura(background, spot, { live, read, stamp }) {
   };
   if (!canPay()) return shortage();
   if (!await read("remake_ch2_purikura_invite")) return false;
-  const guests = purikuraGuests(spot);
-  const mode = await modal({ title: "プリクラ、撮っていく？", body: "2回目からは1回400円。撮影・落書き・シール込みです。追加の行動・体力は使いません。", options: [
-    { label: "一人で撮る（400円）", value: "solo", test: "purikura-solo" },
-    { label: "あげはと撮る（400円）", value: "pair", test: "purikura-pair" },
-    ...guests.length ? [{ label: "相席した人と撮る（400円）", value: "guest", test: "purikura-guest" }] : [],
+  // 来店の会話の後に、まず撮るかを聞く（1回400円）。撮るなら、あげはが居合わせた知り合いとの2ショットを勧め、
+  // あげはとの2ショット・一人でも選べる（PFC19 オーナー「400円払うとあげはから居合わせた人で撮るよう…マッチしてくれる」）。
+  // お金は写真を受け取った時に払う（途中でやめたら払わない）。
+  const shoot = await modal({ title: "プリクラ、撮っていく？", body: "2回目からは1回400円。撮影・落書き・シール込みです。追加の行動・体力は使いません。", options: [
+    { label: "撮る（400円）", value: true, test: "purikura-shoot", primary: true },
     { label: "今日は撮らない", value: null, test: "purikura-skip" },
   ] });
   if (!live()) return false;
-  let people = ["hajime"];
-  if (mode === "pair") people.push("ageha");
-  if (mode === "guest") {
-    const guest = await modal({ title: "誰と撮る？", body: "今、相席している相手。撮影は二人で400円です。", options: [
-      ...guests.map(person => ({ label: person.name, value: person.id, test: `purikura-with-${person.id}` })),
-      { label: "今日は撮らない", value: null, test: "purikura-guest-back" },
+  let mode = null;
+  const people = ["hajime"];
+  if (shoot) {
+    const guests = purikuraGuests(spot, extra);
+    if (!await read(guests.length ? "remake_ch2_purikura_match" : "remake_ch2_purikura_choose")) return false;
+    // ソロは、あげはから勧めない。はじめが言い出して驚かれる（2回目からは「ソロプリハマっちゃったんだね」と笑われる・PFC23）。
+    const partner = await modal({ title: "誰と撮る？", body: guests.length ? "あげはのおすすめは、居合わせた知り合いとの2ショット。あげはとも撮れます。" : "あげはは、2ショットのつもりでいる。", options: [
+      ...guests.map((person, i) => ({ label: `${person.name}と撮る`, value: person.id, test: `purikura-with-${person.id}`, primary: i === 0 })),
+      { label: "あげはと撮る", value: "pair", test: "purikura-pair", primary: !guests.length },
+      { label: "一人で撮りたい", value: "solo", test: "purikura-solo" },
+      { label: "やっぱり撮らない", value: null, test: "purikura-guest-back" },
     ] });
     if (!live()) return false;
-    if (!guest) { state.flags._ageha_purikura_offer = stamp; save(); return true; }
-    if (!purikuraGuests(spot).some(person => person.id === guest)) return false;
-    people.push(guest);
+    if (partner === "solo" || partner === "pair") mode = partner;
+    else if (partner) {
+      if (!purikuraGuests(spot, extra).some(person => person.id === partner)) return false;
+      mode = "guest";
+      people.push(partner);
+    }
+    if (mode === "pair") people.push("ageha");
   }
   if (mode) {
     if (!["solo", "pair", "guest"].includes(mode)) return false;
     if (!canPay()) return shortage();
-    const ryuji = people.includes("kumicho");
-    if (!await read(ryuji ? "remake_ch2_purikura_ryuji" : `remake_ch2_purikura_${mode}`)) return false;
-    const received = await modal({ title: mode === "solo" ? "一人で初挑戦！" : "今日のプリクラ", body: stickerPhoto(people, mode, id => displayName(id, state)), options: [
+    // 神崎と初めて撮る回は、職人プリ（記念品）の場面。2回目からは、神崎の写真（あげはが入る3人の一枚も）から選ぶ。
+    const ryuji = people.includes("kumicho") && !(state.keepsakes || []).includes("ryuji_purikura");
+    const pick = ryuji ? null : pickPurikuraPhoto(mode === "solo" ? "solo" : people[1]);
+    const firstSolo = mode === "solo" && !(state.flags._ageha_purikura_history || []).some(row => row?.mode === "solo");
+    const scene = ryuji ? "remake_ch2_purikura_ryuji" : pick?.trio ? "remake_ch2_purikura_trio"
+      : mode === "solo" && !firstSolo ? "remake_ch2_purikura_solo_again" : `remake_ch2_purikura_${mode}`;
+    const cg = ryuji ? "cg_ryuji_purikura" : pick?.cg || null;
+    const photo = { people, mode, ...(cg ? { cg } : {}) };
+    const nameFor = id => displayName(id === "minto" ? "oneesan" : id, state);
+    const setup = await chooseBooth(photo, state.owned || [], nameFor, signal);
+    if (!live() || !setup || !await read(scene)) return false;
+    const design = await finishBooth(photo, setup, nameFor, signal);
+    if (!live() || design === null) return false;
+    if (design) photo.design = design;
+    const title = mode === "solo" ? (firstSolo ? "一人で初挑戦！" : "今日のソロぷり") : pick?.trio ? "3人ぷり☆" : "今日のプリクラ";
+    const received = design ? await receivePrint(title, photo, nameFor, signal) : await modal({ title, signal, body: printedPurikura(photo, nameFor), options: [
       { label: "受け取る（400円）", value: true, test: "purikura-receive", primary: true },
     ] });
     if (!live() || received !== true) return false;
-    if (mode === "guest" && !purikuraGuests(spot).some(person => person.id === people[1])) return false;
+    if (mode === "guest" && !purikuraGuests(spot, extra).some(person => person.id === people[1])) return false;
     if (!canPay()) return shortage();
     if (ryuji && !buyKeepsake("ryuji_purikura")) return false;
+    if (design) photo.printId = Array.from(crypto.getRandomValues(new Uint32Array(2)), n => n.toString(16).padStart(8, "0")).join("");
     addMoney(-REVISIT_FEE);
-    const history = state.flags._ageha_purikura_history ||= [];
-    history.push({ chapter: state.chapter, day: state.day, chapterDay: chapterDay(state), slot: state.slot, people, mode });
+    recordPhoto(photo);
   }
   state.flags._ageha_purikura_offer = stamp;
   save();

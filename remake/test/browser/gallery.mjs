@@ -29,7 +29,8 @@ async function initialLegacyLoad(name, options, malformed) {
   page.on("request", request => requests.push(request.url()));
   try {
     await page.goto(base);
-    await page.locator(t("title-load")).waitFor({ timeout: 45000 });
+    // タイトルが出るまで待つ。ロードは「つづきから」の行の押し所（EXT02）で、セーブが無い間は出ないので、行そのもので待つ
+    await page.locator(t("title-continue")).waitFor({ timeout: 45000 });
     await page.locator("#boot").waitFor({ state: "detached" });
     const fixture = await page.evaluate(async malformed => {
       const core = await import("./js/core/state.js");

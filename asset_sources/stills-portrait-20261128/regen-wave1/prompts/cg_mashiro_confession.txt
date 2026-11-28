@@ -1,0 +1,9 @@
+## cg_mashiro_confession
+
+参照画像（添付順） `remake/img/sprites/character_variants/new/mashiro/chr_mashiro_normal.webp`、`remake/img/sprites/character_variants/new/hajime/chr_hajime_normal.webp`、`remake/img/cgs/portrait/cg_mashiro_confession.webp`
+
+```text
+Use case: illustration-story. Create one new vertical 1024×1536 (2:3) Japanese visual-novel CG, cg_mashiro_confession. Images 1 and 2 are the current character sprites for the adult Mashiro and Hajime: use only their face, hair and clothing designs. Image 3 is the existing CG for scene continuity only. Draw a new composition from scratch.
+Accepted confession on a quiet holiday afternoon. Mashiro, 22, has pale ash-blonde bangs, two long braids, half-lidded golden eyes, an oversized beige knit cardigan, white blouse with a little gray ribbon and a long sage-green skirt. Seated alongside Hajime on the low sofa, she rests her cheek against his upper arm and gently hugs that arm with both hands, a small blissful sleepy smile, looking sideways toward him. Show only Hajime's black hoodie shoulder, arm and part of his torso and lap, with his face entirely outside the frame.
+The composition must read as a strong high-angle view: camera looking steeply downward 65–75 degrees from above them and slightly to the side, as if shooting from over the sofa corner. View the crown of Mashiro's head, her diagonal braids, the top of her sleeves and lap, and the sofa seat planes from above. Her cheek-to-arm contact and two hands holding his sleeve remain clear. Her gaze is aimed across the couch toward Hajime, away from the lens. The sofa back and its checked throw cushion provide two recognizable midground forms, with only a little daylight and surrounding floor visible. No foreground table or counter, no extra people or hands, no text. Warm cream, soft beige, muted sage afternoon daylight. Precise tidy anime lines, flat matte local colors and a few clean cel-shadow shapes.
+```

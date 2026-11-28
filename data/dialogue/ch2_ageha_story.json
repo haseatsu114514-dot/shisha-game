@@ -196,7 +196,7 @@
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "あ……あの時の！ あのグミベアの匂い、香水じゃなかったんですね"
+            "text": "あ……あの時の！ あのくまグミの匂い、香水じゃなかったんですね"
           }
         ],
         "first_new": [
@@ -807,7 +807,7 @@
     },
     {
       "dialogue_id": "remake_ch2_ageha_gummy",
-      "comment": "♥5の段階会話（#2023）兼あげはの味の会話。白・赤のグミベアの試作。雑誌取材の回のあと、♥5で一度だけ。大会の前後どちらで読んでも成立する文面にする。",
+      "comment": "♥5の段階会話（#2023）兼あげはの味の会話。白・赤のくまグミの試作。雑誌取材の回のあと、♥5で一度だけ。大会の前後どちらで読んでも成立する文面にする。",
       "metadata": {
         "flavor_lesson": {
           "white_gummy_bear": 1,
@@ -828,7 +828,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "白と赤……それ、グミベアの葉ですか"
+          "text": "白と赤……それ、くまグミの葉ですか"
         },
         {
           "speaker": "ageha",
@@ -1007,7 +1007,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "じゃーん。うちのホワイトグミベア専用ハガル。店開けた日から使ってる相棒"
+          "text": "じゃーん。うちのしろくまグミ専用ハガル。店開けた日から使ってる相棒"
         },
         {
           "speaker": "ageha",
@@ -1040,6 +1040,11 @@
           "text": "……当たりです。一字も違いません"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_bond_ageha",
+          "portrait_only": true
+        },
+        {
           "speaker": "ageha",
           "face": "smile",
           "text": "っしゃ！ うち、言葉で当てたの、初めてかも"
@@ -1054,6 +1059,10 @@
           "speaker": "ageha",
           "face": "smile",
           "text": "答え合わせ係の、正式な支給品ね。お礼とも言う"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "speaker": "hajime",
@@ -1440,7 +1449,7 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "KEMURIKUSAのなる。地元の大会で、こいつに負けた側ね"
+          "text": "KEMURIYAのなる。地元の大会で、こいつに負けた側ね"
         },
         {
           "speaker": "ageha",

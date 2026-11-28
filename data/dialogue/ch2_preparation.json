@@ -1577,6 +1577,245 @@
       ]
     },
     {
+      "dialogue_id": "remake_ch2_kumicho_repeat_f",
+      "comment": "VOL21 第3便（2026-11-27 オーナー「続けて良い」・第2章の街・店）。通い訪問の小会話（chapters/ch2-preparation.js の REPEAT_POOL）。初回相談と続編だけを前提にし、大会の前後どちらでも、第3章の出発前の準備期間でも読める話だけ。好感度・能力は動かさない（既存の訪問精算のまま）。 看板を下ろした店（柚ヶ谷は激戦区で、合わない店はすぐ消える）。神崎は預かったトングを、また始める時に返すつもりでいる",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に入る前、二つ隣の店の前で足が止まった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "先週まで灯っていたシーシャの看板が、外されている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "二つ隣のお店、看板がなくなってました"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……おう。昨日、店主が挨拶に来やした。半年もたなかったって、頭を下げてな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "半年……"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "この街じゃ珍しかねえ。合わねえ店には、すぐ客が来なくなる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは、机の引き出しから細長い箱を出した。使い込んだトングが一本、布に包んである。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "置いてったもんでさ。うちで使ってくれってな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "使うんですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "いや。あの人がまた始める時に、返すんでさ。……預かっとくって言っちまった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "箱のふたを閉める手つきは、炭の箱を閉める時と同じくらい丁寧だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この街で店を続けてるって、それだけで、すごいことなんだ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_kumicho_repeat_g",
+      "comment": "VOL21 第3便（2026-11-27 オーナー「続けて良い」・第2章の街・店）。通い訪問の小会話（chapters/ch2-preparation.js の REPEAT_POOL）。初回相談と続編だけを前提にし、大会の前後どちらでも、第3章の出発前の準備期間でも読める話だけ。好感度・能力は動かさない（既存の訪問精算のまま）。 黒革のソファの肘の継ぎ当て。客は立つ時にそこへ手をつくので、帰り際に触る所から直している",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "黒革のソファの肘に、同じ色の革が一枚、小さく当ててあった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ここ、直したんですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう。立つ時に、客がみんなそこへ手をつくんでさ。そこから先に擦り切れる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "座る所じゃなくて、肘の方が先なんですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "人は座る時より、立つ時に力を入れる。帰り際ってのは、案外重てえんでさ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "継ぎ目の縫い目は細かく、指でなぞっても引っかからない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ、神崎さんが縫ったんですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "針は、若え頃に覚えたんでさ。ボタン付けから始めてね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（帰り際に手をつく所。……客が最後に触る所から、直してるんだ）"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "気持ちよく立てりゃ、また座りに来る。そういうもんでさ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_kumicho_repeat_h",
+      "comment": "VOL21 第3便（2026-11-27 オーナー「続けて良い」・第2章の街・店）。通い訪問の小会話（chapters/ch2-preparation.js の REPEAT_POOL）。初回相談と続編だけを前提にし、大会の前後どちらでも、第3章の出発前の準備期間でも読める話だけ。好感度・能力は動かさない（既存の訪問精算のまま）。 入口の貸し傘。急な雨の日に帰りの客へ持たせ、返しに来たついでに一台吸っていく客もいる",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入口の傘立てに、透明なビニール傘が何本も挿してあった。どれも同じ形だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "傘、多いですね。お客さんの忘れ物ですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "いや、貸し傘でさ。急に降った日に、帰りの客へ持たせる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "返ってくるんですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "だいたいはな。返しに来たついでに、一台吸ってく客もいる"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "返ってこねえ分は、どっかで誰かが濡れずに済んだってこってさ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは、柄に巻いた白いテープを一本ずつ確かめた。小さく「神崎煙草店」と書いてある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お店の名前、書いてあるんですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "書いとかねえと、返す先が分からねえでしょう。……返しに来てえ客もいるんでさ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（傘一本で、もう一回来る理由ができるんだ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_kumicho_repeat_i",
+      "comment": "VOL21 第3便（2026-11-27 オーナー「続けて良い」・第2章の街・店）。通い訪問の小会話（chapters/ch2-preparation.js の REPEAT_POOL）。初回相談と続編だけを前提にし、大会の前後どちらでも、第3章の出発前の準備期間でも読める話だけ。好感度・能力は動かさない（既存の訪問精算のまま）。 駅の反対側に開く新しい店のチラシ。同業の新顔には炭を一箱持って挨拶に行く（第2章DAY5の挨拶と同じ人柄）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "机の上に、新しい店の開店のチラシが一枚置いてあった。駅の反対側の店だ。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "来週、開くらしい。開いたら、一度挨拶に行こうと思いやしてね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "同じシーシャ屋に、ですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "同業の新顔には、一度は顔を出す。……俺が店を始めた時、そうしてもらったんでさ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "誰にですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "この街の、もう看板を下ろした店の親父にね。炭を一箱、黙って置いてった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは、チラシの端を指でそろえて、引き出しへしまった。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "手ぶらじゃ何だ。俺も炭を一箱、持ってくかね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "同じ街でお客さんを取り合う相手、じゃないんですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "取り合う前に、この街に客が来なくなっちまったら、誰も残らねえんでさ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（勝ち負けの前に、街ごと見てるんだ）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_ch2_kuraudo_repeat_e",
       "comment": "#3097 大会進行・恋愛関係に依存しない通いの日常。既存の訪問精算で読む。",
       "lines": [
@@ -1649,6 +1888,250 @@
           "speaker": "kuraudo",
           "face": "normal",
           "text": "……次に来た時も、見つけてやって"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_kuraudo_repeat_f",
+      "comment": "VOL21 第3便（2026-11-27 オーナー「続けて良い」・第2章の街・店）。通い訪問の小会話（chapters/ch2-preparation.js の REPEAT_POOL）。初回相談と続編だけを前提にし、大会の前後どちらでも、第3章の出発前の準備期間でも読める話だけ。好感度・能力は動かさない（既存の訪問精算のまま）。 黒いコートの灰を粘着ローラーで取る。黒は灰が目立つが、好きな服で立ちたい",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に入ると、クラウドが黒いロングコートに、粘着ローラーを転がしていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "それ、毎日やってるんですか"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……黒は、灰が目立つから"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "開店前と、休憩の時。……袖口が、いちばん付く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭を替える時ですね。トングを持つ手の、すぐ横だから"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "surprise",
+          "text": "……そう。よく見てる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドはローラーの紙を一枚はがして、丸めて捨てた。白い粉が、びっしり付いていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "白い服にしようとは、思わないんですか"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……思わない。好きな服で立ちたい。灰は、取ればいい"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "smile",
+          "text": "……キミも、要る？ 袖、付いてる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われて見下ろすと、俺の袖にも、灰の白い点がいくつも付いていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_kuraudo_repeat_g",
+      "comment": "VOL21 第3便（2026-11-27 オーナー「続けて良い」・第2章の街・店）。通い訪問の小会話（chapters/ch2-preparation.js の REPEAT_POOL）。初回相談と続編だけを前提にし、大会の前後どちらでも、第3章の出発前の準備期間でも読める話だけ。好感度・能力は動かさない（既存の訪問精算のまま）。 ギターの弦の張り替え。店では弾かず、閉めた後に少しだけ。新しい弦は何日か弾いてやっと落ち着く",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの奥で、クラウドがギターの弦を張り替えていた。古い弦が、くるりと丸めてある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お店で弾くんですか"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……弾かない。店の時間は、店の曲だけ"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……閉めたあと、少しだけ。誰もいない時に"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新しい弦を巻き終えると、クラウドは一本だけ指で弾いた。低い音が、煙の下にしばらく残った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今の、いい音ですね"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "surprise",
+          "text": "……今のは、合わせてただけ"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "新しい弦は、すぐ音が下がる。何日か弾いて、やっと落ち着く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭も、着けたてより、少し置いた方が落ち着きます"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "smile",
+          "text": "……似てる。来たばかりのものは、だいたい落ち着かない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドは、ギターを壁のスタンドに戻した。指先には、弦の跡が細く残っていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_kuraudo_repeat_h",
+      "comment": "VOL21 第3便（2026-11-27 オーナー「続けて良い」・第2章の街・店）。通い訪問の小会話（chapters/ch2-preparation.js の REPEAT_POOL）。初回相談と続編だけを前提にし、大会の前後どちらでも、第3章の出発前の準備期間でも読める話だけ。好感度・能力は動かさない（既存の訪問精算のまま）。 常連がくれた入口の鉢植え（好みを覚えていたお礼）。水やりの量を聞けず、土を触って確かめる",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入口の横に、小さな鉢植えが一つ置いてあった。暗い店の前で、葉の緑だけが明るい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "植木、前からありましたっけ"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……先週から。常連の人がくれた。好みを覚えてたお礼、だって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "あのメモ帳のおかげですね"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……でも、水やりの量が分からない"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "sad",
+          "text": "くれた人に聞けばいいのに、聞けなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "土を触ってみたらどうですか。乾いてたら、あげるって"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドは、そっと鉢の土に指を入れた。少しして、小さく頷く。"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……乾いてる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "じょうろの水が、ゆっくり土にしみていく。クラウドは、最後の一滴まで見ていた。"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "smile",
+          "text": "……次にあの人が来たら、葉っぱ、見せる。それなら、話せる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_kuraudo_repeat_i",
+      "comment": "VOL21 第3便（2026-11-27 オーナー「続けて良い」・第2章の街・店）。通い訪問の小会話（chapters/ch2-preparation.js の REPEAT_POOL）。初回相談と続編だけを前提にし、大会の前後どちらでも、第3章の出発前の準備期間でも読める話だけ。好感度・能力は動かさない（既存の訪問精算のまま）。 手書きのメニューの飾り文字が読めない。飾り文字は残し、下に小さな普通の字で読み方を足す",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドが、新しいメニューを手で書いていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "とがった飾り文字が、紙いっぱいに並んでいる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "かっこいいですね。……でも、ちょっと読めないです"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "surprise",
+          "text": "……読めない？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この三行目、たぶん「ベリー」ですよね。最初、「ペリー」かと"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドは紙を目の高さに上げて、しばらく黙っていた。"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "sad",
+          "text": "……初めての人が黙って一番上を頼むの、これのせいかも"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "normal",
+          "text": "……飾り文字は、やめたくない。好きだから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドは細いペンに持ち替え、飾り文字の下に、小さな普通の字で読み方を書き足した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "これなら、どっちも分かります"
+        },
+        {
+          "speaker": "kuraudo",
+          "face": "smile",
+          "text": "……好きなのと、伝わるの。両方、置いておく"
         }
       ]
     }

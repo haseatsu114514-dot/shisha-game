@@ -1,0 +1,221 @@
+/* 縦画面の試作: DESERT RIDE の縦の並べ方（frame/desert.html が読む）。
+   本編の画面（js/minigames/desert-ride.js を layout: "portrait" で呼ぶ）の部品をそのまま使い、置き場所と大きさだけ縦用に替える。色・絵・動きは css/desert-ride.css のまま。
+   ステージは幅 640（スマホの幅 390px で 0.61 倍）。字は 22px 以上（実寸 13px）、押す所は 72px 以上（実寸 44px）。
+   並べ方: 上＝滑走の絵（横長の絵を板の上いっぱいの高さに置き、左右を切る）。空の所に、やめる・道のり・時計・得点。
+           下＝操作の板。上の縁にブーストのゲージ、いちばん下の段に左から 左・右｜ブースト・ジャンプ（左の親指で曲がり、右の親指でブーストと跳ぶ）。速さはその上。
+           ブーストはよく押すので、ジャンプの隣（下の段・親指を伸ばさずに届く所）に同じ大きさで置く（2026-11-27 オーナー「ブーストよく押すから使いやすい位置に」）。
+   文字を減らす: SCORE・TIME・km/h の添え字、コースの名前の札は出さない（数字と形で分かる）。 */
+
+#stage .desert-ride { --deck: 410px; --lap: 84px; background: #1c0f08; }
+
+/* ───────── 滑走の絵 ───────── */
+#stage .dr-canvas, #stage .dr-fx { inset: 0 auto auto 50%; width: auto; height: calc(100% - var(--deck) + var(--lap)); aspect-ratio: 16 / 9; transform: translateX(-50%); }
+/* 絵の裾を操作の板へ溶かす */
+#stage .desert-ride::after { content: ""; position: absolute; left: 0; right: 0; bottom: calc(var(--deck) - var(--lap)); height: var(--lap); z-index: 1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(28, 15, 8, 0), rgba(28, 15, 8, .55) 55%, #1c0f08); }
+#stage .desert-ride:is([data-phase="menu"], [data-phase="practiced"], [data-phase="result"])::after { display: none; }
+
+/* ───────── HUD: 上（空の所）と、操作の板の上 ───────── */
+#stage .dr-hud { inset: 0; display: block; z-index: 5; }
+#stage .dr-hud-left, #stage .dr-hud-center, #stage .dr-hud-right { display: contents; }
+#stage .dr-hud-left > small, #stage .dr-clock > small, #stage .dr-speedo-read > small, #stage .dr-course { display: none; }
+/* 道のり（真ん中の上）と、相手との差 */
+#stage .dr-progress { position: absolute; left: 118px; right: 150px; top: 46px; width: auto; height: 14px; border-radius: 7px; background: rgba(40, 22, 12, .5); border: 2px solid rgba(255, 240, 210, .75); }
+#stage .dr-progress i { border-radius: 5px; }
+#stage .dr-progress-sun { right: -14px; width: 30px; height: 30px; margin-top: -15px; }
+#stage .dr-mark { width: 24px; height: 24px; margin: -12px 0 0 -12px; border-width: 3px; }
+#stage .dr-mark-noor, #stage .dr-mark-naru { width: 20px; height: 20px; margin: -10px 0 0 -10px; }
+#stage .dr-race { position: absolute; left: 50%; top: 74px; transform: translateX(-50%); padding: 4px 16px; font-size: 22px; white-space: nowrap; }
+/* 時計（右上）: 字の「TIME」は出さず、時計の形を添える */
+#stage .dr-clock { position: absolute; right: 20px; top: 30px; margin: 0; display: flex; align-items: center; gap: 6px; padding: 6px 14px 6px 10px; border-radius: 999px; background: rgba(40, 22, 12, .62); color: #fff5e6; }
+#stage .dr-clock::before { content: ""; width: 22px; height: 22px; box-sizing: border-box; border: 3px solid #ffe2a6; border-radius: 50%; background: linear-gradient(#ffe2a6, #ffe2a6) 50% 22% / 3px 7px no-repeat, linear-gradient(#ffe2a6, #ffe2a6) 68% 50% / 7px 3px no-repeat; }
+#stage .dr-time { font-size: 28px; }
+/* やめる（左上） */
+#stage .dr-hud-right .dr-quit { left: 14px; right: auto; top: 12px; bottom: auto; --q-hit: 88px; --q-font: 34px; color: #fff5e6; }
+#stage .dr-hud-right .dr-quit::before { background: rgba(40, 22, 12, .62); border: 2px solid rgba(255, 226, 166, .8); }
+/* 得点とコンボ（左・道のりの下） */
+#stage .dr-score { position: absolute; left: 24px; top: 112px; font-size: 64px; color: #fffaf0; -webkit-text-stroke: 2px #4a2408; paint-order: stroke fill; text-shadow: 0 4px 0 rgba(60, 24, 6, .55), 0 0 18px rgba(255, 200, 120, .35); }
+#stage .dr-combo { position: absolute; left: 26px; top: 180px; margin: 0; min-height: 0; padding: 3px 14px; border-radius: 999px; font-size: 24px; color: #fff5e6; background: rgba(150, 52, 12, .85); white-space: nowrap; }
+#stage .dr-combo:empty { display: none; }
+/* 練習は点を数えない（「練習」の字も出さない。上はヌールの吹き出しが使う） */
+#stage .desert-ride[data-phase="practice"] :is(.dr-score, .dr-combo) { display: none; }
+#stage .dr-combo[data-hot="1"], #stage .dr-combo[data-hot="2"] { color: #fff5e6; background: #e2551a; }
+/* 技と着地の出来（真ん中）: 絵の上に大きく。人物には重ねない */
+#stage .dr-feedback { position: absolute; left: 20px; right: 20px; top: 226px; width: auto; height: 120px; margin: 0; border: 0; overflow: visible; }
+#stage .dr-pop { font-size: 44px; color: #fffaf0; -webkit-text-stroke: 2px #5a2206; paint-order: stroke fill; text-shadow: 0 4px 0 rgba(60, 24, 6, .6); }
+#stage .dr-pop[data-kind="spin"] { font-size: 58px; }
+#stage .dr-pop[data-kind="fall"] { color: #ffd2c4; }
+#stage .dr-pop[data-kind="boost"], #stage .dr-pop[data-kind="perfect"] { color: #ffe27a; }
+#stage .dr-pop[data-kind="recover"] { color: #c8ffd4; }
+#stage .dr-cutin-words { color: #fffaf0; -webkit-text-stroke: 2px #5a2206; paint-order: stroke fill; text-shadow: 0 4px 0 rgba(60, 24, 6, .6); }
+#stage .dr-cutin-words b { font-size: 60px; } #stage .dr-cutin-words span { font-size: 30px; }
+#stage .dr-cutin-band[data-grade="perfect"] .dr-cutin-words { color: #ffe27a; }
+
+/* 操作の板の上: ブーストのゲージ（板の上の縁いっぱい）と、速さ（左右の上） */
+#stage .dr-boost-meter { position: absolute; left: 24px; right: 24px; bottom: calc(var(--deck) - 58px); margin: 0; height: 40px; gap: 10px; z-index: 3; }
+#stage .dr-bolt { width: 34px; height: 40px; font-size: 34px; }
+#stage .dr-gauge { height: 30px; border-radius: 15px; border: 2px solid rgba(255, 226, 166, .7); background: rgba(20, 10, 4, .7); }
+#stage .dr-gauge i { border-radius: 13px; }
+#stage .dr-hud-right { box-shadow: none; }
+#stage .dr-speedo { position: absolute; left: 30px; bottom: 196px; width: 300px; height: 128px; grid-template-columns: 128px minmax(0, 1fr); column-gap: 12px; padding: 0; }
+#stage .dr-speedo-dial { width: 128px; height: 128px; }
+#stage .dr-speedo-read { align-items: flex-start; }
+#stage .dr-kmh { font-size: 76px; color: #fff3d6; text-shadow: 0 4px 0 rgba(0, 0, 0, .45); }
+#stage .dr-speedo[data-fast="boost"] .dr-kmh { color: #ffb347; }
+
+/* ───────── 操作の板 ───────── */
+#stage .dr-controls { inset: auto 0 0; height: var(--deck); padding: 0; display: block; z-index: 4; }
+#stage .dr-controls[hidden] { display: none; }
+#stage .dr-touch-pair { position: absolute; display: block; bottom: 18px; height: 164px; }
+#stage .dr-touch-pair .dr-touch { position: absolute; bottom: 0; }
+#stage .dr-steer-pair { left: 10px; width: 286px; }
+#stage .dr-steer-pair .dr-touch { width: 142px; height: 142px; bottom: 8px; }
+#stage .dr-steer-pair .dr-left { left: 0; } #stage .dr-steer-pair .dr-right { left: 144px; }
+#stage .dr-touch-pair:not(.dr-steer-pair) { right: 8px; width: 322px; }
+#stage .dr-touch.dr-boost { left: 0; width: 158px; height: 158px; bottom: 2px; }
+#stage .dr-touch.dr-jump { right: 0; width: 162px; height: 162px; }
+/* 着地の札（重なったら押す → 今！ → 構えた！）: ジャンプのすぐ上 */
+#stage .dr-land-tag { bottom: calc(100% + 6px); left: auto; right: 0; translate: 0 0; padding: 5px 14px; font-size: 24px; z-index: 7; }
+
+/* 練習の説明（ヌールの吹き出し）: 得点の下。2行まで */
+#stage .dr-guide { left: 16px; right: 16px; top: 104px; width: auto; transform: none; align-items: flex-start; gap: 12px; padding: 10px 16px 12px; border-radius: 18px; z-index: 3; }
+#stage .dr-guide-face { width: 64px; height: 64px; }
+#stage .dr-guide-name { font-size: 20px; }
+#stage .dr-caption { font-size: 26px; line-height: 36px; }
+#stage .dr-return-cue, #stage .dr-action-cue { font-size: 26px; white-space: nowrap; z-index: 3; }
+/* 押すボタンの合図は、ボタンのすぐ上（人物に重ねない） */
+#stage .dr-action-cue { top: auto; bottom: calc(var(--deck) + 8px); font-size: 24px; }
+#stage .dr-return-cue { top: auto; bottom: calc(var(--deck) + 8px); }
+/* スタートの合図・相手の名乗り */
+#stage .dr-start-pop { top: 21%; font-size: 150px; }
+#stage .dr-versus { top: 46%; padding: 12px 40px 14px; white-space: nowrap; }
+#stage .dr-versus b { font-size: 54px; }
+
+/* 操作の板の地: 革の色の面に、金の細い縁 */
+#stage .dr-controls::before { content: ""; position: absolute; inset: calc(var(--lap) - 6px) 0 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 210, 140, .16), rgba(255, 210, 140, 0) 10px), linear-gradient(180deg, #2c1a10, #170c06);
+  border-top: 2px solid rgba(233, 183, 106, .55); }
+
+/* ───────── 入口・練習のおわり: 上に題字、真ん中に滑る二人、下（親指の届く所）に板 ───────── */
+#stage .desert-ride:is([data-phase="menu"], [data-phase="practiced"]) .dr-panel {
+  background:
+    linear-gradient(180deg, rgba(20, 44, 96, .34) 0%, rgba(20, 44, 96, 0) 26%, rgba(120, 44, 10, 0) 52%, rgba(60, 20, 6, .72) 100%),
+    url("../../../img/ui/desert_ride/title_bg.webp") 38% center / cover no-repeat, #e8ab5a; }
+#stage .dr-card.dr-menu { display: flex; flex-direction: column; box-sizing: border-box; padding: 0 20px 30px; }
+#stage .dr-menu-head { position: static; order: 1; flex: none; width: auto; padding: 64px 0 0 16px; z-index: 2; }
+#stage .dr-menu .dr-title { max-width: none; font-size: 124px; }
+/* 題字のロゴ（DSR108）: 縦は幅いっぱい近くに大きく */
+#stage .desert-ride .dr-menu[data-kind="title"] .dr-title { width: 560px; font-size: 0; }
+#stage .desert-ride .dr-menu[data-kind="title"] .dr-menu-head { padding: 34px 0 0; display: grid; justify-items: center; }
+#stage .dr-menu[data-kind="practiced"] .dr-title { font-size: 88px; }
+#stage .dr-menu-hero { position: relative; order: 2; flex: 1 1 0; min-height: 0; left: auto; bottom: auto; width: auto; height: auto; }
+#stage .dr-menu-rival { left: 30px; bottom: 96px; width: 200px; }
+#stage .dr-menu-rider { left: 250px; bottom: 16px; width: 350px; }
+#stage .dr-menu-dust { left: 262px; bottom: -4px; width: 350px; }
+#stage .dr-menu-sun { left: -160px; top: auto; bottom: 200px; }
+#stage .dr-menu-board { position: relative; order: 3; flex: none; right: auto; top: auto; width: auto; transform: none; gap: 14px; padding: 12px 0 14px; border-width: 22px 34px; border-image-width: 22px 34px; z-index: 2; }
+#stage .dr-card.dr-menu .dr-tier.dr-tier { min-height: 104px; }
+#stage .dr-card.dr-menu .dr-tier.dr-tier b { font-size: 34px; }
+#stage .dr-card.dr-menu .dr-tier.dr-tier small { font-size: 20px; }
+#stage .dr-menu .dr-best { font-size: 26px; }
+#stage .dr-menu .dr-lead { font-size: 24px; }
+#stage .dr-card.dr-menu .dr-button.dr-button { min-height: 92px; font-size: 27px; letter-spacing: .02em; padding: 8px 10px; white-space: nowrap; }
+/* 「○級クリアで開く」・結果の段の札の注記は出さない（2026-11-27 オーナー「報酬対象外とかシステム的な説明は載せない」）。閉じた段は鍵の形で見せる。
+   入口の初級の「報酬対象外」は、本編（横）からも外した */
+#stage .dr-tier small[data-kind="locked"], #stage .dr-result-tags small { display: none; }
+/* 閉じた段の錠は、名前の下に1つだけ大きく（名前の左の小さな錠は出さない。前の形は錠の輪が名前に重なっていた） */
+#stage .dr-card.dr-menu .dr-tier.dr-tier:disabled b::before { display: none; }
+#stage .dr-tier:disabled::after { content: ""; width: 28px; height: 33px; margin-top: 6px; background: #8d7a66; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24'%3E%3Cpath d='M10 1a6 6 0 0 0-6 6v3H3a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V7a6 6 0 0 0-6-6zm-3 9V7a3 3 0 0 1 6 0v3H7z'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 24'%3E%3Cpath d='M10 1a6 6 0 0 0-6 6v3H3a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V7a6 6 0 0 0-6-6zm-3 9V7a3 3 0 0 1 6 0v3H7z'/%3E%3C/svg%3E") center / contain no-repeat; }
+#stage .dr-tier:disabled .dr-tier-stars { display: none; }
+#stage .dr-tier-stars { height: 26px; font-size: 24px; line-height: 26px; }
+/* なるの札（4枚目・DSR107）: 4枚が幅に収まるよう、名前は少し小さく。開いたら顔、閉じている間は「？？？」と錠 */
+#stage .dr-card.dr-menu .dr-tiers[data-slots="4"] { gap: 8px; }
+#stage .dr-card.dr-menu .dr-tiers[data-slots="4"] .dr-tier.dr-tier { padding: 8px 2px 9px; }
+#stage .dr-card.dr-menu .dr-tiers[data-slots="4"] .dr-tier.dr-tier b { font-size: 30px; letter-spacing: .02em; }
+#stage .dr-card.dr-menu .dr-tier.dr-tier-naru b { font-size: 28px; letter-spacing: 0; }
+#stage .dr-tier-face { width: 40px; height: 40px; }
+#stage .dr-card.dr-menu .dr-button.dr-button.primary { min-height: 116px; font-size: 42px; letter-spacing: .3em; }
+#stage .dr-menu .dr-help-btn.dr-help-btn { right: 12px; top: 14px; --q-hit: 88px; --q-font: 36px; }
+
+/* 遊び方: 絵札を2列×3段に。文章の説明（くわしく）は1列 */
+#stage .dr-menu .dr-help { inset: 18px 12px 22px; border-width: 22px 30px; border-image-width: 22px 30px; padding: 6px 0 8px; gap: 14px; }
+#stage .dr-menu .dr-help-title { font-size: 38px; }
+#stage .dr-menu .dr-how-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 14px 12px; }
+#stage .dr-how-caption { padding: 30px 12px 10px; }
+#stage .dr-how-title { font-size: 30px; }
+#stage .dr-how-note { font-size: 22px; white-space: normal; }
+#stage .dr-how-key { width: 50px; height: 50px; }
+#stage .dr-how-scene .how-tag { font-size: 22px; top: calc(10px + var(--i, 0) * 40px); }
+#stage .dr-menu .dr-howto { grid-template-columns: 1fr; gap: 8px; padding: 0 6px 0 0; font-size: 24px; line-height: 1.5; }
+#stage .dr-menu .dr-howto li { padding: 10px 10px 12px 118px; }
+#stage .dr-menu .dr-howto li::before { width: 100px; font-size: 20px; }
+#stage .dr-menu .dr-help-actions { gap: 12px; }
+#stage .dr-card.dr-menu .dr-help-actions .dr-button.dr-button { flex: 1 1 0; width: auto; min-height: 88px; }
+#stage .dr-card.dr-menu .dr-help-actions .dr-button.dr-button.dr-help-more { width: auto; font-size: 26px; }
+
+/* ───────── 結果: 上から、勝敗の帯・評価のメダル・合計・記録（6つに絞る）・ボタン ───────── */
+#stage .desert-ride[data-phase="result"] .dr-panel { display: block; background: radial-gradient(ellipse 110% 46% at 50% 26%, rgba(255, 196, 120, .2), rgba(30, 14, 16, .8) 76%), linear-gradient(180deg, rgba(40, 18, 20, .3), rgba(24, 10, 12, .7)); }
+#stage .dr-card.dr-result { width: 100%; max-width: none; height: 100%; max-height: none; box-sizing: border-box; padding: 34px 22px 28px; display: flex; flex-direction: column; gap: 12px; }
+#stage .dr-result-hero { flex: none; gap: 6px; }
+#stage .dr-result .dr-kicker { display: none; }
+#stage .dr-result .dr-race-result { min-height: 84px; padding: 16px 70px 20px; }
+#stage .dr-result .dr-race-result b { font-size: 32px; }
+#stage .dr-result .dr-race-result span { font-size: 22px; }
+#stage .dr-result .dr-race-result em { font-size: 24px; }
+#stage .dr-result .dr-rank { --medal-w: clamp(230px, 24cqh, 330px); --coin: calc(var(--medal-w) * .643); margin: 0 0 -14px; }
+#stage .dr-result .dr-rank b { font-size: calc(var(--medal-w) * .34); }
+#stage .dr-result .dr-rank span { font-size: 24px; }
+#stage .dr-result .dr-total { font-size: 24px; }
+#stage .dr-result .dr-total strong { font-size: 76px; }
+#stage .dr-result .dr-next-rank { font-size: 24px; }
+/* 伸ばし方の一言は出さない（読む量を減らす。次の評価までの点は残す） */
+#stage .dr-result .dr-next { display: none; }
+#stage .dr-result .dr-best { font-size: 22px; }
+#stage .dr-result .dr-best[data-new="true"] { font-size: 26px; }
+#stage .dr-result-side { flex: 1 1 0; min-height: 0; padding-top: 0; gap: 12px; }
+#stage .dr-result-tags { margin: 0; }
+#stage .dr-result .dr-rows { grid-template-columns: 1fr 1fr; gap: 0 14px; padding: 4px 0; border-width: 18px 26px; border-image-width: 18px 26px; }
+/* 記録の1ます: 左に印、右に短い名前と値。印は生成した絵（gpt-image-2.6-sunburst。asset_sources/ui/minigame-visuals-20261127/portrait/）。
+   はじめは名前の字を消して印だけにしていたが、オーナー「29になってる鎖付きのやつなんなのかよくわからない」（VPG16）で、印だけでは意味が通じないものがあると分かったので、短い名前を添える */
+#stage .dr-result .dr-row { display: grid; grid-template-columns: 76px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 10px; row-gap: 0; align-items: center; align-content: center; min-width: 0; padding: 6px 0; line-height: 1.2; }
+#stage .dr-result .dr-row::before { content: ""; grid-row: 1 / 3; width: 76px; height: 76px; background: var(--stat, none) center / contain no-repeat; filter: drop-shadow(0 3px 3px rgba(20, 8, 2, .5)); }
+#stage .dr-result .dr-row > span { grid-column: 2; align-self: end; justify-self: start; text-align: left; font-size: 22px; font-weight: 700; color: #e9caa0; white-space: nowrap; }
+#stage .dr-result .dr-row strong { grid-column: 2; align-self: start; justify-self: start; min-width: 0; font-size: 28px; white-space: normal; text-align: left; }
+#stage .dr-result .dr-row[data-test="desert-time"] { --stat: url("../../../img/ui/desert_ride_result/stat_time.webp"); }
+#stage .dr-result .dr-row[data-test="desert-combo"] { --stat: url("../../../img/ui/desert_ride_result/stat_combo.webp"); }
+#stage .dr-result .dr-row[data-test="desert-falls"] { --stat: url("../../../img/ui/desert_ride_result/stat_fall.webp"); }
+#stage .dr-result .dr-row[data-test="desert-landings"] { --stat: url("../../../img/ui/desert_ride_result/stat_land.webp"); }
+#stage .dr-result .dr-row[data-test="desert-tricks"] { --stat: url("../../../img/ui/desert_ride_result/stat_trick.webp"); }
+#stage .dr-result .dr-row[data-test="desert-boosts"] { --stat: url("../../../img/ui/desert_ride_result/stat_boost.webp"); }
+/* 並び: 時間・コンボ／転倒・ブースト（2列）、着地とトリックは値が長い（「完璧 8 ／ 良い 0」「8 回（最高 720°）」）ので幅いっぱいの行にする（折り返さない。オーナー「トリックの最高とか改行で見ずらい」） */
+#stage .dr-result .dr-row[data-test="desert-time"] { order: 1; } #stage .dr-result .dr-row[data-test="desert-combo"] { order: 2; }
+#stage .dr-result .dr-row[data-test="desert-falls"] { order: 3; } #stage .dr-result .dr-row[data-test="desert-boosts"] { order: 4; }
+#stage .dr-result .dr-row:is([data-test="desert-landings"], [data-test="desert-tricks"]) { order: 5; grid-column: 1 / -1; }
+#stage .dr-result .dr-row[data-test="desert-tricks"] { order: 6; }
+#stage .dr-result .dr-row strong { white-space: nowrap; }
+/* 記録は6つ（時間・コンボ・転倒・着地・トリック・ブースト）。大ジャンプ・かすめた・立て直し・カービング・コースは、縦では出さない */
+#stage .dr-result .dr-row:is([data-test="desert-jumps"], [data-test="desert-near"], [data-test="desert-recoveries"], [data-test="desert-carves"], [data-test="desert-result-course"]) { display: none; }
+#stage .dr-result .dr-tier-note { margin: 0; font-size: 24px; }
+#stage .dr-result .dr-actions { margin-top: auto; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+#stage .dr-card.dr-result .dr-button.dr-button { flex: 1 1 calc(50% - 6px); min-width: 0; min-height: 88px; font-size: 27px; padding: 8px 10px; }
+#stage .dr-card.dr-result .dr-button.dr-button.primary { flex: 1 1 100%; min-height: 110px; font-size: 38px; letter-spacing: .2em; }
+
+/* ───────── 縦が短い端末（16:9 など。ステージの高さ 1200 未満）: 題字・絵・メダルを小さくして収める ───────── */
+@container (max-height: 1200px) {
+  #stage .dr-menu-head { padding-top: 40px; }
+  #stage .dr-menu .dr-title { font-size: 100px; }
+  #stage .dr-menu-rival { left: 40px; bottom: 70px; width: 160px; }
+  #stage .dr-menu-rider { left: 290px; width: 280px; }
+  #stage .dr-menu-dust { left: 296px; width: 290px; height: 130px; }
+  #stage .dr-card.dr-result { padding: 22px 22px 20px; gap: 8px; }
+  #stage .dr-result .dr-rank { --medal-w: clamp(190px, 19cqh, 240px); }
+  #stage .dr-result .dr-total strong { font-size: 66px; }
+  #stage .dr-result-side { gap: 8px; }
+  #stage .dr-result .dr-row { padding: 3px 0; }
+  #stage .dr-result .dr-row { grid-template-columns: 58px minmax(0, 1fr); padding: 3px 0; }
+  #stage .dr-result .dr-row::before { width: 58px; height: 58px; }
+  #stage .dr-result .dr-row strong { font-size: 24px; }
+  /* ボタンは、主の下に残りを1段で */
+  #stage .dr-card.dr-result .dr-button.dr-button { flex: 1 1 0; min-height: 84px; font-size: 24px; letter-spacing: 0; padding: 8px 4px; }
+  #stage .dr-card.dr-result .dr-button.dr-button.primary { flex: 1 1 100%; min-height: 100px; font-size: 36px; letter-spacing: .2em; }
+}

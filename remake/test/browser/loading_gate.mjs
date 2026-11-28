@@ -32,7 +32,7 @@ await suite("loading-gate", async check => {
       await page.locator('.loading-gate.is-ready').waitFor();
       assert.equal(await page.locator('.loading-proceed').evaluate(node => getComputedStyle(node).opacity !== '0'), true, 'The reading prompt appears');
       assert.equal(await page.locator('.loading-status').innerText(), '準備完了', 'The status says loading has finished');
-      assert.equal(await page.locator('.loading-proceed').innerText(), 'クリック・Enter で進む', 'A mouse-and-keyboard screen is told to click or press Enter');
+      assert.equal(await page.locator('.loading-proceed').innerText(), 'タップで進む', 'The prompt names no keyboard key, on any screen');
       await page.locator('.loading-status').click();
       await page.locator('.loading-gate').waitFor({ state: 'detached' });
       assert.equal(await page.locator('#underlying').evaluate(node => node.closest('.demo-scene').inert), false);

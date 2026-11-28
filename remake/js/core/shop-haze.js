@@ -1,12 +1,12 @@
 // シーシャ屋にうっすら漂う煙（docs/owner_requests.md の KMR21）。
 // 見えている背景がシーシャ屋の店内のときだけ、背景のすぐ上（立ち絵・操作より下）に薄い煙を漂わせる。
 // 背景を白く覆わず、気づく程度にごく薄く。夜でも層は7%、昼はさらに控えめ。描き方は core/smoke.js（もこもこの房）。
-// 出さない: 端末の「動きを減らす」・自動操作・DS風の表示中・作業台や結果発表など背景が主役でない画面。
+// 出さない: 端末の「動きを減らす」・自動操作・新版の縦持ち外枠の表示中・作業台や結果発表など背景が主役でない画面。
 import { hazeLayer, smokeAllowed } from "./smoke.js";
 import { timeOfDay } from "./state.js";
 
 // シーシャ屋の店内の背景（時間帯・曇りの違いは同じ店として扱う）。
-// tonari／第1章の3店（KEMURIKUSA・EDEN・PEPPERMINT）／第2章（MELTY PUFF・神崎煙草店）／
+// tonari／第1章の3店（KEMURIYA・EDEN・PEPPERMINT）／第2章（MELTY PUFF・神崎煙草店）／
 // 第3章の東京（mukai・煙幕・Smoke & Glory・鉄の煙）／第4章のドバイ（龍龍水煙所・カフェ3つ）。
 // 葉や機材の店（Dr.fookah）・C.STATION・カフェ・ジム・クラブ・自宅・大会の舞台は入れない。
 const SHISHA_SHOPS = new Set([

@@ -409,7 +409,7 @@ export async function runSteamDodge(cs) {
       const start = el("button.btn.primary.craft-warmup-start", { text: "蒸らしを始める", dataset: { test: "steam-warmup-start" } });
       const practice = el("div.steam-warmup", [
         el("b", { text: "移動の練習・採点なし" }),
-        el("p", { text: "矢印キー、画面のドラッグ、スティックでハートを動かせます。" }),
+        el("p", { text: "画面のドラッグか、スティックでハートを動かせます。" }),
         start,
       ]);
       box.append(practice);

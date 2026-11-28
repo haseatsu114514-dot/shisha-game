@@ -17,7 +17,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "あげはにはグミベア、神崎にはドラゴンフルーツ、田中さんにはカシスのフレーバーだ"
+          "text": "あげはにはくまグミ、神崎にはドラゴンフルーツ、田中さんにはカシスのフレーバーだ"
         },
         {
           "speaker": "hajime",
@@ -77,7 +77,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "あ、待ってたやつ！ グミベアでしょ？ うちの店、ちょうど切らしてたんだよね"
+          "text": "あ、待ってたやつ！ くまグミでしょ？ うちの店、ちょうど切らしてたんだよね"
         },
         {
           "speaker": "",
@@ -1241,6 +1241,33 @@
       ]
     },
     {
+      "dialogue_id": "remake_ch2_purikura_match",
+      "comment": "撮ると決めた後、居合わせた知り合いがいる時の、あげはのおすすめ（PFC19）。相手は呼出元の選択肢で選ぶ（知り合い／あげは／一人）。ソロは、あげはから勧めず、はじめが言い出して驚かれる（PFC23）。",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "あ、ハジメっちの知り合い来てんじゃん！"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "せっかくだし、一緒に撮ってけばいいじゃん。もちろん、うちとでもいいよ♡"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_purikura_choose",
+      "comment": "撮ると決めた後、居合わせた知り合いがいない時（PFC19）。あげはは自分と撮るつもりで、ソロは勧めない（はじめが言い出す・PFC23）。相手は呼出元の選択肢で選ぶ（あげは／一人）。",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "おっけー！ じゃ、今日もうちと撮ろ♡"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_ch2_purikura_solo",
       "lines": [
         {
@@ -1261,7 +1288,38 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "プリクラの自主練って何！ じゃ、落書きはうちが盛っとくね"
+          "text": "プリクラの自主練って何！ いってら〜、盛れてきてね♡"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_purikura_solo_again",
+      "comment": "2回目からのソロ（PFC23 オーナー「2回目以降はソロプリハマっちゃったんだねって笑われる」）。初回は remake_ch2_purikura_solo（はじめが言い出して驚かれる）。",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……今日も、一人で撮ってきていいですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "またソロプリ！？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "あはは、ハジメっち、ソロプリハマっちゃったんだね！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "画面に追いつけるようになってきたら、つい……"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "いいじゃんいいじゃん。今日も盛れてきてね♡"
         }
       ]
     },
@@ -1347,6 +1405,47 @@
           "speaker": "ageha",
           "face": "normal",
           "text": "じゃ、ちょっと座ってって。ハジメっちの隣、空いてるから"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_purikura_trio",
+      "comment": "神崎と2回目以降に撮る時、あげはが入って3人で撮る一枚（PFC18・core/purikura-data.js の trio）。写真は呼出元が出す。",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "神崎さん、よかったら、また一緒に撮りませんか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "また写真かい。……あんちゃんの誘いなら、断るスジもねえ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "待って、今日はうちも入る！ 3人ぷり撮ろ！"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "surprise",
+          "text": "店主が入っちまって、店の方はいいんですかい"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "一回だけ！ お客さん、今みんな一服中だし"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "狭いブースに、三人でぎゅっと並んだ。神崎さんは、また背筋を伸ばしている。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "はい、さん、に、いち！ 3人ぷり、優勝〜！"
         }
       ]
     },

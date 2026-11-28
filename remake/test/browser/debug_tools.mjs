@@ -1,6 +1,7 @@
 // デバッグ用の道具（remake/js/dev/）: ?debug=1 で出る・?debug=0 で消える・タイトルの版の表示を5回押して出し入れ・何倍速・シーシャ作りの自動・便利ボタン。
 import assert from "node:assert/strict";
 import { suite, baseURL } from "./support.mjs";
+import { turnToTrpgBook } from "./trpg_start.mjs";
 
 const t = id => `[data-test="${id}"]`;
 const openPanel = async page => {
@@ -13,7 +14,7 @@ await suite("debug-tools", async check => {
     const games = [
       ["axe", "axe-game"], ["camel", "camel-game"], ["desert", "desert-ride"], ["desert-naru", "desert-ride"],
       ["dj-1", "dj-frame"], ["dj-2", "dj-frame"], ["dj-3", "dj-frame"],
-      ["tetsuko", "tetsuko-cat"], ["trpg", "trpg-play-ordinary-cup"], ["ichidai", "ichi-game"], ["floor", "tonari-floor-intro"],
+      ["tetsuko", "tetsuko-cat"], ["trpg", "trpg-book-spread"], ["ichidai", "ichi-game"], ["floor", "tonari-floor-intro"],
     ];
     await page.evaluate(() => localStorage.setItem("suien_remake_save", '{"debugSentinel":true}'));
     for (const [id, screen] of games) {
@@ -24,15 +25,18 @@ await suite("debug-tools", async check => {
       assert.equal(await close.isVisible(), false, `${id}: no return button is overlaid on the game`);
       assert.equal(await close.evaluate(node => node.parentElement.dataset.test), "debug-panel");
       assert.match(await page.locator(t("debug-toggle")).innerText(), /終了/, "the visible toggle tells how to exit");
-      // 砂丘: メニューからなるとも勝負できる。「なると勝負」はメニューを通さず、なるとの本番から始まる（2026-11-25）
-      if (id === "desert") await page.locator(t("desert-start-naru")).waitFor({ timeout: 30000 });
+      // 砂丘: メニューからなるとも勝負できる（なるは段の札の4枚目・DSR107）。「なると勝負」はメニューを通さず、なるとの本番から始まる（2026-11-25）
+      if (id === "desert") await page.locator(`${t("desert-tier-naru")}:not([disabled])`).waitFor({ timeout: 30000 });
       if (id === "desert-naru") {
         await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === "run" && window.__desertRide?.raceWith === "naru", null, { timeout: 60000 });
         assert.equal(await page.locator(t("desert-ride")).getAttribute("data-rival"), "naru");
       }
       if (id === "trpg") {
-        assert.ok(await page.locator(t(screen)).isEnabled(), "night debug has an actual playable story");
-        await page.locator(t(screen)).click();
+        // 物語は、開いた本をめくって選ぶ（TRP11）。「世界一普通の一台」の頁を開いてから遊ぶ
+        await turnToTrpgBook(page, "trpg-play-ordinary-cup");
+        const play = page.locator(t("trpg-play-ordinary-cup"));
+        assert.ok(await play.isEnabled(), "night debug has an actual playable story");
+        await play.click();
         await page.locator(t("trpg-skip")).click(); // 初回の店長の説明は残し、ここでは表紙へ進める
         await page.locator(t("trpg-start")).waitFor({ timeout: 30000 });
       }
@@ -521,7 +525,7 @@ await suite("debug-tools", async check => {
 
   await check("minigames-stop-title-bgm-and-restore-on-close-part2", page => verifyTitleBgmLifecycle(page, [
     ["ichidai", "ichi-game", null],
-    ["trpg", "trpg-play-ordinary-cup", "bgm_trpg"],
+    ["trpg", "trpg-book-spread", "bgm_trpg"],
     ["tetsuko", "tetsuko-cat", "bgm_tetsuko_time"],
   ]));
 

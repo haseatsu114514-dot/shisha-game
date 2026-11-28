@@ -19,7 +19,8 @@ async function setup(page, { day = 4, slot = 1, manual = true } = {}) {
       data: await import("./js/core/data.js"), vn: await import("./js/vn/engine.js"),
       ch1: await import("./js/chapters/ch1.js"), tonari: await import("./js/daily/tonari.js"),
       view: await import("./js/daily/tonari-floor-view.js"), model: await import("./js/daily/tonari-floor-model.js"),
-      floorData: await import("./js/daily/tonari-floor-data.js"), bot: await import("./test/tonari_floor_bot.mjs"), audio: await import("./js/core/audio.js") };
+      floorData: await import("./js/daily/tonari-floor-data.js"), floorChats: await import("./js/daily/floor-chats.js"),
+      bot: await import("./test/tonari_floor_bot.mjs"), audio: await import("./js/core/audio.js") };
     C.ch1.setupHooks(); C.vn.vnTest.turbo = true;
     C.view.floorTest.manual = manual;
     C.fresh = (d = day, sl = slot) => {
@@ -903,7 +904,13 @@ await suite("tonari-floor", async (check) => {
       });
       await page.locator(t("option-start")).click();
       await afterBand(page);
-      for (const hand of [["apple", "cappuccino", "cottoncandy", "mintshake", "berrymint"], ["berries", "flowergarden", "caramelmacchiato", "grapesoda", "nutslatte"], ["chai", "tropical", "pinepassion", "earlgrey", "sakuralatte"]]) {
+      const hands = [
+        ["apple", "cappuccino", "cottoncandy", "mintshake", "berrymint"],
+        ["berries", "flowergarden", "caramelmacchiato", "grapesoda", "nutslatte"],
+        ["chai", "tropical", "pinepassion", "earlgrey", "sakuralatte"],
+        ["applemint", "caramelapple", "cinnamonapple", "applepie", "apple"],
+      ];
+      for (const hand of hands) {
         await page.evaluate((hand) => { const a = C.view.floorTest.api, s = a.state(); s.hand = hand; if (s.tables[0].phase === "empty") a.tick(4); else a.tick(1); }, hand);
         const expected = await page.evaluate((hand) => hand.map((id) => ({ name: C.model.mixName(id), full: C.model.mixFullName(id), single: C.model.mixIsSingle(id), flavors: C.model.mixFlavorNames(id) })), hand);
         const rows = await page.locator(".tf-preset").evaluateAll((list) => list.map((n) => { const row = n.getBoundingClientRect(), name = n.querySelector(".tf-preset-name"), nr = name.getBoundingClientRect(), node = n.querySelector(".tf-recipe"), rr = node?.getBoundingClientRect();
@@ -1222,7 +1229,7 @@ await suite("tonari-floor", async (check) => {
     await page.locator(t("sheet")).waitFor();
     assert.equal(await page.locator(".tf-visit-info > b").innerText(), "アダム");
     assert.equal(await page.locator(".tf-sheet-quote").innerText(), "「……はじめよ。ダブルアップルを。宇宙の原点を、一台」");
-    // ◎はダブルアップルの入った一台だけ。刺激系のメインでも、林檎が無ければ○
+    // ◎はダブルアップルの入った一台だけ。刺激系のメインでも、ダブルアップルが無ければ○
     const marks = await page.locator(".tf-mix-option").evaluateAll((list) => list.map((n) => [n.dataset.mix, n.dataset.rating]));
     const flavorsOf = await page.evaluate((ids) => Object.fromEntries(ids.map((id) => [id, C.floorData.MIXES[id].flavors])), marks.map(([id]) => id));
     for (const [id, rating] of marks) assert.equal(rating === "best", flavorsOf[id].includes("double_apple"), id);
@@ -1240,6 +1247,28 @@ await suite("tonari-floor", async (check) => {
     });
     assert.equal(await api((a) => a.state().tables[2].call), null);
     assert.equal(await spot.getAttribute("data-tap"), "tend");
+    // 先に、その人だけの雑談で話しかけてくる（TFL70）。応えると、話しかけとはじめの返しの会話が出る（二回のキャッチボール・TFL72）
+    assert(await page.evaluate(() => C.until("s.tables[2].call?.type === 'chatty'", [3])));
+    await page.locator(t("table-3")).click();
+    const chat = await page.evaluate(() => { const s = C.view.floorTest.api.state(); return C.floorChats.VISITOR_CHATS.tonari.adam.find((c) => c.said === C.model.floorCallLine(s, 3).said); });
+    assert(chat, "アダムだけの雑談");
+    assert.equal(await page.locator(".tf-sheet-quote").innerText(), `「${chat.said}」`);
+    await page.evaluate(() => { C.view.floorTest.verdictMs = 5000; });
+    await page.locator(t("option-chat")).click();
+    await page.locator(t("talk")).waitFor();
+    assert.deepEqual(await page.locator(".tf-talk-line").evaluateAll((list) => list.map((n) => [n.dataset.who, n.querySelector(".tf-talk-name")?.textContent || "", n.querySelector("span").textContent])),
+      [["guest", "", `「${chat.said}」`], ["hajime", "はじめ", `「${chat.reply}」`]]);
+    assert.equal(await page.locator(".tf-visit .tf-sheet-quote").isVisible(), false, "会話の間は、ひとつの吹き出しを出さない");
+    const talkBox = await page.locator(t("talk")).boundingBox(), viewBox = await page.locator(".tf-visit-view").boundingBox();
+    assert(talkBox.y >= viewBox.y && talkBox.y + talkBox.height <= viewBox.y + viewBox.height, "会話は卓の様子の中に収まる");
+    for (const line of await page.locator(".tf-talk-line span").all()) {
+      const { lines } = await line.evaluate((n) => ({ lines: Math.round(n.getBoundingClientRect().height / parseFloat(getComputedStyle(n).lineHeight)) }));
+      assert(lines <= 2, "吹き出しは2行まで");
+    }
+    await page.screenshot({ path: `${shots}/tonari-floor-pc-visitor-talk.png`, animations: "disabled" }).catch(() => {});
+    await page.locator(t("option-chat")).click();
+    await page.waitForFunction(() => C.view.floorTest.api.mode() === "live");
+    await api((a) => { a.state().tables[2].nextCall = a.state().t; });
     assert(await page.evaluate(() => C.until("s.tables[2].call?.type === 'thirsty'", [3])));
     await page.locator(t("table-3")).click();
     assert.equal(await page.locator(".tf-sheet-quote").innerText(), "「……水を。舌を、まっさらにしたい」");

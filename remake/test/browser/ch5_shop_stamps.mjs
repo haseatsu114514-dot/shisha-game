@@ -1,5 +1,5 @@
 // 第5章の各地の店めぐり帳（MGR・chapters/ch5-shop-stamps.js）を、実際の地図の来店と LIME の帳面で確かめる。
-// 1. 第5章の地元の店（KEMURIKUSA）へ行く → 来店の会話を読み終えると判子が一つ（一言の案内）→ もう一度行っても増えない。
+// 1. 第5章の地元の店（KEMURIYA）へ行く → 来店の会話を読み終えると判子が一つ（一言の案内）→ もう一度行っても増えない。
 //    くじ券は増えず、代金はいつもの来店のまま。
 // 2. 帳面の最後の一店（C.STATION）で判子 → 地元がそろった1枚＋全部そろった1枚＝くじ券2枚。
 // 3. LIME の一番上の「店めぐり帳」の行 → 帳面が開き、地域ごとの判子と「判子 10/10」が見える（時間は使わない）。
@@ -89,14 +89,14 @@ await suite("ch5-shop-stamps", async check => {
     await visit(page, "naru");
     await mapReady(page, { day: 51, slot: 1 });
     let state = await get(page);
-    assert.deepEqual(book(state).shops, { naru: 51 }, "KEMURIKUSA is stamped after the visit");
+    assert.deepEqual(book(state).shops, { naru: 51 }, "KEMURIYA is stamped after the visit");
     assert.equal(state.kujiTickets, 0, "no tickets for a single stamp");
     assert.equal(state.money, before.money - 3000, "the usual shop price, nothing more");
     assert(state.visitedDay.naru === 51, "one action on the map");
-    assert((await toasts(page)).some(text => /店めぐり帳に判子をもらった：KEMURIKUSA（1\/10）/.test(text) && /LIMEの「店めぐり帳」/.test(text)),
+    assert((await toasts(page)).some(text => /店めぐり帳に判子をもらった：KEMURIYA（1\/10）/.test(text) && /LIMEの「店めぐり帳」/.test(text)),
       "a short note tells where to see the book");
 
-    // 同じ店は一日一回なので、別の日にもう一度行く（52日目は KEMURIKUSA の定休日なので53日目）
+    // 同じ店は一日一回なので、別の日にもう一度行く（52日目は KEMURIYA の定休日なので53日目）
     await rewrite(page, "s.day = 53; s.slot = 0; s.flags._morning_53 = true;");
     await mapReady(page, { day: 53, slot: 0 });
     await recordToasts(page);
@@ -141,7 +141,7 @@ await suite("ch5-shop-stamps", async check => {
     }
     assert.equal(await panel.locator('li[data-stamped="1"]').count(), 10);
     assert.match(await panel.textContent(), /SHISHARK（任意）.*カフェ・オアシス（任意）/);
-    assert.match(await panel.textContent(), /地元・橙須.*KEMURIKUSA.*EDEN.*PEPPERMINT.*C\.STATION.*隣町・柚ヶ谷.*MELTY PUFF.*神崎煙草店.*貴方ノ為ノ此ノ煙。.*東京.*Smoke & Glory.*鉄の煙.*ドバイ.*路地裏のカフェ/);
+    assert.match(await panel.textContent(), /地元・橙須.*KEMURIYA.*EDEN.*PEPPERMINT.*C\.STATION.*隣町・柚ヶ谷.*MELTY PUFF.*神崎煙草店.*貴方ノ為ノ此ノ煙。.*東京.*Smoke & Glory.*鉄の煙.*ドバイ.*路地裏のカフェ/);
     await page.locator(dt("shop-stamps-close")).click();
     await mapReady(page, { day: 51, slot: 1 });
     const after = await get(page);

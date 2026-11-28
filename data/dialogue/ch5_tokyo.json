@@ -156,8 +156,17 @@
         { "speaker": "steve", "face": "serious", "text": "ノー、ノー。葉はつけない。あれは、俺の看板だ" },
         { "speaker": "steve", "face": "smile", "text": "吸いたくなったら、店に来い。こいつに何を詰めるかは、ハジメが決めろ" },
         { "speaker": "", "face": "", "text": "紙袋は、ハガル一つぶんの重さだった。" },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_bond_steve",
+          "portrait_only": true
+        },
         { "speaker": "", "face": "", "text": "空いた棚に、スティーブはレシピカードを一枚立てた。余白まで、客の言葉で埋まっている。" },
         { "speaker": "steve", "face": "smile", "text": "新しいのが焼けるまで、こいつが見張り役だ" },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
+        },
         { "type": "apply", "stats": { "technique": 2 } }
       ],
       "branches": {
@@ -281,10 +290,19 @@
         { "speaker": "hajime", "face": "smile", "text": "はい。俺は先にお客さんにうなずいて、それから書きます" },
         { "speaker": "volk", "face": "normal", "text": "……順番は違っても、両方を書くなら構わない" },
         { "type": "condition", "condition_type": "contact", "char_id": "volk", "next_false": "lime_exchange" },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ch3_volk_jam",
+          "portrait_only": true
+        },
         { "speaker": "", "text": "紅茶のカップが二つ、カウンターに並んだ。小皿のジャムは、測らずにすくってある。" },
         { "speaker": "hajime", "face": "normal", "text": "これも、測らないんですよね" },
         { "speaker": "volk", "face": "normal", "text": "祖母に言われたことは、国を出ても、店を開いても変えていない" },
         { "speaker": "volk", "face": "smile", "text": "……お前の一行の隣は、まだ空いている。また来い" },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
+        },
         { "speaker": "hajime", "face": "smile", "text": "来ます。次は、俺のお客さんの話も持ってきます" },
         { "speaker": "", "face": "", "text": "木箱の素焼きは、最後の刻みの隣だけ、土がまだ滑らかだった。" },
         { "type": "apply", "stats": { "technique": 2 } }
@@ -336,9 +354,9 @@
     },
     {
       "dialogue_id": "ch5_tokyo_gym_day",
-      "comment": "東京に泊まっている昼の CHOI-ZAP（会員の時だけ・#2033）。無人のジムなので話す相手はいない。第3章の ch3_choizap_* とは別の、第5章の言葉にする。ましろ・綾取は出さない。",
+      "comment": "東京に泊まっている昼の サクッとジム（会員の時だけ・#2033）。無人のジムなので話す相手はいない。第3章の ch3_choizap_* とは別の、第5章の言葉にする。ましろ・綾取は出さない。",
       "lines": [
-        { "speaker": "", "face": "", "text": "高架下のCHOI-ZAP。昼の店内に、マシンの低い音だけが続いている。" },
+        { "speaker": "", "face": "", "text": "高架下のサクッとジム。昼の店内に、マシンの低い音だけが続いている。" },
         { "speaker": "hajime", "face": "normal", "text": "（屋根裏とmukaiの往復だけだと、体がなまりそうだ）" },
         { "speaker": "", "face": "", "text": "アプリのフォーム動画を見ながら、マシンで肩と背中を動かした。" },
         { "speaker": "hajime", "face": "normal", "text": "（前に東京にいた頃は、毎日が本番の前の日みたいだったな）" },
@@ -349,9 +367,9 @@
     },
     {
       "dialogue_id": "ch5_tokyo_gym_night",
-      "comment": "東京に泊まっている夜の CHOI-ZAP。勝負の日は自由行動の間はまだ決まっていない（決めるのは地元の家の電話から）。",
+      "comment": "東京に泊まっている夜の サクッとジム。勝負の日は自由行動の間はまだ決まっていない（決めるのは地元の家の電話から）。",
       "lines": [
-        { "speaker": "", "face": "", "text": "夜のCHOI-ZAP。誰もいない店内で、マシンの画面だけが光っている。" },
+        { "speaker": "", "face": "", "text": "夜のサクッとジム。誰もいない店内で、マシンの画面だけが光っている。" },
         { "speaker": "hajime", "face": "normal", "text": "（勝負の日は、まだ決めていない。体だけは整えておこう）" },
         { "speaker": "", "face": "", "text": "動画のカウントに合わせて、スクワットを十回ずつ三組。" },
         { "speaker": "hajime", "face": "normal", "text": "（数えている間は、頭の中が静かになる）" },

@@ -2,7 +2,7 @@ import { spendableMoney, returnFareReserve } from "../core/travel-budget.js";
 // ピンと街の入口は同じ訪問条件を使う。ここでは進行・支払い・訪問記録を変更しない。
 import { state } from "../core/state.js";
 import { yen } from "../core/util.js";
-import { isUnlocked, isClosed, isTemporaryClosed, visitedToday } from "./spots.js";
+import { isUnlocked, isClosed, isTemporaryClosed, isEarlyClosed, visitedToday } from "./spots.js";
 import { openingStatus } from "./spot-hours.js";
 
 const deliveryPendingSpot = (s, save = state) => {
@@ -28,7 +28,7 @@ export function spotAvailability(s, { guide = null, visitBlock = null } = {}) {
   if (!hours.ok) return hours;
   // 占い師は現れた1回につき1度（占ってもらうと、その出現は終わって地図から消える。daily/fortune-schedule.js）。
   if (isClosed(s)) {
-    const tag = isTemporaryClosed(s) ? "本日臨時休業" : "本日定休日";
+    const tag = isTemporaryClosed(s) ? "本日臨時休業" : isEarlyClosed(s) ? "今夜は早じまい" : "本日定休日";
     return { ok: false, why: tag, tag };
   }
   if (s.boardOnly) return { ok: true }; // 旧セーブの通常訪問済みにかかわらず、盤は何度でも開ける

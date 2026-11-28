@@ -231,7 +231,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "CHOI-ZAPのランニングマシン。画面の距離の数字が、少しずつ増えていく。"
+          "text": "サクッとジムのランニングマシン。画面の距離の数字が、少しずつ増えていく。"
         },
         {
           "speaker": "hajime",
@@ -1557,7 +1557,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "CHOI-ZAPのステップマシン。画面の段数が、前よりずっと伸びていた。"
+          "text": "サクッとジムのステップマシン。画面の段数が、前よりずっと伸びていた。"
         },
         {
           "speaker": "staff_choizap",
@@ -1689,7 +1689,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "CHOI-ZAPのストレッチ台で首を回すと、ごきっと鳴った。"
+          "text": "サクッとジムのストレッチ台で首を回すと、ごきっと鳴った。"
         },
         {
           "speaker": "staff_choizap",
@@ -1887,7 +1887,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "雨の日のCHOI-ZAP。入口の傘立てに、濡れた傘が三本差してあった。"
+          "text": "雨の日のサクッとジム。入口の傘立てに、濡れた傘が三本差してあった。"
         },
         {
           "speaker": "",
@@ -2145,7 +2145,7 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "入荷の数なら、私のほうが知ってる。柚ヶ谷でグミベアがよく出てることも"
+          "text": "入荷の数なら、私のほうが知ってる。柚ヶ谷でくまグミがよく出てることも"
         },
         {
           "speaker": "rio",
@@ -4204,13 +4204,13 @@
     {
       "dialogue_id": "ch2_naru_sign_light",
       "metadata": {
-        "setting": "#3097（計画 PR-C）第2章の普段の会話。KEMURIKUSAの来店で一度だけ（daily/spots.js の CHAPTER_TALKS）。DAY3の祝い（_ch2_naru_warm_done）の後、DAY11の対峙（naruRiftActive）より前だけ。対峙の後、なるは店を長く休む。はじめは味の感想を言わない（味の不調の前後どちらでも読む）。"
+        "setting": "#3097（計画 PR-C）第2章の普段の会話。KEMURIYAの来店で一度だけ（daily/spots.js の CHAPTER_TALKS）。DAY3の祝い（_ch2_naru_warm_done）の後、DAY11の対峙（naruRiftActive）より前だけ。対峙の後、なるは店を長く休む。はじめは味の感想を言わない（味の不調の前後どちらでも読む）。"
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "KEMURIKUSAの前で、なるが脚立に乗っていた。看板の電球を、一つ外している。"
+          "text": "KEMURIYAの前で、なるが脚立に乗っていた。看板の電球を、一つ外している。"
         },
         {
           "speaker": "naru",
@@ -4315,7 +4315,7 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "よし。今日も「KEMURIKUSA」だ"
+          "text": "よし。今日も「KEMURIYA」だ"
         },
         {
           "speaker": "hajime",
@@ -5400,7 +5400,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "KEMURIKUSAのカウンターで、なるが小皿に栗の甘露煮を一粒のせていた。"
+          "text": "KEMURIYAのカウンターで、なるが小皿に栗の甘露煮を一粒のせていた。"
         },
         {
           "speaker": "naru",
@@ -5722,7 +5722,7 @@
     },
     {
       "dialogue_id": "choizap_ch2_aircon",
-      "comment": "VOL16（#3097 計画 2-9）: CHOI-ZAPのスタッフ。エアコンの温度の頼みが割れる日。昼夜どちらでも読むので時間帯を書かない。大会・味に触れない",
+      "comment": "VOL16（#3097 計画 2-9）: サクッとジムのスタッフ。エアコンの温度の頼みが割れる日。昼夜どちらでも読むので時間帯を書かない。大会・味に触れない",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_choizap.png"
       },
@@ -5730,7 +5730,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "CHOI-ZAPのスタッフが、エアコンのリモコンを手に、天井をにらんでいた。"
+          "text": "サクッとジムのスタッフが、エアコンのリモコンを手に、天井をにらんでいた。"
         },
         {
           "speaker": "staff_choizap",
@@ -5835,7 +5835,7 @@
     },
     {
       "dialogue_id": "choizap_ch2_balance",
-      "comment": "VOL16（#3097 計画 2-9）: CHOI-ZAPのスタッフと老人。目を閉じた片足立ち。老人が記録を見ないのは choizap_ch2_stairs（画面にタオル）の続きなので、その後ろに並べる。昼夜どちらでも読む。大会・味に触れない",
+      "comment": "VOL16（#3097 計画 2-9）: サクッとジムのスタッフと老人。目を閉じた片足立ち。老人が記録を見ないのは choizap_ch2_stairs（画面にタオル）の続きなので、その後ろに並べる。昼夜どちらでも読む。大会・味に触れない",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_choizap.png"
       },
@@ -5963,7 +5963,7 @@
     },
     {
       "dialogue_id": "choizap_ch2_shoelace",
-      "comment": "VOL16（#3097 計画 2-9）: CHOI-ZAPのスタッフ。ほどけにくい靴ひもの結び方。昼夜どちらでも読む。大会・味に触れない",
+      "comment": "VOL16（#3097 計画 2-9）: サクッとジムのスタッフ。ほどけにくい靴ひもの結び方。昼夜どちらでも読む。大会・味に触れない",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_choizap.png"
       },

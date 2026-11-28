@@ -102,7 +102,7 @@ const ZOOM = .2;
 const SERIES = [1, 3];
 // 弾き損ねの理由の札の言葉（2026-11-13 手応えレビュー指摘3）
 const FLICK_MISS = { shallow: ["弾きが浅い", "↑ もう少し上まで弾く"], lean: ["斜めすぎ", "↑ まっすぐ上へ弾く"],
-  down: ["上へ弾いて投げる", "↑ 下ではなく上へ"], hold: ["Space を長めに", "押している長さが回転"] };
+  down: ["上へ弾いて投げる", "↑ 下ではなく上へ"], hold: ["長めに押す", "押している長さが回転"] };
 // Where the owner's lesson happens: the first paid throw at the bar, or before hiyori's three throws.
 // Each context swaps only the greeting and the send-off.
 export const LESSON_CONTEXTS = ["first", "event"];
@@ -623,7 +623,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     }
   } });
   const controls = el("div.axe-controls", [focusButton, reaim]);
-  const keyhint = el("p.axe-keyhint", { text: "ボタン / 的をタップ / Space・Enter" });
+  const keyhint = el("p.axe-keyhint", { text: "ボタン / 的をタップ" }); // キーの名前は出さない（2026-11-27 オーナー「PC版のスペースとかの表示を全てのゲームから無くす」）
   // The judge's close-up: the same painted board through <use>, the 4in blade and the zone it touched.
   const zoomBlade = svg("g", {}, [svg("path", { stroke: "#160f0a", "stroke-width": 2.6, "stroke-linecap": "round", fill: "none" }),
     svg("path", { stroke: "#fff7e0", "stroke-width": 1.2, "stroke-linecap": "round", fill: "none" })]);
@@ -1087,7 +1087,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (!hud) return strength;
     const label = powerActive ? "③ 回転 " + Math.round(power * 100) + "% · " + strength : "③ 回転";
     if (powerLabel.textContent !== label) powerLabel.textContent = label;
-    const readout = phase !== "power" ? strength : tapPull ? "上へ弾く／Spaceは緑の帯で離す"
+    const readout = phase !== "power" ? strength : tapPull ? "上へ弾く"
       : strength === "適正" ? "いま放す！" : power < POWER.sweetMin ? "緑の帯まで待つ" : power <= POWER.stickMax ? "回り気味 · 次の緑で放す" : "回りすぎ · 次の緑で放す";
     if (powerReadout.textContent !== readout) powerReadout.textContent = readout;
     const gaugeLabel = label + "。緑は適正、茶色は刺さる範囲";
@@ -1409,8 +1409,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       : "腕の疲れ " + (fatigue < .3 ? "小" : fatigue < .7 ? "中" : "大") + (steady < 1 ? " · マイ斧で揺れ−" + Math.round((1 - steady) * 100) + "%" : " · 白い刃先を見よう");
     if (steadiness.textContent !== steadyText) steadiness.textContent = steadyText;
     keyhint.hidden = !moving;
-    keyhint.textContent = phase === "power" ? "緑の帯でタップ / Space・Enter · Fで集中" : "的をタップ / Space・Enterで止める · Fで集中";
-    if (tapPull) keyhint.textContent = phase === "power" ? "的に触れて上へ弾く / Space長押し / Fで集中" : "的をタップ / Space・Enterで針を止める · Fで集中";
+    keyhint.textContent = phase === "power" ? "緑の帯でタップ" : "的をタップで止める";
+    if (tapPull) keyhint.textContent = phase === "power" ? "的に触れて上へ弾く" : "的をタップで針を止める";
     board.setAttribute("aria-disabled", String(!moving && !(phase === "choice" && actor === "player" && !sd) || actor !== "player" || isPaused()));
     board.setAttribute("aria-label", moving ? ({ horizontal: "横", vertical: "縦", power: "回転" })[phase] + "ゲージ。タップまたはSpaceで止める" : "斧投げの的。赤6点・5の円・リング4〜1点・宣言した青7／8点。青をタップで宣言");
     if (tapPull) board.setAttribute("aria-label", phase === "power" ? "上へ弾いて投げる" : moving ? ({ horizontal: "横", vertical: "縦" })[phase] + "の針。金の印に重なったらタップで止める" : "的をタップで構える");

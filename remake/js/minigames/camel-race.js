@@ -7,7 +7,7 @@
 // ラクダ・ロボット騎手・SUV・車輪は Codex の絵（assets/ui/camel_race・2026-11-02 採用。原画は asset_sources/ch4-camel-race）。
 // 絵が読めない環境では Canvas の描画に戻す。砂漠・柵・砂煙・合図の輪・HUD は Canvas で描く。
 import { withMinigameStyles } from "./minigame-styles.js";
-import { installRotateGuard, rotateGuarded } from "../core/rotate-guard.js";
+import { installRotateGuard, rotateGuarded as rotateGuardedNow } from "../core/rotate-guard.js";
 import { el } from "../core/util.js";
 import { TIER_LABEL, TIER_RULE_LINE, PLAY_RULES } from "../core/play-tiers.js";
 import { SE, currentBgm, playBgm, preloadBgm, unlockAudio, playCamelRaceSe, preloadCamelRaceSe, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
@@ -89,12 +89,12 @@ const ICONS = Object.freeze({
 });
 const TUTORIAL = [
   // どのページも絵と一言（2026-11-27 オーナー「文字で説明しすぎず、UIやボタンで視覚的に」「まだ文字が多い」）。細かい決まり（more）は「くわしく」を押した時だけ出す。
-  // 4ページ目は駆け引き（風よけと競り合い・2026-11-11）。キーは kbd で添え、タッチ端末では CSS で隠す。結果・大会選びの「？」から読み直せる。
+  // 4ページ目は駆け引き（風よけと競り合い・2026-11-11）。キーの名前（Space・X）は出さない（2026-11-27 オーナー「PC版のスペースとかの表示を全てのゲームから無くす」）。結果・大会選びの「？」から読み直せる。
   { icon: "camel", art: "howto-camel", title: "ラクダは、自分で走る", body: "★がハビーバ。声とムチを送るだけ。",
     more: "手前を走る金のゼッケン（★）がハビーバ。操縦はしない。背中のロボット騎手へ「声」と「ムチ」を送るだけ。" },
-  { icon: "voice", art: "howto-voice", title: "声 ── 左のボタン", key: "Space", body: "輪が重なった瞬間に押す。",
+  { icon: "voice", art: "howto-voice", title: "声 ── 左のボタン", body: "輪が重なった瞬間に押す。",
     more: "騎手のまわりの金の輪が縮む。内側の輪と重なった瞬間に押すと PERFECT で、ぐっと伸びる。輪の縮む速さは毎回ちがうので、よく見て押す。外したり連打したりすると、スタミナ（息）が減る。" },
-  { icon: "signal", art: "howto-whip", title: "ムチ ── 右を長押し", key: "X", body: "押すと加速、息が減る。空になる前に離す。",
+  { icon: "signal", art: "howto-whip", title: "ムチ ── 右を長押し", body: "押すと加速、息が減る。空になる前に離す。",
     more: "押している間は加速して息が減り、離すと調子に応じて回復。40以下で注意、30未満は減速。空になる前に離し、輪に合わせた声で整える。ゲージの白い印は終盤3秒ぶんの目安。最後の4分の1の LAST SPURT はムチがよく効く。" },
   // 駆け引き（2026-11-11）。絵は CR-WD07（#3217）。
   { icon: "camel", art: "howto-tactics", title: "前のラクダを使う", body: "真後ろは風よけ。並んだら声かムチで抜く。",
@@ -542,7 +542,12 @@ export function runCamelRace(options = {}) {
 }
 
 function startCamelRace({ host = document.getElementById("stage"), signal = null, seed = null, tutorial = true, allowRetry = true,
-  pilot = null, timeScale = 1, best = null, cups = null, cupRecords = {}, debugTools = false, reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches } = {}) {
+  pilot = null, timeScale = 1, best = null, cups = null, cupRecords = {}, debugTools = false, reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches,
+  layout = "landscape" } = {}) {
+  // layout: "portrait" は縦画面の試作（remake/previews/portrait-stage/frame/camel.html）だけが渡す。並べ方は data-layout を見るCSSが決め、
+  // 規則・採点・描く中身は横と同じ。縦では横向きの案内（回転ガード）を見張らない。既定（横）の動きは変えない。
+  const portrait = layout === "portrait";
+  const rotateGuarded = () => !portrait && rotateGuardedNow();
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   const pilotPolicy = typeof pilot === "function" ? pilot : pilot ? POLICIES[pilot] : null;
@@ -557,7 +562,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     return { completed, cancelled: !completed, runs: runs.map(run => ({ ...run })), best: bestRun ? { ...bestRun } : null, last: runs.length ? { ...runs.at(-1) } : null };
   };
   if (signal?.aborted) return Promise.resolve(summary(false));
-  installRotateGuard();
+  if (!portrait) installRotateGuard();
   let finish;
   const promise = new Promise(resolve => { finish = resolve; });
   active.set(host, promise);
@@ -604,13 +609,11 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   const voiceButton = el("button.camel-control.camel-voice", { type: "button", "aria-label": "声をかける", dataset: { test: "camel-voice", cue: "off" } }, [
     el("span.camel-control-icon", { html: ICONS.voice }),
     el("span.camel-control-text", [el("strong", { text: "声をかける" }),
-      el("span.camel-rhythm", { "aria-hidden": "true" }, [el("small", { text: "調子" }), el("span.camel-rhythm-bars", rhythmBars)])]),
-    el("kbd", { text: "Space" })]);
+      el("span.camel-rhythm", { "aria-hidden": "true" }, [el("small", { text: "調子" }), el("span.camel-rhythm-bars", rhythmBars)])])]);
   const signalButton = el("button.camel-control.camel-signal", { type: "button", "aria-label": "ムチ（押している間）", dataset: { test: "camel-signal", state: "ready" } }, [
     el("i.camel-control-cool", { "aria-hidden": "true" }),
     el("span.camel-control-icon", { html: ICONS.signal }),
-    el("span.camel-control-text", [el("span.camel-signal-head", [el("strong", { text: "ムチ" }), signalCost]), staminaNode]),
-    el("kbd", { text: "X" })]);
+    el("span.camel-control-text", [el("span.camel-signal-head", [el("strong", { text: "ムチ" }), signalCost]), staminaNode])]);
   const pacingText = el("span"), reserveText = el("small");
   const pacingNode = el("div.camel-pacing", { hidden: true, dataset: { test: "camel-pacing" } }, [pacingText, reserveText]);
   // 息の予告はムチのボタンのすぐ上に積む（2026-11-11。画面の中央下は SUV とはじめを見せる）。読み込み中は隠す。
@@ -627,7 +630,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   const stageNode = el("div.camel-stage", [canvas, flashNode, hudNode, callNode, feedback, banner, countdownNode, boostLabel, controls, closeButton, pauseButton]);
   const sheet = el("div.camel-sheet", { hidden: true });
   const root = el("section.camel-game", { role: "dialog", "aria-modal": "true", "aria-label": CAMEL_RACE_TITLE, tabindex: "-1",
-    dataset: { test: "camel-game", phase: "loading", reducedMotion: String(reducedMotion) } }, [stageNode, live, sheet]);
+    dataset: { test: "camel-game", phase: "loading", reducedMotion: String(reducedMotion), ...(portrait ? { layout: "portrait" } : {}) } }, [stageNode, live, sheet]);
   host.append(root);
   // 音の解禁はユーザー操作が起点（自動再生制限）。本編は main.js が全体で受けているが、
   // 試遊ページ等の単独表示でも BGM・SE が鳴るよう、レース画面自身の操作でも解禁する（#3065）。
@@ -676,10 +679,24 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   // 画面が小さい（スマホ）ほどラクダが遠く小さく見えるので、動きを割り増す（桜井氏の動画 #047・#091）。
   // 画面に出ている大きさは、ステージごと縮められた後の実寸で測る（始める時と画面の大きさが変わった時だけ。毎コマは測らない）。
   let viewScale = 1, voiceTop = H;
+  // 縦では、横長のコースの左右を切って見せる（並べ方の CSS の側）。見えている範囲（絵の画素）を持ち、競り合いの寄り・絵の中の字と印はその内側に置く。
+  // 横は絵の幅いっぱい（0〜W）なので、下の式はどれも今までと同じ値になる。
+  let viewL = 0, viewR = W;
+  const viewCx = () => (viewL + viewR) / 2, viewW = () => viewR - viewL;
+  /** いま見えている範囲（寄りの倍率を戻した、描く時の座標）。 */
+  const viewSpan = () => { const half = viewW() / (2 * duelScale); return [viewCx() - half, viewCx() + half]; };
   const measureView = () => {
     const { width, height, top } = stageNode.getBoundingClientRect();
     viewScale = width > 0 ? clamp(W / width, 1, 1.6) : 1;
     if (!controls.hidden && height > 0) voiceTop = (voiceButton.getBoundingClientRect().top - top) * H / height;
+    if (portrait) {
+      const shown = canvas.getBoundingClientRect(), frame = root.getBoundingClientRect();
+      if (shown.width > 0 && frame.width > 0) {
+        viewL = clamp((frame.left - shown.left) * W / shown.width, 0, W - 1);
+        viewR = clamp((frame.right - shown.left) * W / shown.width, viewL + 1, W);
+        voiceTop = H; // 声のボタンはコースの下にある（重ならない）
+      }
+    }
   };
   window.addEventListener("resize", measureView);
   const far = () => 1 + (viewScale - 1) * FEEL.farGain;
@@ -750,7 +767,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   };
   const basePlayerX = () => Math.min(FRAME_X.limit, frameX + camShift) + lunge;
   const playerX = () => basePlayerX() - duelPan;
-  const duelScreenX = x => W / 2 + (x - W / 2) * duelScale;
+  const duelScreenX = x => viewCx() + (x - viewCx()) * duelScale;
   const duelScreenY = y => duelPivotY + (y - duelPivotY) * duelScale;
   let lastPosition = 0, leaderId = null, marks = new Set();
   // スマホではコース（1280×720）が半分ほどに縮むので、Canvas の名札・吹き出し・順位の文字だけ大きくする。
@@ -821,7 +838,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   const cuePoint = () => {
     const x = playerX() + CUE_AT.dx, y = laneOf("player").y + CUE_AT.dy;
     if (duelScale === 1) return { x, y };
-    const sx = duelScreenX(x), edge = clamp(sx, 148, W - 148);
+    const sx = duelScreenX(x), edge = clamp(sx, viewL + 148, viewR - 148);
     return { x: x + (edge - sx) / duelScale, y, detached: edge !== sx };
   };
   /** 声が当たった所から火花と波紋を飛ばす（PERFECT は金で多く、GOOD は水色で少なく、外れは灰の煙）。 */
@@ -1128,7 +1145,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       ]),
       el("div.camel-tutorial-body", [
         el("p.camel-eyebrow", { text: `HOW TO PLAY  ${page + 1} / ${TUTORIAL.length}` }),
-        el("h2", [step.title, step.key ? el("kbd.camel-key", { text: step.key }) : null]), bodyNode,
+        el("h2", { text: step.title }), bodyNode,
         el("div.camel-steps", { "aria-hidden": "true" }, TUTORIAL.map((_, i) => el("i", { class: i === page ? "on" : null }))),
       ]),
       el("div.camel-card-actions", lastPage ? [moreButton, next] : [moreButton, skip, next]),
@@ -1548,7 +1565,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     if (duel.pair) {
       const [a, b] = duel.pair;
       const middle = (racersById[a].distance + racersById[b].distance) / 2;
-      const pan = basePlayerX() - W / 2 + (middle - race.player.distance) * PX_PER_M;
+      const pan = basePlayerX() - viewCx() + (middle - race.player.distance) * PX_PER_M;
       const pivotY = (laneOf(a).y + laneOf(b).y) / 2 + 110;
       const follow = duelMix === 0 ? 1 : Math.min(1, dt * DUEL_VIEW.follow);
       duelFocusPan += (pan - duelFocusPan) * follow;
@@ -1574,7 +1591,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     ctx.clearRect(0, 0, W, H);
     const zoomed = duelScale !== 1;
     // コースを拡大後の座標に直接描く。Canvas の描画領域で画面外を切り取る。
-    if (zoomed) ctx.setTransform(duelScale, 0, 0, duelScale, (1 - duelScale) * W / 2, (1 - duelScale) * duelPivotY);
+    if (zoomed) ctx.setTransform(duelScale, 0, 0, duelScale, (1 - duelScale) * viewCx(), (1 - duelScale) * duelPivotY);
     ctx.save();
     // 揺れ（GO・ムチ・ゴール）と、ムチの間だけ自分のラクダへ少し寄る。
     if (!reducedMotion && race) {
@@ -1586,7 +1603,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       // 揺れで画面の端が空かないよう、ずれた分だけ自分のラクダを軸に拡大して覆う。
       const zoom = 1 + Math.max(Math.abs(dx) / 320, Math.abs(dy) / 170) + whip * 0.035 + (phase === "goal" && slow > 0 ? 0.05 * Math.min(1, slow) : 0);
       if (zoom > 1) {
-        const lane = laneOf("player"), baseX = basePlayerX(), px = baseX + (W / 2 - baseX) * duelMix;
+        const lane = laneOf("player"), baseX = basePlayerX(), px = baseX + (viewCx() - baseX) * duelMix;
         ctx.translate(px, lane.y); ctx.scale(zoom, zoom); ctx.translate(-px, -lane.y);
       }
     }
@@ -1993,7 +2010,10 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       const gap = phase === "race" && camel.id === targetId ? Math.max(1, Math.ceil(camel.distance - race.player.distance)) : 0;
       const label = gap ? `${camel.name}  あと${gap}m` : camel.name;
       const sprite = getRivalTagSprite(camel, label, gap, zoom);
-      ctx.drawImage(sprite.canvas, tx - sprite.ox, ty - sprite.oy, sprite.cw, sprite.ch);
+      // 縦では、名前と差の札が見えている端で切れないよう、内側へ寄せる（ラクダが見えている間だけ）
+      const [seenL, seenR] = viewSpan();
+      const tagX = portrait && tx > seenL && tx < seenR ? clamp(tx - sprite.ox, seenL + 6, Math.max(seenL + 6, seenR - 6 - sprite.cw)) : tx - sprite.ox;
+      ctx.drawImage(sprite.canvas, tagX, ty - sprite.oy, sprite.cw, sprite.ch);
     }
   }
   /** 自分のラクダの足元の金の輪（脈打つ）。いちばん先に描いて、ラクダの下に敷く。 */
@@ -2085,7 +2105,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   }
   function drawOffscreen() {
     const zoom = Math.min(textScale, 1.3);
-    const left = W / 2 - W / (2 * duelScale), right = W - left;
+    const [left, right] = viewSpan();
     for (const rival of race.rivals) {
       const sx = screenX(rival);
       if (sx >= left - 40 && sx <= right + 40) continue;
@@ -2502,7 +2522,12 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       ctx.globalAlpha = k < 0.15 ? k / 0.15 : 1 - Math.max(0, (k - 0.6) / 0.4);
       ctx.font = `900 ${Math.round(30 * textScale)}px ${FONT}`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
       const duel = f.kind === "duel";
-      const y = lane.y - (duel ? 196 : 96 + (f.row || 0) * 44) - k * 40, fx = playerX() + (duel ? 40 : 150);
+      const y = lane.y - (duel ? 196 : 96 + (f.row || 0) * 44) - k * 40;
+      let fx = playerX() + (duel ? 40 : 150);
+      if (portrait) { // 縦では、字が見えている端で切れないよう内側へ寄せる
+        const [seenL, seenR] = viewSpan(), half = ctx.measureText(f.text).width / 2 + 10;
+        fx = clamp(fx, seenL + half, Math.max(seenL + half, seenR - half));
+      }
       ctx.lineJoin = "round";
       ctx.lineWidth = 7; ctx.strokeStyle = duel ? "#4a1a04" : up ? "#0c3a18" : "#4a0c0c"; ctx.strokeText(f.text, fx, y);
       ctx.fillStyle = duel ? "#ffcf5a" : up ? "#9dffb4" : "#ff9a9a"; ctx.fillText(f.text, fx, y);

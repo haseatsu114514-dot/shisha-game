@@ -131,7 +131,7 @@ await setup(); await go({ ...EDEN, id: "ch2_ageha", region: "widehanga", charId:
 assert(!played.some(([id]) => id === "ch2_adam_distance"), "隣町の店は第2章の通い訪問のまま");
 await setup({ chapter: 3 }); assert.equal(visitDue("adam"), false, "第2章だけ");
 
-// DAY12: みんとは夜の来店だけ。DAY11の選択があれば、帰り道の閉じたケムリクサまで同じ来店で読む
+// DAY12: みんとは夜の来店だけ。DAY11の選択があれば、帰り道の閉じたKEMURIYAまで同じ来店で読む
 await setup({ day: abs(12) });
 assert.equal(visitDue("minto"), false); assert.equal(await go(PEPPERMINT), null, "昼はいつもの来店");
 state.slot = 1; state.flags._ch2_naru_hurt = true;
@@ -139,7 +139,7 @@ assert.equal(visitDue("minto"), true);
 result = await go(PEPPERMINT);
 assert.equal(result.used, true);
 assert.deepEqual(played, [["ch2_minto_warning", null], ["ch2_naru_window", "res://assets/backgrounds/bg_kemurikusa_outside_night.png"]],
-  "台本の背景（PEPPERMINT）と、帰り道のケムリクサ");
+  "台本の背景（PEPPERMINT）と、帰り道のKEMURIYA");
 assert(state.flags._ch2_read_ch2_minto_warning && state.flags._ch2_read_ch2_naru_window && state.flags._ch2_night_12_done);
 assert.deepEqual(plain(state.affinity), [], "Mandatory scenes give no affinity");
 

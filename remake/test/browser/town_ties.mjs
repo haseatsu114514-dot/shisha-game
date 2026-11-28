@@ -1,5 +1,5 @@
 // REL01〜03・06・07: 街の人同士のつながりを、実際の施設・店の来店で読む。
-// 喫茶こはく（なると凛想）→ ケムリクサと2階の続き、観音堂（なるとアダム）→ EDENの続き、
+// 喫茶こはく（なると凛想）→ KEMURIYAと2階の続き、観音堂（なるとアダム）→ EDENの続き、
 // SHISHARK（みんとの開店祝い）→ ぺぱーみんとの続き、第5章の Dr.fookah の2階（凛想がなるにお茶を出す）、
 // ぺぱーみんとのひよりの相席。施設の遭遇は好感度を動かさず、店の来店はいつもの来店と同じだけ。どれも一度きり。
 import assert from "node:assert/strict";
@@ -56,7 +56,7 @@ await suite("town-ties", async check => {
       return { cafe, unchanged, seen, naru, naruAgain, rio, rioAgain, flags: [s.flags._spot_follow_naru_rio, s.flags._spot_follow_rio_naru] };
     });
     assert.deepEqual(r.cafe.trace, ["cafe_naru_rio"]); assert(r.unchanged && r.seen, "施設の遭遇は好感度を動かさない");
-    assert(r.cafe.lines.some(t => t.includes("KEMURIKUSAさん")) && r.cafe.lines.some(t => t.includes("円頓寺さん")));
+    assert(r.cafe.lines.some(t => t.includes("KEMURIYAさん")) && r.cafe.lines.some(t => t.includes("円頓寺さん")));
     assert(r.cafe.names.includes("なる") && r.cafe.names.includes("凛想"), JSON.stringify(r.cafe.names));
     assert.equal(r.naru.trace[0], "cafe_naru_rio_followup"); assert(r.naru.lines.some(t => t.includes("誰にも言うなよ")), "恋人でなければ内緒の話");
     assert(!r.naruAgain.includes("cafe_naru_rio_followup"));
@@ -155,7 +155,7 @@ await suite("town-ties", async check => {
       assert.equal(tea.some(t => t.includes("数えてないけどね")), lover);
       assert.equal(tea.some(t => t.includes("十分を目指して")), !lover);
       const order = r.rows[3].lines;
-      assert(order.some(t => t.includes("ケムリクサさん")) && order.some(t => t.includes("条件を先に")) && order.some(t => t.includes("丁寧な字で三行")));
+      assert(order.some(t => t.includes("ケムリヤさん")) && order.some(t => t.includes("条件を先に")) && order.some(t => t.includes("丁寧な字で三行")));
       assert.equal(order.some(t => t.includes("仕事、ちゃんと見とけよ")), lover);
       assert.equal(order.some(t => t.includes("いい取引先だよ")), !lover);
       assert.equal(order.some(t => t.includes("読みがいがある")), lover);

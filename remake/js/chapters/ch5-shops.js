@@ -1,5 +1,5 @@
 // 第5章の通い店（#2033 F）。第1・2章の物語の続きが流れる店は、第5章では「通いの小会話」だけで出す。
-//   KEMURIKUSA（なる）: 第4章で再開した店（ch4_naru_dubai_3）。第2章の決裂の判定（naruRiftActive）は LIME・誘いでも
+//   KEMURIYA（なる）: 第4章で再開した店（ch4_naru_dubai_3）。第2章の決裂の判定（naruRiftActive）は LIME・誘いでも
 //     使うので変えず、第5章の地図だけこの通い店で出す（charId を持たせない＝臨時休業の判定に掛からない）。
 //   C.STATION: 大会を運営するチェーン店。世界大会の後の、新しい王者としての来店。
 //   Dr.fookah の2階（凛想・夜だけ）: 地図のピンは1階の店。来店の時に階を選ぶ（chapterFiveShowroom・BLC08）。

@@ -348,6 +348,13 @@ html:root .tetsuko-time .tt-tools > .tt-help-btn.tt-help-btn { order: 1; positio
 .tetsuko-time[data-art-ui~="tk_title"] .tt-logo-title { font-size: 22px; }
 .tetsuko-time[data-art-ui~="tk_title"] .tt-status { top: 132px; }
 .tetsuko-time[data-art-ui~="tk_title"] .tt-logo-card.tt-logo { position: relative; }
+/* 題字のロゴ（2026-11-27・生成した絵。丸い手書き風のひらがなと寝そべるてつこ・820×390）: 札に字を書く形の代わりに、絵を出す。
+   字（題・英字）は読み上げ用に残して見えなくする。上の札（ハート・なかよし）は、ロゴの下へ下げる。 */
+.tetsuko-time[data-art-ui~="tk_logo"] .tt-logo { display: block; left: 22px; top: 16px; width: 290px; height: 138px; padding: 0; border: 0; border-radius: 0; box-shadow: none;
+  background: url("../img/ui/tetsuko/ui_tk_logo.webp") center / contain no-repeat; filter: drop-shadow(0 4px 0 rgba(59, 36, 22, .3)); }
+.tetsuko-time[data-art-ui~="tk_logo"] .tt-logo > * { position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.tetsuko-time[data-art-ui~="tk_logo"] .tt-logo-card.tt-logo { position: relative; left: auto; top: auto; }
+.tetsuko-time[data-art-ui~="tk_logo"] .tt-status { top: 156px; }
 
 /* 小さな粒（文字の ♥ ✦ ♪、CSS の汗・毛・肉球の代わり）。Zzz と光の点は今までどおり */
 .tetsuko-time[data-art-ui~="tk_fx"] .tt-bit:is([data-kind="heart"], [data-kind="spark"], [data-kind="note"], [data-kind="sweat"], [data-kind="fur"], [data-kind="paw"], [data-kind="puff"]) {
@@ -452,3 +459,48 @@ html:root .tetsuko-time .tt-tools > .tt-help-btn.tt-help-btn { order: 1; positio
   html:root[data-density="phone"] .tetsuko-time[data-art-ui~="tk_badge"] .tt-new { width: calc(var(--tk-fs-sub) * 1.7); height: calc(var(--tk-fs-sub) * 1.7); }
 }
 
+/* ---- §12（2026-11-27）: なかよしの肉球・残りの回数・帰りの札・手帳のなかよし。スマホでは、ほかの札と同じ実寸（文字 13px・補助 11.5px 以上）にそろえる */
+/* 上の札: 1段目にハートと、なかよしの段。2段目に、付き合ってくれる残りの回数（丸） */
+.tetsuko-time .tt-status { display: grid; grid-template-columns: auto auto 1fr; align-items: center; justify-items: start; gap: 7px 10px; }
+.tetsuko-time .tt-turns { grid-column: 1 / -1; grid-row: 2; margin-left: 6px; }
+@media (pointer: coarse) and (hover: none) {
+  html:root[data-density="phone"] .tetsuko-time .tt-bond { padding: 3px 18px 3px 7px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-bond .tt-paw { width: 48px; height: 48px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-bond b { font-size: max(32px, calc(15px / var(--k, 1))); }
+  html:root[data-density="phone"] .tetsuko-time .tt-turns { gap: 8px; padding: 11px 15px; border-radius: 24px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-turns i { width: 19px; height: 19px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-shot-need { right: -12px; top: -16px; padding: 2px 11px 2px 6px; border-radius: 20px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-shot-need span { width: 28px; height: 28px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-shot-need b { font-size: var(--tk-fs); }
+  /* 帰りの札 */
+  html:root[data-density="phone"] .tetsuko-time .tt-result { right: 28px; bottom: 22px; gap: 10px 18px; padding: 18px 28px 20px 24px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-result-hearts .tt-heart { width: 46px; height: 46px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-result-bond .tt-paw { width: 46px; height: 46px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-result-bond small { font-size: var(--tk-fs-sub); }
+  html:root[data-density="phone"] .tetsuko-time .tt-result-gain { min-width: 70px; font-size: max(38px, calc(18px / var(--k, 1))); }
+  html:root[data-density="phone"] .tetsuko-time .tt-result-gift b { font-size: var(--tk-fs); }
+  html:root[data-density="phone"] .tetsuko-time .tt-result-gift .tt-gift { width: 84px; height: 84px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-result-ember .tt-bond-mark { width: 84px; height: 84px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-result-ember .tt-bond-mark[data-mark="ember"] svg { width: 64px; height: 64px; }
+  /* 帰りの札が出ている間は、反応の帯を札に重ねない */
+  html:root[data-density="phone"] .tetsuko-time[data-result="1"] .tt-caption { width: 530px; }
+  /* 手帳のなかよし */
+  html:root[data-density="phone"] .tetsuko-time .tt-book-bond small { font-size: var(--tk-fs-sub); }
+  html:root[data-density="phone"] .tetsuko-time .tt-bond-mark[data-mark="ember"] svg { width: 30px; height: 30px; }
+  /* 右のページの「なかよし」 */
+  html:root[data-density="phone"] .tetsuko-time .tt-bond-detail .tt-paws .tt-paw { width: 50px; height: 50px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-gift-list { gap: 4px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-gift-list li { grid-template-columns: 64px minmax(0, 1fr); }
+  html:root[data-density="phone"] .tetsuko-time .tt-gift-list .tt-gift { width: 64px; height: 64px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-gift-list b { font-size: var(--tk-fs); line-height: 1.2; }
+  html:root[data-density="phone"] .tetsuko-time .tt-gift-memo { font-size: var(--tk-fs-sub); line-height: 1.25; }
+}
+/* 手帳の題は折り返さない（なかよしの肉球を右に並べても「てつこ手帳」が2行にならない）。スマホでは肉球としるしを少し詰める */
+.tetsuko-time .tt-book-head h3 { flex: none; white-space: nowrap; }
+@media (pointer: coarse) and (hover: none) {
+  /* 肉球の列は1つのボタン: 押せる高さ（実寸 38px 以上）にそろえる */
+  html:root[data-density="phone"] .tetsuko-time .tt-book-bond { gap: 2px; min-height: max(84px, calc(39px / var(--k, 1))); align-items: center; padding: 2px 8px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-book-bond small { margin-right: 2px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-book-bond .tt-paw { width: 34px; height: 34px; }
+  html:root[data-density="phone"] .tetsuko-time .tt-bond-mark, html:root[data-density="phone"] .tetsuko-time .tt-bond-mark .tt-gift { width: 40px; height: 40px; }
+}

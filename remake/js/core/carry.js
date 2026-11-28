@@ -4,6 +4,7 @@
 // 好感度・恋愛のキーは構造的に混入しない。
 import { MAX_MONEY, KUJI_LIMITED_GRADES, KUJI_ONLY_EQUIPMENT } from "./rules.js";
 import { STAT_KEYS } from "./state.js";
+import { ALL_MINTO_CHEKIS } from "./minto-cheki-data.js";
 
 const clone = (v) => structuredClone(v);
 
@@ -91,11 +92,12 @@ export const GIFT_EQUIPMENT_IDS = [
 
 // 記念品の由来分類（core/keepsakes.js の KEEPSAKES と対応）。
 // "person" = 人物由来（撮影・贈答）→ リセット。それ以外 → 引き継ぐ。
-// 現在の3件はいずれも人物との写真・チェキで、CG はギャラリー層に残る。
+// いずれも人物との写真・チェキで、CG はギャラリー層に残る（PEPPERMINTで頼むチェキも同じ）。
 export const KEEPSAKE_ORIGINS = {
   ryuji_purikura: "person",
   ageha_first_purikura: "person",
   minto_first_cheki: "person",
+  ...Object.fromEntries(ALL_MINTO_CHEKIS.map(c => [c.id, "person"])),
 };
 
 // §2.3 の性質分類。unlock（恒久解放）と ui（UI・説明既読）だけが引き継ぐ。
@@ -159,11 +161,17 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_coal_role_coals", "progression"],
   ["_ch2_coal_role_plate", "progression"],
   // #3097 PR-B: 行き帰りの電車の小品（chapters/ch2-commute.js）。読んだ日と各回の既読。window_sent は写真をつむぎへ送った（後日の LIME の条件）
+  ["_ch2_commute_corner", "progression"],
   ["_ch2_commute_day", "progression"],
   ["_ch2_commute_doze", "progression"],
   ["_ch2_commute_regulars", "progression"],
+  ["_ch2_commute_signs", "progression"],
   ["_ch2_commute_tonari", "progression"],
   ["_ch2_commute_v1", "progression"],
+  ["_ch2_commute_vocab", "progression"],
+  ["_ch2_commute_wake", "progression"],
+  ["_ch2_commute_scores", "progression"],
+  ["_ch2_commute_reunion", "progression"],
   ["_ch2_commute_window", "progression"],
   ["_ch2_commute_window_sent", "person"],
   ["_ch2_day1", "progression"],
@@ -534,6 +542,7 @@ export const FLAG_EXACT_RULES = [
   ["_met_volk", "person"],
   ["_minto_cheki_keep_done", "person"],
   ["_minto_cool_mint_done", "person"], // 極冷ミントの味見（SPC15・daily/spots.js）
+  ["_minto_twoshot_at", "person"], // 2ショットの回を読んだ来店の回数（PFC17・daily/spots.js。あいだに一度いつもの来店を挟む）
   ["_minto_fifth_done", "person"],
   ["_minto_history_shared", "person"],
   ["_minto_identity_revealed", "person"],
@@ -581,6 +590,7 @@ export const FLAG_EXACT_RULES = [
   ["_rio_sample", "person"],
   ["_rio_sample_received", "person"],
   ["_roam_day", "progression"],
+  ["_roam_early_closed", "progression"], // 早じまいして居合わせた人と会った夜の店（daily/roamers.js）
   ["_roam_seen_dr_charcoal", "person"], // 第5章の ch5_opening が読む（よその店で博士に居合わせた回数）
   ["_ryuji_melty_greeting", "person"],
   ["_ryuji_melty_visit", "person"],

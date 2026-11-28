@@ -69,7 +69,7 @@ function pinCaption(s, locked) {
 const pinSpeech = (s, locked, caption) => !locked && caption === s.label && ["tonari", "rival", "shop", "samechan"].includes(s.kind) ? `${caption}へ行く` : caption;
 /** 地図の利用料は「¥3,000」の短い印（読み上げは「利用料 3,000円」のまま・#2853） */
 /** 定休日・臨時休業は文字の札ではなく、看板をグレーにして「休」の印を付ける（#2853） */
-const CLOSED_TAGS = new Set(["本日定休日", "本日臨時休業"]);
+const CLOSED_TAGS = new Set(["本日定休日", "本日臨時休業", "今夜は早じまい"]);
 /** 「今日はどうする？」の操作の説明を出すのは、第1章の最初の自由行動の日（1日目は案内つきの用事だけ）まで。日付を読むだけ（#2853） */
 const firstFreeDay = () => state.chapter === 1 && state.day <= 2;
 
@@ -423,7 +423,8 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
       const lessonTag = lessons.length ? ["mi-lesson", `授業の相談「${lessons.map((l) => l.name).join("」「")}」`, "map-lesson"] : null;
       const visitTag = visitHint ? ["mi-visit-hint", visitHint, "map-visit-hint"] : null;
       const timing = timeTag(s);
-      const useCost = s.playCost ? ["mi-cost", `プレイ ${yen(s.playCost)}・記録閲覧無料`, "map-cost"]
+      // 斧投げBarの料金の札は長いので、狭い時は「・」の後でだけ折る（スマホで右下の案内の幅を超えていた）。文の区切りごとに分けて渡す
+      const useCost = s.playCost ? ["mi-cost", [`プレイ ${yen(s.playCost)}・`, "記録閲覧無料"], "map-cost"]
         : s.cost && !freeGuide(s) ? ["mi-cost", `料金 ${yen(s.cost)}`, "map-cost"] : null;
       const tags = av.why === "locked" ? [] : [
         av.ok ? visitTag : ["mi-why", av.why, "map-why"],
@@ -432,7 +433,9 @@ function openMap({ notice = "", reminder = "", eventPin = null, eventPinLabel = 
         av.ok && !freeGuide(s) ? freshnessTag(s) : null,
         lessonTag,
       ].filter(Boolean);
-      const tagRow = tags.length ? el("div.mi-tags", tags.map(([cls, text, test]) => el(`span.mi-tag.${cls}`, { text, dataset: { test } }))) : null;
+      const tagRow = tags.length ? el("div.mi-tags", tags.map(([cls, text, test]) => Array.isArray(text)
+        ? el(`span.mi-tag.${cls}.mi-tag-split`, { dataset: { test } }, text.map((part) => el("span.mi-tag-part", { text: part })))
+        : el(`span.mi-tag.${cls}`, { text, dataset: { test } }))) : null;
       info.replaceChildren(...[
         el("div.mi-banner", { text: label }),
         tagRow,

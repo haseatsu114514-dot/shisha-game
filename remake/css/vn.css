@@ -31,8 +31,8 @@
 }
 .vn-cg.show { opacity: 1; }
 .vn-skip .vn-cg { transition-duration: .14s; }
-/* 縦型チェキの余白・落書きも、下の台詞ボックスに隠さず一枚全体を見せる。 */
-.vn-cg[data-cg="cg_minto_first_cheki"] {
+/* 縦型チェキの余白・落書きも、下の台詞ボックスに隠さず一枚全体を見せる（PEPPERMINTで頼むチェキ・私服の一枚も同じ。PFC14）。 */
+.vn-cg[data-cg="cg_minto_first_cheki"], .vn-cg[data-cg^="cg_minto_cheki_"], .vn-cg[data-cg^="cg_minto_secret_cheki_"] {
   background-color: var(--ink);
   background-size: auto calc(100% - 230px);
   background-position: center 18px;

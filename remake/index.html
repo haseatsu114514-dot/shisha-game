@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja" data-ui-theme="classic">
+<html lang="ja" data-ui-theme="classic" data-look-boot>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -22,10 +22,10 @@
      登録と同じ中身で、test/loading_comics_spec.mjs が一致を確かめる。本体のロード画面（js/core/loading.js）は同じ話を続ける。 -->
 <script type="application/json" id="boot-comics">
 [
-{"id": "sumi-cold-tea", "title": "冷めた紅茶", "caption": "シーシャの話になると、時間を忘れる二人。", "panels": [{"src": "loading/sumi-cold-tea-1.webp", "alt": "左: はじめが冷めた紅茶を見て「お茶、冷めました。」。右のスミさんは頬杖で「話しすぎたな。」。"}, {"src": "loading/sumi-cold-tea-2.webp", "alt": "スミさんが指を立てて楽しそうに話を続け、はじめはノートを開く。はじめ「話はまだ熱い。」。"}]},
-{"id": "sumi-cloth-fold", "title": "畳みの極意", "caption": "掃除のあと、ふきんを畳む練習をしていたら。", "panels": [{"src": "loading/sumi-cloth-fold-1.webp", "alt": "左: はじめが清潔な白いふきんを持ち「畳み方は？」。スミさんが「角をそろえろ。」。"}, {"src": "loading/sumi-cloth-fold-2.webp", "alt": "はじめが折り紙の鶴そっくりに畳んだ白ふきんを手にして困惑「鶴になった。」。スミさんは無言で眼鏡をずらし驚く。布の鶴は飛ばない。"}]},
-{"id": "restored-17", "title": "似顔絵", "caption": "つむぎの絵には、いつも少し遊び心があります。", "panels": [{"src": "loading/restored-17-1.webp", "alt": "タブレットで絵を描くつむぎに、はじめが身を乗り出して「俺も描いて。」。"}, {"src": "loading/restored-17-2.webp", "alt": "つむぎが見せた絵は、はじめの帽子とパーカーの猫。はじめ「猫になった。」。つむぎ「似てます。」。"}]},
-{"id": "tsumugi-route-map", "title": "道順の地図", "caption": "つむぎは、葉っぱの耳の猫を描く芸大生です。", "panels": [{"src": "loading/tsumugi-route-map-1.webp", "alt": "店のソファ席で、はじめがメモ帳を差し出して「道順、描いてくれる？」。タブレットを抱えたつむぎが「……はい。」。"}, {"src": "loading/tsumugi-route-map-2.webp", "alt": "はじめが広げた道順は、山・川・森と葉っぱの耳の猫まで描き込まれた冒険の地図のような大作。はじめ「地図が壮大だ。」。"}]}
+{"id": "sumi-cold-tea", "title": "冷めた紅茶", "caption": "シーシャの話は、つい長くなる二人。", "panels": [{"src": "loading/sumi-cold-tea-1.webp", "alt": "左: はじめが冷めた紅茶を見て「お茶、冷めました。」。右のスミさんは頬杖で「話しすぎたな。」。"}, {"src": "loading/sumi-cold-tea-2.webp", "alt": "スミさんが指を立てて楽しそうに話を続け、はじめはノートを開く。はじめ「話はまだ熱い。」。"}]},
+{"id": "sumi-cloth-fold", "title": "畳みの極意", "caption": "スミさんに、ふきんの畳み方を習う。", "panels": [{"src": "loading/sumi-cloth-fold-1.webp", "alt": "左: はじめが清潔な白いふきんを持ち「畳み方は？」。スミさんが「角をそろえろ。」。"}, {"src": "loading/sumi-cloth-fold-2.webp", "alt": "はじめが折り紙の鶴そっくりに畳んだ白ふきんを手にして困惑「鶴になった。」。スミさんは無言で眼鏡をずらし驚く。布の鶴は飛ばない。"}]},
+{"id": "restored-17", "title": "似顔絵", "caption": "つむぎの似顔絵は、なぜか猫になる。", "panels": [{"src": "loading/restored-17-1.webp", "alt": "タブレットで絵を描くつむぎに、はじめが身を乗り出して「俺も描いて。」。"}, {"src": "loading/restored-17-2.webp", "alt": "つむぎが見せた絵は、はじめの帽子とパーカーの猫。はじめ「猫になった。」。つむぎ「似てます。」。"}]},
+{"id": "tsumugi-route-map", "title": "道順の地図", "caption": "つむぎが描くと、道順も冒険の地図。", "panels": [{"src": "loading/tsumugi-route-map-1.webp", "alt": "店のソファ席で、はじめがメモ帳を差し出して「道順、描いてくれる？」。タブレットを抱えたつむぎが「……はい。」。"}, {"src": "loading/tsumugi-route-map-2.webp", "alt": "はじめが広げた道順は、山・川・森と葉っぱの耳の猫まで描き込まれた冒険の地図のような大作。はじめ「地図が壮大だ。」。"}]}
 ]
 </script>
 <script>
@@ -80,7 +80,8 @@
 <meta property="og:url" content="https://haseatsu114514-dot.github.io/shisha-game/remake/">
 <meta property="og:image" content="https://haseatsu114514-dot.github.io/shisha-game/remake/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<!-- ホーム画面に追加すると全画面で遊べる（iPhone の Safari は Fullscreen API 非対応のため唯一の道）。横画面前提 -->
+<!-- ホーム画面に追加すると全画面で遊べる（iPhone の Safari は Fullscreen API 非対応のため唯一の道）。
+     向きは固定しない（manifest の orientation は any）。縦持ちが基本で、まだ縦にしていない場面だけ横にして遊ぶ（VPO01） -->
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -97,6 +98,7 @@
     <link href="css/ichidai-lines.css" rel="stylesheet">
   </template>
   <template id="styles-desert-ride"><link href="css/desert-ride.css" rel="stylesheet"></template>
+  <template id="styles-extra"><link href="css/extra.css" rel="stylesheet"></template>
   <template id="styles-tetsuko">
     <link href="css/tetsuko-time.css" rel="stylesheet">
     <link href="css/tetsuko-theme.css" rel="stylesheet">
@@ -105,6 +107,8 @@
   <link rel="stylesheet" href="css/motions/bundle.css">
   <link rel="stylesheet" href="css/vn/bundle.css">
   <link rel="stylesheet" href="css/bundle-2.css">
+  <!-- 様式「縦画面」（煙の舞台）を縦持ちで使う時だけ、この位置で有効にする（js/looks/vertical.js） -->
+  <template id="styles-look-vertical"><link href="css/look-vertical.css" rel="stylesheet"><link href="css/look-vertical-craft.css" rel="stylesheet"></template>
 <style>
 /* 起動直後（モジュール読込前）の #boot は、共通ロード画面（css/loading.css の .loading-gate / .boot-gate）と同じ部品・同じ CSS で組む
    （2026-11-17 LPOS03: 起動画面から次のロード画面へ替わるとき、ロゴ・漫画・ゲージの位置が動かないように）。
@@ -183,8 +187,6 @@
   };
   place();
   for (const query of queries) query.addEventListener("change", place);
-  // 「進む」の行は見えないまま場所だけ取る（共通ロード画面と同じ文言で同じ高さ）。
-  if (!window.matchMedia("(pointer: coarse)").matches) boot.querySelector(".loading-proceed").textContent = "クリック・Enter で進む";
   const fontsReady = document.fonts
     ? Promise.race([
         Promise.all(["500", "700", "900"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線似顔絵LOADING…準備完了クリックタップで進む"))),

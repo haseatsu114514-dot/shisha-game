@@ -81,7 +81,6 @@
 .camel-control-icon svg { width: 58%; height: 58%; }
 .camel-control-text { display: grid; gap: .3em; min-width: 0; font-size: clamp(12px, 1.2cqw, 16px); }
 .camel-control-text strong { font-size: 1.3em; font-weight: 900; letter-spacing: .06em; line-height: 1.15; }
-.camel-control kbd { padding: 2px 7px; border-radius: 6px; border: 1px solid rgba(255,255,255,.25); border-bottom-width: 3px; background: rgba(0,0,0,.35); color: var(--cr-sand); font: inherit; font-size: 12px; font-weight: 800; }
 .camel-rhythm { display: flex; align-items: center; gap: .5em; }
 .camel-rhythm small, .camel-signal-note { font-size: .85em; font-weight: 800; color: var(--cr-dim); white-space: nowrap; }
 .camel-rhythm-bars { display: flex; align-items: flex-end; gap: .22em; height: .95em; }
@@ -230,7 +229,6 @@
   border: 1px solid rgba(255,215,122,.5); border-radius: 50%; background: rgba(0,0,0,.3); color: var(--cr-gold); font: inherit; font-size: 20px; font-weight: 900; cursor: pointer; }
 .camel-game .camel-sheet .camel-card .camel-help:hover, .camel-game .camel-sheet .camel-card .camel-help:focus-visible { border-color: var(--cr-gold); background: rgba(255,215,122,.14); color: #fff; }
 .camel-result .camel-result-head { padding-right: 48px; }
-.camel-key { margin-left: .6em; padding: 1px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,.25); border-bottom-width: 3px; background: rgba(0,0,0,.35); color: var(--cr-sand); font: inherit; font-size: 14px; font-weight: 800; vertical-align: middle; }
 
 @media (prefers-reduced-motion: reduce) {
   .camel-result .camel-medal, .camel-result .camel-grade-letter, .camel-result .camel-score-bar i, .camel-flash.show,
@@ -251,17 +249,13 @@
 }
 /* コースが小さいとき（スマホ）: 説明の字とキーを隠し、順位は名前と順位だけ */
 @container (max-width: 760px) {
-  .camel-clock-sub, .camel-control kbd, .camel-chip-gap, .camel-speed-bar { display: none; }
+  .camel-clock-sub, .camel-chip-gap, .camel-speed-bar { display: none; }
   .camel-call { max-width: 60%; }
   .camel-standings { width: 9.5em; --row-h: 2.2em; }
   .camel-standings li { grid-template-columns: auto minmax(0, 1fr); }
   .camel-progress { left: 17cqw; right: 15cqw; }
 }
 
-/* タッチ端末ではキーの表示（Space／X）は意味がないので隠す（#2836） */
-@media (hover: none) and (pointer: coarse) {
-  .camel-control kbd, .camel-key { display: none; }
-}
 /* スマホ横持ち（#2836）。本編では #stage が --k で縮むので、そのぶんを戻して実寸で文字 11px・押せる所 38px を下回らせない（少し余裕を持たせる）。
    独立ページ（縮まない）でも本編と同じ割合になるよう、HUD の字はコースの高さ（cqh）でも抑える。
    操作ボタンは名前の字を隠してアイコンとゲージだけ、「調子」「押している間」も出さない。縦持ちは扱わない。 */
@@ -354,7 +348,6 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
   background: none; color: #43301c; box-shadow: 0 22px 60px rgba(0,0,0,.5); }
 .camel-game.cr-card .camel-card h2 { color: #4a2a0e; }
 .camel-game.cr-card .camel-eyebrow { color: #96690f; }
-.camel-game.cr-card .camel-key { background: rgba(74,42,14,.1); border-color: rgba(74,42,14,.4); color: #43301c; }
 .camel-game.cr-card .camel-steps i { background: rgba(74,42,14,.25); }
 .camel-game.cr-card .camel-steps i.on { background: #c08a1e; }
 .camel-game.cr-card .camel-sheet .camel-card .camel-card-actions .btn { background: rgba(255,252,244,.5); border-color: rgba(74,42,14,.45); color: #43301c; box-shadow: none; }

@@ -35,7 +35,7 @@ button.addEventListener("click", async () => {
   controller = new AbortController();
   button.disabled = select.disabled = true;
   stop.disabled = false;
-  message.textContent = "クリック・Enterで台詞送り／AUTO・SKIPも使えます";
+  message.textContent = "タップで台詞送り／AUTO・SKIPも使えます";
   newGame();
   unlockAudio();
   playBgm("tonari");

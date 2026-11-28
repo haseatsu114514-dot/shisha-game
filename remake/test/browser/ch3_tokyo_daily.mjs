@@ -121,15 +121,14 @@ await suite("ch3-tokyo-daily", async check => {
     await help.waitFor();
     assert.match(await help.innerText(), /12,000/, "mukai shows the same chapter 3 base pay as tonari");
     await help.click();
-    // mukai のシフト（VOL09）: 今日の注文に合う配合を二つから選ぶ → 客の反応 → 日当。
-    await page.locator(dt("mukai-order-0")).waitFor({ timeout: 60000 });
-    await page.locator(dt("mukai-order-0")).click();
+    // mukai のシフトは店番（TFL62。今日の注文の二択は TFL63 で廃止）。ブラウザ検査では店番を通り過ぎる（support.mjs の suien_floor=instant）→ 日当。
     await page.locator(dt("tokyo-tetsuko-yes")).waitFor({ timeout: 60000 });
     await page.locator(dt("tokyo-tetsuko-yes")).click();
     // 夜の本筋（肩に残る勝利）→ 奥の部屋で寝る → DAY3 の朝は店の違いの場面（昼の行動を使う）→ 夜の地図。
     await tokyoMap(page, { day: 34, slot: 1 });
     state = await get(page);
-    assert.equal(state.money, before.money + 10000, "The day's pay from the mukai shift");
+    // 日当は店番の精算（TFL62・#4262）: 基本給12,000円＋売上の歩合＋手当（魅力の段階など）。この保存では毎回13,000円
+    assert.equal(state.money, before.money + 13000, "The day's pay from the mukai shift");
     assert.equal(state.flags._mukai_shift_day, 33, "The shift day is kept for Mukai's invitations");
     assert(state.contacts.includes("mukai_master") || state.flags._lime_contact_mukai_master, "Mukai's LIME was exchanged on the first work day");
     assert.equal(state.flags._ch3_outings.mukai_help, 1);
@@ -152,8 +151,6 @@ await suite("ch3-tokyo-daily", async check => {
     const help = page.locator(`#modal.show button`, { hasText: "シフトに入る" });
     await help.waitFor();
     await help.click();
-    await page.locator(dt("mukai-order-0")).waitFor({ timeout: 60000 });
-    await page.locator(dt("mukai-order-0")).click();
     await page.locator(dt("tokyo-tetsuko-game")).waitFor({ timeout: 60000 });
     assert.equal((await page.locator(dt("tokyo-tetsuko-game")).innerText()).trim(), "てつこといっしょ", "The game is no longer marked as in preparation");
     assert.equal((await page.locator(dt("tokyo-tetsuko-yes")).innerText()).trim(), "少し構っていく（短く）", "The short care path stays");
@@ -191,7 +188,8 @@ await suite("ch3-tokyo-daily", async check => {
     const after = await get(page);
     assert.equal(after.flags._ch3_outings.tetsuko, 1, "Counted once");
     assert.equal(after.flags._ch3_outings.mukai_help, 1, "The shift still counted exactly once");
-    assert.equal(after.money, before.money + 10000, "Only the shift pay changed money");
+    // 日当は店番の精算（TFL62・#4262）: 基本給12,000円＋売上の歩合＋手当（魅力の段階など）。この保存では毎回13,000円
+    assert.equal(after.money, before.money + 13000, "Only the shift pay changed money");
     assert.equal(await page.locator(dt("tetsuko-time-screen")).count(), 0, "The screen is gone after returning");
   });
 
@@ -206,8 +204,6 @@ await suite("ch3-tokyo-daily", async check => {
     const help = page.locator(`#modal.show button`, { hasText: "シフトに入る" });
     await help.waitFor();
     await help.click();
-    await page.locator(dt("mukai-order-0")).waitFor({ timeout: 60000 });
-    await page.locator(dt("mukai-order-0")).click();
     await page.locator(dt("tokyo-tetsuko-game")).click({ timeout: 60000 });
     const screen = page.locator(dt("tetsuko-time-screen"));
     await screen.waitFor({ timeout: 60000 });
@@ -239,8 +235,6 @@ await suite("ch3-tokyo-daily", async check => {
     const help = page.locator(`#modal.show button`, { hasText: "シフトに入る" });
     await help.waitFor();
     await help.click();
-    await page.locator(dt("mukai-order-0")).waitFor({ timeout: 60000 });
-    await page.locator(dt("mukai-order-0")).click();
     await page.locator(dt("tokyo-tetsuko-game")).click({ timeout: 60000 });
     const screen = page.locator(dt("tetsuko-time-screen"));
     await screen.waitFor({ timeout: 60000 });
@@ -288,8 +282,6 @@ await suite("ch3-tokyo-daily", async check => {
     const help = page.locator(`#modal.show button`, { hasText: "シフトに入る" });
     await help.waitFor();
     await help.click();
-    await page.locator(dt("mukai-order-0")).waitFor({ timeout: 60000 });
-    await page.locator(dt("mukai-order-0")).click();
     const doneBtn = page.locator(dt("tokyo-tetsuko-done"));
     await doneBtn.waitFor({ timeout: 60000 });
     assert.equal(await doneBtn.isDisabled(), true, "Cannot start a second session on the same day");
@@ -684,7 +676,7 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(open.nextScene, "mashiro_time_train", "The next day reads the next short scene");
   });
 
-  // 日常ループの東京の CHOI-ZAP も、旧行程（ch3-activity-progress.js）と同じく3日間「風邪をひきにくい」を付ける（spot.gym・daily/calendar.js）。
+  // 日常ループの東京の サクッとジム も、旧行程（ch3-activity-progress.js）と同じく3日間「風邪をひきにくい」を付ける（spot.gym・daily/calendar.js）。
   await check("the-tokyo-choizap-grants-the-fit-days", async page => {
     await seed(page);
     await page.evaluate(async () => {

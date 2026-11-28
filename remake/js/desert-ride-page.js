@@ -2,7 +2,7 @@
 // 自己ベストはこのページだけの localStorage（suien_desert_ride_preview）に残す。
 // 三段階（#3779）: このページでは初級・中級・上級とも開いている。?tier=easy|normal|hard で最初に選んでおく段（既定は中級＝前と同じ遊び）。
 // 初級の自己ベストは別の鍵（suien_desert_ride_preview_easy）。初級の勝ちでは、なる（好敵手）は来ない（本編と同じ）。
-import { BOOST, RULES_VERSION, desertBestKey, desertDisplayBests } from "./minigames/desert-ride-model.js";
+import { RULES_VERSION, desertBestKey, desertDisplayBests } from "./minigames/desert-ride-model.js";
 import { TIERS, TIER_LABEL } from "./core/play-tiers.js";
 import { el } from "./core/util.js";
 import { unlockAudio } from "./core/audio.js";
@@ -77,8 +77,6 @@ function menu(message = "狙いは、S。") {
     ]),
     el("p", { style: { marginTop: "16px" } }, [el("label", [reduceBox, el("span", { text: "動きを減らす（揺れ・閃光・速度線なし）" })])]),
     best?.beatNoor ? el("p", { text: "ヌールに勝った。なるが、砂丘で待っている。", dataset: { test: "desert-page-naru" } }) : null,
-    // キーの説明は PC だけ（スマホは画面のボタンと、ゲームの中の「？」で足りる）
-    el("p.dr-page-keys", { text: `PC: ← → で移動（大ジャンプ中は回転）、Space でジャンプ／着地、ゲージが目印（${BOOST.minGauge * 100}%）に届いたら ↓ でブースト。スマホは画面のボタン。`, style: { fontSize: "15px", color: "#5a3a2a" } }),
   ].filter(Boolean));
 }
 menu();

@@ -39,8 +39,10 @@ export const CH2_CLOSED_ON = Object.freeze({ kumicho: 0, kuraudo: 1 });
 const REPEAT_POOL = {
   ageha: ["remake_ch2_ageha_repeat", "remake_ch2_ageha_repeat_f", "remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d", "remake_ch2_ageha_repeat_e",
     "remake_ch2_ageha_repeat_g", "remake_ch2_ageha_repeat_h", "remake_ch2_ageha_repeat_i"], // #3097: g〜i（ch2_ageha_story.json）
-  kumicho: ["remake_ch2_kumicho_repeat", "remake_ch2_kumicho_repeat_b", "remake_ch2_kumicho_repeat_c", "remake_ch2_kumicho_repeat_d", "remake_ch2_kumicho_repeat_e"],
-  kuraudo: ["remake_ch2_kuraudo_repeat", "remake_ch2_kuraudo_repeat_b", "remake_ch2_kuraudo_repeat_c", "remake_ch2_kuraudo_repeat_d", "remake_ch2_kuraudo_repeat_e"],
+  kumicho: ["remake_ch2_kumicho_repeat", "remake_ch2_kumicho_repeat_b", "remake_ch2_kumicho_repeat_c", "remake_ch2_kumicho_repeat_d", "remake_ch2_kumicho_repeat_e",
+    "remake_ch2_kumicho_repeat_f", "remake_ch2_kumicho_repeat_g", "remake_ch2_kumicho_repeat_h", "remake_ch2_kumicho_repeat_i"], // VOL21 第3便: f〜i（ch2_preparation.json）
+  kuraudo: ["remake_ch2_kuraudo_repeat", "remake_ch2_kuraudo_repeat_b", "remake_ch2_kuraudo_repeat_c", "remake_ch2_kuraudo_repeat_d", "remake_ch2_kuraudo_repeat_e",
+    "remake_ch2_kuraudo_repeat_f", "remake_ch2_kuraudo_repeat_g", "remake_ch2_kuraudo_repeat_h", "remake_ch2_kuraudo_repeat_i"], // VOL21 第3便: f〜i（h は c のメモ帳の後に読む）
 };
 /** クラウドのライブの夜（RVE07）。台本は data/dialogue/ch2_rei.json（柚ヶ谷の台本と一緒に ch2-city-data.js が読み込む）。 */
 export const KURAUDO_LIVE_SCENE = "ch3_prep_kuraudo_live";
@@ -170,7 +172,7 @@ async function visitStoryAtHome(spot, night, { staminaGuard }) {
  * 柚ヶ谷の店・支店・外出先への来店（第2章と、第3・4章の出発前の準備期間 chapters/departure-prep.js）。
  * 第2章の地元の店で読む本編（VOL13）も、ここで先に受け持つ（第2章だけ）。
  */
-export async function visitPreparationSpot(spot, { staminaGuard }) {
+export async function visitPreparationSpot(spot, { staminaGuard, roamer = null, meetRoamerNow = null }) {
   const storyVisit = spot.kind === "rival" && (spot.region || "home") === "home" ? storyVisitDue(state, spot.charId) : null;
   if (storyVisit) return visitStoryAtHome(spot, storyVisit, { staminaGuard });
   // 第2章の大会準備で一台作る（VOL13・ch2-craft-prep.js）。「いつものtonari」なら通常の tonari メニューへ（null）。
@@ -272,7 +274,12 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
     if (!await playQuestionVisit("ageha", { bg: ROOMS.ageha, deferSave: true })) return { used: false, exerted: false };
     if (state !== owner) return { used: false, exerted: false };
   }
-  if (id === "ageha" && !await offerAgehaPurikura(ROOMS.ageha, spot)) return { used: false, exerted: false };
+  if (id === "ageha") {
+    // 居合わせた人（daily/roamers.js）とは、プリクラの前に話す。早じまい・店の休みの理由はその会話で明かし、その人とも撮れる
+    const met = !!roamer && !!meetRoamerNow && await meetRoamerNow();
+    if (state !== owner) return { used: false, exerted: false };
+    if (!await offerAgehaPurikura(ROOMS.ageha, spot, { guests: met ? [roamer.id] : [] })) return { used: false, exerted: false };
+  }
   addMoney(-spot.cost); addStamina(spot.stamina);
   if (followup) (state.flags._ch2_followup_done ||= {})[id] = true;
   if (stage?.done) (state.flags[stage.done] ||= {})[id] = true;

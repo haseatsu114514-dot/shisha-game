@@ -113,7 +113,7 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-odds small { display: none; } /* 「30以上で成功」は右の説明と同じ */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-forecast-head { margin-bottom: 2px; justify-content: center; }
 
-/* ---- 役衣装の姿（TMX04）: シートは 姿｜顔書きと能力｜特徴と切り札 の3列 ---- */
+/* ---- 役衣装の姿（TMX04）: シートは 姿｜顔書きと能力｜特徴とスキル の3列 ---- */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] { grid-template-columns: 196px 330px 1fr; column-gap: 24px; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > .trpg-sheet-costume { grid-column: 1; grid-row: 1 / span 6; width: 196px; height: 262px; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > .trpg-sheet-head { grid-column: 2; grid-row: 1; }
@@ -122,10 +122,10 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costu
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-origin:has(.trpg-builder-origin-art) { padding-left: 104px; min-height: 104px; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-origin-art { width: 82px; }
 
-/* ---- 判定に賭けるもの（TRF02）: 成功のごほうびの札は1行。右の列で切り札の札を押し下げない ---- */
+/* ---- 判定に賭けるもの（TRF02）: 成功のごほうびの札は1行。右の列でスキルの札を押し下げない ---- */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-stake { margin: 0 auto 4px; padding-block: 2px; white-space: nowrap; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-reward { margin: 4px auto; padding-block: 2px; }
-/* 判定の決まりの一文は題の行の右へ。本文の先頭の一文は出さない（Safari のバーが出ている 844×340 でも、切り札の札の2行目まで見える）。 */
+/* 判定の決まりの一文は題の行の右へ。本文の先頭の一文は出さない（Safari のバーが出ている 844×340 でも、スキルの札の2行目まで見える）。 */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage > h2 { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 20px; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage > h2 .trpg-roll-rule {
   display: inline; font-size: var(--phone-sub); font-weight: 400; letter-spacing: 0; color: #c6d4cb; white-space: nowrap;
@@ -175,7 +175,7 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-cue .trpg-
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot > span { max-width: none; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot[data-label-align] > span { transform: none; }
 
-/* チュートリアルの図: 図の下の説明（GM＝… / 30以上で成功… / 切り札は一人一度…）と GM・PL の札が実寸 8〜9px だった */
+/* チュートリアルの図: 図の下の説明（GM＝… / 30以上で成功… / スキルは一人一度…）と GM・PL の札が実寸 8〜9px だった */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-tutorial-panel { width: 960px; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-tutorial-panel :is(p, .trpg-tutorial-seats b) { font-size: var(--phone-sub); line-height: 1.5; }
 

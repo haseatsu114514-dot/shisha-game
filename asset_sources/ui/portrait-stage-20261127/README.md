@@ -580,3 +580,165 @@ Polished anime game illustration style with clean dark outlines and two or three
 Do not draw: any background, smoke, a necklace, a second hose, a forked hose, the hookah body, a bowl, charcoal, text, letters, logos other than the cap emblem, watermark, frame.
 ```
 
+## 14回目: 水入れの流し台を、ボトルと同じ低い目線で蛇口ごと作り直す（VPL101・候補2枚から1枚）
+
+オーナー「水入れゲームシンクとボトルのサイズや立体感が変」。11回目の流し台は高い所から見下ろした絵で、横から見たボトルと目線が合っていなかった。ボトルの方が流し台より大きく見え、足は流し台の手前に浮いていた。蛇口の先も宙に浮いていた。
+`gpt-image-2.6-sunburst` の編集（images/edits・品質 high・背景は透明・1536×1024・2枚）で作った。鍵は環境変数から読み、値は記録していない。入力は2枚で、店の背景 `remake/img/backgrounds/bg_tonari_inside_day.webp` は絵柄と光の参考、ボトル `remake/previews/portrait-stage/img/ui-bottle-open.webp` は目線をそろえる参考にした（どちらも描かないよう指示）。
+
+試作に入れる時の手直し（生成はしていない）:
+- 蛇口のまっすぐな柱の所（絵の上から300行目）の1行を323行くり返して、首を伸ばした。吐水口からカウンターの手前の縁までを、ボトルの口から足の少し上までの長さに合わせるため（柱は上下に一様なので、伸ばしても形は変わらない）。
+- 縮めて 1152×1010 にした。
+
+試作では、吐水口がボトルの口の真上（FAUCET.nx・ny）に来るよう置き、流し台の幅をボトルの約2倍にした。カウンターの手前の縁から下（絵の縦 85.3% より下）は、同じ絵をもう1枚ボトルの上に重ねて、ボトルの足を隠す。
+
+| 原画（v3/） | 試作で使う絵（img/） | 使う所 |
+|---|---|---|
+| `sink-low-original.webp`（1536×1024） | `ui-sink-faucet.webp`（1152×1010・柱を伸ばした） | 水入れの流し台と蛇口（奥）と、カウンターの手前の縁（ボトルの上） |
+| `sink-low-candidate2-original.webp`（1536×1024） | 使わない | もう1枚の候補。流し台の中が浅く見え、ボトルを入れた時に中の奥行きが出にくいため使わない |
+
+11回目の `ui-sink.webp` と、9回目の蛇口 `ui-faucet.webp` は試作で使わなくなったので、`img/` から外した（原画は v3/ にそのまま残す）。
+
+生成後の確認（素材規約の必須チェック）:
+- 流し台は空で乾いている。水・ボトル・食器・人・壁・文字・ロゴが無い。
+- 目線は低く、カウンターの手前の縁がまっすぐな横線。流し台の床は手前の縁に隠れ、奥と左右の内側の壁が見える。
+- 蛇口はカウンターの奥に1本だけ立ち、首を曲げて吐水口が下を向く。
+- カウンターより上は透明（蛇口のほか）。
+- 合格（2枚のうち1枚を使う）。シーシャ台の機材ではないため、§4 の8行は当てはまらない。
+
+```text
+Match the illustration style and the warm lighting of the first reference image (a polished anime game background of a small Japanese shisha bar with clean outlines and soft cel shading). Do NOT draw the room from it; it is only a style and lighting reference.
+The second reference is the glass water base of a hookah that will be placed into this sink later by the game. Match its viewing angle exactly: seen straight from the front, with the eye only a little above the counter (looking down about 15 degrees). Do NOT draw that glass base.
+Draw on a fully transparent background one object only: the work sink of this shisha bar with its faucet, where the staff fill the glass hookah bases with water.
+- A brushed stainless-steel counter that spans the whole width of the image (cut off by the left and right edges). Because the eye is low, the counter top is a fairly thin band in perspective. The front edge of the counter top is one straight horizontal line at about 80 percent of the image height; below it, the vertical front face of the counter (a plain stainless apron) continues down to the bottom edge of the image.
+- Set into the counter, centered, one deep rectangular stainless-steel sink basin about 68 percent of the image width. From this low angle you look into it: the inner back wall and the two inner side walls are visible in perspective, and the basin floor is hidden behind the front edge of the counter.
+- On the back part of the counter, behind the basin and a little left of center, a tall gooseneck bar faucet in brushed stainless steel: a round base, a vertical column rising high above the counter, a smooth arch at the top, and a short spout that points straight down, ending exactly above the horizontal center of the image at about 15 percent of the image height from the top. One small lever handle on the column.
+- Everything above the back edge of the counter is fully transparent except the faucet.
+- Warm reflections of the bar lights on the steel, a few soft highlights, very clean.
+Do not draw: water, a hookah, a glass base, bottles, glasses, dishes, sponges, towels, people, hands, a wall, tiles, a window, text, letters, logos, watermark.
+```
+
+## 15回目: 縦長のキッチンタイマー（VPL127・生成なし）
+
+オーナー「どの案も微妙　さらに考え直して」（蒸らしのタイマーの場面の空き）。空きに物を足すのでなく、タイマーそのものを縦画面の形にした。
+新しく生成はしていない。本編の `remake/img/ui/making/kitchen_timer.webp`（1280×853）を部品に分け、等倍のまま組み直した。線の太さと角の丸みは元の絵と同じ。
+
+- 本体: 上の縁（0〜150行）と、下の縁と影（695〜853行）は元のまま。間は、むらの無い516行目の1行をくり返して伸ばした（横幅は元のまま）。
+- 液晶（145〜1125・150〜492）: 角の64pxを保って、縦だけ 600px に伸ばした。
+- ボタン: 灰（140〜345・525〜690）と緑（578〜908・525〜690）を、角を保って伸ばした（左右52・上44・下56px は元のまま）。2段に並べた。上の段は分・秒（灰）、下の段はリセット（灰・幅36%）とスタート＆ストップ（緑）。
+- 出来上がりは 1280×1672（`remake/previews/portrait-stage/img/ui-kitchen-timer-tall.webp`）。液晶の数字と、ボタンの字は試作が上に重ねる（絵に焼き込まない）。
+
+| 元の絵 | 試作で使う絵（img/） | 使う所 |
+|---|---|---|
+| `remake/img/ui/making/kitchen_timer.webp`（本編・1280×853） | `ui-kitchen-timer-tall.webp`（1280×1672・組み直し） | 蒸らしのタイマーの場面の案D |
+
+## 16回目: 縦長のキッチンタイマーを、初めから縦長の形で描き直す（VPL128・3パターン×候補2枚）
+
+オーナー「縦長タイマーがいいけどいま無理やり引き伸ばしてる感あるから作り直して見た目を縦長ように　生成してもいい　何パターンか見たい」。15回目の絵は横長の絵の部品を伸ばして組み直したもので、本体の白い所が広く、伸ばした感じが出ていた。
+`gpt-image-2.6-sunburst` の編集（images/edits・品質 high・背景は透明・1024×1536・各2枚）で作った。鍵は環境変数から読み、値は記録していない。入力は本編のタイマー `remake/img/ui/making/kitchen_timer.webp` 1枚だけで、画風・色・線の手本にした。並びの違う3パターンを、それぞれ2枚ずつ作った。
+
+試作に入れる時の手直し（生成はしていない）: 本体の外枠（透明でない所）で切り抜き、幅720に縮めた。液晶の数字と、ボタンの字（分・秒・リセット・スタート＆ストップ）は、試作が上に重ねる（絵に焼き込まない）。液晶とボタンの位置は、絵の色（液晶の緑・ボタンの灰と薄緑）から測り、`app.mjs` の `TIMER_LOOKS` に割合で書いた。
+
+| 原画（v4/） | 試作で使う絵（img/） | 使う所 |
+|---|---|---|
+| `ktimer-round-original.webp`（1024×1536） | `ui-ktimer-tall-round.webp`（720×1184） | 案1 丸いボタン（上が丸い本体・小さな足・丸いボタン3つと大きな丸いボタン） |
+| `ktimer-bar-original.webp`（1024×1536） | `ui-ktimer-tall-bar.webp`（720×1075） | 案2 長いスタート（分・秒・横長のボタン・小さなボタン） |
+| `ktimer-grid-original.webp`（1024×1536） | `ui-ktimer-tall-grid.webp`（720×1052） | 案3 4つのボタン（2段2列） |
+| `ktimer-round-candidate2-original.webp` | 使わない | 案1のもう1枚。大きな丸いボタンが小さめで、上の3つとの差が出にくい |
+| `ktimer-bar-candidate2-original.webp` | 使わない | 案2のもう1枚。ほぼ同じ形で、本体の下が少しすぼまる |
+| `ktimer-grid-candidate2-original.webp` | 使わない | 案3のもう1枚。ボタンが大きい分、液晶が小さい |
+
+生成後の確認（素材規約の必須チェック）:
+- 液晶は無地の緑で、数字・区画・記号が無い。ボタンは無地で、字・記号が無い。擬似文字が無い。
+- 本編のタイマーと同じ描き手に見える（クリーム色の本体・暖かい灰の輪郭線・2段の影・灰のボタンと薄緑のボタン1つ）。テカリやエアブラシのグラデは無い。
+- 背景は透明で、床の影・手・台・枠が無い。
+- 合格（各2枚のうち1枚を使う）。シーシャ台の機材ではないため、§4 の8行は当てはまらない。
+
+共通の指示:
+
+```text
+The reference image is the kitchen timer from this game: a cute, clean, slightly chunky illustration with a soft cream-white plastic body, a dark warm-gray outline, gentle two-tone shading, a sage-green blank LCD screen with a thin dark frame, light-gray rounded keys and one pale mint-green key. Keep exactly that art style, line weight, colors, material and level of detail, so it looks drawn by the same artist.
+Redesign it as a PORTRAIT (taller than wide) kitchen timer that was designed to be tall from the start. Proportions must look natural for a real portrait kitchen timer: not a stretched landscape timer, no large empty plastic areas, the screen and keys sized and spaced in a balanced way.
+Seen straight from the front, perfectly frontal, centered, filling about 88 percent of the image height, on a fully transparent background.
+The LCD screen is a wide rectangle near the top, completely blank and evenly sage green: no digits, no segments, no icons, no text.
+All keys are completely blank: no letters, no symbols, no icons, no printed labels. Every key is a separate, clearly outlined shape with a little gap around it.
+Do not draw: digits, letters, text, symbols, logos, a hand, a table, a shadow on the ground, a background, a frame, a watermark.
+```
+
+パターンごとの指示（共通の指示のあとに足した）:
+
+```text
+[round] Layout: a friendly rounded body with a gently arched top and softly rounded bottom corners, standing on a small flat foot. The blank LCD screen across the upper part. Below it, a row of three small round light-gray buttons. Below that row, one large round pale mint-green button in the center. All buttons are circles.
+[bar] Layout: the blank LCD screen across the upper part of the body. Below it, a row of two light-gray rounded keys side by side. Below that row, one wide pale mint-green key in a long rounded bar shape spanning almost the full width of the body. Below that, one small light-gray rounded key centered near the bottom. Rounded-rectangle body with softly rounded corners.
+[grid] Layout: the blank LCD screen across the upper part of the body. Below it, four equal rounded-rectangle keys in a 2 by 2 grid: top-left light gray, top-right light gray, bottom-left light gray, bottom-right pale mint green. The keys are large and easy to press. Rounded-rectangle body with softly rounded corners.
+```
+
+15回目の組み直しの絵 `ui-kitchen-timer-tall.webp` は使わなくなったので、`img/` から外した。
+
+この回の3枚（丸いボタン・長いスタート・4つのボタン）は、17回目で実物に合わせた絵に替えたため、試作の `img/` から外した（原画は v4/ にそのまま残す）。
+
+## 17回目: 縦長のキッチンタイマーを、実物に合わせた作りで描き直す（VPL129・3パターン×候補2枚）
+
+オーナー「こんなかだと四つよりだけど……縦タイマーの見た目がなんか変だから調べたりしてリアルな見た目にして」。16回目の絵は、おもちゃや電卓のように見えていた。
+実物のキッチンタイマーを調べた。ドリテック T-549 は約 W62×D15×H90mm の縦長で、磁石・ストラップ・スタンドの3通りで置ける。キーは「分」「秒」「スタート/ストップ」が基本で、リセットは2つのキーの同時押しが多い。これに合わせて、作りを次のようにした。
+- 縦横比は 62:90。
+- 液晶はくぼんだ窓で、透明なカバーに薄い映り込みがある。
+- キーはゴムで少し盛り上がり、間をあける。
+- 本体の縁に合わせ目と厚みを見せる。
+- スピーカーの小さな穴を付ける。
+
+キーの並びは、オーナーが寄った4つ（2段2列）のまま。
+`gpt-image-2.6-sunburst` の編集（images/edits・品質 high・背景は透明・1024×1536・各2枚）で作った。鍵は環境変数から読み、値は記録していない。入力は2枚。店の背景 `remake/img/backgrounds/bg_tonari_inside_day.webp` は画風の手本にし、本編のタイマー `remake/img/ui/making/kitchen_timer.webp` は色の手本だけにした（形は写さない）。
+
+試作に入れる時の手直しは16回目と同じ（本体の外枠で切り抜いて幅720。数字とボタンの字は試作が重ねる）。液晶の窓のふちは映り込みで色が途切れるため、左右対称として左の端を右の端から出した。
+
+| 原画（v4/） | 試作で使う絵（img/） | 使う所 |
+|---|---|---|
+| `ktimer-real-slim-original.webp`（1024×1536） | `ui-ktimer-tall-slim.webp`（720×1112） | 案1 大きな液晶（液晶が上半分・液晶とボタンの間にスピーカーの穴の列） |
+| `ktimer-real-std-original.webp`（1024×1536） | `ui-ktimer-tall-std.webp`（720×1119） | 案2 ストラップ穴（上にストラップの穴・下にスピーカーの丸い穴） |
+| `ktimer-real-bumper-original.webp`（1024×1536） | `ui-ktimer-tall-bumper.webp`（720×1062） | 案3 シリコンの縁（白い面を淡い緑のシリコンの縁が包む） |
+| `ktimer-real-slim-candidate2-original.webp` | 使わない | 案1のもう1枚。キーが小さめ |
+| `ktimer-real-std-candidate2-original.webp` | 使わない | 案2のもう1枚。キーが小さく、本体の白い所が広い |
+| `ktimer-real-bumper-candidate2-original.webp` | 使わない | 案3のもう1枚。全体に小さくまとまり、キーが小さい |
+
+生成後の確認（素材規約の必須チェック）:
+- 液晶は無地（映り込みのほか）で、数字・区画・記号が無い。キーは無地で、字・記号が無い。擬似文字・ロゴが無い。
+- プラスチックの厚み・合わせ目・ゴムのキーが分かる。テカリは液晶のカバーの映り込みだけで、エアブラシのグラデは無い。
+- 背景は透明で、床の影・手・台・枠が無い。
+- 合格（各2枚のうち1枚を使う）。シーシャ台の機材ではないため、§4 の8行は当てはまらない。
+
+共通の指示:
+
+```text
+The first reference image is a background from this game (a small Japanese shisha bar). Match its illustration style: a polished anime game illustration with clean outlines, soft cel shading and warm light. Do NOT draw the room; it is only a style reference.
+The second reference is this game's old kitchen timer. Use ONLY its color scheme (cream-white plastic body, pale sage-green LCD, light warm-gray keys, one pale mint-green key). Do NOT copy its chunky shape or layout.
+Draw one object on a fully transparent background: a realistic, believable digital kitchen timer like the ones sold in Japanese home-goods stores, designed as a portrait (upright) product from the start.
+- Seen straight from the front at eye level, perfectly frontal and centered, filling about 88 percent of the image height.
+- Real product proportions: about 62 mm wide, 90 mm tall and 15 mm thick (width to height about 0.69). Matte cream-white ABS plastic with softly rounded corners, a thin parting line along the edge where the front cover meets the back case, and a gentle highlight along the top edge, so it reads as a real molded plastic object with thickness, not a flat sticker.
+- In the upper part: a recessed rectangular LCD window about 52 mm wide and 30 mm tall, with a narrow darker frame and a clear cover with a faint reflection. The LCD behind it is the typical pale gray-green of a reflective LCD and is completely blank: no digits, no segments, no icons, no text.
+- Below the LCD: exactly four soft rubber keys arranged in a 2 by 2 grid, each a rounded rectangle about 22 mm wide and 13 mm tall, slightly domed, with small even gaps and a little shadow at their base. Top-left, top-right and bottom-left keys are light warm gray; the bottom-right key is pale mint green. The keys are completely blank: no letters, no symbols, no printing.
+- Do not draw: digits, letters, text, symbols, logos, brand names, a hand, a table, a floor shadow, a background, a frame, a watermark.
+```
+
+パターンごとの指示（共通の指示のあとに足した）:
+
+```text
+[slim] Extra details: the body is a little slimmer and taller (about 58 mm wide and 92 mm tall), the LCD is large and fills most of the upper half, and there is a row of tiny speaker holes centered between the LCD and the keys. No strap hole.
+[std] Extra details: a small round strap hole near the top center of the body, and a small round speaker grille of tiny holes centered on the body below the keys.
+[bumper] Extra details: the cream-white front panel is held in a soft silicone bumper frame in pale sage green that wraps around the whole edge with rounded corners, like many modern kitchen timers. A small speaker grille of tiny holes centered on the panel below the keys.
+```
+
+## 18回目: 縦長のキッチンタイマーを案1に決め、縦を少し詰める（VPL130・生成なし）
+
+オーナー「案1で　これを若干縦幅削れるとこ削っていい　そうすればちょうど良くなりそう」。17回目の案1（`ktimer-real-slim-original.webp`）を使い、縦を約12%詰めた（縦横比 0.65→0.73）。
+新しく生成はしていない。行ごとの変化がなだらかな帯だけを選び、縦に縮めてつないだ。帯を抜き取ると液晶のうすいグラデーションに段が出たため、抜き取りはやめた。ボタンの下は、角の丸みが始まる所に近いので触らない。
+
+| 元の行（1024×1536 の原画） | 縮めた後 | 所 |
+|---|---|---|
+| 181〜228（48行） | 28行 | 液晶の上の本体 |
+| 420〜699（280行） | 180行 | 液晶の下半分（映り込みの無い所） |
+| 743〜797（55行） | 35行 | 液晶とスピーカーの穴の間 |
+| 818〜870（53行） | 33行 | スピーカーの穴とボタンの間 |
+
+詰めたあと、本体の外枠で切り抜き、幅720にした（`remake/previews/portrait-stage/img/ui-ktimer-tall.webp`・720×982）。液晶とボタンの位置は、縮めた分だけずらして `app.mjs` の `KTIMER` に割合で書いた。
+案2・案3（`ui-ktimer-tall-std.webp`・`ui-ktimer-tall-bumper.webp`）と、詰める前の `ui-ktimer-tall-slim.webp` は、試作の `img/` から外した（原画は v4/ にそのまま残す）。
+

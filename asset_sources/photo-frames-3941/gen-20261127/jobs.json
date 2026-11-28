@@ -1,0 +1,1343 @@
+{
+  "_comment": "#3941 追加候補（2026-11-27）。チェキ C31〜C42（みんと。台紙・窓は本編 cg_minto_first_cheki と同じ位置）、プリクラ P31〜P42（640×1080 の2コマ）。text は余白・落書きに手書きで入れる言葉（各キャラの正本の呼び方・口調に合わせた）。",
+  "cheki": [
+    {
+      "id": "C31",
+      "title": "両手でハート",
+      "pose": "facing the camera, making a heart shape with both hands in front of her chest, bright happy smile",
+      "text": "はじめくん\nいつもありがと♡"
+    },
+    {
+      "id": "C32",
+      "title": "ほっぺにピース",
+      "pose": "facing the camera, a peace sign held against her cheek, playful wink with her tongue slightly out",
+      "text": "今日も来てくれて\nうれしいっ♪"
+    },
+    {
+      "id": "C33",
+      "title": "小悪魔のツノ",
+      "pose": "facing the camera, both index fingers pointing up beside her own devil horns as extra little horns, teasing grin showing a tiny fang",
+      "text": "小悪魔に\nご注意♡"
+    },
+    {
+      "id": "C34",
+      "title": "ミントのひと枝",
+      "pose": "facing the camera, holding a small fresh mint sprig near her lips, one eye closed, gentle smile",
+      "text": "ミント\nましまし♡"
+    },
+    {
+      "id": "C35",
+      "title": "投げキッス",
+      "pose": "facing the camera, blowing a kiss from her fingertips, eyes closed happily, slight head tilt",
+      "text": "ずっと\nまってるね♡"
+    },
+    {
+      "id": "C36",
+      "title": "指ハート",
+      "pose": "facing the camera, leaning forward a little and making a finger heart toward the lens, confident wink",
+      "text": "推してくれて\nありがと♡"
+    },
+    {
+      "id": "C37",
+      "title": "頬づえ",
+      "pose": "sitting at the cafe counter, resting her chin on both hands, looking up at the camera with a sweet smile",
+      "text": "みんとに\n会いにきてね"
+    },
+    {
+      "id": "C38",
+      "title": "フラミンゴ・ピーチ",
+      "pose": "facing the camera, holding up a tall glass of pink peach soda drink with a paper straw beside her face, winking",
+      "text": "フラミンゴ・ピーチ\n推し♡"
+    },
+    {
+      "id": "C39",
+      "title": "2ショット・半分こハート",
+      "two": true,
+      "pose": "two-shot cheki: Minto and Hajime side by side, each making half of a heart with one hand so the halves meet between them; Minto beams, Hajime smiles shyly",
+      "text": "2ショット\n記念日♡"
+    },
+    {
+      "id": "C40",
+      "title": "2ショット・かたいピース",
+      "two": true,
+      "pose": "two-shot cheki: Minto doing a big cheerful peace sign; Hajime standing rigidly upright like a soldier, arms stiff, a tiny awkward peace sign at chest height, tense closed-mouth expression with a drop of sweat — clearly NOT smiling naturally",
+      "text": "かたいよ〜？\n次は笑ってね"
+    },
+    {
+      "id": "C41",
+      "title": "2ショット・ツノのいたずら",
+      "two": true,
+      "pose": "two-shot cheki: Minto standing slightly behind Hajime, holding two fingers up behind his head like little devil horns; Hajime looks at the camera surprised",
+      "text": "はじめくんも\n悪魔の仲間♡"
+    },
+    {
+      "id": "C42",
+      "title": "2ショット・肩を並べて",
+      "two": true,
+      "pose": "two-shot cheki: Minto and Hajime shoulder to shoulder (not touching cheeks), both smiling at the camera, Minto doing a peace sign",
+      "text": "相性\nばっちり♡"
+    },
+    {
+      "id": "C43",
+      "title": "がおーポーズ",
+      "pose": "facing the camera, both hands raised like little claws beside her face in a playful 'rawr' pose, mischievous grin showing a tiny fang",
+      "text": "がおー♡\nつかまえた"
+    },
+    {
+      "id": "C44",
+      "title": "敬礼ウインク",
+      "pose": "facing the camera, a cute little salute at her temple with one hand, winking, the other hand on her hip",
+      "text": "本日も\nご来店感謝♡"
+    },
+    {
+      "id": "C45",
+      "title": "ほっぺにハート",
+      "pose": "facing the camera, both hands making small hearts pressed against her cheeks, eyes closed in a big happy smile",
+      "text": "ほっぺに\nハート♡"
+    },
+    {
+      "id": "C46",
+      "title": "2ショット・ドリンク",
+      "two": true,
+      "pose": "two-shot cheki: Hajime holding a tall glass of pink peach soda with a paper straw, a little embarrassed; Minto beside him pointing at the drink and winking",
+      "text": "ちゃんと\n飲んでね♡"
+    },
+    {
+      "id": "C47",
+      "title": "黒フチ・特別な日",
+      "frame": "a glossy BLACK card (black instant-film frame) instead of white",
+      "ink": "gold and silver metallic gel-pen handwriting",
+      "pose": "facing the camera, one hand lightly at her heart choker, confident half-lidded smile with a tiny fang",
+      "text": "特別な日の\nみんと♡",
+      "patterned": true
+    },
+    {
+      "id": "C48",
+      "title": "ハート柄フチ",
+      "frame": "a pastel PINK card printed with small white and darker-pink hearts",
+      "ink": "white and hot-pink paint-marker handwriting",
+      "pose": "facing the camera, both hands cupped under her chin in a cute 'burikko' pose, sparkly eyes",
+      "text": "かわいく\n撮れた？",
+      "patterned": true
+    },
+    {
+      "id": "C49",
+      "title": "ミントのギンガムフチ",
+      "frame": "a MINT-GREEN gingham-check card",
+      "ink": "deep green and pink paint-marker handwriting",
+      "pose": "facing the camera, holding a small potted mint plant toward the lens with a proud smile",
+      "text": "ミント\n育ててます♪",
+      "patterned": true
+    },
+    {
+      "id": "C50",
+      "title": "全身ver.",
+      "pose": "FULL-BODY shot from the top of her horns down to her boots, standing in the cafe, a little curtsy pinching her skirt hem, winking",
+      "text": "全身ver.\nレアだよ♡"
+    },
+    {
+      "id": "C51",
+      "title": "顔アップ",
+      "pose": "a very close-up shot where her face fills most of the photo, big wink, a peace sign right next to her eye",
+      "text": "近すぎ？\nえへへ♡"
+    },
+    {
+      "id": "C52",
+      "title": "ハートのふうせん",
+      "pose": "facing the camera, holding the string of a mint-green heart-shaped balloon floating beside her head, leaning playfully to one side",
+      "text": "ふうせん\nあげるっ♡"
+    },
+    {
+      "id": "C53",
+      "title": "撮る側のみんと",
+      "pose": "facing the camera, holding a small instant camera herself and aiming it back at the viewer with one eye closed, playful",
+      "text": "次は\nはじめくんの番"
+    },
+    {
+      "id": "C54",
+      "title": "2ショット・おそろいのツノ",
+      "two": true,
+      "pose": "two-shot cheki: Hajime wearing a small headband with black devil horns (it sits on top of his cap) that Minto put on him, looking embarrassed; Minto beside him pointing at his horns and laughing",
+      "text": "おそろいの\nツノ♡"
+    },
+    {
+      "id": "C55",
+      "title": "2ショット・背中あわせ",
+      "two": true,
+      "pose": "two-shot cheki: Minto and Hajime standing back to back with arms crossed in a 'cool' pose, Minto winking, Hajime trying to look serious",
+      "text": "クール\nコンビ？笑"
+    },
+    {
+      "id": "C56",
+      "title": "2ショット・はじめのハート",
+      "two": true,
+      "pose": "two-shot cheki: Hajime awkwardly making a heart with both hands, Minto leaning in and pretending to catch the heart with both hands, delighted",
+      "text": "ハート\nいただきっ♡"
+    },
+    {
+      "id": "C57",
+      "title": "雨の日",
+      "pose": "inside the cafe on a rainy day, rain on the window behind her, holding a closed clear umbrella with raindrops, slightly damp bangs, warm smile",
+      "text": "雨の日も\nありがと♡"
+    },
+    {
+      "id": "C58",
+      "title": "イベント衣装案・天使の日",
+      "pose": "a one-day 'angel day' event costume: the same dress redrawn in WHITE with mint-green frills, small white feathered angel wings instead of bat wings and a thin golden halo, but she keeps her small black devil horns peeking out (a devil playing angel); playful prayer hands",
+      "text": "天使の日\n限定♡"
+    },
+    {
+      "who": "shiori",
+      "rare": true,
+      "frame": "a soft IVORY (cream) card",
+      "ink": "small, neat, slightly shaky dark-green fineliner handwriting with only one or two tiny hearts or a small mint leaf",
+      "id": "C59",
+      "title": "激レア・ないしょの一枚",
+      "pose": "after closing time in the dim cafe (only one warm lamp on, chairs up on some tables), Shiori in her plain clothes holding a finger to her lips, a shy small smile",
+      "text": "……ないしょの\n一枚"
+    },
+    {
+      "who": "shiori",
+      "rare": true,
+      "frame": "a soft IVORY (cream) card",
+      "ink": "small, neat, slightly shaky dark-green fineliner handwriting with only one or two tiny hearts or a small mint leaf",
+      "id": "C60",
+      "title": "激レア・てれる",
+      "pose": "after closing time, Shiori half-hiding her blushing face behind her cardigan sleeve, eyes looking at the camera",
+      "text": "……てれる"
+    },
+    {
+      "who": "shiori",
+      "rare": true,
+      "frame": "a soft IVORY (cream) card",
+      "ink": "small, neat, slightly shaky dark-green fineliner handwriting with only one or two tiny hearts or a small mint leaf",
+      "id": "C61",
+      "title": "激レア・閉店後のコーヒー",
+      "pose": "after closing time, Shiori sitting at the counter holding a cup of coffee with both hands, a soft, tired but warm smile",
+      "text": "いつも……\nありがと"
+    },
+    {
+      "who": "shiori",
+      "rare": true,
+      "frame": "a soft IVORY (cream) card",
+      "ink": "small, neat, slightly shaky dark-green fineliner handwriting with only one or two tiny hearts or a small mint leaf",
+      "id": "C62",
+      "title": "激レア・チョコミントパフェ",
+      "pose": "after closing time, Shiori holding up a small chocolate-mint parfait in a tall glass (her family cafe's old signature dessert), a gentle nostalgic smile",
+      "text": "チョコミント\n……すき"
+    },
+    {
+      "who": "shiori",
+      "rare": true,
+      "frame": "a soft IVORY (cream) card",
+      "ink": "small, neat, slightly shaky dark-green fineliner handwriting with only one or two tiny hearts or a small mint leaf",
+      "id": "C63",
+      "title": "激レア・古いコースター",
+      "pose": "after closing time, Shiori holding up an old, worn wooden coaster with both hands near her face, as if showing a treasure, a small proud smile",
+      "text": "これは……\nひみつ"
+    },
+    {
+      "who": "shiori",
+      "rare": true,
+      "frame": "a soft IVORY (cream) card",
+      "ink": "small, neat, slightly shaky dark-green fineliner handwriting with only one or two tiny hearts or a small mint leaf",
+      "id": "C64",
+      "title": "激レア・2ショット",
+      "two": true,
+      "pose": "two-shot after closing time: Shiori in her plain clothes standing very close to Hajime (shoulders touching), a tiny peace sign held near her chest, shy smile; Hajime smiling gently",
+      "text": "……また、ね"
+    }
+  ],
+  "purikura": [
+    {
+      "id": "P31",
+      "title": "あげはとギャルピ伝授",
+      "with": "ageha",
+      "face": "smile",
+      "petite": true,
+      "top": "Ageha and Hajime both doing the gyaru peace sign (palm turned inward, fingers under the chin), Ageha perfect and confident",
+      "bottom": "Ageha laughing and correcting Hajime's hand, Hajime's gyaru peace is clumsy",
+      "text": [
+        "ギャルピ伝授♡",
+        "ハジメっち へた笑"
+      ],
+      "theme": "hot pink and leopard print gyaru frame, glitter hearts, bear stamps"
+    },
+    {
+      "id": "P32",
+      "title": "あげはと半分こハート",
+      "with": "ageha",
+      "face": "smile",
+      "petite": true,
+      "top": "Ageha and Hajime each making half of a heart with their hands so it joins between them",
+      "bottom": "both laughing with eyes closed, Ageha leaning on Hajime's shoulder",
+      "text": [
+        "うちら最強☆",
+        "ハジメっち♡"
+      ],
+      "theme": "neon pink and gold, sparkle stars, heart stamps"
+    },
+    {
+      "id": "P33",
+      "title": "あげはと盛れ顔",
+      "with": "ageha",
+      "face": "smile",
+      "petite": true,
+      "top": "both making exaggerated cute pouty faces at the camera",
+      "bottom": "Ageha playfully pinching Hajime's cheek while he flinches, both grinning",
+      "text": [
+        "盛れすぎ注意",
+        "まじウケる"
+      ],
+      "theme": "pastel lilac and mint checkerboard frame, lipstick and star stamps"
+    },
+    {
+      "id": "P34",
+      "title": "組長と記念の一枚",
+      "with": "kumicho",
+      "face": "normal",
+      "top": "Kanzaki stands stern with arms crossed, Hajime stiff and nervous beside him",
+      "bottom": "Kanzaki gives an awkward small peace sign, Hajime bursting into laughter",
+      "text": [
+        "あんちゃんと 記念ですわ",
+        "笑"
+      ],
+      "theme": "cream and wine-red frame with gold laurel stamps, a little old-fashioned"
+    },
+    {
+      "id": "P35",
+      "title": "クラウドと闇プリ",
+      "with": "rei",
+      "face": "normal",
+      "top": "Kuraudo in a dramatic visual-kei pose with a hand over one eye, Hajime trying to copy it",
+      "bottom": "both breaking into laughter, Kuraudo's pose fallen apart",
+      "text": [
+        "†闇プリ†"
+      ],
+      "theme": "black and deep burgundy frame with lace, roses, crosses and bat stamps"
+    },
+    {
+      "id": "P36",
+      "title": "ソロぷり初挑戦",
+      "solo": true,
+      "top": "Hajime alone, standing stiffly, not sure where to look",
+      "bottom": "Hajime alone, a shy small peace sign and a faint smile, getting used to it",
+      "text": [
+        "一人で 初挑戦！"
+      ],
+      "theme": "sky blue and white frame with camera and sparkle stamps"
+    },
+    {
+      "id": "P37",
+      "title": "ましろとゆるぷり",
+      "with": "mashiro",
+      "face": "smile",
+      "petite": true,
+      "top": "Mashiro and Hajime both sleepy-eyed and relaxed, Mashiro tilting her head",
+      "bottom": "Mashiro yawning behind her sleeve, Hajime smiling at her",
+      "text": [
+        "はじめくんと ゆるぷり",
+        "ねむ…"
+      ],
+      "theme": "soft sage green and cream gingham frame, rabbit and cloud stamps"
+    },
+    {
+      "id": "P38",
+      "title": "つむぎの似顔絵",
+      "with": "tsumugi",
+      "face": "smile",
+      "petite": true,
+      "top": "Tsumugi shyly hugging her tablet, Hajime beside her looking at the camera",
+      "bottom": "Tsumugi holding up a quick cute sketch of Hajime on paper, Hajime surprised and laughing",
+      "text": [
+        "似顔絵 できた"
+      ],
+      "theme": "lavender frame with pencil, eraser and paint stamps, sketchbook paper texture"
+    },
+    {
+      "id": "P39",
+      "title": "サメちゃんとサメぷり",
+      "with": "samechan",
+      "face": "smile",
+      "petite": true,
+      "top": "Same-chan and Hajime both putting a flat hand on top of their head like a shark fin",
+      "bottom": "Same-chan doing a playful chomp pose with her shark plush, Hajime pretending to be bitten",
+      "text": [
+        "お主と サメぷり！"
+      ],
+      "theme": "ocean blue frame with waves, bubbles, coral and shark-tooth stamps"
+    },
+    {
+      "id": "P40",
+      "title": "鳴と勝負の一枚",
+      "with": "naru",
+      "face": "smile",
+      "top": "Naru and Hajime staring each other down competitively, foreheads not touching",
+      "bottom": "the two doing a fist bump and laughing",
+      "text": [
+        "勝負は 次！"
+      ],
+      "theme": "navy and orange sporty frame with checkered flag and lightning stamps"
+    },
+    {
+      "id": "P41",
+      "title": "ひよりとないしょの一枚",
+      "with": "hiyori",
+      "face": "smile",
+      "top": "Hiyori leaning in playfully toward the camera, Hajime surprised",
+      "bottom": "both smiling softly, Hiyori's high ponytail swinging",
+      "text": [
+        "ないしょの 一枚"
+      ],
+      "theme": "teal and cream frame with small rain-drop and star stamps"
+    },
+    {
+      "id": "P42",
+      "title": "スミさんと師匠と弟子",
+      "with": "sumi",
+      "face": "smile",
+      "top": "Sumi and Hajime both with arms crossed, serious master-and-apprentice faces",
+      "bottom": "Sumi ruffling Hajime's cap with a big hand, both laughing",
+      "text": [
+        "師匠と 弟子"
+      ],
+      "theme": "warm brown cafe frame with coffee bean, cup and mosaic-lamp stamps"
+    },
+    {
+      "id": "P43",
+      "title": "ヨルとセッション",
+      "with": "yoru",
+      "face": "smile",
+      "top": "Yoru tapping out a rhythm with her headphones half on, Hajime nodding along awkwardly",
+      "bottom": "the two grinning at the camera, Yoru resting an arm on Hajime's shoulder like a cool older friend",
+      "text": [
+        "はじめくんと セッション♪"
+      ],
+      "theme": "dark purple club frame with sound-wave lines, music notes and vinyl record stamps"
+    },
+    {
+      "id": "P44",
+      "title": "凛想とたまには",
+      "with": "rio",
+      "face": "smile",
+      "top": "Rio calm and languid with a small cool smile, Hajime stiff beside her",
+      "bottom": "Rio gently tilting Hajime's cap brim with one finger, both smiling",
+      "text": [
+        "たまには ね"
+      ],
+      "theme": "calm slate blue and white frame with small leaf and ribbon stamps"
+    },
+    {
+      "id": "P45",
+      "title": "あげはと変顔対決",
+      "with": "ageha",
+      "face": "smile",
+      "petite": true,
+      "top": "both pulling silly funny faces at the camera (puffed cheeks, crossed eyes) — playful, not ugly",
+      "bottom": "both collapsing into laughter",
+      "text": [
+        "変顔 対決！",
+        "ハジメっち 勝ち"
+      ],
+      "theme": "yellow and hot pink pop frame with comic burst and star stamps"
+    },
+    {
+      "id": "P46",
+      "title": "あげはと組長と3人で",
+      "with": [
+        "ageha",
+        "kumicho"
+      ],
+      "face": "smile",
+      "top": "three people: Ageha in the middle doing a gyaru peace, Kanzaki on the right stern with arms crossed, Hajime on the left nervous",
+      "bottom": "Ageha pulling Kanzaki and Hajime close, Kanzaki giving in with a reluctant small peace sign, Hajime laughing",
+      "text": [
+        "3人ぷり☆"
+      ],
+      "theme": "pink leopard and gold frame with crown and heart stamps"
+    },
+    {
+      "id": "P47",
+      "title": "tonariの3人",
+      "with": [
+        "sumi",
+        "tsumugi"
+      ],
+      "face": "smile",
+      "top": "three people: Sumi on the left with arms crossed, Tsumugi in the middle shyly hugging her tablet, Hajime on the right",
+      "bottom": "all three smiling, Sumi with a hand on Hajime's cap, Tsumugi giving a small peace sign",
+      "text": [
+        "tonariの 3人"
+      ],
+      "theme": "warm amber frame with colorful mosaic-lamp and coffee stamps"
+    },
+    {
+      "id": "P48",
+      "title": "私服のみんと（栞）とないしょの一枚",
+      "with": "shiori",
+      "top": "Shiori (Minto off duty, in plain clothes) shyly hiding half of her face behind her hand, Hajime surprised to see her",
+      "bottom": "Shiori with a small, tired but warm smile and a tiny peace sign held close to her chest, Hajime smiling gently",
+      "text": [
+        "……たのしかった",
+        "ないしょね"
+      ],
+      "theme": "soft cream and dusty-green frame with small leaves, a teacup and a tiny heart; quiet and modest, very few stamps",
+      "quiet": true
+    },
+    {
+      "id": "P49",
+      "title": "つむぎと初プリ",
+      "with": "tsumugi",
+      "petite": true,
+      "top": "Tsumugi standing stiffly, unused to purikura, hugging her tablet; Hajime pointing at the camera to show her where to look",
+      "bottom": "Tsumugi smiling shyly with a small peace sign, Hajime grinning",
+      "text": [
+        "はじめさんと 初プリ"
+      ],
+      "theme": "soft lavender frame with pencils, a small sketchbook and flower stamps"
+    },
+    {
+      "id": "P50",
+      "title": "サメちゃんとコロちゃんの記念",
+      "with": "samechan",
+      "petite": true,
+      "top": "Same-chan holding her crowned shark plush Koro-chan up proudly between herself and Hajime",
+      "bottom": "Koro-chan the plush 'biting' Hajime's cap while Same-chan looks surprised at her own plush",
+      "text": [
+        "余と勇者の 記念である"
+      ],
+      "theme": "deep blue frame with waves, a small crown, bubbles and shark-tooth stamps"
+    },
+    {
+      "id": "P51",
+      "title": "ひよりとあわの一枚",
+      "with": "hiyori",
+      "top": "Hiyori gazing slightly away with a dreamy, fragile expression, Hajime glancing at her",
+      "bottom": "Hiyori suddenly smiling brightly at the camera with a peace sign, Hajime laughing",
+      "text": [
+        "きょうの きおく .｡oO"
+      ],
+      "theme": "pale aqua frame with floating soap bubbles and small sparkle stamps"
+    },
+    {
+      "id": "P52",
+      "title": "凛想とモルモットくんの記録",
+      "with": "rio",
+      "top": "Rio holding a small notebook as if observing Hajime for research, Hajime stiff",
+      "bottom": "Rio leaning in close beside Hajime with a subtle satisfied smile, pen tapping her lips",
+      "text": [
+        "モルモットくんの 記録"
+      ],
+      "theme": "slate blue frame with graph-paper lines, a tiny flask and leaf stamps"
+    },
+    {
+      "id": "P53",
+      "title": "アダムとダブルアップル",
+      "with": "adam",
+      "top": "Adam staring at the camera with a dead-serious face, holding up two apples (one red, one green); Hajime confused beside him",
+      "bottom": "Adam still serious while Hajime laughs, Adam pressing the two apples together into a heart-ish shape",
+      "text": [
+        "ダブルアップルか それ以外か"
+      ],
+      "theme": "red and green frame with apple and leaf stamps, a little stylish"
+    },
+    {
+      "id": "P54",
+      "title": "鳴とポーズ勝負",
+      "with": "naru",
+      "top": "Naru and Hajime each striking a cool pose, competing",
+      "bottom": "both breaking into laughter, Naru with an arm around Hajime's shoulder",
+      "text": [
+        "次も 本気な"
+      ],
+      "theme": "black and orange street-style frame with lightning and star stamps"
+    },
+    {
+      "id": "P55",
+      "title": "組長と左右そろった指ハート",
+      "with": "kumicho",
+      "top": "Kanzaki making a finger heart with perfect craftsman precision, checking that both sides are symmetric; Hajime making a sloppy one",
+      "bottom": "Kanzaki gently correcting the angle of Hajime's finger heart, both now perfectly matched",
+      "text": [
+        "左右 そろえやした"
+      ],
+      "theme": "cream and deep purple frame with gold laurel and small heart stamps"
+    },
+    {
+      "id": "P56",
+      "title": "あげはとクラウドと3人で",
+      "with": [
+        "ageha",
+        "rei"
+      ],
+      "top": "three people: Ageha in the middle, Kuraudo on the right in a cool visual-kei pose, Hajime on the left; the photo is NOT whitened or skin-brightened so Kuraudo's black and wine-red stay deep",
+      "bottom": "all three smiling, Ageha has drawn a single small heart on Kuraudo's shoulder",
+      "text": [
+        "盛らない ver.☆"
+      ],
+      "theme": "black, wine-red and pink frame with lace, roses and small heart stamps"
+    },
+    {
+      "id": "P57",
+      "title": "私服のみんととぼうし交換",
+      "with": "shiori",
+      "top": "Shiori wearing Hajime's black cap a little too big for her, embarrassed, Hajime without his cap laughing",
+      "bottom": "Shiori giving a tiny peace sign under the brim of the cap, Hajime fixing the cap on her head",
+      "text": [
+        "……かぶってみた"
+      ],
+      "theme": "soft cream and dusty-green frame with small leaves and a tiny cap stamp; quiet and modest",
+      "quiet": true
+    },
+    {
+      "id": "P58",
+      "title": "私服のみんととおそろいの角度",
+      "with": "shiori",
+      "top": "Shiori and Hajime both tilting their heads the same way, Shiori glancing at him to copy",
+      "bottom": "both smiling softly at the camera, heads leaning a little toward each other (not touching)",
+      "text": [
+        "おそろい……"
+      ],
+      "theme": "pale mint and ivory gingham frame with a teacup and a small heart; quiet",
+      "quiet": true
+    },
+    {
+      "id": "P59",
+      "title": "私服のみんとの笑い顔",
+      "with": "shiori",
+      "top": "Shiori trying to keep a calm small smile",
+      "bottom": "Shiori suddenly laughing openly with her eyes closed, a rare unguarded laugh, Hajime surprised then smiling",
+      "text": [
+        "わらっちゃった"
+      ],
+      "theme": "warm ivory frame with a few small mint leaves and sparkles; quiet",
+      "quiet": true
+    },
+    {
+      "id": "P60",
+      "title": "凛想と記録更新",
+      "with": "rio",
+      "top": "Rio looking straight at the camera with a calm, analytical expression, one finger at her chin as if evaluating the shot; Hajime stiff beside her",
+      "bottom": "Rio caught off guard and laughing quietly behind her hand, Hajime grinning",
+      "text": [
+        "記録 更新"
+      ],
+      "theme": "slate blue and white frame with small graph lines, leaf and star stamps",
+      "redone": "1回目は、プリ機の画面がコマの中に写っていた"
+    },
+    {
+      "id": "P61",
+      "title": "ひよりと会社帰り",
+      "with": "hiyori",
+      "top": "Hiyori after work with a work tote bag on her shoulder (NO ID card, NO lanyard, nothing around her neck), a weary, fragile sigh pose toward the camera",
+      "bottom": "Hiyori suddenly full of energy, a big grin and a fist pump, Hajime laughing",
+      "text": [
+        "きょうも おつかれ .｡oO"
+      ],
+      "theme": "pale aqua frame with soap bubbles, a tiny clock and star stamps",
+      "redone": "1回目は、仕事の後なのに首から社員証を下げていた"
+    },
+    {
+      "id": "P62",
+      "title": "サメちゃんと2枚目",
+      "with": "samechan",
+      "petite": true,
+      "top": "Same-chan holding her shark plush behind her back for once, a little shy, Hajime curious",
+      "bottom": "Same-chan popping the shark plush up between them with a big fang grin",
+      "text": [
+        "お主と 2枚目じゃ"
+      ],
+      "theme": "turquoise frame with waves, bubbles and small fish stamps"
+    },
+    {
+      "id": "P63",
+      "title": "つむぎの落書き",
+      "with": "tsumugi",
+      "petite": true,
+      "top": "Tsumugi and Hajime both posing with cat-paw hands toward the camera, Tsumugi a little shy",
+      "bottom": "both smiling at the camera; cat ears and whiskers are DOODLED over Hajime in glitter pen on top of the photo (drawn lines, not real ears), Tsumugi giving a small peace sign",
+      "text": [
+        "はじめさん ネコ化"
+      ],
+      "theme": "lavender and white frame with pencil, paw and small flower stamps",
+      "redone": "1回目は、プリ機のペンで落書きしている姿そのものが写っていた"
+    },
+    {
+      "id": "P64",
+      "title": "ソロぷり・キメ顔練習",
+      "solo": true,
+      "top": "Hajime alone trying a cool serious face with two fingers on the brim of his cap",
+      "bottom": "Hajime alone breaking into an embarrassed laugh, covering half his face with his hand",
+      "text": [
+        "キメ顔 練習中"
+      ],
+      "theme": "navy and silver frame with small stars and a crescent moon"
+    },
+    {
+      "id": "P65",
+      "title": "ソロぷり・盛れすぎ注意",
+      "solo": true,
+      "top": "Hajime alone leaning toward the camera, surprised by his own sparkly enlarged eyes",
+      "bottom": "Hajime alone doing a confident peace sign with a small grin",
+      "text": [
+        "盛れすぎ 注意！"
+      ],
+      "theme": "mint green and white frame with sparkles and a mirror stamp"
+    },
+    {
+      "id": "P66",
+      "title": "ソロぷり・指ハート習得",
+      "solo": true,
+      "top": "Hajime alone making an awkward finger heart, fingers not quite right",
+      "bottom": "Hajime alone making a proper finger heart, proud, trying to wink but both eyes half closed",
+      "text": [
+        "指ハート 習得"
+      ],
+      "theme": "pink and white gingham frame with small heart stamps"
+    },
+    {
+      "id": "P67",
+      "title": "ソロぷり・あげは監修",
+      "solo": true,
+      "top": "Hajime alone pointing at the camera with a slightly stiff smile",
+      "bottom": "Hajime alone framing his face with both hands in a V shape",
+      "text": [
+        "ハジメっち ソロデビュー☆",
+        "盛ったのは あげは"
+      ],
+      "theme": "hot pink leopard gyaru frame with crowns and bear stamps (Ageha did the doodles)"
+    },
+    {
+      "id": "P68",
+      "title": "ソロぷり・大会前の気合い",
+      "solo": true,
+      "top": "Hajime alone raising a fist with a determined face",
+      "bottom": "Hajime alone taking a deep breath, a calm small smile",
+      "text": [
+        "大会 がんばる！"
+      ],
+      "theme": "orange and yellow frame with flame and star stamps"
+    },
+    {
+      "id": "P69",
+      "title": "あげはとクマ耳おそろ",
+      "with": "ageha",
+      "face": "smile",
+      "top": "Ageha and Hajime both making bear ears on their heads with their fists, Ageha's bear hair clips visible",
+      "bottom": "Ageha laughing and adjusting Hajime's bear-ear hands, Hajime a little embarrassed",
+      "text": [
+        "クマ耳 おそろ♡",
+        "ハジメっち クマ似合う"
+      ],
+      "theme": "pink and cream frame with bear stamps and hearts"
+    },
+    {
+      "id": "P70",
+      "title": "あげはと背中合わせ",
+      "with": "ageha",
+      "face": "smile",
+      "top": "Ageha and Hajime standing back to back with cool faces and arms crossed",
+      "bottom": "both turning to the camera and laughing because they couldn't keep the cool face",
+      "text": [
+        "背中は 任せた☆"
+      ],
+      "theme": "purple and silver frame with lightning and star stamps"
+    },
+    {
+      "id": "P71",
+      "title": "あげはとびっくり顔",
+      "with": "ageha",
+      "face": "surprise",
+      "top": "Ageha and Hajime both making exaggerated surprised faces with round mouths and hands on cheeks",
+      "bottom": "both laughing at how silly they looked, Ageha doing a gyaru peace",
+      "text": [
+        "びっくり 盛り",
+        "うちら 天才"
+      ],
+      "theme": "yellow and hot pink pop-art frame with exclamation and burst stamps"
+    },
+    {
+      "id": "P72",
+      "title": "あげはとピースの高さ",
+      "with": "ageha",
+      "face": "smile",
+      "top": "Ageha holding her peace sign high above Hajime's head, Hajime holding his low",
+      "bottom": "swapped: Hajime holding his peace high, Ageha low and pouting playfully",
+      "text": [
+        "ピースの 高さ対決"
+      ],
+      "theme": "turquoise and pink frame with arrow and star stamps"
+    },
+    {
+      "id": "P73",
+      "title": "恋人のあげはと半分こハート",
+      "with": "ageha",
+      "face": "smile",
+      "lover": true,
+      "top": "Ageha and Hajime cheek to cheek, making one heart together with their hands",
+      "bottom": "Ageha resting her head on Hajime's shoulder with a soft happy smile, Hajime blushing",
+      "text": [
+        "ハジメっち 大すき♡",
+        "カップルぷり"
+      ],
+      "theme": "pink and red frame with many hearts and a small lock stamp"
+    },
+    {
+      "id": "P74",
+      "title": "恋人のあげはとバックハグ",
+      "with": "ageha",
+      "face": "smile",
+      "lover": true,
+      "top": "Ageha hugging Hajime from behind with her arms around his shoulders, chin on his shoulder, grinning",
+      "bottom": "Hajime turning his head to her, both laughing, his ears red",
+      "text": [
+        "うちの♡"
+      ],
+      "theme": "hot pink leopard and gold frame with hearts and a crown"
+    },
+    {
+      "id": "P75",
+      "title": "恋人のあげはとおでこ",
+      "with": "ageha",
+      "face": "smile",
+      "lover": true,
+      "top": "Ageha and Hajime with foreheads gently touching, eyes closed, smiling",
+      "bottom": "both turning to the camera, Ageha doing a gyaru peace, Hajime holding her hand",
+      "text": [
+        "ずっと いっしょ☆"
+      ],
+      "theme": "soft pink and white frame with stars and small bear stamps"
+    },
+    {
+      "id": "P76",
+      "title": "恋人のあげはと手つなぎ",
+      "with": "ageha",
+      "face": "smile",
+      "lover": true,
+      "top": "Ageha and Hajime holding hands and raising them together toward the camera",
+      "bottom": "their joined free hands making a heart shape, both smiling, Ageha leaning on him",
+      "text": [
+        "手つなぎ ぷり♡"
+      ],
+      "theme": "pink and lilac frame with hearts and ribbon stamps"
+    },
+    {
+      "id": "P77",
+      "title": "恋人のあげはとちゅー未遂",
+      "with": "ageha",
+      "face": "smile",
+      "lover": true,
+      "top": "Ageha leaning in as if to kiss Hajime's cheek but stopping just short: a clear visible gap of air between her puckered lips and his cheek (they do NOT touch), Hajime frozen and bright red",
+      "bottom": "Ageha laughing with a tongue-out wink, Hajime covering his red face",
+      "text": [
+        "ちゅー 未遂♡",
+        "ハジメっち 固まりすぎ"
+      ],
+      "theme": "hot pink and red frame with lipstick-mark and heart stamps",
+      "redone": "1回目は、あげはの唇がはじめの頬に触れて見え、「未遂」にならなかった"
+    },
+    {
+      "id": "P78",
+      "title": "恋人のつむぎと肩よせ",
+      "with": "tsumugi",
+      "face": "smile",
+      "lover": true,
+      "quiet": true,
+      "top": "Tsumugi shyly leaning her head on Hajime's shoulder, Hajime smiling gently",
+      "bottom": "Tsumugi holding up a small heart with both hands near Hajime's face, a quiet happy smile",
+      "text": [
+        "はじめさん すき"
+      ],
+      "theme": "lavender and white frame with small hand-drawn flowers and a pencil stamp"
+    },
+    {
+      "id": "P79",
+      "title": "恋人のつむぎと手つなぎ",
+      "with": "tsumugi",
+      "face": "smile",
+      "lover": true,
+      "quiet": true,
+      "top": "Tsumugi and Hajime holding hands, Tsumugi looking down, blushing",
+      "bottom": "Tsumugi looking up at the camera with a small brave smile, still holding his hand",
+      "text": [
+        "ふたりの 絵"
+      ],
+      "theme": "soft purple frame with sketch-line hearts and a small cat stamp"
+    },
+    {
+      "id": "P80",
+      "title": "恋人の凛想と寄りかかり",
+      "with": "rio",
+      "face": "smile",
+      "lover": true,
+      "quiet": true,
+      "top": "Rio lazily leaning her weight on Hajime's shoulder with a languid half-lidded smile",
+      "bottom": "Rio pulling Hajime's cheek lightly with a teasing look, Hajime laughing",
+      "text": [
+        "……たまには 甘える"
+      ],
+      "theme": "slate blue and silver frame with small sparkles and a perfume-bottle stamp"
+    },
+    {
+      "id": "P81",
+      "title": "恋人の凛想と頬よせ",
+      "with": "rio",
+      "face": "smile",
+      "lover": true,
+      "quiet": true,
+      "top": "Rio and Hajime cheek to cheek, Rio with a cool small smile, Hajime nervous",
+      "bottom": "Rio's arm hooked through Hajime's, both looking at the camera, Rio smirking",
+      "text": [
+        "君は 私の 試香係"
+      ],
+      "theme": "deep navy and pale blue frame with a small leaf and star stamps"
+    },
+    {
+      "id": "P82",
+      "title": "恋人のひよりと腕組み",
+      "with": "hiyori",
+      "face": "smile",
+      "lover": true,
+      "top": "Hiyori (hair clearly tied up in her HIGH PONYTAIL, the ponytail visible behind her head) in her casual clothes linking arms with Hajime, smiling brightly",
+      "bottom": "Hiyori (high ponytail visible) leaning her head on his shoulder with a soft relieved smile",
+      "text": [
+        "きょうも ごほうび♡"
+      ],
+      "theme": "pale aqua and pink frame with soap bubbles and heart stamps",
+      "redone": "1回目は、ひよりの高いポニーテールが分かりにくかった"
+    },
+    {
+      "id": "P83",
+      "title": "恋人のひよりとハート",
+      "with": "hiyori",
+      "face": "smile",
+      "lover": true,
+      "top": "Hiyori and Hajime making one heart together with their hands, cheeks close",
+      "bottom": "Hiyori pinching Hajime's cheek playfully, both laughing",
+      "text": [
+        "はじめくん だいすき"
+      ],
+      "theme": "pastel pink and mint frame with ribbon and heart stamps"
+    },
+    {
+      "id": "P84",
+      "title": "恋人のサメちゃんとがぶ",
+      "with": "samechan",
+      "face": "smile",
+      "lover": true,
+      "top": "Same-chan pressing her shark plush's mouth against Hajime's cheek as a playful bite, grinning with her fang",
+      "bottom": "Same-chan hugging his arm, cheeks pink, looking a little proud",
+      "text": [
+        "お主は わしのもの"
+      ],
+      "theme": "ocean blue and white frame with wave, shark-fin and bubble stamps"
+    },
+    {
+      "id": "P85",
+      "title": "恋人のサメちゃんとくっつき",
+      "with": "samechan",
+      "face": "smile",
+      "lover": true,
+      "top": "Same-chan cheek to cheek with Hajime, her shark hood's fin touching his cap",
+      "bottom": "Same-chan making a heart with Hajime, the shark plush tucked under her arm",
+      "text": [
+        "ずっと いっしょじゃ"
+      ],
+      "theme": "turquoise and navy frame with shark, heart and star stamps"
+    },
+    {
+      "id": "P86",
+      "title": "恋人の私服のみんとと肩よせ",
+      "with": "shiori",
+      "face": "smile",
+      "lover": true,
+      "quiet": true,
+      "top": "Shiori quietly leaning her head on Hajime's shoulder, eyes almost closed, a small peaceful smile",
+      "bottom": "Shiori looking at the camera, a tiny shy peace sign, still leaning on him",
+      "text": [
+        "……すき"
+      ],
+      "theme": "soft cream and dusty-green frame with small leaves and a tiny mint stamp; quiet and modest"
+    },
+    {
+      "id": "P87",
+      "title": "恋人の私服のみんとと手つなぎ",
+      "with": "shiori",
+      "face": "smile",
+      "lover": true,
+      "quiet": true,
+      "top": "Shiori and Hajime holding hands, Shiori hiding the lower half of her blushing face with her cardigan sleeve",
+      "bottom": "Shiori smiling openly with their joined hands lifted a little toward the camera",
+      "text": [
+        "ふたりの ないしょ"
+      ],
+      "theme": "cream and pale green frame with a tiny heart and mint leaf stamps; quiet and modest"
+    },
+    {
+      "id": "P88",
+      "title": "つむぎとモデルのはじめさん",
+      "with": "tsumugi",
+      "face": "smile",
+      "quiet": true,
+      "top": "Tsumugi giving a small shy peace sign beside Hajime",
+      "bottom": "Tsumugi holding up her thumb at arm's length toward Hajime like a painter measuring proportions, Hajime laughing",
+      "text": [
+        "はじめさん モデル"
+      ],
+      "theme": "lavender and white frame with small paint-palette and flower stamps"
+    },
+    {
+      "id": "P89",
+      "title": "つむぎと指のフレーム",
+      "with": "tsumugi",
+      "face": "smile",
+      "quiet": true,
+      "top": "Tsumugi and Hajime both making a rectangle frame with their fingers in front of their faces",
+      "bottom": "both laughing because their finger frames don't line up",
+      "text": [
+        "構図 ばっちり"
+      ],
+      "theme": "soft purple and cream frame with sketch-line stars"
+    },
+    {
+      "id": "P90",
+      "title": "凛想とクールに",
+      "with": "rio",
+      "face": "smile",
+      "quiet": true,
+      "top": "Rio and Hajime both doing cool poses, Rio languid with a slight smirk, Hajime trying too hard",
+      "bottom": "Rio laughing quietly at Hajime's pose, Hajime embarrassed",
+      "text": [
+        "試香係と 一枚"
+      ],
+      "theme": "slate blue and white frame with a small perfume-bottle stamp and sparkles"
+    },
+    {
+      "id": "P91",
+      "title": "凛想とあくび",
+      "with": "rio",
+      "face": "smile",
+      "quiet": true,
+      "top": "Rio yawning lazily with her hand over her mouth, Hajime laughing",
+      "bottom": "Rio half-lidded giving a lazy small peace sign, Hajime copying her sleepy face",
+      "text": [
+        "……ねむい"
+      ],
+      "theme": "deep navy frame with a crescent moon and star stamps"
+    },
+    {
+      "id": "P92",
+      "title": "ひよりとはかなげポーズ",
+      "with": "hiyori",
+      "face": "smile",
+      "top": "Hiyori (high ponytail) striking an exaggerated fragile, wistful pose with a hand on her cheek, Hajime confused",
+      "bottom": "Hiyori bursting into a big grin and a peace sign, Hajime laughing",
+      "text": [
+        "はかなげ（笑）"
+      ],
+      "theme": "pale aqua frame with soap bubbles and a tiny flower stamp"
+    },
+    {
+      "id": "P93",
+      "title": "ひよりとガッツポーズ",
+      "with": "hiyori",
+      "face": "smile",
+      "top": "Hiyori (high ponytail) and Hajime both doing a fist pump with determined faces",
+      "bottom": "both laughing and giving a high five",
+      "text": [
+        "きょうも がんばった！"
+      ],
+      "theme": "pastel yellow and aqua frame with star and sparkle stamps"
+    },
+    {
+      "id": "P94",
+      "title": "サメちゃんとがおー",
+      "with": "samechan",
+      "face": "smile",
+      "top": "Same-chan and Hajime both making shark-bite claw hands and a 'gao' face, her small fang showing",
+      "bottom": "Same-chan laughing, her shark plush held up between them",
+      "text": [
+        "がおー じゃ！"
+      ],
+      "theme": "ocean blue frame with wave, fin and bubble stamps"
+    },
+    {
+      "id": "P95",
+      "title": "サメちゃんとコロちゃん",
+      "with": "samechan",
+      "face": "smile",
+      "top": "Same-chan holding up her crowned blue shark plush in the middle as if it were posing, Hajime bowing to it",
+      "bottom": "Same-chan proud with the plush on her head, Hajime giving a thumbs up",
+      "text": [
+        "余も おるぞ"
+      ],
+      "theme": "turquoise and gold frame with crown and shark stamps"
+    },
+    {
+      "id": "P96",
+      "title": "私服のみんととまた来たね",
+      "with": "shiori",
+      "face": "smile",
+      "quiet": true,
+      "top": "Shiori with a small quiet smile, holding her shoulder-bag strap, beside Hajime",
+      "bottom": "Shiori giving a tiny wave toward the camera, Hajime smiling",
+      "text": [
+        "……また 来たね"
+      ],
+      "theme": "soft cream and dusty-green frame with tiny leaf stamps; quiet and modest"
+    },
+    {
+      "id": "P97",
+      "title": "恋人のつむぎとおでこ",
+      "with": "tsumugi",
+      "face": "smile",
+      "quiet": true,
+      "lover": true,
+      "top": "Tsumugi and Hajime with foreheads gently touching, Tsumugi blushing with eyes closed",
+      "bottom": "Tsumugi leaning on his shoulder holding his sleeve, a small happy smile",
+      "text": [
+        "はじめさんの となり"
+      ],
+      "theme": "lavender and pink frame with small flowers and a heart stamp"
+    },
+    {
+      "id": "P98",
+      "title": "恋人のつむぎとほっぺ",
+      "with": "tsumugi",
+      "face": "smile",
+      "quiet": true,
+      "lover": true,
+      "top": "Tsumugi shyly touching Hajime's cheek with her fingertip, Hajime surprised and red",
+      "bottom": "Tsumugi and Hajime cheek to cheek, both smiling softly",
+      "text": [
+        "ふたりで 一枚"
+      ],
+      "theme": "soft purple and white frame with sketch hearts"
+    },
+    {
+      "id": "P99",
+      "title": "恋人の凛想と手つなぎ",
+      "with": "rio",
+      "face": "smile",
+      "quiet": true,
+      "lover": true,
+      "top": "Rio holding Hajime's hand tightly with a cool sidelong smile",
+      "bottom": "Rio pulling Hajime close by the hand, Hajime red, Rio smirking",
+      "text": [
+        "……逃がさない"
+      ],
+      "theme": "slate blue and silver frame with small sparkles and a leaf stamp"
+    },
+    {
+      "id": "P100",
+      "title": "恋人の凛想とバックハグ",
+      "with": "rio",
+      "face": "smile",
+      "quiet": true,
+      "lover": true,
+      "top": "Rio hugging Hajime lazily from behind, chin on his shoulder, half-lidded",
+      "bottom": "Rio's cheek against his, a rare soft smile",
+      "text": [
+        "……あったかい"
+      ],
+      "theme": "deep navy and pale blue frame with star stamps"
+    },
+    {
+      "id": "P101",
+      "title": "恋人のひよりとなでなで",
+      "with": "hiyori",
+      "face": "smile",
+      "lover": true,
+      "top": "Hiyori (high ponytail) patting Hajime's head with a warm smile, Hajime embarrassed",
+      "bottom": "Hiyori hugging his arm and leaning on him",
+      "text": [
+        "えらい えらい"
+      ],
+      "theme": "pastel pink and aqua frame with heart and bubble stamps"
+    },
+    {
+      "id": "P102",
+      "title": "恋人のひよりとバックハグ",
+      "with": "hiyori",
+      "face": "smile",
+      "lover": true,
+      "top": "Hiyori (high ponytail) hugging Hajime from behind, cheek on his shoulder, eyes closed happily",
+      "bottom": "both turning to the camera laughing, her arms still around him",
+      "text": [
+        "ずっと そばに"
+      ],
+      "theme": "soft pink frame with ribbon and heart stamps"
+    },
+    {
+      "id": "P103",
+      "title": "恋人のサメちゃんと手つなぎ",
+      "with": "samechan",
+      "face": "smile",
+      "lover": true,
+      "top": "Same-chan holding Hajime's hand and swinging it, grinning with her fang",
+      "bottom": "Same-chan pressing their joined hands to her cheek, blushing",
+      "text": [
+        "はなさんぞ"
+      ],
+      "theme": "ocean blue and pink frame with heart and fin stamps"
+    },
+    {
+      "id": "P104",
+      "title": "恋人のサメちゃんと照れ",
+      "with": "samechan",
+      "face": "smile",
+      "lover": true,
+      "top": "Same-chan hiding the lower half of her blushing face behind her shark plush, peeking at Hajime",
+      "bottom": "Same-chan leaning on him with her shark hood pulled low, embarrassed but happy",
+      "text": [
+        "……てれるのじゃ"
+      ],
+      "theme": "turquoise and soft pink frame with bubble and heart stamps"
+    },
+    {
+      "id": "P105",
+      "title": "恋人の私服のみんとと指切り",
+      "with": "shiori",
+      "face": "smile",
+      "quiet": true,
+      "lover": true,
+      "top": "Shiori and Hajime making a pinky promise between them, Shiori looking at their hands",
+      "bottom": "Shiori looking at the camera with a small brave smile, pinkies still linked",
+      "text": [
+        "……やくそく"
+      ],
+      "theme": "cream and pale green frame with a tiny heart and leaf stamps; quiet and modest"
+    },
+    {
+      "id": "P106",
+      "title": "恋人の私服のみんとと腕組み",
+      "with": "shiori",
+      "face": "smile",
+      "quiet": true,
+      "lover": true,
+      "top": "Shiori shyly linking her arm with Hajime's, eyes down",
+      "bottom": "Shiori laughing openly while holding his arm, leaning on him",
+      "text": [
+        "はじめくんの となり"
+      ],
+      "theme": "soft cream and dusty-green frame with small leaf stamps; quiet and modest"
+    },
+    {
+      "id": "P107",
+      "title": "アダムとダブルピース",
+      "with": "adam",
+      "face": "smile",
+      "top": "Adam striking a dramatic model pose with a double peace sign, deadly serious face; Hajime doing a normal double peace",
+      "bottom": "Adam gesturing grandly toward the camera as if it adores him, Hajime laughing",
+      "text": [
+        "林檎は ふたつで 完全体"
+      ],
+      "theme": "red and green frame with apple and sparkle stamps"
+    },
+    {
+      "id": "P108",
+      "title": "アダムと決め顔指導",
+      "with": "adam",
+      "face": "smile",
+      "top": "Adam showing a smoldering stare with his hand on his chin, Hajime trying to copy it awkwardly",
+      "bottom": "Hajime giving up and laughing, Adam still perfectly serious",
+      "text": [
+        "決め顔 指導中",
+        "まだまだ だな"
+      ],
+      "theme": "black and gold frame with star and crown stamps"
+    },
+    {
+      "id": "P109",
+      "title": "アダムと赤と緑",
+      "with": "adam",
+      "face": "smile",
+      "top": "Adam pointing to the red side and the green side of his own hair, Hajime pointing too",
+      "bottom": "Adam and Hajime making an apple shape together with their hands",
+      "text": [
+        "赤と緑で ダブルアップル"
+      ],
+      "theme": "half red, half green frame with apple stamps"
+    },
+    {
+      "id": "P110",
+      "title": "上園さんとおいしい顔",
+      "with": "uezono",
+      "face": "smile",
+      "top": "Uezono and Hajime both making delighted 'so delicious' faces with hands on their cheeks",
+      "bottom": "Uezono laughing heartily with a thumbs up, Hajime laughing",
+      "text": [
+        "シーシャは おいしいねえ"
+      ],
+      "theme": "warm orange and cream frame with steam-swirl and star stamps",
+      "unused": "審査員はプリクラの対象外（オーナー 2026-11-27）"
+    },
+    {
+      "id": "P111",
+      "title": "上園さんと取材ぷり",
+      "with": "uezono",
+      "face": "smile",
+      "top": "Uezono holding up his small notepad and pen like an interviewer, Hajime nervous",
+      "bottom": "Uezono giving a big flower-circle gesture with his arms, Hajime relieved",
+      "text": [
+        "本日の 取材ぷり"
+      ],
+      "theme": "newspaper-print and yellow frame with pen and star stamps",
+      "unused": "審査員はプリクラの対象外（オーナー 2026-11-27）"
+    },
+    {
+      "id": "P112",
+      "title": "チャコール博士と記念の一枚",
+      "with": "dr_charcoal",
+      "face": "smile",
+      "top": "Dr. Charcoal adjusting his glasses with a gentle smile, Hajime polite",
+      "bottom": "both giving a peace sign, the doctor a little shy and pleased",
+      "text": [
+        "逢縁くんと 記念♪"
+      ],
+      "theme": "white and soft green frame with small gear and leaf stamps",
+      "unused": "審査員はプリクラの対象外（オーナー 2026-11-27）"
+    },
+    {
+      "id": "P113",
+      "title": "チャコール博士と照明の角度",
+      "with": "dr_charcoal",
+      "face": "smile",
+      "top": "Dr. Charcoal pointing up excitedly at something above the frame (the booth's light is NOT shown), eyes sparkling like a child, Hajime laughing",
+      "bottom": "Dr. Charcoal proudly giving a thumbs up, Hajime copying",
+      "text": [
+        "照明の 角度 完璧"
+      ],
+      "theme": "white and brown frame with lightbulb and spark stamps",
+      "unused": "審査員はプリクラの対象外（オーナー 2026-11-27）"
+    },
+    {
+      "id": "P114",
+      "title": "千須会長と一枚",
+      "with": "sensu",
+      "face": "smile",
+      "top": "Sensu standing composed with arms crossed and a faint smile, Hajime stiff and nervous",
+      "bottom": "Sensu resting a hand on Hajime's shoulder, Hajime relaxed and smiling",
+      "text": [
+        "会長と 一枚"
+      ],
+      "theme": "black and silver frame with star stamps; classy",
+      "unused": "審査員はプリクラの対象外（オーナー 2026-11-27）"
+    },
+    {
+      "id": "P115",
+      "title": "千須会長と親指",
+      "with": "sensu",
+      "face": "smile",
+      "top": "Sensu giving a subtle, dignified thumbs up, Hajime giving a big thumbs up",
+      "bottom": "both doing a serious 'judge face' pose with chins up",
+      "text": [
+        "次の 大会で 会おう"
+      ],
+      "theme": "navy and gold frame with trophy and star stamps; classy",
+      "unused": "審査員はプリクラの対象外（オーナー 2026-11-27）"
+    }
+  ],
+  "_comment_20261127b": "2026-11-27（4回目の追加）: オーナー「ヒロインのプリクラは距離感が友達と恋人でまた変わると思うので二つ用意したい」「あげとツーショットとはじめソロのやつは複数パターン欲しい」→ ソロ P64〜P68、あげは（友達）P69〜P72、あげは（恋人）P73〜P77、ヒロインの恋人版 P78〜P87（つむぎ・凛想・ひより・サメちゃん・私服のみんと 各2）。lover: true は恋人の距離感。",
+  "_comment_20261127c": "2026-11-27（6回目の追加）: オーナー「恋人写真とか友達写真は枚数平等に用意したい　恋人4種みたいな　あげはは特例」「アダムとか他の1.2章キャラもあってもいい」→ ヒロインを友達4・恋人4にそろえる分 P88〜P106（つむぎ・凛想・ひより・サメちゃん 友達＋2・恋人＋2、私服のみんと 友達＋1・恋人＋2）と、アダム P107〜P109・上園 P110・P111・チャコール博士 P112・P113・千須 P114・P115。"
+}

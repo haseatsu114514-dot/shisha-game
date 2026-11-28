@@ -226,23 +226,38 @@ body.reduce-shake :is(.loading-gate, .boot-gate).is-ready .loading-bar::after { 
    phones still get the "rotate to landscape" hint; tablets / narrow windows that skip that hint see the large layout. */
 :is(.loading-gate, .boot-gate).is-viewport { position: fixed; z-index: 900; }
 
-/* Phone/tablet portrait: stack the two panels nearly full-width so each is large and the text reads.
-   cq units here are the gate (= visible viewport). The card width is capped by height:
-   R/2 * (77.8cqh - 160px) + 4.4cqw + 2px keeps logo + two panels + gauge + status + proceed on screen. */
+/* Phone/tablet portrait = 縦画面C案「煙の舞台」のロード画面（2026-11-27 オーナー「縦画面をメインに」・要望台帳 LDC44。
+   試作 previews/portrait-stage/loading.css と同じ形）。上にロゴ、真ん中に紙面（2コマを上下に積んで幅いっぱいに）、
+   下の親指の届く所に、バー・LOADING の印・大きな「進む」の札（タイトルのメニューの行と同じ角丸の札）。
+   cq units here are the gate (= visible viewport). The sheet always spans the width (title and one-line note keep a readable size);
+   on a short screen only the two panels narrow so logo + panels + gauge + status + proceed stay on screen:
+   2 panels of 3:2 take 4/3 of the panel width, everything else ~21.5cqh + 205px.
+   「進む」の札は準備中も同じ場所・同じ大きさで暗く「準備しています…」を出し、準備完了で灯る（起動画面からの引き継ぎで位置を動かさない）。 */
 @media (orientation: portrait) {
-  :is(.loading-gate, .boot-gate) { --loading-unit: calc(100cqw / 720); --loading-backdrop-art-pos: 70% 50%; --loading-gutter: 1.2cqh; }
-  .loading-logo { width: min(260px, 52cqw); height: 6.6cqh; margin: 2cqh 0 .8cqh; }
-  .loading-card { width: min(94cqw, calc((var(--loading-panel-ratio)) / 2 * (77.8cqh - 160px) + 4.4cqw + 2px)); padding: 1.2cqh 2.2cqw; }
-  :is(.loading-comic-title, .loading-blank-title) { font-size: clamp(18px, 5.2cqw, 30px); margin-bottom: 1cqh; padding-bottom: .8cqh; }
-  .loading-panels { grid-template-columns: 1fr; }
+  :is(.loading-gate, .boot-gate) { --loading-unit: calc(100cqw / 720); --loading-backdrop-art-pos: 70% 50%; --loading-gutter: 1.5cqh;
+    --vt-pad: max(14px, 3.6cqw); --vt-go-h: clamp(44px, 6.4cqh, 56px);
+    padding: max(10px, env(safe-area-inset-top, 0px)) var(--vt-pad) max(12px, env(safe-area-inset-bottom, 0px)); }
+  .loading-logo { width: min(250px, 60cqw); height: 7.2cqh; margin: 0 0 1.3cqh; }
+  .loading-card { --vt-card-w: calc(100cqw + 4px); width: var(--vt-card-w); padding: 1.3cqh 2.7cqw 1.1cqh; }
+  :is(.loading-comic-title, .loading-blank-title) { font-size: clamp(18px, 5.3cqw, 28px); margin-bottom: 1cqh; padding-bottom: .8cqh; letter-spacing: .06em; }
+  .loading-panels { grid-template-columns: 1fr; width: min(100%, calc(.75 * (78.5cqh - 205px))); margin-inline: auto; }
   .loading-panels::after { transform: translate(-50%, -50%) rotate(90deg); }
-  :is(.loading-comic-caption, .loading-blank-caption) { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; white-space: normal; font-size: clamp(12px, 3.6cqw, 18px); margin-top: 1cqh; line-height: 1.35; height: 2.7em; }
-  :is(.loading-comic-caption, .loading-blank-caption)::before { display: none; }
-  .loading-gauge { margin-top: 1.6cqh; }
-  .loading-bar { width: 62cqw; height: clamp(8px, 1.1cqh, 14px); }
-  .loading-status { margin-top: 1.2cqh; font-size: clamp(15px, 4.2cqw, 22px); }
-  .loading-proceed { margin: .6cqh 0 2cqh; min-height: 1.3em; font-size: clamp(14px, 3.6cqw, 16px); }
+  /* 一行解説は必ず一行（2026-11-27 オーナー「漫画の解説は一行で収まるように」）。解説は全角18字まで（loading_comics_spec.mjs が止める）なので、
+     紙面の内側の幅（紙面の幅 − 左右の余白）を、18字と琥珀の印の分（約19.6字）で割った大きさを字の上限にする。 */
+  :is(.loading-comic-caption, .loading-blank-caption) { margin-top: 1cqh; height: 1.4em; font-size: min(clamp(12px, 4.2cqw, 17px), calc((var(--vt-card-w) - 5.4cqw - 6px) / 19.6)); }
+  .loading-gauge { margin-top: 1.9cqh; }
+  .loading-gauge::before, .loading-gauge::after { display: none; }
+  .loading-bar { width: 70cqw; height: clamp(8px, 1.1cqh, 12px); }
+  .loading-status { margin-top: 1.2cqh; font-size: clamp(15px, 4.4cqw, 20px); }
+  .loading-proceed { position: relative; display: grid; place-items: center; width: 100%; min-height: var(--vt-go-h); margin: 1.4cqh 0 0; padding: 0 1em;
+    border-color: #ffffff38; background: #120c1d99; -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 6px 14px #0008;
+    font-size: clamp(15px, 4.6cqw, 19px); letter-spacing: .16em; text-indent: .16em; opacity: .55; color: transparent; }
+  .loading-proceed::after { content: "準備しています…"; position: absolute; inset: 0; display: grid; place-items: center; color: #f0eaf8; font-size: .86em; font-weight: 600; letter-spacing: .12em; }
+  :is(.loading-gate, .boot-gate).is-ready .loading-proceed { color: #fff4fb; border-color: #ff9bd2; background: color-mix(in srgb, #ff9bd2 22%, #120c1dcc);
+    box-shadow: 0 0 0 1.5px #ff9bd28c, 0 0 24px #ff9bd266, 0 6px 14px #0008; animation: loading-ready-proceed .9s ease-out, loading-vt-proceed 1.8s ease-in-out .9s infinite; }
+  :is(.loading-gate, .boot-gate).is-ready .loading-proceed::after { content: none; }
 }
+@keyframes loading-vt-proceed { 0%, 100% { opacity: .95; } 50% { opacity: 1; box-shadow: 0 0 0 1.5px #ff9bd2bf, 0 0 34px #ff9bd299, 0 6px 14px #0008; } }
 
 /* Phone held sideways (a short landscape screen). The gate leaves the letterboxed #stage like portrait does
    (core/loading.js adds .is-viewport), so cq units are the real screen. The logo stays, shrunk to a compact

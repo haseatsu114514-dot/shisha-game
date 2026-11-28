@@ -1,21 +1,23 @@
-// てつこといっしょのハート（#3779・docs/spec/tetsuko_time.md §11）が、何回の来訪で5つそろうかを計る。
+// てつこといっしょの、ごきげん（その日のハート5つ）と、なかよし（肉球5つ。来訪をまたいで溜まる）の調整を計る
+// （docs/spec/tetsuko_time.md §12・2026-11-27）。
 // 画面（tetsuko-time.js）と同じ間合いでモデルを時間つきで動かす: 操作のあと 1.6 秒は自分から動かない・自律行動は 1.7〜2.4 秒ごと・
-// 7 秒触らないと見守ったことになる。1回の来訪は「何回か触って帰る」。確定は本物の settleTetsukoTime で、来訪をまたいで溜める。
-// 遊び方（プレイヤーの型）× 1回に触る回数ごとに、ハートが5つそろうまでの来訪回数（通算日を変えた24通りの中央値・最短・最長）を出す。
-// 調整値（tetsuko-model.js の JOY・CARE_CAP・VISIT_JOY）を変えたら回し直す。
+// 7 秒触らないと見守ったことになる。1回の来訪は「切り上げになるか、決めた回数だけ触って帰る」。確定は本物の settleTetsukoTime。
+// 遊び方（プレイヤーの型）× 1回に触る回数ごとに、帰る時のハートの数・1回に伸びるなかよし・嫌がらせた回数と、
+// なかよしが肉球3つ（火種）・5つ（白火）に届くまでの来訪回数（通算日を変えた24通りの中央値・最短・最長）を出す。
+// 調整値（tetsuko-model.js の JOY・CARE_CAP・JOY_UNIT・VISIT_TURNS・BOND_GAIN・DROP）を変えたら回し直す。
 //
 // 使い方: node remake/tools/balance/tetsuko_hearts.mjs [--json]
 import { newState } from "../../js/core/state.js";
 import { OUTINGS_FLAG } from "../../js/chapters/ch3-outing-progress.js";
 import { WATCH_IDLE_MS, settleTetsukoTime, tetsukoVisitKey } from "../../js/minigames/tetsuko-time.js";
 import {
-  TETSUKO_TIME_FLAG, JOY_MAX, createSession, openingReaction, act, canAct, autonomous, autoDelay, peakReaction, wrapUpReaction, placeProp, invite, slotOf,
-  unlockedProps, rng, readTetsukoRecord, sessionResult, SWEET_ZONES,
+  TETSUKO_TIME_FLAG, JOY_MAX, JOY_HEARTS, BOND_EMBERS, CARE_CAP, createSession, openingReaction, act, canAct, autonomous, autoDelay, peakReaction, wrapUpReaction, placeProp, invite, slotOf,
+  unlockedProps, rng, readTetsukoRecord, sessionResult, SWEET_ZONES, sulky, petLimit, lapReady,
 } from "../../js/minigames/tetsuko-model.js";
 
 const AFTER_ACTION_MS = 1600, TREAT_MS = 3000, PHOTO_HOLD_MS = 6500, TOY_HELD_MS = 1700, POUNCE_MS = 380, PEAK_DELAY_MS = 900;
-/** 来訪を数える上限（ここまでに5つそろわなければ「そろわない」）。 */
-export const MAX_VISITS = 30;
+/** 来訪を数える上限（ここまでに肉球が5つにならなければ「届かない」）。 */
+export const MAX_VISITS = 60;
 
 /** 第3章の東京の一日。まだ一度も会っていない（来訪0回）ところから始める。 */
 function save(day) {
@@ -29,10 +31,10 @@ function save(day) {
 
 /**
  * プレイヤーの型。next(session, random, memo) は次の操作 { kind, zone?, prop?, slot?, wait? } を返す。
- * - petter: なでるだけ（猫をあちこちタップ。しっぽにも触る）。
- * - casual: おねだりを見ない。なでる・じゃらし・ブラシ・おやつを気ままに。
- * - buttons: 手元の札を順に押す（なでる→じゃらし→ブラシ→おやつ）。
- * - attentive: おねだりに応え、お気に入りの場所を探してなで、なで過ぎる前に遊びを変える。置いた物でも誘う。
+ * - petter: なでるだけ（猫をあちこちタップ。しっぽにも触る。嫌がっても続ける）。
+ * - casual: おねだりも、嫌がるしぐさも見ない。なでる・じゃらし・ブラシ・おやつを気ままに。
+ * - buttons: 手元の札を順に押す（なでる→じゃらし→ブラシ→おやつ）。嫌がるしぐさは見ない。
+ * - attentive: おねだりに応え、お気に入りの場所を探してなで、嫌がるしぐさを一度見たらその操作をやめる。置いた物でも誘い、そばで待つ。
  */
 const PLAYERS = {
   petter: { gap: [1100, 2000], next(s, r) {
@@ -56,21 +58,29 @@ const PLAYERS = {
     return { kind: "pet", zone: "head" };
   } },
   attentive: { gap: [1800, 3000], next(s, r, memo) {
+    // 嫌がるしぐさ（知らせ）を一度見た操作は、もうしない。なでるのは「もういい」の手前でやめる。
+    const off = kind => kind === "play" ? !!s.warned.toy && s.mood === "sleepy"
+      : kind === "brush" ? (!!s.warned.brush && s.mood === "playful") || (!!s.warned.touch && sulky(s))
+      : kind === "pet" ? (!!s.warned.touch && sulky(s)) || s.petStreak >= petLimit(s) - 1 : false;
+    const ok = kind => canAct(s, kind) && !off(kind);
+    const used = kind => s.careBy[kind] || 0;
     const wish = s.wish;
     if (wish) {
       if (wish.kind === "watch") return { wait: true };
       if (wish.kind === "decor") return decor(s, wish.prop);
-      if (wish.kind === "pet") return { kind: "pet", zone: petZone(s, memo) };
-      if (canAct(s, wish.kind)) return { kind: wish.kind };
+      if (wish.kind === "pet" && ok("pet")) return { kind: "pet", zone: petZone(s, memo) };
+      if (wish.kind !== "pet" && ok(wish.kind)) return { kind: wish.kind };
     }
+    if (lapReady(s) && s.cat.pose !== "lap" && !s.found.includes("lap_nap")) return { wait: true };
     if (canAct(s, "treat")) return { kind: "treat" };
     if (s.swings > 0 && s.swings < 5) return { kind: "play" };
-    const used = kind => s.careBy[kind] || 0;
-    if (!used("play")) return { kind: "play" };
-    if (canAct(s, "brush") && used("brush") < 5) return { kind: "brush" };
-    if (used("props") < 4) return decor(s, "ball");
-    if (s.petStreak >= 5) return { kind: "play" };
-    return { kind: "pet", zone: petZone(s, memo) };
+    if (!used("play") && ok("play")) return { kind: "play" };
+    if (ok("brush") && used("brush") < CARE_CAP.brush) return { kind: "brush" };
+    if (used("props") < CARE_CAP.props) return decor(s, "ball");
+    if (ok("pet") && used("pet") < CARE_CAP.pet) return { kind: "pet", zone: petZone(s, memo) };
+    if (used("watch") < CARE_CAP.watch) return { wait: true };
+    if (ok("play")) return { kind: "play" };
+    return { wait: true };
   } },
 };
 // 物で誘う: 置いていなければ置く（もようがえ）、置いてあれば誘う。
@@ -133,41 +143,52 @@ export function runVisit(value, { player, presses: budget, seed = 1 }) {
   }
   if (s.peakReady) peakReaction(s);
   if (s.wrapReady) wrapUpReaction(s);
-  return { ...sessionResult(s), seconds: Math.round(t / 1000) };
+  return { ...sessionResult(s), seconds: Math.round(t / 1000), drops: s.drops, turns: s.turns, mood: s.mood };
 }
 
-/** 来訪0回から、ハートが5つそろうまで通う。次の来訪は翌日（おやつは1日1回）。 */
+/** 来訪0回から、なかよしが肉球5つになるまで通う。次の来訪は翌日（おやつは1日1回）。 */
 export function visitsToFull({ player, presses, day = 40 }) {
   const value = save(day);
-  const perVisit = [];
+  const perVisit = [], hearts = [], drops = [], seconds = [];
+  let ember = null;
   for (let visit = 1; visit <= MAX_VISITS; visit += 1) {
     const before = readTetsukoRecord(value).affection;
     const result = runVisit(value, { player, presses, seed: visit });
     settleTetsukoTime(value, result);
     const after = readTetsukoRecord(value).affection;
-    perVisit.push(after - before);
-    if (after >= JOY_MAX) return { visits: visit, perVisit, seconds: result.seconds };
+    perVisit.push(after - before); hearts.push(result.hearts); drops.push(result.drops); seconds.push(result.seconds);
+    if (ember === null && after >= BOND_EMBERS[0]) ember = visit;
+    if (after >= JOY_MAX) return { visits: visit, ember, perVisit, hearts, drops, seconds };
     value.day += 1;
   }
-  return { visits: null, perVisit };
+  return { visits: null, ember, perVisit, hearts, drops, seconds };
 }
 
 const DAYS = Array.from({ length: 24 }, (_, i) => 3 + i * 5);
 export const PLAYER_TYPES = Object.freeze(Object.keys(PLAYERS));
 const median = xs => xs.length ? [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)] : null;
 
-/** 遊び方 × 1回に触る回数ごとの、5つそろうまでの来訪回数（中央値・最短・最長）と、1回の来訪で溜まる量の中央値。 */
+/**
+ * 遊び方 × 1回に触る回数ごとの結果:
+ * visits・fastest・slowest＝肉球5つ（白火）までの来訪回数（中央値・最短・最長）／ember＝肉球3つ（火種）までの中央値／
+ * perVisit＝1回に伸びるなかよしの中央値／hearts＝帰る時のハートの中央値／heartsMean＝その平均／fullRate＝ハートが5つそろった来訪の割合／
+ * drops＝1回の来訪で嫌がらせて下がった回数の平均／seconds＝1回の来訪の長さ（秒）の中央値。
+ */
 export function measure({ players = PLAYER_TYPES, presses = [10, 20, 40], days = DAYS } = {}) {
   const out = {};
+  const mean = xs => xs.length ? +(xs.reduce((sum, x) => sum + x, 0) / xs.length).toFixed(2) : 0;
   for (const player of players) for (const n of presses) {
     const runs = days.map(day => visitsToFull({ player, presses: n, day }));
     const visits = runs.map(run => run.visits ?? Infinity);
-    const allVisits = runs.flatMap(run => run.perVisit);
-    const zeroDays = allVisits.filter(v => v === 0).length;
+    const hearts = runs.flatMap(run => run.hearts);
     out[`${player}/${n}`] = {
       visits: median(visits), fastest: Math.min(...visits), slowest: Math.max(...visits),
+      ember: median(runs.map(run => run.ember ?? Infinity)),
       perVisit: median(runs.flatMap(run => run.perVisit.slice(0, -1))),
-      missRate: allVisits.length ? +(zeroDays / allVisits.length).toFixed(2) : 0,
+      hearts: median(hearts), heartsMean: mean(hearts),
+      fullRate: hearts.length ? +(hearts.filter(h => h >= JOY_HEARTS).length / hearts.length).toFixed(2) : 0,
+      drops: mean(runs.flatMap(run => run.drops)),
+      seconds: median(runs.flatMap(run => run.seconds)),
     };
   }
   return out;
@@ -178,8 +199,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   if (process.argv.includes("--json")) console.log(JSON.stringify(result, null, 1));
   else for (const [key, row] of Object.entries(result)) {
     const [player, n] = key.split("/");
-    console.log(`${player.padEnd(9)} 1回に${String(n).padStart(2)}手: ハート5つまで 中央${String(row.visits).padStart(3)}回（最短${row.fastest}・最長${row.slowest}）`
-      + ` 1回あたり 中央${String(row.perVisit).padStart(3)}（未達率${Math.round(row.missRate * 100)}%）`);
+    console.log(`${player.padEnd(9)} 1回に${String(n).padStart(2)}手: 帰る時のハート 中央${row.hearts}・平均${row.heartsMean}（5つの回 ${Math.round(row.fullRate * 100)}%）`
+      + ` 嫌がらせ 平均${row.drops}回／なかよし 1回に中央+${row.perVisit}、肉球3つまで${row.ember}回・5つまで 中央${row.visits}回（最短${row.fastest}・最長${row.slowest}）`
+      + ` 1回およそ${row.seconds}秒`);
   }
 }
 void TETSUKO_TIME_FLAG;

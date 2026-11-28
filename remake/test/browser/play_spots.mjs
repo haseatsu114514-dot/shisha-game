@@ -3,13 +3,14 @@ import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
 import { travelToCity as travel } from "./station_helpers.mjs";
 import { flickFromHandle, stanceAt } from "./axe_flick_input.mjs";
-import { startTrpgStory } from "./trpg_start.mjs";
+import { rollTrpgCheck, startTrpgStory, turnToTrpgBook, waitForTrpgTable } from "./trpg_start.mjs";
 const shots = process.env.COMPARISON_DIR;
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
 const t = id => `[data-test="${id}"]`;
 const map = '[data-destination-selection]:not(.done)';
 async function hit(page, id) {
+  await turnToTrpgBook(page, id); // ボドゲカフェの本の中の操作は、その本の頁を開いてから押す
   const button = page.locator(t(id));
   if (await page.evaluate(() => matchMedia("(pointer:coarse)").matches)) await button.tap(); else await button.click();
 }
@@ -126,9 +127,7 @@ async function twistStep(page) {
   const card = page.locator('[data-test^="trpg-approach-"]').first();
   if (touch) await card.tap(); else await card.click();
   for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
-  const roll = page.locator('[data-test="trpg-roll"]');
-  if (touch) await roll.tap(); else await roll.click();
-  await page.locator('[data-test="trpg-settle"]').waitFor();
+  await rollTrpgCheck(page); // 振り直せる出目は、劇場の中の「振り直す？」で「このまま続ける」
   const settle = page.locator('[data-test="trpg-settle"]');
   if (touch) await settle.tap(); else await settle.click();
   for (let i = 0; i < 60 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
@@ -137,7 +136,8 @@ async function declare(page) {
   const card = page.locator('[data-test^="trpg-approach-"]').first();
   if (await card.count() && await card.isVisible()) { await card.click(); await lines(page); }
 }
-async function roll(page) { await declare(page); await hit(page, "trpg-roll"); await page.locator(t("trpg-settle")).waitFor(); await hit(page, "trpg-settle"); await lines(page); }
+// 振って結果の窓へ。スキル（助力・振り直し）は劇場の中で選ぶので、ここでは「使わずに振る」「このまま続ける」で進む（rollTrpgCheck）
+async function roll(page) { await declare(page); await rollTrpgCheck(page); await hit(page, "trpg-settle"); await lines(page); }
 async function returnFromTable(page) {
   await page.locator(t("trpg-replay-save-question")).waitFor();
   await hit(page, "trpg-replay-save-no");
@@ -389,7 +389,7 @@ await suite("play-spots", async runCheck => {
     await travel(page, "widehanga"); await go(page, "trpg_bar");
     assert.equal(await page.locator(t("trpg-buy-ordinary-cup")).count(), 0);
     assert(await page.locator(t("trpg-play-ordinary-cup")).isEnabled());
-    await hit(page, "trpg-play-ordinary-cup"); await lines(page); await startTrpgStory(page); await lines(page); await roll(page);
+    await hit(page, "trpg-play-ordinary-cup"); await waitForTrpgTable(page); await lines(page); await startTrpgStory(page); await lines(page); await roll(page);
     await interviewStep(page);
     for (const id of ["menu", "window", "bag"]) { await hit(page, "trpg-spot-" + id); await lines(page); }
     await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-quiet"); await lines(page); await twistStep(page);
@@ -432,7 +432,7 @@ await suite("play-spots", async runCheck => {
       const bought = await value(page);
       assert.equal(bought.money, before.money - 800); assert.equal(bought.slot, 1); assert.equal(bought.stamina, before.stamina);
       assert.deepEqual(bought.trpg.owned, ["shark-last-order"]);
-      await hit(page, "trpg-play-shark-last-order"); await lines(page); await startTrpgStory(page); await lines(page); await roll(page);
+      await hit(page, "trpg-play-shark-last-order"); await waitForTrpgTable(page); await lines(page); await startTrpgStory(page); await lines(page); await roll(page);
       const inProgress = await value(page);
       const { bookmark, ...inProgressTrpg } = inProgress.trpg;
       assert.deepEqual({ ...inProgress, trpg: inProgressTrpg }, bought,

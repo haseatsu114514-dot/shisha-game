@@ -34,10 +34,12 @@ export const dubaiDaytime = slot => (slot ?? 0) === 0;
  */
 export const CREEK_SCENES = Object.freeze({
   // #3097: 昼夜それぞれ2本→4本（カモメ・冷水の箱／食事船・家族との通話）
-  day: Object.freeze(["ch4_creek_walk_day", "ch4_creek_dhow", "ch4_creek_gulls", "ch4_creek_water_box"]),
-  night: Object.freeze(["ch4_creek_walk_night", "ch4_creek_fishing", "ch4_creek_dinner_boat", "ch4_creek_call_home"]),
+  // 第4章ボリューム第2便: 昼は岸から見る渡し舟の運賃の手渡し、夜は貨物船の甲板の夕食
+  day: Object.freeze(["ch4_creek_walk_day", "ch4_creek_dhow", "ch4_creek_gulls", "ch4_creek_water_box", "ch4_creek_abra"]),
+  night: Object.freeze(["ch4_creek_walk_night", "ch4_creek_fishing", "ch4_creek_dinner_boat", "ch4_creek_call_home", "ch4_creek_dhow_supper"]),
 });
-export const CREEK_SPOT_IDS = Object.freeze(["ch4_creek_dhow", "ch4_creek_fishing", "ch4_creek_gulls", "ch4_creek_water_box", "ch4_creek_dinner_boat", "ch4_creek_call_home"]);
+export const CREEK_SPOT_IDS = Object.freeze(["ch4_creek_dhow", "ch4_creek_fishing", "ch4_creek_gulls", "ch4_creek_water_box", "ch4_creek_dinner_boat", "ch4_creek_call_home",
+  "ch4_creek_abra", "ch4_creek_dhow_supper"]);
 export const CREEK_TURN = "dubai_creek";
 /** ch4_spots.json から、クリーク沿いの場面だけを取り出す（本筋のスーク・カフェの台本を上書きしない）。 */
 export const creekSpotScenes = rows => Object.fromEntries(CREEK_SPOT_IDS.map(id => [id, rows[id]]));

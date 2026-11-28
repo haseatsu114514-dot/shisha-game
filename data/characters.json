@@ -78,10 +78,10 @@
     "role": "rival_ch1",
     "age": 23,
     "nationality": "Japan",
-    "affiliation": "KEMURIKUSA",
+    "affiliation": "KEMURIYA",
     "play_style": "「甘さ（お菓子系）の追求」と「誠実な理論」",
     "description": "実力・人格ともに地元最強格の好敵手。料理の専門学校で学んだ元料理畑の作り手。実際の菓子や料理の味・香り・後味をイメージし、フレーバーでミックスを組み立てる。シーシャ歴が長く、理論派だが知識をひけらかさない。聞かれれば惜しみなく教える面倒見の良さがあり、口癖は「俺の台は丸見えだ」。負けると人目もはばからず本気で悔しがるが、相手を称えることを絶対に忘れない。はじめにとって最初の壁であり、最初の目標であり、のちに最も痛いことを言ってくれる友人になる。第2章でははじめの慢心に正面から苦言を呈する唯一の人物。 得意な味の軸はバニラと甘いお菓子系。チョコ、クリーム、パンや焼き菓子の香りを追求し、試作会でも世界大会でもその軸は変わらない。",
-    "background_secret": "実家は商店街の洋菓子屋だったが、中学のときに潰れた。「店を続けることの重さ」を体で知っている。はじめが軽々しく語る「店を持ちたい」という夢に厳しいのはそのため。本人は多くを語らないが、ケムリクサを自分の店として営みながら、「潰れない店の作り方」を探し続けている。 第2章の対峙後はケムリクサを長期休業し、行き先を告げず修行へ出る。旅先の店や借りた作業場で、違う器具や客の吸う速度に合わせて甘さを出し直す練習を積む。第3章では、はじめの東京での歩みと並行してラストチャンス予選を勝ち抜く。推薦や救済ではなく本人が勝ち取る枠。 はじめとの「勝った方が作る」という約束は、スミと千須の昔の競争に重なる。話を聞き直す電話を経て、帰国後は互いの一台を作る。千須と同じ引退を辿るのではなく、現役の好敵手として自分の甘さを磨く。 はじめとは物語の前に一度、はじめのバイト先tonariで顔を合わせている（なるが店に寄った際。第1章の初来店で「前に店に寄ったとき見た顔だ」と言うのはこのため。場面としては描かない）。",
+    "background_secret": "実家は商店街の洋菓子屋だったが、中学のときに潰れた。「店を続けることの重さ」を体で知っている。はじめが軽々しく語る「店を持ちたい」という夢に厳しいのはそのため。本人は多くを語らないが、KEMURIYAを自分の店として営みながら、「潰れない店の作り方」を探し続けている。 第2章の対峙後はKEMURIYAを長期休業し、行き先を告げず修行へ出る。旅先の店や借りた作業場で、違う器具や客の吸う速度に合わせて甘さを出し直す練習を積む。第3章では、はじめの東京での歩みと並行してラストチャンス予選を勝ち抜く。推薦や救済ではなく本人が勝ち取る枠。 はじめとの「勝った方が作る」という約束は、スミと千須の昔の競争に重なる。話を聞き直す電話を経て、帰国後は互いの一台を作る。千須と同じ引退を辿るのではなく、現役の好敵手として自分の甘さを磨く。 はじめとは物語の前に一度、はじめのバイト先tonariで顔を合わせている（なるが店に寄った際。第1章の初来店で「前に店に寄ったとき見た顔だ」と言うのはこのため。場面としては描かない）。",
     "favorite_flavor": "バニラ",
     "specialty_flavor": "激甘お菓子系（パン・バニラ系）",
     "growth_stats": {
@@ -123,7 +123,7 @@
       "notes": "はじめの『誰にでも合わせる』シーシャに触れたことで、頑固な彼もいつの間にか、客のコンディションに合わせてダブルアップルの強さを微調整する柔軟さを覚えていた。"
     },
     "visual_concepts": [
-      "28-year-old Japanese male, eccentric but lovable expression, stylish Eden shop outfit, surrounded by red and green apples and anise props, performing grandly while preparing a shisha bowl. Hair is green-apple green on HIS OWN LEFT and red-apple red on HIS OWN RIGHT: in a front-facing view SCREEN LEFT is red and SCREEN RIGHT is green. Keep those anatomical sides when he turns or appears in profile; do not divide a side view into arbitrary screen halves, and do not use blue for green. Preserve the adopted face, expression, pose, short hairstyle, black Henley shirt and waist apron.",
+      "28-year-old Japanese male, eccentric but lovable expression, stylish Eden shop outfit, surrounded by red and green apples and anise props, performing grandly while preparing a shisha bowl. Hair is green-apple green on HIS OWN LEFT and red-apple red on HIS OWN RIGHT: in a front-facing view SCREEN LEFT is red and SCREEN RIGHT is green. Keep those anatomical sides when he turns or appears in profile; do not divide a side view into arbitrary screen halves, and do not use blue for green. Preserve the adopted face, expression, pose, short hairstyle, plain white short-sleeved crew-neck T-shirt, long black waist apron and black trousers.",
       "Japanese double apple specialist, dramatic self-styled Adam persona, playful confidence, slightly messy private-life vibe, modern shisha lounge Eden background. Paired apples and corresponding EDEN or intro motifs are SCREEN LEFT red apple and SCREEN RIGHT green apple, aligned with front-facing Adam. Preserve adopted names, labels, lettering, poses, faces, clothing, composition and apple count; leave extra apples outside the pair and already-correct art unchanged."
     ],
     "spriteScale": 1.03,
@@ -171,7 +171,7 @@
       "private_name": "名前欄では、本名を本人から聞いた後（_minto_name_known）の私的な場面だけ『栞』（private_name）と表示する。店・大会・応援など営業の場面は『みんと』。私服の立ち絵を見ただけでは本名を出さず、名乗る前の tonari の私服客は『お姉さん』（speaker oneesan）。",
       "lime": "はじめは初来店時に、チェキ購入の有無にかかわらず案内カードのLIME IDをもらい、『営業LIME』だと疑いつつ、こういう店で連絡先を交換していいのかとドキドキしながら登録する。届くのは店の公式アカウント風の事務的な自動メッセージ（アカウント名は lime_name の『みんと＠PEPPERMINT』・営業姿のアイコン）。ただし店はみんとひとりなので中の人も彼女だけ＝実質みんとの個人アカウント、と本人が明かす（HF12〜HF14）。本名を知った後も、私的な誘いや素の文面はこのお仕事用から届く。恋人になった夜（confession_minto_accept）に『お店のじゃない方』の私用LIME（アカウント名『栞』・私服のアイコン）を渡され、以後はそちらから届く。お仕事用のトークはそのまま残る（2026-10-04 オーナー指定 HF10・HF11）。",
       "first_visit": "Ch1序盤のチュートリアルでtonariに私服姿の「お姉さん」として来店。PEPPERMINTの初回は店内で初対面。好感度♥3以上・固有会話2回以上の後の来店途中に、私服のお姉さんとの会話で正体がつながり、その日は店でも照れた接客になる。",
-      "facility_encounter": "チョイザップで素の姿の本人と会うのは、店内で正体が実際につながった後（_minto_identity_revealed）だけ。好感度や訪問回数だけでは登場させず、本名を本人から聞く前（_minto_name_knownなし）は栞と呼ばない。施設の遭遇と選択では好感度・恋愛値・店の固有会話を進めない。後日の店内の一言は営業姿と表示名「みんと」で返す。"
+      "facility_encounter": "サクッとジムで素の姿の本人と会うのは、店内で正体が実際につながった後（_minto_identity_revealed）だけ。好感度や訪問回数だけでは登場させず、本名を本人から聞く前（_minto_name_knownなし）は栞と呼ばない。施設の遭遇と選択では好感度・恋愛値・店の固有会話を進めない。後日の店内の一言は営業姿と表示名「みんと」で返す。"
     },
     "spriteScale": 0.91,
     "intro_cutin": {
@@ -531,7 +531,7 @@
     "play_style": "「バイブスと直感」",
     "description": "第2章で立ちはだかるライバルでありヒロイン候補の一人。はじめと同い年の22歳。\nベースは平成ギャルマインド──「カワイイは最強」「バイブスで全部OK」「人に優しく、自分にもゆるく」が信条。ギャル友のグループとよく連む。\n雑誌の読者モデルとして活動しており、雑誌掲載をきっかけにファンになったオタクたちが通うようになった（見た目に反して誰にでも分け隔てなく接してくれるため）。シーシャ好き・ギャル仲間・オタクと、客層の幅がとびきり広い。\n理論ではなく「バイブス」だけで最高の一台を作り上げてしまう天才肌だが、内心ではいつか通用しなくなる不安と戦っている。\nもともと体が丈夫でなく、手が震える日や感覚が鈍る日がある。朝起きるたびに「今日、感覚あるかな…」と確かめるのが習慣になっており、このことは主人公だけが知る秘密になる。",
     "background_secret": "幼い頃から体調に波があり、今も手が震える日がある。味覚喪失ではない。周りを不安にさせまいと、相手ごとに明るく振る舞ううち、自分の希望を言いにくくなった。モデルとしてのあげはも店長としてのあげはも本人。第2章の県大会で負けても、はじめを拒絶したり姿を消したりしない。悔しさのまま祝い、友人関係は続く。第3章の帰郷で、手が震えていた日のことを自分から話す。はじめに救われるだけでなく、してほしいことを言葉にする練習を続ける。周りからは天才に見えるが、崩れた日に直し方が分からない感覚派の弱さを本人が一番知っている。調子が悪くても手順と言葉で戻ってくるはじめの才能に壁を感じており、県大会の夜に心の中でだけ嫉妬する（本人には言わない）。",
-    "favorite_flavor": "ホワイトグミベアとレッドグミベア",
+    "favorite_flavor": "しろくまグミとあかくまグミ",
     "specialty_flavor": "トロピカルフルーツ系",
     "growth_stats": {
       "primary": "センス",
@@ -1068,7 +1068,7 @@
     "id": "staff_choizap",
     "name": "スタッフ",
     "role": "mob",
-    "description": "チョイザップのジムスタッフ"
+    "description": "サクッとジムのジムスタッフ"
   },
   {
     "id": "hiyori",

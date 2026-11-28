@@ -1,20 +1,45 @@
 import { el } from "../core/util.js";
+import { imgFileUrl } from "../core/img-file.js";
 import { scoringGuide } from "./axe-coach.js";
+
+// 遊び方の図解（2026-11-27 オーナー「文字で説明しすぎずUIやボタンで視覚的にわかるよう設計していきたい」「斧投げとボドゲも頼む」）:
+// 開いた時は4枚の絵札だけ（一枚絵・見出し・一言・点の札）。文章のルール（下の7つの節）は「くわしいルール」を押した時だけ出す。
+// 絵は gpt-image-2.6-sunburst で生成（asset_sources/ui/minigame-visuals-20261127/axe/。レーンと的の実画面・斧の絵を参照に渡した）
+const HOW_CARDS = tap => [
+  { id: "aim", title: "ねらう", note: "横 → 縦の針を止める" },
+  { id: "throw", title: tap ? "投げる" : "回転を決める", note: tap ? "上へすばやく弾く" : "緑の帯で針を止める" },
+  { id: "score", title: "得点", note: "刃が触れた一番高い所", tags: ["赤 6点"] },
+  { id: "killshot", title: "キルショット", note: "青を宣言して当てる", tags: ["7・8点", "1ゲーム2回"], kind: "kill" },
+];
+const howCard = card => el("li.axe-how-card", { dataset: { how: card.id, test: "axe-how-card", ...(card.kind ? { kind: card.kind } : {}) } }, [
+  el("img.axe-how-art", { src: imgFileUrl(`ui/axe_throw/howto/how_${card.id}.webp`), alt: "", decoding: "async", onerror: event => { event.currentTarget.hidden = true; } }),
+  ...(card.tags || []).map((text, index) => el("em.axe-how-tag", { text, style: { "--i": String(index) } })),
+  el("div.axe-how-caption", [el("b.axe-how-title", { text: card.title }), el("span.axe-how-note", { text: card.note })]),
+]);
 
 /** Shared by the practice entrance and the in-story game. No save/state dependencies. */
 export function axeRules(onClose, { inputMode = "tap-pull" } = {}) {
   const tap = inputMode === "tap-pull";
   const close = el("button.axe-button.axe-primary", { text: "戻る", dataset: { test: "axe-rules-close" }, onclick: onClose });
   const section = (title, rows) => el("section", [el("h3", { text: title }), el("ul", rows.map(text => el("li", { text })))]);
+  // 図解 ⇄ 文章のルール。開いた時は図解。文章は .axe-rules-scroll の data-detail="open" の間だけ見える（中身は前と同じ）。
+  // 窓の最初のボタンは「戻る」のまま（呼び出し側が最初のボタンへフォーカス・中断時に押す）。「くわしいルール」は見た目だけ左へ置く
+  const more = el("button.axe-button.axe-rules-more", { type: "button", text: "くわしいルール", "aria-expanded": "false", dataset: { test: "axe-rules-more" },
+    onclick: () => {
+      const scroll = panel.querySelector(".axe-rules-scroll"), open = scroll.dataset.detail !== "open";
+      scroll.dataset.detail = open ? "open" : "closed"; scroll.scrollTop = 0;
+      more.textContent = open ? "図解にもどる" : "くわしいルール"; more.setAttribute("aria-expanded", String(open));
+    } });
   const panel = el("section.axe-rules", { role: "dialog", "aria-modal": "true", "aria-label": "斧投げの遊び方と得点ルール", dataset: { test: "axe-rules-panel" } }, [
-    el("div.axe-rules-card", [el("header", [el("h2", { text: "斧投げの遊び方（WATL 2026式）" }), close]),
-      el("div.axe-rules-scroll", { tabindex: "0" }, [
+    el("div.axe-rules-card", [el("header", [el("h2", { text: "斧投げの遊び方（WATL 2026式）" }), el("div.axe-rules-actions", [close, more])]),
+      el("div.axe-rules-scroll", { tabindex: "0", dataset: { detail: "closed" } }, [
+        el("ul.axe-how-cards", { dataset: { test: "axe-how-cards" } }, HOW_CARDS(tap).map(howCard)),
         scoringGuide(),
         section("まずこれだけ", [
-          tap ? "的をタップで構え、①横 → ②縦の針を的のタップ・ボタン・Spaceで止めて狙う。金の三角が止めたい所（真ん中の赤、宣言した青）で、針が重なると緑になる。狙いが決まったら、的か右下のスワイプ面から、上へ素早く弾いて離すと投げる。" : "①横 → ②縦 → ③回転の順に、ボタン・的のタップ・Space・Enterで針を止める。",
+          tap ? "的をタップで構え、①横 → ②縦の針を的のタップ・ボタンで止めて狙う。金の三角が止めたい所（真ん中の赤、宣言した青）で、針が重なると緑になる。狙いが決まったら、的か右下のスワイプ面から、上へ素早く弾いて離すと投げる。" : "①横 → ②縦 → ③回転の順に、ボタン・的のタップで針を止める。",
           tap ? "弾く速さで回転が決まる。右のゲージの54〜70%の緑がちょうどいい。遅いと柄から当たり、速すぎると回りすぎて落下して0点。斜めに弾くと横へ流れる。" : "回転は54〜70%の緑の帯で放す。弱いと柄から当たり、強いと回りすぎて落下して0点。",
           "白い刃先（4インチの刃）が予測着地点。刃が触れた一番高い区画の点が入る。",
-          tap ? "キーボードはSpace・Enterで針を止め、投げる時はSpaceを長押しして、緑の帯で離す。Fで一度だけ集中。" : "↔ 横・↕ 縦・↻ 回転のチップは、金色が今止める工程。チップの下の値が止めた位置と回転。",
+          ...(tap ? [] : ["↔ 横・↕ 縦・↻ 回転のチップは、金色が今止める工程。チップの下の値が止めた位置と回転。"]),
           tap ? "直近の一投と累計は得点欄に表示。キルショットの残り回数は宣言ボタンに表示。" : "上の帯は各投の点数。青い斧のバッジの数字が、キルショットを宣言できる残りの回数。",
         ]),
         section("的と得点（公式の寸法）", [
@@ -46,8 +71,8 @@ export function axeRules(onClose, { inputMode = "tap-pull" } = {}) {
         ]),
         section("構え・疲れ・集中", [
           "長く構えるほど腕が疲れて刃先が揺れる。緑の帯を外すと力みも増える。投げる前なら構え直せる。",
-          "各投1回「息を整える」かFキーで約1秒だけ揺れを抑えられる。小さい青や赤を狙うときに。構え直しても回数は戻らない。",
-          "この画面を読んでいる間と別タブでは時計が止まる。Escは説明を閉じる。" + (tap ? "構える前か投げる直前のEscで宣言を取り消し、通常時は中断。" : "ゲーム中はEscで中断。"),
+          "各投1回「息を整える」で約1秒だけ揺れを抑えられる。小さい青や赤を狙うときに。構え直しても回数は戻らない。",
+          "この画面を読んでいる間と別タブでは時計が止まる。",
           "WATL（World Axe Throwing League）2026年の的と得点を参考にしたラウンジ用ルール。審判・反則線・大会運営は扱わない。",
         ]),
       ]),

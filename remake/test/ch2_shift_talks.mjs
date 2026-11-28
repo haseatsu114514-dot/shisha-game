@@ -45,7 +45,7 @@ assert.equal(due(save({ met: { ageha: true, kumicho: true }, flags: seen("ch2_sh
 {
   const shops = dialogues.ch2_shift_talk_three_shops.lines.map(line => line.text).join("\n");
   assert.doesNotMatch(shops, /ズボー|擬音/, "three_shops does not retell remake_ch2_ageha_repeat_f");
-  assert.match(shops, /グミベア/, "retells the day-one delivery");
+  assert.match(shops, /くまグミ/, "retells the day-one delivery");
 }
 // 夕飯の話は DAY6 の ch2_lingering_smell の後だけ
 const early = seen("ch2_shift_talk_fare", "ch2_shift_talk_three_shops");

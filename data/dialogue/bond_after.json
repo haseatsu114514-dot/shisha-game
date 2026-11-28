@@ -244,7 +244,7 @@
       "dialogue_id": "bond_after_naru_1",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。はじめの台詞は、第3章の和解（tournament_finished 3）の前は敬語・後はタメ口に分ける（締めくくり ch1_naru_bond_finale と同じ）。一本目は締めくくりの「次はお前の煙を吸わせろ。こいつで作った、お前の一台をな」の回収。素焼き（suyaki_naru）を持っている時だけ。",
       "lines": [
-        {"speaker": "", "face": "", "text": "KEMURIKUSAに入ると、なるがカウンターを空けて、腕を組んで待っていた。"},
+        {"speaker": "", "face": "", "text": "KEMURIYAに入ると、なるがカウンターを空けて、腕を組んで待っていた。"},
         {"speaker": "naru", "face": "normal", "text": "約束だろ。あの素焼きで作った、お前の一台"},
         {"type": "condition", "condition_type": "tournament_finished", "next_true": "reconciled_1", "next_false": "keigo_1", "tournament_chapter": 3},
         {"speaker": "", "face": "", "text": "焼き菓子みたいな色の縁に、葉を詰める。バニラの染みた土の上に、自分で選んだ葉を重ねた。"},
@@ -273,7 +273,7 @@
       "dialogue_id": "bond_after_naru_2",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。はじめの台詞は、第3章の和解（tournament_finished 3）の前は敬語・後はタメ口に分ける（締めくくり ch1_naru_bond_finale と同じ）。菓子の味から組み立てる理論派（character_profiles）。二人の舌が割れても、それを次の一台にする。",
       "lines": [
-        {"speaker": "", "face": "", "text": "KEMURIKUSAのカウンターに、焼き菓子の箱が三つ並んでいた。"},
+        {"speaker": "", "face": "", "text": "KEMURIYAのカウンターに、焼き菓子の箱が三つ並んでいた。"},
         {"speaker": "naru", "face": "normal", "text": "近所に新しくできた店のだ。どれがバニラに合うか、二人で決めようぜ"},
         {"type": "condition", "condition_type": "tournament_finished", "next_true": "reconciled_1", "next_false": "keigo_1", "tournament_chapter": 3},
         {"speaker": "naru", "face": "smile", "text": "一口ずつな。……煙の前に、舌を合わせとくんだ"},
@@ -1140,7 +1140,7 @@
         {"speaker": "", "face": "", "text": "MELTY PUFFのカウンターに、クマのシールが貼られた素焼きを置いた。"},
         {"speaker": "ageha", "face": "surprise", "text": "あ！ 支給品じゃん！ 持ってきたの？"},
         {"speaker": "hajime", "face": "normal", "text": "約束の一台です。答え合わせ、お願いします"},
-        {"speaker": "", "face": "", "text": "白いグミの匂いが残る素焼きに、ホワイトグミベアを詰める。上に、ミントをひと筋だけ乗せた。"},
+        {"speaker": "", "face": "", "text": "白いグミの匂いが残る素焼きに、しろくまグミを詰める。上に、ミントをひと筋だけ乗せた。"},
         {"speaker": "", "face": "", "text": "あげはは一口吸って、目を閉じたまま指を一本立てた。"},
         {"speaker": "ageha", "face": "serious", "text": "待って。言うから。……最初ふわってして、最後に、すって抜ける"},
         {"speaker": "ageha", "face": "normal", "text": "ミント、ちょっとだけ。……うちの白、甘いだけで終わんないようにした？"},
@@ -1154,7 +1154,7 @@
       "lines": [
         {"speaker": "", "face": "", "text": "あげはが、手書きのメニュー表をカウンターに広げていた。"},
         {"speaker": "ageha", "face": "normal", "text": "ハジメっち、ちょい見て。説明、自分で書いてみたの"},
-        {"speaker": "", "face": "", "text": "『ホワイトグミベア：ズボーって吸うと、ふわ〜ってなる』。どの行にも、擬音が並んでいた。"},
+        {"speaker": "", "face": "", "text": "『しろくまグミ：ズボーって吸うと、ふわ〜ってなる』。どの行にも、擬音が並んでいた。"},
         {"speaker": "hajime", "face": "smile", "text": "ズボーは、伝わります"},
         {"speaker": "ageha", "face": "surprise", "text": "え、まじ？ 直されると思ってた"},
         {"speaker": "hajime", "face": "normal", "text": "そのままで、もう一言だけ足しませんか。誰に吸ってほしいか"},
@@ -1719,7 +1719,7 @@
       "dialogue_id": "bond_after_noor_1",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第4章ドバイのカフェ・オアシス（chapters/ch4-desert.js の雑談の代わり）。はじめは「ヌールさん」と敬語、ヌールは「ハジメ」「私」。友だちに教わった変わった日本語は、その部分だけ片仮名で、ときどき。はじめの大会・味覚・恋愛には踏み込まない（character_profiles）。お父さんは台詞を持たない。一本目は締めくくりで受け取ったダブルアップルの素焼き（suyaki_noor）で一台。持っている時だけ。店では三口しか吸えない彼女（character_profiles）と、父の席（締めくくり）。",
       "lines": [
-        {"speaker": "", "face": "", "text": "カフェ・オアシスのテーブルに、りんごの匂いの素焼きを置いた。"},
+        {"speaker": "", "face": "", "text": "カフェ・オアシスのテーブルに、アニスの香りが残る素焼きを置いた。"},
         {"speaker": "noor", "face": "surprise", "text": "あ、持ってきたの？ 日本に帰ってから使うんだと思ってた"},
         {"speaker": "hajime", "face": "normal", "text": "一回目は、ここで作りたくて。お父さんの席で、いいですか"},
         {"speaker": "noor", "face": "surprise", "text": "父の席？"},

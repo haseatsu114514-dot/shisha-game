@@ -618,6 +618,16 @@
         {
           "speaker": "",
           "face": "",
+          "text": "戸締まりに来たムカイさんは、小さな一台を見て、換気扇を一段だけ強くした。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "奥の部屋の灯り、消し忘れるなよ。……ごはんは、温めてから食え"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "俺は残していたごはんを温め、ましろは先に帰り支度をした。"
         }
       ],
@@ -760,6 +770,26 @@
           "speaker": "mashiro",
           "face": "normal",
           "text": "じゃあ、それは任せたいなぁ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの奥で、ムカイさんが伝票の端の字をのぞいていた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "ホースを置くまでの間、か。……夜の客は、そこが長い"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "明日も、それを書いてくれ。俺が見るより、細かい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい"
         },
         {
           "speaker": "",

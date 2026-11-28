@@ -232,12 +232,34 @@ $('crossfader').addEventListener('input', e => audio.setMix(e.target.value));
 const jogs = [0, 1].map(id => ({ id, el: $('platter-' + (id ? 'b' : 'a')), drag: null, spin: 0, pending: 0, flushed: 0 }));
 for (const jog of jogs) {
   const el = jog.el, angle = (e, r) => Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2)) * 180 / Math.PI;
-  const turn = degrees => { jog.spin += degrees; el.style.setProperty('--spin', `${jog.spin.toFixed(1)}deg`); jog.pending += degrees / 360 * FEEL.jog.beatsPerTurn; };
+  const turn = jog.turn = degrees => { jog.spin += degrees; el.style.setProperty('--spin', `${jog.spin.toFixed(1)}deg`); jog.pending += degrees / 360 * FEEL.jog.beatsPerTurn; };
   el.addEventListener('pointerdown', e => { const r = el.getBoundingClientRect(); if (Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2)) > r.width / 2 * 1.05) return;
     e.preventDefault(); el.setPointerCapture(e.pointerId); jog.drag = { last: angle(e, r) }; el.classList.add('touching'); buzz(6); });
   el.addEventListener('pointermove', e => { if (!jog.drag) return; const a = angle(e, el.getBoundingClientRect()); let d = a - jog.drag.last; if (d > 180) d -= 360; if (d < -180) d += 360; jog.drag.last = a; turn(d); });
   const end = () => { jog.drag = null; el.classList.remove('touching'); }; el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
   el.addEventListener('keydown', e => { const k = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key]; if (!k) return; e.preventDefault(); turn(k * FEEL.jog.keyStep / FEEL.jog.beatsPerTurn * 360); });
+}
+// ズレ直しのボタン（2026-11-27 オーナー「DJは皿でピッチ合わせとかもするからそこもなんか救済措置欲しい　フェーダー動かしてる時にピッチ少しずらせるとか　なんか専用ボタンで」・VPG15）。
+// 横フェーダーのすぐ上、ビートメーターの左右の ◀・▶ が、ズレている側の皿を回すのと同じ働きをする
+// （◀ ＝ 左回り＝戻す、▶ ＝ 右回り＝先へ）。ひと押しは矢印キー1回ぶん、押し続けると一定の速さで回り続ける。判定・採点は皿と同じ（回した分を同じ所へ送る）。
+// 縦画面（?layout=portrait）では、つなぎの間は真ん中のミキサーへ寄っていて皿が見えないので、案内もボタンを指す。
+// 横の画面にも出す（2026-11-27「横にも出す」）。横は皿も見えているので、案内は皿を先に言い、ボタンは脇の一言で添える（皿で直すのが本筋、ボタンは救済）。
+const portraitLayout = params.get('layout') === 'portrait';
+const NUDGE = { holdAfterMs: 220, beatsPerSecond: .32 };
+for (const [id, dir] of [['nudge-back', -1], ['nudge-fwd', 1]]) {
+  const el = $(id);
+  let held = null;
+  const target = () => jogs[view.sync?.deck ?? audio.mix.cue?.to ?? 1];
+  const spin = beats => target().turn(dir * beats / FEEL.jog.beatsPerTurn * 360);
+  const roll = t => { if (!held) return; if (t - held.since > NUDGE.holdAfterMs) spin(NUDGE.beatsPerSecond * Math.min(.05, (t - held.last) / 1000)); held.last = t; held.frame = requestAnimationFrame(roll); };
+  el.addEventListener('pointerdown', e => {
+    if (el.disabled) return;
+    e.preventDefault(); el.setPointerCapture?.(e.pointerId); spin(FEEL.jog.keyStep); buzz(6);
+    const t = performance.now(); held = { since: t, last: t, frame: requestAnimationFrame(roll) };
+  });
+  const stop = () => { if (held) cancelAnimationFrame(held.frame); held = null; };
+  for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) el.addEventListener(type, stop);
+  el.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !el.disabled) { e.preventDefault(); spin(FEEL.jog.keyStep); } });
 }
 /** Send what the platters were turned since the last time. A turn that brings the track back in time is the moment (lamp, sound, the room). */
 function flushJogs(perf) {
@@ -254,11 +276,13 @@ function flushJogs(perf) {
 function beatMeter(m) {
   // 拍が合っていても、フェーダーに触るまでは「ぴったり」と出さない（入れた曲はまだ聞こえていない。DJR02）。ズレはいつでも知らせる
   const sync = m.phase === 'mix' && m.running ? view.sync : null, off = !!sync?.off, state = !sync ? 'idle' : off ? 'off' : m.fader?.touched ? 'lock' : 'idle';
-  if (state !== shown.beat) { shown.beat = state; setAttr($('beat'), 'data-state', state); put('beat-label', state === 'off' ? 'ズレ！ 皿で直す' : state === 'lock' ? '拍 ぴったり' : '拍'); }
+  { const live = !!sync; for (const id of ['nudge-back', 'nudge-fwd']) { const el = $(id); if (el.disabled === live) el.disabled = !live; } } // つなぎの間だけ押せる
+  if (state !== shown.beat) { shown.beat = state; setAttr($('beat'), 'data-state', state); put('beat-label', state === 'off' ? 'ズレ！ ◀ ▶ で直す' : state === 'lock' ? '拍 ぴったり' : '拍'); } // 札は左右のボタンを指す（縦横とも）
   setVar($('beat-dot'), '--x', (sync ? Math.max(-1, Math.min(1, sync.error / FEEL.jog.meterSpan)) : 0).toFixed(3));
   const jog = off ? `${sync.deck ? 'b' : 'a'}-${sync.error > 0 ? 'ccw' : 'cw'}` : '';
   if (jog !== shown.jog) {
     shown.jog = jog;
+    $('nudge-back').classList.toggle('go', off && sync.error > 0); $('nudge-fwd').classList.toggle('go', off && sync.error < 0); // 直す向きのボタンが光る
     for (const [id, key] of ['a', 'b'].entries()) { const mine = off && sync.deck === id, arrows = $('jog-arrows-' + key); arrows.hidden = !mine; arrows.classList.toggle('ccw', mine && sync.error > 0); $('platter-' + key).classList.toggle('off', mine); }
   }
 }
@@ -560,7 +584,10 @@ function navi(m, now, away) {
     // #2456 §4: ▶ was pressed a little early. The track is held for the entry line and comes in exactly on it (the count and the ring go on).
     if (view.reserved) { const u = view.untilIn; return { ...out, step: 2, untilHead: u, count: u <= 4 && u > 0 ? String(Math.ceil(u)) : '', main: `予約した！ ${deckOf(to)} は 0 でぴったり入る`, sub: 'あとは待つだけ（早すぎたら、もう一度 ▶ で取り消せる）', points: [] }; }
     // DJG: the incoming track has slipped out of time. Turn its platter the way the arrows run (ahead → back, behind → on) until the gold dot is in the frame.
-    if (view.sync?.off) return { ...out, step: 3, warn: true, main: `ズレた！ ${sideOf(to)}の皿を${view.sync.error > 0 ? '左回り' : '右回り'}に回そう`, sub: '金の点が枠に入れば戻る。フェーダーはそのまま', points: ['fader', `jog-${to ? 'b' : 'a'}`] };
+    // 縦は皿が見えないのでボタンを、横は皿を先に言い、光るボタンでも直せることを下の一言で添える（VPG15）
+    if (view.sync?.off) { const key = view.sync.error > 0 ? '◀' : '▶';
+      return { ...out, step: 3, warn: true, main: portraitLayout ? `ズレた！ 光る ${key} を押して、金の点を枠へ` : `ズレた！ ${sideOf(to)}の皿を${view.sync.error > 0 ? '左回り' : '右回り'}に回そう`,
+        sub: portraitLayout ? '金の点が枠に入れば戻る。フェーダーはそのまま' : `光る ${key} を押しても戻る。フェーダーはそのまま`, points: ['fader', `jog-${to ? 'b' : 'a'}`] }; }
     // #2456 §4-2: the grace is over but the incoming track still cannot be heard. The outgoing one keeps playing until the fader is half way.
     if (view.stuck) return { ...out, step: 3, warn: true, main: `${deckOf(to)} に移れていない！ ${sideOf(to)}へ動かそう`, sub: '真ん中を越えれば乗り換わる。曲は止まらない', points: ['fader'] };
     if (view.progress >= 1) return { ...out, step: 3, main: `最後まで${sideOf(to)}へ動かしきろう`, sub: `フェーダーが${sideOf(to)}の端に着くと、${deckOf(to)} に乗り換わる`, points: ['fader'] };

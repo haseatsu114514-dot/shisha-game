@@ -162,6 +162,10 @@ await suite("axe-lesson", async check => {
     await page.locator('[data-test="axe-rules"]').click();
     const rules = page.locator('[data-test="axe-rules-panel"]');
     assert.equal(await rules.locator(".axe-rules-scroll > .axe-coach-diagram").count(), 1);
+    // 2026-11-27: 開いた時は図解の4枚（この検査はゲージで止める操作なので2枚めは「回転を決める」。弾いて投げる操作では「投げる」）。文章のルールは「くわしいルール」を押した時だけ
+    assert.deepEqual(await rules.locator('[data-test="axe-how-card"] .axe-how-title').allTextContents(), ["ねらう", "回転を決める", "得点", "キルショット"]);
+    assert.doesNotMatch(await rules.innerText(), /まずこれだけ/);
+    await page.locator('[data-test="axe-rules-more"]').click();
     assert.match(await rules.innerText(), /まずこれだけ/); assert.match(await rules.innerText(), /キルショット（青）/);
     for (const explanation of [/外側の青は7点.*中心は8点/, /その青以外.*0点/, /宣言なしで青に刺さると1のリングの1点/, /1ゲーム2回/, /外れ・落下でも1回/, /左右とも閉じ/, /落下.*宣言が1回増える/, /前半・後半/, /レク.*アマ.*プロ|部門/, /サドンデス/])
       assert.match(await rules.innerText(), explanation);
@@ -177,7 +181,9 @@ await suite("axe-lesson", async check => {
     await action(page); await stop(page, .5, 3600, "vertical"); await stop(page, .5, 3600, "power");
     await gauge(page, .62, 2400); assert.equal((await previewMatchesModel(page)).outcome, "killshot-miss");
     assert.equal((await previewMatchesModel(page)).score, 0);
+    // 途中の Esc は、すぐやめずに「つづける／やめる」を確かめる（2026-11-26 から）。「やめる」を押して終える
     await game(page).focus(); await page.keyboard.press("Escape");
+    await page.locator('[data-test="axe-quit-confirm"]').click();
     const result = await page.evaluate(() => window.lessonPromise);
     assert(result.cancelled && !result.completed); assert.equal(result.throws.length, 0);
     assert.deepEqual(await storageSnapshot(page), before);

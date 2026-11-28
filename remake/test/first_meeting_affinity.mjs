@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const root = process.env.HEART1_ROOT || fileURLToPath(new URL('../js/', import.meta.url));
 const sourceRoot = process.env.HIYORI_SOURCE_ROOT || root;
 const supportRoot = process.env.HIYORI_SUPPORT_ROOT || root;
-const realPaths = ['core/bond-after.js','core/chapter-data.js','core/util.js','core/axe-bar-discovery.js','daily/hiyori.js','daily/spot-encounters.js','core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/chapter-save.js', 'core/state.js', 'core/legacy-cast-save.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
+const realPaths = ['core/bond-after.js','core/chapter-data.js','core/util.js','core/axe-bar-discovery.js','daily/hiyori.js','daily/spot-encounters.js','core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/chapter-save.js', 'core/state.js', 'core/legacy-cast-save.js','core/portrait-style.js','core/gallery-progress.js','core/minto-cheki-data.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
 const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rio','ch1_bonds','samechan','hiyori','lover_events','cinema','remake_ch1','ch1_spots'];
 const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))));
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -253,7 +253,7 @@ await check('after-chapter revisit plays once on the first chapter-2 visit of a 
  const later=f.fresh();later.chapter=3;later.flags._ch1_regulars={adam:true};
  assert.equal(f.spots.afterChapterVisitDue('adam'),null,'only in chapter 2');
 });
-// #2035: 修行から戻ったなるの後日談は、第4章の出発前の準備期間に、休業中のKEMURIKUSAで一度だけ。
+// #2035: 修行から戻ったなるの後日談は、第4章の出発前の準備期間に、休業中のKEMURIYAで一度だけ。
 await check('naru after-return visit opens the closed shop once during the chapter-4 departure prep',async f=>{
  const s=f.fresh();s.chapter=4;s.phase='daily';s.met.naru=true;s.story.naru=3;s.flags._cafe_introduced=true;s.flags._ch2_read_ch2_naru_confrontation=true;
  const shop=f.spots.SPOTS.find(spot=>spot.id==='naru');

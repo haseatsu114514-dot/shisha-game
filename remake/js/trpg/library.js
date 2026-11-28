@@ -7,7 +7,7 @@ import { shelfHelpButton } from "./shelf-help.js";
 // 操作と遊び方は画面に常に出さず、右上の「？」で読む（#2719・ミニゲーム共通のUI方針）。
 const LIBRARY_HELP = [
   ["物語を選ぶ", "作中の作者が書いた短編を、キャラたちがGMとプレイヤーとして遊びます。本を選んで「この物語を開く」。"],
-  ["操作", "クリック・タップで選びます。会話は Enter／Space でも進みます。"],
+  ["操作", "タップで選びます。会話も、画面をタップして進めます。"],
   ["卓の中", "卓を囲んでいる間は、右上の「？」でいつでも遊び方を確認できます。"],
 ];
 const SHELF_THEME = "harbor";
@@ -50,7 +50,7 @@ export function mountTrpgLibrary(host, { scenarios, characters, manifest, audio,
   }
   syncSound();
   root.append(el("header.trpg-library-header", [
-    el("div", [el("span.trpg-kicker", { text: "水煙前線 -EN:CODE- / TABLETOP COLLECTION" }),
+    el("div", [el("span.trpg-kicker", { text: "水煙前線 -EN:CODE- / TABLE TALK COLLECTION" }),
       el("h1", { text: "ひと息、物語の中へ。" })]),
     el("div.trpg-library-meta", [el("span", { text: String(scenarios.length).padStart(2, "0") + " STORIES" }), sound,
       shelfHelpButton(() => root, { title: "この本棚の遊び方", sections: LIBRARY_HELP, test: "trpg-library-help" }),

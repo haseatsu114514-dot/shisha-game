@@ -158,9 +158,9 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     const before = desertRecords(owner);
     const name = DB.characters[DESERT_GUIDE]?.display_name || "ヌール", naruName = DB.characters.naru?.display_name || "なる";
     // 締めくくりで「二人で見たい」と答えた後の砂丘: 滑ったあと夕日で告白（DSR20）。この日はなるを呼ばない
-    // 第5章（帰国後にまたドバイへ来た日・naru: false）は、なるは地元の KEMURIKUSA にいるので砂丘に来ない。ヌールとだけ滑る
+    // 第5章（帰国後にまたドバイへ来た日・naru: false）は、なるは地元の KEMURIYA にいるので砂丘に来ない。ヌールとだけ滑る
     const rivals = !naru || (confessionDay && !before.naruMet) ? ["noor"] : desertRivals(owner);
-    // ヌールに勝った後の最初の外出: なるが砂丘に来て勝負を持ちかける（一度だけ）
+    // 上級をクリアした後の最初の外出: なるが砂丘に来て勝負を持ちかける（一度だけ。DSR107 より前は、ヌールに一度勝った後）
     if (rivals.includes("naru") && !before.naruMet) {
       if (!await read(DESERT_SCENES.naruArrive, bgUrl(DESERT_BG))) return changed;
       if (markNaruMet(owner)) save();
@@ -170,6 +170,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     // 段の解放（旧保存のヌールへの勝ち＝中級クリアを先に取り込む。何度呼んでも同じ）。上級の札には、まだなら白火の案内
     syncPlayTiers(owner);
     const tierState = () => ({ tiers: openTiers(owner, "desert"), cleared: tierRecord(owner, "desert").cleared });
+    void import("../core/extra-games.js").then((m) => m.recordExtraPlay("desert")).catch(() => {}); // タイトルの EXTRA（EXT01）
     const { results } = await runDesertRide({
       host: host || document.getElementById("stage") || layers.screen, signal, tutorial: status.first,
       best: before.best, legacyBest: before.legacyBest, easyBest: before.easyBest, bests: before.bests,
@@ -178,6 +179,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       onTier: tier => { if (current() && rememberTier(owner, "desert", tier)) save(); },
       reducedMotion: (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches) || !!config.reduceShake,
       guide: name, rivals,
+      // なるの札（段の札の4枚目。開くまでは「？？？」）: 第5章はなるが砂丘に来ないので、札ごと出さない
+      naruSlot: naru,
       onResult: result => {
         if (!current()) return null;
         const saved = recordDesertResult(owner, result, { awardExp: awardActionExp });

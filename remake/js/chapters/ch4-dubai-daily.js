@@ -62,7 +62,9 @@ import { CH4_TOUR_BG, CH4_TOUR_FLAG, CH4_TOUR_IDS, CH4_TOUR_SCENES, chapterFourT
 import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
 
 export const DUBAI = "dubai";
-const INN_REST_SCENES = ["ch4_inn_rest", "ch4_inn_rest_b", "ch4_inn_rest_c", "ch4_inn_rest_d", "ch4_inn_rest_e"]; // #3097: 3本→5本
+// #3097: 3本→5本。f〜h は第4章ボリューム第2便（2026-11-27。絵はがき・「ゆっくりどうぞ」の練習・タオルのラクダ）
+const INN_REST_SCENES = ["ch4_inn_rest", "ch4_inn_rest_b", "ch4_inn_rest_c", "ch4_inn_rest_d", "ch4_inn_rest_e",
+  "ch4_inn_rest_f", "ch4_inn_rest_g", "ch4_inn_rest_h", "ch4_inn_rest_i"]; // i は第4便（シャツが一時間で乾く・葉の袋の口）
 // スミさんからの夜の電話（#3097 計画 4-1）。DAY7 の時差の電話（CH4_SUMI_CALL）を読んだ後、夜に宿で休むと、休む場面の代わりに
 // 一本ずつ順に読む（一度きり。読み終えたら休む巡回だけに戻り、休む巡回の回数は進めない）。つむぎが同じ便で来ていれば、
 // tonari のつむぎの話（_c）は飛ばす。読んだ数は再訪の会話の記録の sumi_call に置く。
@@ -75,23 +77,31 @@ const DEADLINE = Object.freeze({ festa: 6, first: 8, second: 11 });
 
 // 再訪の会話（data/dialogue/ch4_dubai_daily.json）。既存の再訪（ch4_main.json）と並べて巡回する。
 // カフェの *_culture_* は現地のシーシャ文化の話（吸いながら店の人・常連から聞く。注文の後に読む）。
+// 各行き先の末尾は第4章ボリューム第2便（2026-11-27）。同じ場所の前置きや感想を繰り返さず、初めて起きる出来事・関係が一歩進む回だけを足した。
 const TALKS = Object.freeze({
-  souq: ["ch4_dubai_souq_revisit", "ch4_souq_talk_b", "ch4_souq_talk_c", "ch4_souq_talk_d", "ch4_souq_talk_e", "ch4_souq_talk_f", "ch4_souq_talk_g"],
+  souq: ["ch4_dubai_souq_revisit", "ch4_souq_talk_b", "ch4_souq_talk_c", "ch4_souq_talk_d", "ch4_souq_talk_e", "ch4_souq_talk_f", "ch4_souq_talk_g",
+    "ch4_souq_talk_h", "ch4_souq_talk_i", "ch4_souq_talk_j"],
   // h・i は太陽との小会話（#3097 計画 4-5。審査員だとは明かさない）
   festa: ["ch4_festa_revisit", "ch4_festa_talk_b", "ch4_festa_talk_c", "ch4_festa_talk_d", "ch4_festa_talk_e", "ch4_festa_talk_f", "ch4_festa_talk_g",
-    "ch4_festa_talk_h", "ch4_festa_talk_i"],
-  center_cafe: ["ch4_dubai_cafe_revisit", "ch4_cafe_talk_b", "ch4_cafe_culture_hose", "ch4_cafe_talk_c", "ch4_cafe_culture_coffee", "ch4_cafe_talk_d", "ch4_cafe_talk_e", "ch4_cafe_talk_f"],
-  alley_cafe: ["ch4_alley_cafe_quiet", "ch4_alley_culture_clay", "ch4_alley_talk_c", "ch4_alley_culture_majlis", "ch4_alley_talk_d", "ch4_alley_talk_e", "ch4_alley_talk_f"],
+    "ch4_festa_talk_h", "ch4_festa_talk_i", "ch4_festa_talk_j"],
+  center_cafe: ["ch4_dubai_cafe_revisit", "ch4_cafe_talk_b", "ch4_cafe_culture_hose", "ch4_cafe_talk_c", "ch4_cafe_culture_coffee", "ch4_cafe_talk_d", "ch4_cafe_talk_e", "ch4_cafe_talk_f",
+    "ch4_cafe_talk_g", "ch4_cafe_talk_h", "ch4_cafe_talk_i"],
+  alley_cafe: ["ch4_alley_cafe_quiet", "ch4_alley_culture_clay", "ch4_alley_talk_c", "ch4_alley_culture_majlis", "ch4_alley_talk_d", "ch4_alley_talk_e", "ch4_alley_talk_f",
+    "ch4_alley_talk_g", "ch4_alley_talk_h"],
   // 4本目からは期限の無い追加の小会話（#3097）。3本を読んだ後は、追加の分だけを巡回する（nextTalk）
   naru: ["ch4_naru_dubai_1", "ch4_naru_dubai_2", "ch4_naru_dubai_3", "ch4_naru_dubai_4", "ch4_naru_dubai_5", "ch4_naru_dubai_6",
-    "ch4_naru_dubai_7", "ch4_naru_dubai_8", "ch4_naru_dubai_9", "ch4_naru_dubai_10"], // 7〜10 は #3097 計画 4-3
-  practice: ["ch4_practice_hall_1", "ch4_practice_hall_2", "ch4_practice_hall_3", "ch4_practice_hall_4", "ch4_practice_hall_5", "ch4_practice_hall_6"],
+    "ch4_naru_dubai_7", "ch4_naru_dubai_8", "ch4_naru_dubai_9", "ch4_naru_dubai_10", // 7〜10 は #3097 計画 4-3
+    "ch4_naru_dubai_11", "ch4_naru_dubai_12", "ch4_naru_dubai_13", "ch4_naru_dubai_14"],
+  practice: ["ch4_practice_hall_1", "ch4_practice_hall_2", "ch4_practice_hall_3", "ch4_practice_hall_4", "ch4_practice_hall_5", "ch4_practice_hall_6",
+    "ch4_practice_hall_7", "ch4_practice_hall_8"],
 });
 // 再訪の会話の背景（行き先の既定と違う場面だけ）。なるの2回目は練習会場、3回目はクリーク沿い、7回目は夜のロビー（地の文が夜）。
 const TALK_BG = Object.freeze({
   ch4_naru_dubai_1: CH4_PLACE_BG.inn, ch4_naru_dubai_2: CH4_PLACE_BG.venue, ch4_naru_dubai_3: "bg_dubai_street_night",
   ch4_naru_dubai_4: CH4_PLACE_BG.inn, ch4_naru_dubai_5: CH4_PLACE_BG.inn, ch4_naru_dubai_6: CH4_PLACE_BG.inn,
   ch4_naru_dubai_7: "bg_dubai_inn_night", ch4_naru_dubai_8: CH4_PLACE_BG.inn, ch4_naru_dubai_9: CH4_PLACE_BG.inn, ch4_naru_dubai_10: CH4_PLACE_BG.inn,
+  // 11 はスークの服屋、12〜14 は宿（13 は宿の近くのスーパーから宿の給湯器へ戻る）
+  ch4_naru_dubai_11: CH4_PLACE_BG.souq, ch4_naru_dubai_12: CH4_PLACE_BG.inn, ch4_naru_dubai_13: CH4_PLACE_BG.inn, ch4_naru_dubai_14: CH4_PLACE_BG.inn,
   ch4_practice_hall_1: CH4_PLACE_BG.venue, ch4_practice_hall_2: CH4_PLACE_BG.venue,
 });
 export const DUBAI_DAILY_IDS = Object.freeze([
@@ -112,10 +122,18 @@ export const dubaiEveDay = (value = state) => chapterFourProgress(value).startDa
 
 // ---- 行き先 -----------------------------------------------------------------------------
 const spot = fields => Object.freeze({ region: DUBAI, kind: "ch4_dubai", ...fields });
+/** 初めて太陽に会う場面（ch4_festa）を読んだ後か。FESTA はその後から定休日を取る（第4章の記録が無い保存では休まない）。 */
+function festaMet(value) {
+  try { return chapterFourProgress(value).read?.ch4_festa === true; } catch { return false; }
+}
 export const CH4_DUBAI_SPOTS = Object.freeze([
   spot({ id: "ch4_dubai_souq", place: "souq", label: "スーク", area: "旧市街の市場", x: 22, y: 58, theme: "shop", glyph: "市",
     preview: CH4_PLACE_BG.souq, stamina: -10, stat: "insight", desc: "スパイスの匂いが立つ市場。歩くたびに、違うものが目に入る。屋台で軽いものも買える。" }),
+  // ドバイのライバルの店の定休日（day % 7。2026-11-28 オーナー「東京やドバイの店にも定休日を作って」）。
+  // FESTA は初めて太陽に会う場面（期限の夜にもここで読む ch4_festa）の後から、龍龍水煙所は王煙楼に会った後から休む。
+  // 中心地のカフェ（昼のシフト）・路地裏のカフェ（約束の場面）は休まない
   spot({ id: "ch4_dubai_festa", place: "festa", label: "FESTA", area: "大会会場の出張ブース", x: 56, y: 28, theme: "rival", glyph: "煙",
+    closedOn: 3, closedFrom: festaMet,
     face: "da_silva", teacher: "da_silva", preview: CH4_PLACE_BG.festa, cost: 6000, stamina: -12, stat: "charm", desc: "手拍子と炭の匂いのする、太陽の店。一台6,000円（約140ディルハム）。夜がにぎわう。" }),
   spot({ id: "ch4_dubai_cafe", place: "center_cafe", label: "中心地のカフェ", area: "街の中心", x: 70, y: 52, theme: "store", glyph: "茶",
     preview: CH4_PLACE_BG.center_cafe, cost: 3000, stamina: -10, stat: "sense", desc: "立派なカフェ。現地のメニューから一台頼んで、給仕と客の作法も見る。一台3,000円（約70ディルハム）。夜がにぎわう。" }),
@@ -124,6 +142,7 @@ export const CH4_DUBAI_SPOTS = Object.freeze([
   // 龍龍水煙所（王煙楼の店）は最初から出す。王煙楼に会うまでは店主の顔は「？」（daily/spot-people.js）。背景は仮置き。
   spot({ id: "ch4_dubai_longlong", place: "longlong", label: "龍龍水煙所", area: "世界大会のあいだの店", x: 58, y: 50, theme: "rival", glyph: "龍",
     face: LONGLONG_CHAR, freshnessKey: LONGLONG_CHAR, preview: LONGLONG_BG, cost: 6000, stamina: -12, stat: "insight",
+    closedOn: 5, closedFrom: value => !!value?.met?.[LONGLONG_CHAR],
     desc: "中国の水煙の老舗が、世界大会に合わせて出した店。一台6,000円（約140ディルハム）。夜がにぎわう。" }),
   spot({ id: "ch4_dubai_naru", place: "naru", label: "なると会う", area: "宿のロビー", x: 20, y: 36, theme: "rival", glyph: "友",
     face: "naru", preview: CH4_PLACE_BG.inn, stamina: -8, stat: "guts", desc: "同じ街にいる日本の第二代表。少し話す。" }),

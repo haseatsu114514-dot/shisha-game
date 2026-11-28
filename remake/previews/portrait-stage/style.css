@@ -47,7 +47,9 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .switch .grip i { width: 20px; height: 3px; border-radius: 3px; background: #ffffffa6; }
 .switch .panel { display: none; gap: 4px; margin-top: 4px; padding: 5px; border-radius: 14px; background: #0a0710f0; border: 1px solid #ffffff38; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: 0 10px 24px #000b; }
 .switch.open .panel { display: grid; }
-.switch .panel > div { display: flex; align-items: center; justify-content: center; gap: 2px; }
+.switch .panel > div { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px; }
+/* 場面が増えて1行に収まらない時は折り返す（VPS05）。つまみ全体は画面の幅まで */
+.switch { width: max-content; max-width: calc(100vw - 16px); }
 .switch .sep { width: 1px; height: 18px; margin: 0 4px; background: #ffffff38; }
 .switch small { padding: 0 6px; font-size: 10px; font-weight: 700; color: #9a8fae; }
 .switch button:not(.grip), .switch a { height: 28px; padding: 0 9px; display: grid; place-items: center; border-radius: 100px; font-weight: 700; white-space: nowrap; color: #d8cfe6; text-decoration: none; }
@@ -349,7 +351,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 @keyframes res-off { 20% { translate: -0.6rem 0; } 45% { translate: 0.5rem 0; } 70% { translate: -0.3rem 0; } 100% { translate: 0 0; } }
 /* 熱ゲージ: 右に大きく。本編（remake/css/craft.css の .thermo-*）と同じ色の意味。緑の帯＝適温の目安（両端に白い刻み）、
    真ん中の虹＝合わせやすい範囲（中央に白線）、一番上＝焦げる帯（炎の印）。今の温度は外から指す矢印と管を横切る線。今より上は少し暗い */
-.thermo { position: absolute; z-index: 5; right: 1.1rem; top: 9.6rem; bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 10.2rem); width: 5.4rem; display: grid; grid-template-rows: auto 1fr; justify-items: center; gap: 0.6rem; pointer-events: none; }
+.thermo { position: absolute; z-index: 5; right: 1.1rem; top: 10.8rem; bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 10.2rem); width: 5.4rem; display: grid; grid-template-rows: auto 1fr; justify-items: center; gap: 0.6rem; pointer-events: none; }
 .th-icon { width: 3.6rem; height: 3.6rem; display: grid; place-items: center; border-radius: 50%; font-size: 2.3rem; color: #fff; background: #120c1dcc; box-shadow: 0 0 0 0.12rem #ffffff40, 0 0.4rem 1rem #0009; transition: color 0.3s, background 0.3s, box-shadow 0.3s; }
 .th-bar { position: relative; width: 3rem; height: 100%; border-radius: 1.6rem; overflow: hidden; box-shadow: 0 0 0 0.25rem #120c1dd9, 0 0 0 0.38rem #ffffff59, 0 1rem 2rem #000b; }
 .th-bar::before { content: ""; position: absolute; inset: 0; z-index: 4; pointer-events: none; background: repeating-linear-gradient(0deg, transparent 0 calc(10% - 0.1rem), #0b081233 calc(10% - 0.1rem) 10%), linear-gradient(90deg, transparent 14%, #ffffff40 22%, transparent 34%); }
@@ -593,8 +595,8 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 
 /* 案D（VPL33・VPL35）: 工程を終えた時に上の絵へどかっと出て、右上（工程の並びの右、熱ゲージの上）へ収まる */
 .rank-d { z-index: 5; right: 0.9rem; top: max(0.6rem, calc(env(safe-area-inset-top, 0px) - 0.6rem)); }
-.rank-d .rank-box { width: 9.8rem; height: 7.3rem; filter: drop-shadow(0 0.3rem 0.6rem #000b); } /* 気持ち大きく（VPL97。前は 8.2rem×6.1rem）。温度計はその分下げた */
-.rank-d .rank-meter { width: 7.6rem; height: 0.85rem; margin-top: 0.1rem; border: 0.1rem solid #ffffff2e; box-shadow: inset 0 0.1rem 0.3rem #000c, 0 0.2rem 0.6rem #000a; } /* 太く（VPL98。前は 0.45rem） */
+.rank-d .rank-box { width: 11.2rem; height: 8.35rem; filter: drop-shadow(0 0.3rem 0.6rem #000b); } /* もう少し大きく（VPL97 で 8.2rem×6.1rem→9.8rem×7.3rem、VPL115 で 11.2rem×8.35rem）。温度計はその分下げた */
+.rank-d .rank-meter { width: 8.6rem; height: 0.85rem; margin-top: 0.1rem; border: 0.1rem solid #ffffff2e; box-shadow: inset 0 0.1rem 0.3rem #000c, 0 0.2rem 0.6rem #000a; } /* 太く（VPL98。前は 0.45rem） */
 .rank-d .rank-meter i { background: linear-gradient(180deg, #fff3d6, #ffcf6b 55%, #e9a93e); }
 .phone[data-rank="d"] .steps { left: 1rem; transform: none; }
 .rank-impact { position: absolute; z-index: 29; left: 50%; top: 34%; width: 26rem; height: 26rem; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); background: radial-gradient(circle, transparent 52%, #ffe2a6cc 58%, #ffcf6b66 64%, transparent 72%); }
@@ -625,15 +627,21 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .b-glass, .bottle-svg { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
 .b-glass { transform-origin: 50% 98.75%; transform: rotate(8deg); filter: drop-shadow(0 1.2rem 1.8rem #000b); pointer-events: none; }
 .bottle-svg { overflow: visible; }
-/* 流し台（VPL92）: ボトルの足が流し台の底の前寄り（ドレンの手前）に乗る。絵は 1152×768、底の前寄りは絵の縦 86%・横の真ん中は 51.4% */
-.bottle .sink { position: absolute; z-index: 0; left: -60.5%; top: 15.6%; width: 215%; max-width: none; height: auto; pointer-events: none; filter: drop-shadow(0 1rem 1.6rem #0009); }
+/* 流し台と蛇口（VPL92・VPL101）: ボトルと同じ低い目線の絵（1152×1010）。蛇口の吐水口がボトルの口の上（FAUCET.nx・ny）に、
+   カウンターの手前の縁（絵の縦 85.3%）がボトルの y=700 に来るよう置く。流し台の幅はボトルの約2倍。
+   手前の縁から下（カウンターの縁と前板）は、もう1枚をボトルの上に重ねて、ボトルの足を流し台の中に隠す */
+.bottle .sink { position: absolute; z-index: 0; left: -41.33%; top: -24.9%; width: 222.6%; max-width: none; height: auto; pointer-events: none; filter: drop-shadow(0 1rem 1.6rem #0009); }
+.bottle .sink.front { z-index: 1; filter: none; -webkit-clip-path: inset(85.3% 0 0 0); clip-path: inset(85.3% 0 0 0); }
 .w-spill { fill: #bfeaff; opacity: 0.85; filter: drop-shadow(0 0 3px #bfeaff); }
 .w-faucet { filter: drop-shadow(0 6px 8px #0009); }
 .w-body { opacity: 0.94; } .w-deep { fill: #123f80; opacity: 0.22; }
 .w-surf { fill: none; stroke: #e8fbff; stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.2s; }
 [data-zone="none"] .w-surf { stroke: #ff8a8a; } [data-zone="ideal"] .w-surf { stroke: #7df0b0; } [data-zone="shallow"] .w-surf, [data-zone="deep"] .w-surf { stroke: #ffe07a; }
-.w-line { fill: none; stroke: #fff3b0; stroke-width: 3.6; stroke-dasharray: 12 8; }
-[data-zone="ideal"] .w-line { stroke: #5fe39a; }
+.w-band { fill: #7df0b0; opacity: 0.16; transition: opacity 0.2s; } [data-zone="ideal"] .w-band { opacity: 0.32; }
+.w-line2 { fill: none; stroke: #fff6c8; stroke-width: 6; stroke-dasharray: 18 10; filter: drop-shadow(0 0 2px #0b0812) drop-shadow(0 0 5px #0b0812); }
+[data-zone="ideal"] .w-line2 { stroke: #7df0b0; }
+.w-mark rect { fill: #120c1de6; stroke: #fff6c8; stroke-width: 3; } .w-mark text { fill: #fff6c8; font-size: 30px; font-weight: 800; text-anchor: middle; }
+[data-zone="ideal"] .w-mark rect { stroke: #7df0b0; } [data-zone="ideal"] .w-mark text { fill: #7df0b0; }
 .w-stream { opacity: 0.8; filter: drop-shadow(0 0 3px #bfeaff); } .w-stream.in { opacity: 1; } /* 胴の中の水流はガラス越しなので濃いめ */
 .bottle-svg.fx { pointer-events: none; }
 .w-bubbles circle { fill: #ffffff26; stroke: #e8fbff; stroke-width: 1.6; }
@@ -657,7 +665,6 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .thermo.bands[data-selected="false"] .th-bar { filter: grayscale(1) brightness(0.55); }
 .thermo.bands .th-bar { transition: filter 0.3s; }
 .th-note { width: 7.4rem; margin: 0 -1rem; text-align: center; font-size: 1.05rem; line-height: 1.3; font-weight: 700; color: #d9fbe9; text-shadow: 0 0.1rem 0.4rem #000; }
-.thermo.bands[data-selected="false"] .th-note { color: #ffffffa6; }
 .mixbowl { position: absolute; left: 50%; top: 6.4rem; width: 21rem; aspect-ratio: 1; transform: translateX(-50%); }
 .mixbowl img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 1rem 1.4rem #000a); }
 .mixbowl .b-airy, .mixbowl .b-full { opacity: 0; transition: opacity 0.25s; }
@@ -704,7 +711,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 /* 店番と同じ4つのジャンルのボタン。押すとそのジャンルの葉が上に並ぶ（VPL66）。下の段で「決定」の左に並ぶ（VPL74） */
 .genre-bar { position: absolute; left: 1rem; right: calc(var(--ok) + 2.2rem); bottom: calc(0.8rem + (var(--ok) - 4.8rem) / 2); display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
 .gchip { height: 4.8rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.2rem; padding: 0; line-height: 1; border: 0.12rem solid color-mix(in srgb, var(--g) 55%, transparent); border-radius: 1.2rem; background: color-mix(in srgb, var(--g) 12%, #120c1dd9); color: var(--g); }
-.gchip svg { width: 1.8rem; height: 1.8rem; flex: none; } .gchip b { font-size: 1.1rem; line-height: 1; color: #fff; white-space: nowrap; text-align: center; }
+.gchip svg { width: 2.4rem; height: 2.4rem; flex: none; } /* 枠の大きさはそのままで、印だけ少し大きく（VPL107。前は 1.8rem） */ .gchip b { font-size: 1.1rem; line-height: 1; color: #fff; white-space: nowrap; text-align: center; }
 .gchip.on { border-color: var(--g); background: color-mix(in srgb, var(--g) 38%, #120c1d); box-shadow: 0 0 1.2rem color-mix(in srgb, var(--g) 50%, transparent); }
 .gchip:active { scale: 0.95; }
 .digits.nudge { animation: nudge 0.3s; } /* 12gを超える・0gより減らす時は、はかりの表示が揺れる */
@@ -750,13 +757,9 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .help-q { display: grid; place-items: center; width: 3.2rem; height: 3.2rem; padding: 0; border: 0.1rem solid #ffffff4d; border-radius: 50%; background: #120c1dcc; color: #ffffffd9; font-size: 1.7rem; font-weight: 700; line-height: 1; box-shadow: 0 0.3rem 0.8rem #000a; -webkit-backdrop-filter: blur(1rem); backdrop-filter: blur(1rem); }
 .help-q:active { background: var(--acc); color: var(--deep); }
 .phone:not([data-kind="craft"]) .help-q { display: none; }
-/* 案A: スミさんの一言と同じ段の右端。一言の吹き出しはその手前で折り返す */
-.phone[data-help="a"] .coach { padding-right: 4.2rem; }
+/* スミさんの一言と同じ段の右端（下の画面の右上。VPL99・VPL109 で決定）。一言の吹き出しはその手前で折り返す */
+.phone[data-kind="craft"] .coach { padding-right: 4.2rem; }
 .help-a { position: absolute; right: 0; bottom: 0.6rem; z-index: 2; }
-/* 案B: スミさんの顔の右上の札 */
-.help-b { position: absolute; left: 3rem; bottom: 3.3rem; z-index: 2; width: 2.4rem; height: 2.4rem; font-size: 1.35rem; border-color: var(--acc); background: #1e1632; color: var(--acc); }
-/* 案C: 工程の並びの帯の右端（帯の中。細い仕切りの右） */
-.steps .help-c { width: 2.6rem; height: 2.6rem; margin-left: 0.4rem; border: 0; border-left: 0.1rem solid #ffffff2e; border-radius: 0 50% 50% 0; background: none; box-shadow: none; font-size: 1.5rem; color: #ffffffb3; }
 
 /* 炭焼き（VPL54・VPL57）: 下の画面は本編の電熱コンロを幅いっぱいに。炭は大きくし、押せる範囲も絵より広い。
    炭は黒い面（cold）と赤（lit）の絵を重ね、--red で焼け、--ash で灰をまとう */
@@ -834,7 +837,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .tool-bomb .gl-out circle { fill: currentColor; } .tool-bomb .gl-out path { fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; opacity: 0.8; }
 .btn-a.bomb.ready .gl-wave2 { animation: wave-out 1.6s ease-out infinite; transform-origin: 50px 50px; }
 @keyframes wave-out { 0% { transform: scale(0.7); opacity: 0.9; } 100% { transform: scale(1.15); opacity: 0; } }
-.act-label { position: absolute; z-index: 2; left: 0; right: 0; bottom: 13%; text-align: center; font-size: calc(var(--ring) * 0.066); font-weight: 800; letter-spacing: 0.04em; color: #fff; text-shadow: 0 0.1rem 0.4rem #0b0812; pointer-events: none; }
+.act-label { position: absolute; z-index: 2; left: 0; right: 0; bottom: 15%; text-align: center; font-size: calc(var(--ok, 11.2rem) * 0.11); font-weight: 800; letter-spacing: 0; /* 丸の中に収まる大きさ（VPL120。前は十字キーの大きさから決めていて、はみ出していた） */ color: #fff; text-shadow: 0 0.1rem 0.4rem #0b0812; pointer-events: none; }
 .btn-a.bomb .cool { z-index: 3; }
 .act-sub { position: absolute; left: calc(1.5rem + var(--ring)); top: 0.9rem; /* パッドのすぐ右で、下の画面の上端。リフレッシュとは斜めにずらして間をあける（VPL75） */ width: calc(var(--ring) * 0.43); height: calc(var(--ring) * 0.43); display: block; padding: 0; border: 0.14rem solid color-mix(in srgb, #ffd35a 70%, #fff); border-radius: 50%; color: #fff; background: radial-gradient(circle at 50% 30%, #ffd35a33, transparent 60%), url("img/ui-button.webp") center / 100% 100% no-repeat; box-shadow: 0 0 0 0.5rem #ffffff0f, 0 0.8rem 1.6rem #000b; touch-action: manipulation; }
 .act-sub .tool-svg { inset: 10% 18% 30% 18%; width: 64%; height: 60%; }
@@ -876,7 +879,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 @container phone (max-height: 80rem) {
   .body, .pic, .smoke, .sheet, .thermo, .cv-c { --ctrl-h: 26.2rem; } .ctrl { --ctrl-h: 26.2rem; --ring: 18.2rem; --a: 13.2rem; --pad-base: 6.3rem; } .chip { width: 3.9rem; height: 3.9rem; font-size: 1.9rem; } .chips { padding-top: 1rem; }
   .btn-a.center { top: calc(14.2rem + var(--aux-g, 0rem)); width: 11.6rem; height: 11.6rem; margin-left: -5.8rem; } .gauge { left: 4.6rem; right: 4.6rem; top: calc(6.2rem + var(--aux-g, 0rem)); } .foil { width: 25rem; } .ctrl .leaves { top: 1rem; height: 3.9rem; }
-  .thermo { top: 9.6rem; }
+  .thermo { top: 10.8rem; }
 }
 @container phone (max-height: 80rem) {
   .chips.labeled .chip { height: 4.8rem; font-size: 1.9rem; } .phone[data-aux="1"] .serve, .phone[data-aux="3"] .serve { height: 4.8rem; } .sh { height: 4.6rem; } .phone[data-aux="2"] .serve { height: 4.6rem; }
@@ -902,7 +905,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
   .who .ava { width: 4.6rem; height: 4.6rem; } .card img { width: 5.4rem; height: 5.4rem; } .card { padding: 0.5rem 0.4rem 0.8rem; } .coach img { width: 4.4rem; height: 4.4rem; } .coach .say { font-size: 1.62rem; padding: 0.9rem 1.3rem 1rem; } .steps span { width: 2.8rem; height: 2.8rem; }
   .chips.labeled .chip { height: 4.3rem; font-size: 1.7rem; } .chips.labeled .chip span { font-size: 1rem; } .phone[data-aux="1"] .serve, .phone[data-aux="3"] .serve { height: 4.3rem; } .sh { height: 4.2rem; font-size: 2rem; } .sh span { font-size: 1.3rem; } .phone[data-aux="2"] .serve { height: 4.2rem; }
   .tabbar { height: 4.7rem; } .tab { font-size: 1.9rem; } .phone[data-aux="3"] .btn-a.center { scale: 0.84; }
-  .phone[data-scene="pack"] .thermo { bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 15.6rem); } .thermo { top: 9.6rem; width: 4.4rem; } .th-bar { width: 2.4rem; } .th-icon { width: 3rem; height: 3rem; font-size: 1.9rem; }
+  .phone[data-scene="pack"] .thermo { bottom: calc(var(--ctrl-h) + var(--aux-h, 0rem) + 15.6rem); } .thermo { top: 10.8rem; width: 4.4rem; } .th-bar { width: 2.4rem; } .th-icon { width: 3rem; height: 3rem; font-size: 1.9rem; }
 }
 
 @container phone (max-height: 80rem) {
@@ -922,17 +925,17 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 @container phone (max-height: 71rem) {
   .btn-a.center.pour { top: calc(7.8rem + var(--aux-g, 0rem)); width: 10.6rem; height: 10.6rem; margin-left: -5.3rem; } .btn-a.sub { top: calc(9.6rem + var(--aux-g, 0rem)); width: 7rem; height: 7rem; } .btn-a.sub .t { font-size: 2.2rem; }
   .d-time { top: 7rem; } .d-stamp { font-size: 3.6rem; }
-  .phone[data-scene="mix"] > * { --ok: 7rem; --tile: 7.7rem; --sel: 6rem; --pkz: 0.78; --selz: 0.82; } .mix-a .scale { top: calc(5.8rem + var(--sw) * 0.3); } .genre-bar { gap: 0.4rem; bottom: calc(0.5rem + (var(--ok) - 4rem) / 2); } .gchip { height: 4rem; gap: 0.15rem; } .gchip svg { width: 1.5rem; height: 1.5rem; } .gchip b { font-size: 1.05rem; } .mr-name b { font-size: 1.5rem; } .mr-btn { width: 4.2rem; height: 4.2rem; font-size: 2rem; } .mr-g em { font-size: 2.4rem; } .btn-a.mix-ok { bottom: 0.5rem; } .btn-a.mix-ok .t { font-size: 2.2rem; } .mt-name { font-size: 0.9rem; } .mixtile .mr-tags .genre, .mixtile .mr-tags .genre + .genre { width: 1.5rem; height: 1.5rem; }
+  .phone[data-scene="mix"] > * { --ok: 7rem; --tile: 7.7rem; --sel: 6rem; --pkz: 0.78; --selz: 0.82; } .mix-a .scale { top: calc(5.8rem + var(--sw) * 0.3); } .genre-bar { gap: 0.4rem; bottom: calc(0.5rem + (var(--ok) - 4rem) / 2); } .gchip { height: 4rem; gap: 0.15rem; } .gchip svg { width: 2rem; height: 2rem; } .gchip b { font-size: 1.05rem; } .mr-name b { font-size: 1.5rem; } .mr-btn { width: 4.2rem; height: 4.2rem; font-size: 2rem; } .mr-g em { font-size: 2.4rem; } .btn-a.mix-ok { bottom: 0.5rem; } .btn-a.mix-ok .t { font-size: 2.2rem; } .mt-name { font-size: 0.9rem; } .mixtile .mr-tags .genre, .mixtile .mr-tags .genre + .genre { width: 1.5rem; height: 1.5rem; }
   .judges { top: 6.6rem; } .jtag { font-size: 1.5rem; } }
 
 /* ───────── シーシャ作りの手の置き場をそろえる（VPL83・VPL84・VPL86・VPL87） ─────────
-   下の操作パネルの高さは同じ（--cp。844 で 30rem）。例外は2つだけ: 配合は葉の棚の分だけ高く（--cp-mix）、水入れはボタン1段だけなので低い（--cp-water）。
+   下の操作パネルの高さは、どの場面も同じ（--cp。844 で 30rem）。VPL111（上下の比率をそろえる案A）で、配合・水入れ・雑念よけの例外もなくした。
    雑念よけは場（弾幕）を広く取るため、パネルが低いまま。
    右下＝決定（どの場面も同じ位置・同じ大きさ --ok。雑念よけのリフレッシュ・吸い出しの提供も同じ角・同じ大きさ）、
    真ん中＝押し続ける大きな丸（刺す・吸う。中心はパネルの下から --hold-y）、左下＝補助。
    同じ画面に並ぶ丸いボタンは同じ大きさ（水入れの こぼす・注ぐ・決定、雑念よけの 精密・リフレッシュ。VPL86）。
    スミさんの一言は一回り小さく、一言のために空ける帯も詰めて、上の画面を広くする（VPL87）。 */
-.phone[data-kind="craft"] > * { --cp: var(--cp-std); --cp-std: 30rem; --cp-mix: 34rem; --cp-water: 14.4rem; --hold: 18rem; --hold-y: 14rem; --ok: 11.2rem; --edge: 1.4rem; --low: 1.6rem; --band: 3rem; }
+.phone[data-kind="craft"] > * { --cp: var(--cp-std); --cp-std: 30rem; --cp-mix: var(--cp-std); --ok-mix: 8.8rem; --cp-water: var(--cp-std); --hold: 18rem; --hold-y: 14rem; --ok: 11.2rem; --edge: 1.4rem; --low: 1.6rem; --band: 3rem; }
 .phone[data-scene="mix"] > * { --cp: var(--cp-mix); }
 .phone[data-scene="water"] > * { --cp: var(--cp-water); }
 .phone[data-kind="craft"]:not([data-scene="steam"]) :is(.body, .pic, .ctrl, .thermo, .smoke, .veil, .nico-lane) { --ctrl-h: var(--cp); --aux-h: 0rem; --aux-pad: 0rem; --aux-g: 0rem; }
@@ -945,15 +948,23 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 /* 水入れ: こぼす・注ぐ・決定を同じ大きさで1段に並べる（左下・真ん中・右下） */
 .phone[data-kind="craft"] .btn-a.sub.l { right: auto; top: auto; left: var(--edge); bottom: var(--low); width: var(--ok); height: var(--ok); margin: 0; }
 .phone[data-scene="water"] .btn-a.center.pour { top: auto; bottom: var(--low); width: var(--ok); height: var(--ok); margin-left: calc(var(--ok) / -2); }
-.phone[data-scene="water"] .water-a .bottle { bottom: 5.6rem; width: min(23.5rem, calc((100cqh - var(--cp) - 13.3rem) * 0.5)); } /* 流し台が見えるよう一回り小さく（VPL92） */
-.phone[data-scene="water"] .veil { top: calc(100% - var(--cp) - var(--band) - 3rem); } /* 紫の幕は一言のすぐ上から下だけ（流し台を暗くしない） */
+.phone[data-kind="craft"][data-scene="water"] .pic { height: calc(100% - var(--low) - var(--ok) - 1.2rem); } /* 上の絵は、いちばん下の段のすぐ上まで続ける（VPL111。下の画面の空きを詰める） */
+.phone[data-scene="water"] .water-a { --bw: min(24rem, calc((100cqh - var(--cp) - 16.4rem) / 1.63)); } /* 上の画面を使い切る大きさ（VPL112 で 21.5rem、VPL123 で最大 24rem。流し台の左右の端は画面の外へ出る） */
+/* カウンターの手前の縁（ボトルの縦 87.5%）が、スミさんの一言の段の真ん中に来る高さ。ボトルの水の線は一言より上に見える */
+.phone[data-scene="water"] .water-a .bottle { left: calc(50% - var(--bw) * 0.179); top: calc(11.6rem + var(--bw) * 0.3325); bottom: auto; width: var(--bw); } /* 蛇口のてっぺんがランクのすぐ下（11.6rem）に来る高さ。カウンターから下は戸棚で、一言のすぐ上まで続く（VPL123） */
+/* 前板の下は、流し台の下の戸棚（ステンレスの扉）で、いちばん下の段の上まで埋める */
+.bottle .cabinet { position: absolute; z-index: 1; left: -41.33%; width: 222.6%; top: calc(106.9% - 0.2rem); height: 60rem; pointer-events: none;
+  background: linear-gradient(180deg, #00000066 0, transparent 0.8rem), repeating-linear-gradient(90deg, transparent 0 calc(25% - 0.1rem), #0000004d calc(25% - 0.1rem) 25%), linear-gradient(180deg, #8a6e5c, #5a463d 40%, #2c2027); } /* 流し台の幅（ボトルの約2倍）が画面に収まる大きさ。流し台の真ん中が画面の真ん中に来る（VPL101） */
+.phone[data-scene="water"] .veil { top: calc(100% - var(--low) - var(--ok) - 4rem); } /* 紫の幕は、いちばん下の段のすぐ上から下だけ（流し台と戸棚を暗くしない） */
 /* 雑念よけ: 精密（アタック）も同じ大きさ */
 .phone[data-scene="steam"] .act-sub { width: var(--ok); height: var(--ok); }
 .phone[data-scene="steam"] .act-sub small { font-size: calc(var(--ok) * 0.12); }
-.phone[data-scene="steam"] .act-swap { left: calc(2.6rem + var(--ring) + var(--ok)); top: calc(0.9rem + var(--ok) / 2 - var(--ring) * 0.11); }
+/* 雑念よけ（VPL121）: 精密（アタック）はリフレッシュの真上に、同じ大きさで縦に並べる（右の列）。入れ替えの小さな丸は、精密の左上の札 */
+.phone[data-scene="steam"] .act-sub { left: auto; right: var(--edge); top: calc(var(--cp) - var(--low) - var(--ok) * 2 - 1rem); }
+.phone[data-scene="steam"] .act-swap { left: auto; right: calc(var(--edge) + var(--ok) - 2.6rem); top: calc(var(--cp) - var(--low) - var(--ok) * 2 - 2rem); width: 4.4rem; height: 4.4rem; z-index: 3; }
 /* 真ん中の押し続ける丸（刺す・吸う） */
 .phone[data-scene="holes"] .ctrl > * { --hb: var(--hold); --hp: calc(var(--hold) * 1.45); --hy: calc(var(--cp) - var(--hold-y) - var(--hp) / 2); }
-.pic.craft-holes .foil { bottom: 9rem; width: 31.6rem; } /* 上の画面の余白を使って大きく（VPL90） */
+.pic.craft-holes .foil { bottom: 5rem; width: 31.6rem; } /* 上の画面の余白を使って大きく（VPL90） */
 /* 吸い出し（VPL89）: いちばん下の段に 葉の持ち（左）と 提供（右）を同じ高さの横長で並べ、その上に強さのゲージと「吸う」をまとめる */
 .phone[data-scene="pull"] > * { --pill: 5.4rem; --puff: 14rem; --hold-y: calc(var(--low) + var(--pill) + 0.8rem + var(--puff) / 2); --g-side: 4.9rem; --g-up: 13.97rem; }
 .phone[data-scene="pull"] .btn-a.center { top: calc(var(--cp) - var(--hold-y) - var(--puff) / 2); width: var(--puff); height: var(--puff); margin-left: calc(var(--puff) / -2); }
@@ -966,19 +977,19 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .serve-pill .pips { position: static; transform: none; gap: 0.35rem; } .serve-pill .pips i { width: 0.85rem; height: 0.85rem; }
 .serve-pill:active { scale: 0.95; }
 /* 配合: 上にジャンルのボタン、真ん中に葉の棚、下の段に選んだ葉の −／＋ と決定 */
-.phone[data-scene="mix"] > * { --mix-h: var(--cp); --tile: 7.3rem; --pkz: 0.72; }
+.phone[data-scene="mix"] > * { --mix-h: var(--cp); --tile: 6.5rem; --pkz: 0.64; } /* 下の画面がほかの場面と同じ高さなので、棚の札を少し低く（VPL111） */
 .phone[data-scene="mix"] .mix-a { --sw: min(29rem, calc((100cqh - var(--cp) - var(--band) - 10.6rem) / 1.03)); } .phone[data-scene="mix"] .mix-a .scale { top: auto; bottom: 3rem; } /* はかりは一言のすぐ上に置く（VPL91） */
 .phone[data-scene="mix"] .genre-bar { top: 0.6rem; bottom: auto; left: 1rem; right: 1rem; }
 .phone[data-scene="mix"] .picker.shelf { top: 5.6rem; }
 .phone[data-scene="mix"] .mixsel { top: auto; bottom: var(--low); left: 1rem; right: calc(var(--ok) + var(--edge) + 0.8rem); height: var(--ok); grid-template-columns: minmax(0, 1fr) auto 3.8rem auto; gap: 0.6rem; padding: 0 0.9rem 0 1.2rem; }
-.mixsel .mr-name { gap: 0.2rem; } .mixsel .mr-name b { font-size: 1.6rem; } .mixsel .mr-name b.long { font-size: 1.3rem; letter-spacing: -0.02em; } .mixsel .mr-btn { width: 4.6rem; height: 4.6rem; } .mixsel .mr-g em { font-size: 2.6rem; }
+.mixsel .mr-name { gap: 0.2rem; } .mixsel .mr-name b { font-size: 1.6rem; line-height: 1.2; white-space: normal; word-break: keep-all; overflow-wrap: normal; } .mixsel .mr-name b.long { font-size: 1.5rem; letter-spacing: -0.02em; } /* 長い名前は語の切れ目でだけ2行に折る（VPL106） */ .mixsel .mr-btn { width: 4.6rem; height: 4.6rem; } .mixsel .mr-g em { font-size: 2.6rem; }
 /* 詰め方: 札は上、選んだ詰め方の温まり方は下の段で決定の左。器は一言にかからない大きさ */
 .phone[data-scene="pack"] .ctrl > * { --card-h: min(18.4rem, calc(var(--cp) - var(--ok) - var(--low) - 2.2rem)); --pok: var(--ok); }
 .phone[data-scene="pack"] .packinfo { left: var(--edge); bottom: var(--low); right: calc(var(--ok) + var(--edge) + 1rem); }
-.pic.craft-pack .bowl { top: 18%; height: 66%; } /* 下の余白の分だけ下げる（VPL91） */
+.pic.craft-pack .bowl { top: 24%; height: 66%; } /* 下の余白の分だけ下げる（VPL91） */
 /* 炭焼き: コンロは下の端にそろえ、パネルの高さに収める（絵は 3:2） */
 .phone[data-scene="coal"] .veil { top: calc(100% - var(--cp) - 12.2rem); }
-.phone[data-scene="coal"] .stove { top: auto; bottom: -1rem; width: calc((var(--cp) - 0.6rem) * 1.5); }
+.phone[data-scene="coal"] .stove { top: auto; bottom: 1.4rem; width: calc((var(--cp) - 0.6rem) * 1.5); } /* 少し上へ（VPL104。前は -1rem で下の縁が画面の外） */
 .coal-hero { --hw: min(35rem, calc((100cqh - var(--cp) - 11.8rem) * 0.7)); }
 /* ボタンは白い図形＋短い言葉（VPL84）。言葉は図形の下 */
 .btn-a:has(.btn-lab) { container-type: size; }
@@ -989,22 +1000,85 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .btn-lab { position: absolute; z-index: 4; left: 0; right: 0; bottom: 15%; text-align: center; font-size: 12cqw; line-height: 1.1; font-weight: 800; letter-spacing: 0.06em; color: #fff; text-shadow: 0 0.1rem 0.4rem #0b0812, 0 0 0.2rem #0b0812; pointer-events: none; }
 .btn-a:has(.pips) .tool-svg { inset: 5% 23% 41% 23%; width: 54%; height: 54%; } .btn-a:has(.pips) .btn-lab { bottom: 27%; }
 @container phone (max-height: 80rem) {
-  .phone[data-kind="craft"] > * { --cp-std: 26.6rem; --cp-mix: 30.4rem; --cp-water: 12.6rem; --hold: 15.6rem; --hold-y: 12.4rem; --ok: 10rem; --edge: 1.2rem; --low: 1.2rem; --band: 2.6rem; }
-  .phone[data-scene="mix"] > * { --tile: 6.5rem; --pkz: 0.64; } .phone[data-scene="mix"] .picker.shelf { top: 5.2rem; }
+  .phone[data-kind="craft"] > * { --cp-std: 26.6rem; --ok-mix: 8rem; --hold: 15.6rem; --hold-y: 12.4rem; --ok: 10rem; --edge: 1.2rem; --low: 1.2rem; --band: 2.6rem; }
+  .phone[data-scene="mix"] > * { --tile: 5.6rem; --pkz: 0.55; } .phone[data-scene="mix"] .picker.shelf { top: 5.2rem; }
   .phone[data-scene="pull"] > * { --pill: 4.8rem; --puff: 12.4rem; --g-side: 6.3rem; --g-up: 12.63rem; } .pic.craft-holes .foil { width: 27.6rem; }
   .phone[data-kind="craft"] .coach .say { font-size: 1.5rem; }
 }
 @container phone (max-height: 71rem) {
-  .phone[data-kind="craft"] > * { --cp-std: 24rem; --cp-mix: 27.4rem; --cp-water: 11.2rem; --hold: 13.4rem; --hold-y: 11rem; --ok: 8.8rem; --edge: 1rem; --low: 1rem; --band: 2.4rem; }
-  .phone[data-scene="mix"] > * { --tile: 5.9rem; --pkz: 0.56; } .phone[data-scene="mix"] .picker.shelf { top: 4.8rem; } .phone[data-scene="mix"] .mixtile .mt-name { display: none; }
+  .phone[data-kind="craft"] > * { --cp-std: 24rem; --ok-mix: 7.2rem; --hold: 13.4rem; --hold-y: 11rem; --ok: 8.8rem; --edge: 1rem; --low: 1rem; --band: 2.4rem; }
+  .phone[data-scene="mix"] > * { --tile: 5rem; --pkz: 0.49; } .phone[data-scene="mix"] .picker.shelf { top: 4.8rem; } .phone[data-scene="mix"] .mixtile .mt-name { display: none; }
   .phone[data-scene="pull"] > * { --pill: 4.4rem; --puff: 11rem; --g-side: 7.4rem; --g-up: 11.58rem; } .pic.craft-holes .foil { width: 23rem; }
   .phone[data-kind="craft"] .coach .say { font-size: 1.4rem; }
 }
 
+/* 雑念よけも、下の画面の高さをほかの場面と同じにする（VPL111。弾幕の場は上の画面） */
+.phone[data-scene="steam"] :is(.body, .pic, .ctrl, .thermo, .smoke, .veil, .nico-lane) { --ctrl-h: var(--cp); --aux-h: 0rem; --aux-pad: 0rem; --aux-g: 0rem; }
+
 /* 場面ごとのパネルの高さ（画面の高さ別の値を読んだ後で決める） */
 .phone[data-kind="craft"] > * { --cp: var(--cp-std); }
-.phone[data-scene="mix"] > * { --cp: var(--cp-mix); }
-.phone[data-scene="water"] > * { --cp: var(--cp-water); }
+/* 配合は、下の段（グラムの段と決定）を低くし、決定も小さくする（VPL102。844 で 11.2rem→8.8rem）。浮いた分は上の画面へ */
+.phone[data-scene="mix"] > * { --cp: var(--cp-mix); --ok: var(--ok-mix); }
+/* 水入れ・タイマー（VPL112・VPL113）: 下の画面に余裕があるので、3つのボタンを横幅いっぱい近くまで大きくし（844 で 11.2rem→12rem）、
+   下の画面はボタン（とタイマーの早見）の段だけにする。スミさんの一言は、そのすぐ上に出る */
+.phone:is([data-scene="water"], [data-scene="timer"]) > * { --ok: 12rem; --edge: 1rem; }
+@container phone (max-height: 80rem) { .phone:is([data-scene="water"], [data-scene="timer"]) > * { --ok: 10.8rem; } }
+@container phone (max-height: 71rem) { .phone:is([data-scene="water"], [data-scene="timer"]) > * { --ok: 9.6rem; } }
+.phone[data-scene="water"] > * { --cp: calc(var(--low) + var(--ok) + 0.6rem); }
+.phone[data-scene="timer"] > * { --cp: calc(var(--low) + var(--ok) + 7.8rem); }
+/* 雑念よけ（VPL117）: 弾幕の場は、上の工程の並びとランクの下から始める（場を少し狭く）。時間の線は場の上の端 */
+.phone[data-scene="steam"] .pic { background: #0b0812; }
+.phone[data-scene="steam"] .dodge { top: 10.8rem; border-top: 0.1rem solid #ffffff1f; }
+.phone[data-scene="steam"] .d-time { top: 0.8rem; }
+/* 雑念よけ（VPL112）: 下の画面の余裕の分、十字キーを大きくし、下の段に寄せる */
+.phone[data-scene="steam"] .ctrl { --ring: 23rem; --pad-top: calc(var(--cp) - var(--ring) - var(--low)); }
+@container phone (max-height: 80rem) { .phone[data-scene="steam"] .ctrl { --ring: 20.6rem; } }
+@container phone (max-height: 71rem) { .phone[data-scene="steam"] .ctrl { --ring: 18.4rem; } }
+
+/* 蒸らしのタイマー（VPL105）: 上の画面に本編のキッチンタイマー（液晶・4つの物理ボタン）と、蒸らし後の温度の目安。下は早見とリセット、分・秒・スタート */
+.timer-a { position: absolute; left: 0; right: 5.6rem; top: 5.8rem; bottom: 3.2rem; z-index: 1; display: flex; flex-direction: column; align-items: center; } /* 横長のタイマーはランクのすぐ下から（VPL126）。案D（縦長）は下の VPL127 の所で置き直す */
+.ktimer { position: relative; z-index: 1; flex: none; width: 35rem; aspect-ratio: 1280 / 1150; container-type: inline-size; } /* 下の目安の札をなくした分、縦にも大きく（VPL116。絵を縦に約3割のばす）。VPL126 で 32rem→35rem（絵の左右の透明な縁を列の外へ出し、描いた所を温度計の手前まで広げる） */
+.ktimer > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 1rem 1.6rem #000b); pointer-events: none; }
+.ktimer .lcd { position: absolute; left: 13.6%; width: 72.8%; top: 22%; height: 33.4%; display: grid; place-items: center; color: #192e28; }
+.ktimer .lcd svg { width: 88%; height: 86%; }
+.ktimer .lcd path, .ktimer .lcd circle { fill: #192e2812; } .ktimer .lcd .on { fill: currentColor; }
+.kt-key { position: absolute; top: 70.7%; height: 13.5%; transform: translate(-50%, -50%); padding: 0; border: 0; border-radius: 2.4cqw; background: transparent; color: #27342e; font-size: 4.6cqw; font-weight: 800; line-height: 1.1; mix-blend-mode: multiply; touch-action: manipulation; }
+.kt-min { left: 18.8%; width: 14%; } .kt-sec { left: 35.7%; width: 14.6%; } .kt-start { left: 58.2%; width: 25%; font-size: 3.4cqw; } .kt-reset { left: 80.6%; width: 14.6%; font-size: 3.4cqw; }
+.kt-key:disabled { opacity: 0.4; }
+.kt-key.hit { animation: kt-hit 0.2s ease-out; }
+@keyframes kt-hit { 0% { background: #0003; transform: translate(-50%, calc(-50% + 0.25cqw)); } 100% { background: transparent; transform: translate(-50%, -50%); } }
+.timer-a.go .lcd { animation: lcd-go 0.6s steps(2) 1; }
+@keyframes lcd-go { 50% { opacity: 0.25; } }
+.t-forecast { display: grid; justify-items: center; gap: 0.2rem; min-width: min(26rem, 100% - 2rem); padding: 0.9rem 1.6rem 1rem; border: 0.1rem solid #ffffff30; border-radius: 1.6rem; background: linear-gradient(180deg, #1e1632cc, #0e0a18e6); box-shadow: 0 1rem 2rem #000a; text-align: center; }
+.tf-head { font-size: 1.25rem; font-weight: 700; color: #ffffffb3; letter-spacing: 0.04em; }
+.tf-range { font-size: 2.2rem; font-weight: 800; color: #fff; }
+.tf-dodge { font-size: 1.3rem; color: #e3d2ff; }
+/* 下の画面: 早見の段（分・秒・スタートの上） */
+.presets { position: absolute; left: var(--edge); right: var(--edge); top: calc((var(--cp) - var(--low) - var(--ok)) / 2 - 2.6rem); display: flex; gap: 0.8rem; }
+.preset { flex: 1; height: 5.2rem; border: 0.14rem solid #ffffff38; border-radius: 2.6rem; background: #120c1dcc; color: #fff; font-size: 2rem; font-weight: 800; box-shadow: 0 0.6rem 1.2rem #000a, inset 0 0.1rem 0 #ffffff33; touch-action: manipulation; }
+.preset[aria-pressed="true"] { border-color: var(--acc); background: var(--acc); color: var(--deep); box-shadow: 0 0 1.6rem color-mix(in srgb, var(--acc) 55%, transparent); }
+.preset.reset { flex: 0.9; font-size: 1.5rem; color: #ffffffb3; }
+.preset:active { transform: translateY(0.15rem); }
+.phone[data-scene="timer"] .btn-a.center.t-sec { top: auto; bottom: var(--low); width: var(--ok); height: var(--ok); margin-left: calc(var(--ok) / -2); }
+.phone[data-scene="timer"] :is(.t-min, .t-sec) .t { font-size: calc(var(--ok) * 0.32); margin-bottom: calc(var(--ok) * 0.12); }
+.phone[data-scene="timer"] .btn-a.sub.r.t-start .t { font-size: calc(var(--ok) * 0.16); letter-spacing: 0; margin-right: 0; white-space: nowrap; } /* 決定の文字の大きさ（:is の詳しさ）より強く */
+/* 温度計: 蒸らし後の目安（針と、前後する幅）。時間を決めるまでは針と幅を出さない */
+.th-range { position: absolute; left: -0.3rem; right: -0.3rem; z-index: 6; bottom: calc((var(--t) - var(--spread)) * 100%); height: calc(var(--spread) * 200%); border: 0.2rem solid #fff; border-radius: 0.6rem; background: #ffffff33; box-shadow: 0 0 0.8rem #fff; transition: bottom 0.4s var(--ease-out); }
+.thermo.forecast .th-now { display: none; }
+.thermo.forecast[data-selected="false"] :is(.th-range, .th-pointer) { opacity: 0; }
+
+/* 縦長のキッチンタイマー（VPL127 で縦長に決め、VPL129 で実物に合わせた絵に描き直し、VPL130 で案1に決めて縦を少し詰めた）。ランクの下から一言の上までの高さに合わせ、まん中にそろえる。絵の縦横比は --ar（液晶とボタンの位置は app.mjs の KTIMER） */
+.phone[data-scene="timer"] .veil { top: calc(100% - var(--cp) - 5rem); } /* 紫の幕は一言のすぐ上から下だけ（上の画面を暗くしない） */
+.phone[data-scene="timer"] .pic { -webkit-mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); } /* 上の絵の下のぼかしは、一言のすぐ上だけ（初期値の 66% からだと、タイマーの下半分が暗くなる） */
+.phone[data-scene="timer"] .timer-a { top: 9.4rem; bottom: 2.4rem; justify-content: center; container-type: size; }
+.phone[data-scene="timer"] .ktimer { width: min(31.4rem, 100cqh * var(--ar)); }
+.phone[data-scene="timer"] .ktimer .lcd svg { width: 90%; height: 88%; }
+.phone[data-scene="timer"] .kt-key { border-radius: 3cqw; }
+
+/* 温度計（VPL103）: 配合・詰め方・吸い出しで、上端・長さ・太さをそろえる。長さは、いちばん狭い配合の上の画面に合わせる（下の段の高さ --cp-mix から決める）。
+   いちばん下の一言の段（配合の「この配合の適温」など）は、どの場面でも同じ高さを取っておく（空でも管の長さが変わらない） */
+.phone[data-kind="craft"] .thermo { top: 10.8rem; bottom: auto; height: calc(100cqh - var(--cp-mix) - var(--band) - 15.2rem); grid-template-rows: auto 1fr 2.8rem; }
+.phone[data-kind="craft"] .thermo .th-note { align-self: start; margin: 0.2rem -2rem 0; } /* 一言が温度計の幅を広げて、管の位置がずれないように */
 
 @media (prefers-reduced-motion: reduce) {
   .phone *, .phone *::before, .phone *::after, .phone::after { animation-duration: 0.01s !important; animation-iteration-count: 1 !important; transition-duration: 0.01s !important; }

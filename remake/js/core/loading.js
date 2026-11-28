@@ -218,8 +218,7 @@ export async function withLoading(prepare, {
   // The gauge wrapper only carries the decorative smoke flourishes at both ends (css/loading.css).
   const gauge = el("div.loading-gauge", { "aria-hidden": "true" }, [bar]);
   // The prompt names only what this device can do (a touch screen has no click or Enter key to offer).
-  const touchFirst = !!window.matchMedia?.("(pointer: coarse)").matches;
-  const proceed = el("p.loading-proceed", { "aria-hidden": "true", text: touchFirst ? "タップで進む" : "クリック・Enter で進む" });
+  const proceed = el("p.loading-proceed", { "aria-hidden": "true", text: "タップで進む" }); // キーの名前は出さない（スマホのゲーム。2026-11-27 オーナー）
   const content = el("div.loading-comic");
   overlay.classList.add("has-logo");
   const bootNode = document.querySelector("#boot:not(.done)");

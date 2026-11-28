@@ -57,7 +57,7 @@ assert.equal(isRainy(), false, "大会中は雨にならない");
 assert.equal(weatherOf(), null);
 state.phase = "daily";
 
-// 2. 第2章の屋外背景（街マップ昼夜・駅前・会場外ベンチ・ケムリクサ外）が outdoor として判定される
+// 2. 第2章の屋外背景（街マップ昼夜・駅前・会場外ベンチ・KEMURIYA外）が outdoor として判定される
 for (const bg of [
   MAP.day,
   MAP.night,

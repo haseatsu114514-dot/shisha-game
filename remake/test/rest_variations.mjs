@@ -78,7 +78,7 @@ Object.assign(DB.dialogues, await readDialogues('ch4_dubai_daily', [...inn.names
 const cases = [
   ['ch5_tokyo_attic', 'ch5_tokyo_attic_rest', () => tokyo.namespace.performTokyoSpot(tokyo.namespace.TOKYO_SPOTS.find(s=>s.id==='ch5_tokyo_attic'))],
   ['ch5_dubai_guest', 'ch5_dubai_guest_rest', () => dubai.namespace.performDubaiSpot(dubai.namespace.DUBAI_SPOTS.find(s=>s.id==='ch5_dubai_guest'))],
-  ['ch4_dubai_inn', 'ch4_inn_rest', () => inn.namespace.performDubaiSpot(inn.namespace.CH4_DUBAI_SPOTS.find(s=>s.place==='inn'), {}, {staminaGuard:async()=>true}), ['_b', '_c', '_d', '_e']], // #3097 で宿は5本
+  ['ch4_dubai_inn', 'ch4_inn_rest', () => inn.namespace.performDubaiSpot(inn.namespace.CH4_DUBAI_SPOTS.find(s=>s.place==='inn'), {}, {staminaGuard:async()=>true}), ['_b', '_c', '_d', '_e', '_f', '_g', '_h', '_i']], // #3097 で宿は5本、VOL21 第2便・第4便で9本
 ];
 const revisits = rest => rest || ['_b', '_c'];
 for (const [spot,base,visit,rest] of cases) {

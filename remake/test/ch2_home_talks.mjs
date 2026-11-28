@@ -1,5 +1,5 @@
 // VOL13: 第2章の地元の会話を足す。
-// ① 施設の寄り道（実 spot-encounters.js）: 喫茶こはく・観音堂・CHOI-ZAP・C.STATIONに第2章だけの回。第1章・第3章では出ない
+// ① 施設の寄り道（実 spot-encounters.js）: 喫茶こはく・観音堂・サクッとジム・C.STATIONに第2章だけの回。第1章・第3章では出ない
 // ② Dr.fookah 2階の凛想（実 spots.js の visitChar）: 第2章だけの会話2本。味の不調に気づく回を先に、一来店一本・一度だけ
 //    #3097 PR-C: 凛想・アダム・みんとの続きと、なるの1本（DAY3の祝いの後、対峙より前だけ）。台本10本の中身の決まり（④）
 // ③ あげはの通い訪問（実 ch2-preparation.js）: 小会話6種を巡回し、昼夜の店のあいさつを挟む
@@ -22,7 +22,7 @@ const encounters = await import(new URL("remake/js/daily/spot-encounters.js", ro
 // #3097 第1弾: 各施設の第2章の回を1本ずつ足した（既存の回の後ろ）
 // #3097 第2弾: さらに各施設に1本（時計・香炉・首のストレッチ・帰りの飴）
 // #3097 PR-I: 喫茶こはくに上園さんの回（面識がある時だけ・味の回の後ろ）
-// VOL16（#3097 計画 2-9）: 観音堂に老人の五円玉と、マスターの手水。CHOI-ZAPにスタッフの3本（喫茶こはくは昼だけで5本あり、増やさない）
+// VOL16（#3097 計画 2-9）: 観音堂に老人の五円玉と、マスターの手水。サクッとジムにスタッフの3本（喫茶こはくは昼だけで5本あり、増やさない）
 const VOL16 = { kannon: ["kannon_ch2_coin", "kannon_ch2_temizu"], choizap: ["choizap_ch2_aircon", "choizap_ch2_balance", "choizap_ch2_shoelace"] };
 const CH2 = { cafe: ["cafe_ch2_commute", "cafe_ch2_taste", "cafe_ch2_uezono", "cafe_ch2_foam", "cafe_ch2_clock"], kannon: ["kannon_ch2_wish", "kannon_ch2_omikuji", "kannon_ch2_incense", ...VOL16.kannon],
   choizap: ["choizap_ch2_numbers", "choizap_ch2_stairs", "choizap_ch2_neck", ...VOL16.choizap], c_station: ["cs_ch2_haze", "cs_ch2_new_staff", "cs_ch2_candy"] };
@@ -65,7 +65,7 @@ assert.equal(encounters.spotEncounterDue("kannon", 5, save(2, {}, { slot: 1 }), 
 }
 // 台本が読み込まれていない（第2章の準備期間の外）なら出さない
 assert.equal(encounters.spotEncounterDue("cafe", 5, save(2), {}), null);
-// VOL16（#3097 計画 2-9）: 既存の第2章の回を読んだ後に、並びの順で一来店に一本。観音堂は昼だけ、CHOI-ZAPは昼夜どちらでも
+// VOL16（#3097 計画 2-9）: 既存の第2章の回を読んだ後に、並びの順で一来店に一本。観音堂は昼だけ、サクッとジムは昼夜どちらでも
 {
   const { CH2_HOME_IDS } = await import(new URL("remake/js/chapters/ch2-city-data.js", root));
   for (const [spot, ids] of Object.entries(VOL16)) {
@@ -85,9 +85,9 @@ assert.equal(encounters.spotEncounterDue("cafe", 5, save(2), {}), null);
     assert.deepEqual(scene.lines.filter(line => line.type), [{ type: "set_flag", flag: `_spot_seen_${id}` }], `${id}: only the reading mark, at the end`);
     assert.deepEqual([...new Set(scene.lines.map(line => line.speaker).filter(who => who && who !== "hajime"))].sort(), speakers[id].sort(), `${id}: the regulars speak`);
     // DAY2〜13のどこで読んでも成り立つ: 大会・なる（DAY11の対峙の後は街にいない）・報酬の文に触れず、はじめは味の感想を言わない
-    assert(!/大会|本番|県大会|優勝|審査|採点|なるさん|ケムリクサ|KEMURIKUSA|が(少し|かなり|大きく)?上がった/.test(text), `${id}: any day of the chapter`);
+    assert(!/大会|本番|県大会|優勝|審査|採点|なるさん|KEMURIYA|KEMURIYA|が(少し|かなり|大きく)?上がった/.test(text), `${id}: any day of the chapter`);
     assert(!scene.lines.some(line => line.speaker === "hajime" && /味|甘い|苦い|香り|おいし|うまい/.test(line.text)), `${id}: hajime does not judge the taste`);
-    // CHOI-ZAPの回は昼夜どちらでも出るので、時間帯を書かない
+    // サクッとジムの回は昼夜どちらでも出るので、時間帯を書かない
     if (id.startsWith("choizap_")) assert(!/昼|夜|朝|夕方/.test(text), `${id}: no time of day`);
   }
 }
@@ -422,7 +422,7 @@ for (const id of ["remake_ch2_aquarium_repeat", "remake_ch2_aquarium_repeat_b", 
   }
   // ひより: どの店の相席でも読むので店名を出さない。斧投げの正体を前提にしない。本心は inner だけ
   for (const id of PRC.hiyori) {
-    assert(!/斧|tonari|SHISHARK|PEPPERMINT|EDEN|KEMURIKUSA|Dr\.fookah|C\.STATION|MELTY/.test(JSON.stringify(all[id].lines)), id);
+    assert(!/斧|tonari|SHISHARK|PEPPERMINT|EDEN|KEMURIYA|Dr\.fookah|C\.STATION|MELTY/.test(JSON.stringify(all[id].lines)), id);
     assert(all[id].lines.some(line => line.inner) && all[id].metadata?.private_scene === true, id);
   }
 }
@@ -464,7 +464,7 @@ for (const id of ["remake_ch2_aquarium_repeat", "remake_ch2_aquarium_repeat_b", 
   spotSave(1); await spots.visitSpot(spot("cafe")); assert.equal(calls[0].id, rainTexts.cafe[0]); assert.equal(calls[0].growthKey, undefined);
   rainy = false; spotSave(2); await spots.visitSpot(spot("cafe"));
   assert.notEqual(calls[0].id, "cafe_ch2_rain"); assert.equal(calls[0].growthKey, undefined); rainy = true;
-  // CHOI-ZAP・C.STATION: 雨の回が無いので、引いた静かな回を差し替える。静かな回の巡回も一つ進む
+  // サクッとジム・C.STATION: 雨の回が無いので、引いた静かな回を差し替える。静かな回の巡回も一つ進む
   for (const [id, scene, key] of [["choizap", "choizap_ch2_rain", "_spot_turn_choizap"], ["c_station", "cs_ch2_rain", "_spot_turn_c_station"]]) {
     spotSave(2);
     await spots.visitSpot(spot(id));
@@ -472,7 +472,7 @@ for (const id of ["remake_ch2_aquarium_repeat", "remake_ch2_aquarium_repeat_b", 
     assert.deepEqual(plainCall(calls[0]), { id: scene, growthScene: true, growthKey: drawn }, `${id}: chapter 2 rain`);
     assert.equal(state.flags[key], 1);
   }
-  // CHOI-ZAP の夜は夜の束を読み、雨の台本（昼の場面）にしない
+  // サクッとジム の夜は夜の束を読み、雨の台本（昼の場面）にしない
   spotSave(2, { slot: 1 }); await spots.visitSpot(spot("choizap"));
   assert.notEqual(calls[0].id, "choizap_ch2_rain"); assert.equal(calls[0].growthKey, undefined);
   // 家で休む: 雨の回を一度だけ差し替える（休む回は経験値の付かない場面のまま）

@@ -74,12 +74,18 @@ export function gearOffer(s, id, { onBought = () => {}, isCurrent = () => true }
   const status = gearStatus(s, id);
   const button = el("button.btn.ghost.small.gear-offer", {
     type: "button", disabled: !status.ok, title: gear.description, dataset: { test: `gear-buy-${id}` },
-    text: `${gear.short}を買う ${yen(gear.price)}（${gear.effect}）`, "aria-label": `${gear.name}を${yen(gear.price)}で買う。${gear.effect}`,
+    "aria-label": `${gear.name}を${yen(gear.price)}で買う。${gear.effect}`,
     onclick: () => {
       if (!isCurrent() || !buyGear(s, id)) return;
       button.replaceWith(gearOffer(s, id, { onBought, isCurrent }));
       onBought(gear);
     },
-  });
+  }, [
+    // 文面は前と同じ（「◯◯を買う 3,800円（効き目）」の一続き）。名前・値段・効き目を分けておき、置く場所ごとに見せ方を変えられるようにする。
+    // ひとまとめの span に入れるので、ほかの店（斧投げBar・クラブ）では前と同じ一行の字のまま
+    el("span.gear-offer-label", [
+      el("span.gear-offer-name", [gear.short, el("span.gear-offer-verb", { text: "を買う" })]), " ", el("span.gear-offer-price", { text: yen(gear.price) }), el("span.gear-offer-effect", { text: `（${gear.effect}）` }),
+    ]),
+  ]);
   return button;
 }

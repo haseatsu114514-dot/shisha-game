@@ -14,6 +14,7 @@ import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene, weatherOf, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
 import { syncShopHaze } from "./shop-haze.js";
 import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival, takeParkedCover, smokeArt, smokeIn, smokeOut, dateTypeReady, plainDateType } from "./transitions.js";
+import { mountMotion } from "./motion-frame.js";
 import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
 import { uiThemeFrame } from "./ui-theme.js";
@@ -80,7 +81,9 @@ const bgReady = new Map(); // url -> { promise, image, keep }（一度読んだ�
 const IMAGE_CACHE_ENTRIES = 128, KEPT_IMAGE_BYTES = 48 * 1024 * 1024;
 // 作業台の再表示には現在・次の工程を残す。通常の画面を開いても追い出さず、
 // 工程や章が増えたときには作業台の中で古い順に解放する。
-const CRAFT_IMAGE_BYTES = 128 * 1024 * 1024;
+// 大会の作業台（審査員4人の立ち絵・器3種・炭・会場）だけで、デコード後に約136MB（33枚）になる。
+// 128MB では最初に読んだはじめの表情が手放され、開き直すたびに読み直していた（craft_readiness）。余裕を見て 160MB。
+const CRAFT_IMAGE_BYTES = 160 * 1024 * 1024;
 function trimImages(pin) {
   const budget = pin ? CRAFT_IMAGE_BYTES : KEPT_IMAGE_BYTES;
   let bytes = 0, count = 0;
@@ -966,14 +969,15 @@ export async function dayCard(title, sub, { ms = 1900, weather = null, forecast 
   const card = el("div.day-card", [titleNode, el("i.dc-rule"), sub ? el("div.dc-sub", [sub, wx?.badge]) : null]);
   if (forecast) card.append(el("small.dc-sub", { text: `明日は${forecast}`, dataset: { test: "day-forecast" } }));
   if (!(await typeReady)) plainDateType(card, [titleNode]);
-  layers.fx.append(card);
+  // 縦画面を縦持ちで使っている間は、縦の舞台（VPO18）で上の絵の下の方に出す（css/base.css の .mo-portrait.day-card）
+  const mounted = mountMotion(card, { portrait: true, host: layers.fx });
   SE.card();
   await nextFrame();
   card.classList.add("show");
   await sleep(ms);
   card.classList.add("out");
   await sleep(500);
-  card.remove();
+  mounted.remove();
 }
 
 /** 中央の見出し帯（「ROUND 2」など）。登場カットインと同じ生成りの帯を大きく（TMG59） */

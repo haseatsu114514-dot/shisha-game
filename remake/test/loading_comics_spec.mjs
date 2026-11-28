@@ -91,6 +91,15 @@ for (const comic of LOADING_COMICS) {
 }
 assert.equal(new Set(LOADING_COMICS.map(c => c.id)).size, LOADING_COMICS.length, 'comic ids are unique');
 
+// One-line caption (2026-11-27 owner "漫画の解説は一行で収まるように"): at most 18 full-width characters, ASCII counting
+// as half. The portrait layout (css/loading.css) sizes the note so 18 fit on one line even on a narrow phone.
+const captionWidth = text => [...text].reduce((sum, ch) => sum + (/[\u0020-\u007e]/.test(ch) ? 0.5 : 1), 0);
+for (const comic of LOADING_COMICS) {
+  if (comic.caption === undefined) continue;
+  assert(typeof comic.caption === 'string' && !/\n/.test(comic.caption), `${comic.id}: caption is one line of text`);
+  assert(captionWidth(comic.caption) <= 18, `${comic.id}: caption "${comic.caption}" is ${captionWidth(comic.caption)} characters wide; keep it within 18 so it fits one line`);
+}
+
 // Where a comic appears: every game loading screen draws from the bench registrations ("craft";
 // core/loading-context.js), the minigame-only ones add "minigame". contexts is required: a comic without
 // it would also be offered at boot's plain gate, which must stay comic-free in the automated tests.

@@ -155,6 +155,8 @@ await suite("samechan-milestones", async check => {
       await page.locator('[data-test="title-new"]').waitFor(); await page.locator("#boot").waitFor({ state: "detached" });
       await setup(page, true);
       const r = await page.evaluate(async () => {
+        // 会話LOGは同じセーブの読み込み直しをまたいで残る（#4194）。残っているのは中断前の読了分なので、今回の再生の分だけを見る
+        K.vn.clearLog();
         await K.story.playSamechanMilestone(); const after = K.snap(); K.core.load();
         return { after, loaded: K.snap(), log: K.vn.backlog().map(x => x.text).join(" "), privateAfter: K.stats.bond.private };
       });

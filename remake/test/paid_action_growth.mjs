@@ -8,6 +8,8 @@ const browser = await chromium.launch({ headless: true,
 });
 try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+  // バイトは店番（TFL62）。この検査は給料と成長枠を見るだけなので、他のブラウザ検査と同じく店番を通り過ぎる（tonari-floor-view.js の instantFloor）
+  await page.addInitScript(() => { try { localStorage.setItem("suien_floor", "instant"); } catch {} });
   const errors = [];
   page.on("pageerror", e => errors.push(e.message));
   await page.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
@@ -16,6 +18,9 @@ try {
     // 旧しくみ（体力を使った行動で1能力1P・UX12/13）の検査。通常プレイの既定は心得の盤（SBD97）で、行動の経験値は
     // growth_levelup.mjs が受け持つ。?growth=0 と同じ印でこの端末を旧しくみにする
     localStorage.setItem("suien_growth_preview", "0");
+    // バイトは店番（フロア営業・TFL62）になった。ここはシフトを通り過ぎるだけなので、support.mjs と同じく店番はすぐ早じまいにする
+    // （付けないと doBaito() が店番の画面で操作を待ち続け、この検査が止まる）
+    localStorage.setItem("suien_floor", "instant");
     const core = await import("./js/core/state.js"), stats = await import("./js/core/stats.js");
     const vn = await import("./js/vn/engine.js"), spots = await import("./js/daily/spots.js");
     const tonari = await import("./js/daily/tonari.js"), shop = await import("./js/daily/shop.js");

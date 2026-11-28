@@ -28,7 +28,7 @@ const IMG = {
 // 第1章 DAY5 昼の橙須（座標は remake/js/daily/spots.js と同じ。地図の絵に対する %）
 const SPOTS = [
   { id: "tonari", label: "tonari", area: "バイト先", x: 86, y: 36, who: "スミさん 在店", fee: "バイト・練習", mark: "!", thumb: "thumbTonari" },
-  { id: "naru", label: "KEMURIKUSA", area: "商店街の外れ", x: 70, y: 24, who: "なる 在店", fee: "料金 ¥3,000", mark: "!", thumb: "thumbNaru" },
+  { id: "naru", label: "KEMURIYA", area: "商店街の外れ", x: 70, y: 24, who: "なる 在店", fee: "料金 ¥3,000", mark: "!", thumb: "thumbNaru" },
   { id: "adam", label: "EDEN", area: "下町", x: 46, y: 48, who: "本日定休日", fee: "休み", closed: true, thumb: "thumbAdam" },
   { id: "minto", label: "PEPPERMINT", area: "繁華街", x: 32, y: 59, who: "みんと 在店", fee: "料金 ¥3,000", mark: "!", thumb: "shop", face: "faceMinto" },
   { id: "shop", label: "Dr.fookah", area: "問屋街", x: 36, y: 30, who: "1階は時間消費なし", fee: "仕入れ", thumb: "thumbShop" },

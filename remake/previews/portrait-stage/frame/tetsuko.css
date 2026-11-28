@@ -1,0 +1,240 @@
+/* 縦画面の試作: 「てつこといっしょ」の縦の並べ方（frame/tetsuko.html が読む）。
+   本編の画面（js/minigames/tetsuko-time.js）の部品をそのまま使い、置き場所と大きさだけ縦用に替える。色・絵・動きは css/tetsuko-time.css・tetsuko-theme.css のまま。
+   裏口の舞台は横長（1280×720）で、カメラがてつこを真ん中（x=640）に映すので、縦では真ん中だけを見せる:
+     画面の箱（.tetsuko-time）を幅 1280 のまま置き（本編は指の位置や飛ぶハートの位置を「幅 1280」で測るので、そのまま合う）、--z 倍にして左右を切る。
+     見えている幅は 640 / --z（箱の中の px）。--z は端末の高さで決まる（tetsuko.mjs。0.9〜1.25）。
+   寸法の単位 --u ＝「画面の 1px ぶん」（箱の中の px）。字は 14u（実寸 14px）、押す所は 48u 以上にして、端末が変わっても実寸をそろえる。
+   並べ方: 上＝裏口の絵（左上に題と、ごきげんのハート・なかよしの肉球・残りの回数の丸、右上に「？」と「帰る」）。
+           下＝操作の板: 反応の一言／撮影・もようがえ・手帳／なでる・じゃらし・ブラシ・おやつ（親指の届く所に大きく）。
+   文字を減らす（2026-11-27 オーナー「システム的な説明は載せない」「読むので疲れさせないで」）:
+     題の札は入る時の演出だけ（英字 TETSUKO TIME も出さない）。「そろそろおしまい」等の知らせは出さない（残りの回数の丸と、一言で分かる）。
+     お知らせの札は絵・名前・印だけ（「しぐさ図鑑に記録」「写真に残した」の添え字は出さない）。帰りの札は、ハート・肉球・数字と、おみやげの名前だけ。
+     手帳は、認定の条件の一行と、札の番号・名前を出さない（絵で分かる。名前は選ぶと下に出る）。
+     あそびかたは、道具と吹き出しの使い方だけ（見出し・ごきげん／なかよしの決まり・引き継ぎの注記・「帰る」「手帳」の行は出さない）。
+   どれも display: none で隠すだけ（DOM と data-test は本編のまま。台詞は変えない）。 */
+
+#stage .tetsuko-time {
+  --vw: calc(640px / var(--z, 1)); --vl: calc(640px - 320px / var(--z, 1)); --hh: calc(100cqh / var(--z, 1));
+  --u: calc(1px / var(--k, 1) / var(--z, 1)); --fs: calc(14 * var(--u)); --fs-sub: calc(12 * var(--u)); --pad: calc(10 * var(--u));
+  --du: calc(var(--u) * var(--f, 1)); /* 操作の板の単位: 板に余りのある端末では --f 倍（1〜1.2）にして、押す所を大きくする */
+  --dock-h: calc(100 * var(--du)); --tools-h: calc(54 * var(--du)); --q-hit: calc(48 * var(--u)); --q-font: calc(20 * var(--u));
+  inset: 0 auto auto 0; width: 1280px; height: var(--hh); transform-origin: 0 0; transform: translateX(calc(320px - 640px * var(--z, 1))) scale(var(--z, 1));
+  /* 操作の板の地: 段ボール箱の底（生成した絵。gpt-image-2.6-sunburst・asset_sources/ui/minigame-visuals-20261127/portrait/）。絵の下（y=720）から敷き、字が沈まないよう少し暗くする */
+  background: linear-gradient(180deg, rgba(40, 22, 10, .12), rgba(40, 22, 10, .38)) 0 720px / 100% 900px no-repeat, url("../../../img/ui/tetsuko/ui_tk_deck_portrait.webp") 0 720px / 1280px auto no-repeat, #2a1a0f; }
+/* 本編の背景の層は、てつこの画面が自分で絵を持つので出さない（操作の板の後ろに透けない） */
+#stage #bg { visibility: hidden; }
+
+/* ───────── 裏口の絵 ───────── */
+#stage .tt-yard { inset: 0 0 auto; height: 720px; overflow: hidden; overflow: clip; transform-origin: 640px 0; translate: var(--shift, 0px) 0;
+  transition: transform .5s ease-in-out, translate var(--travel-ms, 900ms) cubic-bezier(.25, .1, .25, 1); }
+#stage .tetsuko-time[data-reduced="true"] .tt-yard { transition: none; }
+/* 段ボールの枠は、絵だけを囲む。入る時の箱のふたも絵の上だけ */
+#stage .tt-frame { inset: 0 var(--vl) auto; height: 720px; }
+#stage .tt-intro { inset: 0 0 auto; height: 720px; }
+/* 操作の板の縁 */
+#stage .tetsuko-time::before { content: ""; position: absolute; left: var(--vl); width: var(--vw); top: 718px; height: 4px; z-index: 19; pointer-events: none; background: #4a2d17; box-shadow: 0 2px 0 rgba(235, 202, 147, .35); }
+
+/* 左上: ごきげんのハート。題の札は、入った時の箱が開く演出で一度見せるだけ（その後は出さない。英字も出さない）。
+   札は見えなくするだけで場所は残す（演出の題が飛んでいく先を、本編がこの札の位置から測る） */
+#stage .tt-logo { left: calc(var(--vl) + 14 * var(--u)); top: calc(14 * var(--u)); }
+#stage .tetsuko-time > .tt-logo { visibility: hidden; }
+#stage .tetsuko-time[data-art-ui~="tk_title"] .tt-logo { width: calc(190 * var(--u)); height: calc(57 * var(--u)); padding: calc(13 * var(--u)) calc(8 * var(--u)) calc(12 * var(--u)) calc(40 * var(--u)); }
+/* 題字のロゴの絵（820×390）: 入る時の演出で、真ん中から左上へ収まる札（左上の札は見えないまま、行き先の位置だけ使う） */
+#stage .tetsuko-time[data-art-ui~="tk_logo"] .tt-logo { width: calc(190 * var(--u)); height: calc(90 * var(--u)); padding: 0; }
+#stage .tt-intro-card .tt-logo { left: auto; top: auto; }
+#stage .tetsuko-time .tt-logo-title { font-size: calc(14 * var(--u)); }
+#stage .tt-logo-roman { display: none; }
+#stage .tetsuko-time .tt-status { left: calc(var(--vl) + 16 * var(--u)); top: calc(22 * var(--u)); max-width: calc(var(--vw) - 172 * var(--u)); gap: calc(5 * var(--u)) calc(6 * var(--u)); }
+/* おねだりの吹き出しは、ハートに重ならないよう頭の横へ下げる。擬音（ごろごろ 等）も、上の「？」「帰る」に隠れないよう頭の上から耳の高さへ下げる */
+#stage .tt-wish { top: 12%; }
+#stage .tt-pop { translate: -50% -35%; }
+#stage .tt-joy { gap: calc(2 * var(--u)); padding: calc(4 * var(--u)) calc(9 * var(--u)) calc(2 * var(--u)); border-width: calc(2 * var(--u)); }
+#stage .tt-heart { width: calc(24 * var(--u)); height: calc(24 * var(--u)); }
+/* 「そろそろおしまい」「今日のふれあいはおしまい」の知らせは出さない（残りの回数の丸と、切り上げの一言で分かる） */
+#stage .tt-visit-notice { display: none; }
+
+/* 道具: 右上に「？」と「帰る」、操作の板に 撮影・もようがえ・手帳 */
+#stage .tt-tools { position: static; display: contents; }
+#stage .tt-tool { position: absolute; z-index: 20; box-sizing: border-box; flex-direction: row; gap: calc(4 * var(--u)); width: auto; min-width: 0; height: var(--tools-h); padding: 0 calc(6 * var(--u)); border-width: calc(2 * var(--u)); border-radius: calc(13 * var(--u)); }
+#stage .tt-tool-ico .tt-ico, #stage .tt-tool-ico .tt-ico-art { width: calc(24 * var(--du)); height: calc(24 * var(--du)); }
+#stage .tt-tool-label { font-size: calc(13 * var(--du)); letter-spacing: 0; }
+#stage .tt-tool[data-test="tetsuko-time-back"] .tt-tool-label { font-size: var(--fs); }
+#stage .tt-tool[data-test="tetsuko-time-back"] .tt-tool-ico :is(.tt-ico, .tt-ico-art) { width: calc(24 * var(--u)); height: calc(24 * var(--u)); }
+#stage .tt-tool[data-test="tetsuko-time-back"] { right: calc(var(--vl) + 14 * var(--u)); top: calc(18 * var(--u)); height: var(--q-hit); }
+#stage .tt-tools > .tt-help-btn.tt-help-btn { right: calc(var(--vl) + 96 * var(--u)); top: calc(18 * var(--u)); width: var(--q-hit); height: var(--q-hit); padding: 0; position: absolute; }
+#stage .tt-tool:is([data-test="tetsuko-photo"], [data-test="tetsuko-decor"], [data-test="tetsuko-book"]) { --w3: calc((var(--vw) - 2 * var(--pad) - 16 * var(--u)) / 3); width: var(--w3); bottom: calc(var(--pad) + var(--dock-h) + var(--pad)); }
+#stage .tt-tool[data-test="tetsuko-photo"] { left: calc(var(--vl) + var(--pad)); }
+#stage .tt-tool[data-test="tetsuko-decor"] { left: calc(var(--vl) + var(--pad) + var(--w3) + 8 * var(--u)); }
+#stage .tt-tool[data-test="tetsuko-book"] { left: calc(var(--vl) + var(--pad) + (var(--w3) + 8 * var(--u)) * 2); }
+#stage .tt-tool.new::after { right: calc(-4 * var(--u)); top: calc(-8 * var(--u)); font-size: var(--fs-sub); padding: 0 calc(6 * var(--u)); }
+
+/* 反応の一言: 操作の板のいちばん上（お知らせが重なる時は、絵の裾へ積み上がる） */
+#stage .tt-caption { left: calc(var(--vl) + var(--pad)); width: calc(var(--vw) - 2 * var(--pad)); bottom: calc(var(--pad) * 3 + var(--dock-h) + var(--tools-h)); gap: calc(6 * var(--u)); }
+#stage .tt-caption-paper { padding: calc(7 * var(--u)) calc(14 * var(--u)) calc(7 * var(--u)) calc(30 * var(--u)); border-width: calc(2 * var(--u)); border-radius: calc(13 * var(--u)); }
+#stage .tt-caption-paper::before { width: calc(10 * var(--u)); }
+#stage .tt-text, #stage .tt-line, #stage .tt-toast b { font-size: var(--fs); line-height: 1.4; }
+#stage .tt-line-name, #stage .tt-toast small { font-size: var(--fs-sub); }
+#stage .tt-toast { max-width: 100%; gap: calc(8 * var(--u)); }
+#stage .tt-toast p { flex-wrap: wrap; gap: 0 calc(8 * var(--u)); }
+#stage .tt-toast .tt-thumb { width: calc(34 * var(--u)); height: calc(34 * var(--u)); }
+/* お知らせの札: 絵・名前・印だけ */
+#stage .tt-toast small { display: none; }
+
+/* 手元の道具: 板の下いっぱいに4つ */
+#stage .tt-dock { left: calc(var(--vl) + var(--pad)); right: calc(var(--vl) + var(--pad)); bottom: var(--pad); height: var(--dock-h); gap: 0; justify-content: space-around; align-items: flex-end; }
+#stage .tt-act { width: auto; min-width: calc(72 * var(--du)); max-width: none; gap: calc(4 * var(--du)); padding: 0; }
+#stage .tt-act-token { width: calc(72 * var(--du)); height: calc(72 * var(--du)); }
+#stage .tt-act-token .tt-ico { width: calc(40 * var(--du)); height: calc(40 * var(--du)); }
+#stage .tetsuko-time[data-art-ui~="tk_icons"] .tt-act-token .tt-ico-art { width: calc(48 * var(--du)); height: calc(48 * var(--du)); }
+#stage .tt-act-label { font-size: calc(13 * var(--du)); line-height: 1.2; padding: calc(1 * var(--u)) calc(8 * var(--u)); border-width: calc(1.5 * var(--u)); }
+#stage .tt-act-sub { font-size: var(--fs-sub); top: calc(-8 * var(--u)); }
+
+/* 写真が手帳へ飛ぶ先（手帳のボタン） */
+#stage .tetsuko-time .tt-fly.go { left: calc(var(--vl) + var(--vw) - var(--pad) - 60 * var(--u)) !important; top: calc(var(--hh) - var(--pad) * 2 - var(--dock-h) - var(--tools-h) / 2) !important; }
+
+/* ───────── もようがえ: 舞台を引いて、置き場所（ベンチ・床・寝床）を全部見せる。下に小物の札 ───────── */
+#stage .tetsuko-time[data-panel="decor"] .tt-yard { transform: translateY(calc(74 * var(--u))) scale(calc(.5 / var(--z, 1))); }
+#stage .tetsuko-time[data-panel="decor"] :is(.tt-frame, .tt-status, .tt-logo) { visibility: hidden; }
+#stage .tetsuko-time[data-panel="decor"]::before { display: none; }
+#stage .tt-slot-label { font-size: calc(30px / var(--k, 1)); padding: 2px 18px; top: -40px; border-width: 4px; border-radius: 26px; }
+#stage .tt-slot-hit { border-width: 7px; }
+/* 引いた舞台でも、置き場所を実寸 44px 以上で押せるよう、上へ少し広げる */
+#stage .tetsuko-time[data-panel="decor"] .tt-slot-hit { height: 176px; margin-top: -176px; }
+#stage .tt-drawer { left: calc(var(--vl) + var(--pad)); right: calc(var(--vl) + var(--pad)); top: calc(74 * var(--u) + 360px / var(--z, 1) + var(--pad)); bottom: var(--pad);
+  flex-direction: column; gap: var(--pad); padding: var(--pad); border-width: calc(2 * var(--u)); border-radius: calc(14 * var(--u)); }
+#stage .tt-drawer-head { flex: none; width: auto; flex-direction: row; align-items: center; padding: calc(4 * var(--u)) calc(12 * var(--u)); }
+#stage .tt-drawer-head b { font-size: calc(16 * var(--u)); }
+#stage .tt-drawer-items { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: minmax(calc(78 * var(--u)), 1fr); gap: calc(8 * var(--u)); align-content: start; }
+#stage .tt-item { width: auto; min-width: 0; padding: calc(5 * var(--u)); gap: calc(2 * var(--u)); border-width: calc(2 * var(--u)); border-radius: calc(12 * var(--u)); }
+#stage .tt-item b { font-size: var(--fs); line-height: 1.2; white-space: normal; text-align: center; }
+#stage .tt-item-pic { height: calc(44 * var(--u)); zoom: calc(1 / var(--k, 1) / var(--z, 1) * .8); }
+#stage .tt-item-at, #stage .tt-new { font-size: var(--fs-sub); }
+#stage .tetsuko-time .btn.small:is(.tt-drawer-close, .tt-book-close, .tt-help-close) { min-width: calc(110 * var(--u)); min-height: calc(50 * var(--u)); padding: 0 calc(16 * var(--u)); font-size: calc(16 * var(--u)); border-width: calc(2 * var(--u)); border-radius: calc(13 * var(--u)); }
+#stage .tt-drawer-close { flex: none; align-self: flex-end; }
+#stage .tt-drag-ghost { font-size: var(--fs); padding: calc(6 * var(--u)) calc(12 * var(--u)); }
+
+/* ───────── てつこ手帳: 見開きを上下に。上＝しぐさの札（絵だけ・4列）、下＝選んだしぐさの写真と一言 ───────── */
+#stage .tetsuko-time .tt-book { left: calc(var(--vl) + 8 * var(--u)); right: calc(var(--vl) + 8 * var(--u)); top: calc(74 * var(--u)); bottom: var(--pad); }
+/* 手帳の見開きの絵（横長・左右2ページ）は縦に合わないので、縦では縦開きのリング手帳の絵（生成した絵。上の紙・リング・下の紙）を敷き、2枚の紙の位置に中身を置く。
+   紙の位置は絵の寸法から（上の紙 7〜45%、下の紙 51〜89%、左右 5〜95%） */
+#stage .tetsuko-time .tt-book-spread { display: block; position: absolute; inset: 0; width: auto; height: auto; padding: 0; border: 0; border-radius: 0; box-shadow: none;
+  background: url("../../../img/ui/tetsuko/ui_tk_book_portrait.webp") center / 100% 100% no-repeat; filter: drop-shadow(0 calc(8 * var(--u)) calc(14 * var(--u)) rgba(0, 0, 0, .45)); }
+#stage .tetsuko-time .tt-book-spread::after { display: none; }
+#stage .tetsuko-time .tt-page { position: absolute; left: 7%; right: 7%; box-sizing: border-box; padding: calc(4 * var(--u)) calc(8 * var(--u)); border: 0; border-radius: 0; background: none; box-shadow: none; overflow: hidden; }
+#stage .tetsuko-time .tt-page.left h3 { margin-left: 0; }
+#stage .tetsuko-time .tt-page.left { top: 8%; height: 36.5%; display: flex; flex-direction: column; }
+/* 下の紙は、絵の左下の毛糸玉の飾りに字が重ならない所まで */
+#stage .tetsuko-time .tt-page.right { top: 52%; height: 30.5%; align-items: flex-start; }
+/* 写真は紙の高さに合わせて縮め、一言は写真の横（題の下）に置く（縦が短い端末でも一言が切れない・左下の飾りに重ならない） */
+#stage .tetsuko-time .tt-page.right .tt-detail { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); column-gap: calc(12 * var(--u)); row-gap: calc(6 * var(--u)); height: 100%; align-items: start; }
+#stage .tetsuko-time .tt-page.right .tt-polaroid { grid-row: 1 / 3; align-self: start; }
+#stage .tetsuko-time .tt-page.right .tt-detail h4 { margin-top: calc(6 * var(--u)); }
+#stage .tetsuko-time .tt-page.right .tt-detail-memo { align-self: start; }
+/* しぐさの札は、上の紙の残りの高さを3段で分け合う（縦が短い端末でも3段とも入る） */
+#stage .tetsuko-time .tt-page.left .tt-cards { flex: 1 1 0; min-height: 0; grid-template-rows: repeat(3, minmax(0, 1fr)); align-content: stretch; }
+#stage .tetsuko-time .tt-page.left .tt-card { min-height: 0; }
+#stage .tetsuko-time .tt-page.left .tt-card .tt-thumb { width: auto; height: min(calc(50 * var(--u)), 100%); aspect-ratio: 1; }
+#stage .tt-page h3 { font-size: calc(17 * var(--u)); }
+#stage .tt-book-count { margin: calc(2 * var(--u)) 0 calc(5 * var(--u)); font-size: var(--fs-sub); line-height: 1.3; }
+#stage .tt-book-count[data-test="tetsuko-mastery"] { display: none; }
+#stage .tt-book-joy { margin-left: calc(12 * var(--u)); gap: calc(4 * var(--u)); }
+#stage .tt-book-heart { width: calc(14 * var(--u)); height: calc(14 * var(--u)); }
+#stage .tt-cards { gap: calc(6 * var(--u)); }
+#stage .tt-card { justify-content: center; min-height: calc(58 * var(--u)); padding: calc(3 * var(--u)); }
+#stage .tt-card .tt-thumb { width: calc(50 * var(--u)); height: calc(50 * var(--u)); }
+#stage .tt-thumb.unknown { font-size: calc(26 * var(--u)); }
+#stage .tt-card-no { display: none; }
+#stage .tt-card b { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+#stage .tt-card .tt-stamp { width: calc(16 * var(--u)); height: calc(16 * var(--u)); }
+#stage .tt-detail { flex-direction: row; align-items: flex-start; gap: calc(12 * var(--u)); max-width: none; width: 100%; text-align: left; flex-wrap: wrap; }
+#stage .tetsuko-time .tt-polaroid { flex: none; width: calc(128 * var(--u)); padding: calc(8 * var(--u)) calc(8 * var(--u)) calc(24 * var(--u)); }
+#stage .tetsuko-time .tt-polaroid .tt-thumb { width: calc(112 * var(--u)); height: calc(112 * var(--u)); }
+#stage .tt-polaroid .tt-thumb.unknown { font-size: calc(48 * var(--u)); }
+#stage .tt-polaroid small, #stage .tt-detail-hint { font-size: var(--fs-sub); }
+#stage .tt-polaroid small { text-align: center; }
+#stage .tt-tape { width: calc(70 * var(--u)); height: calc(18 * var(--u)); margin-left: calc(-35 * var(--u)); top: calc(-8 * var(--u)); }
+#stage .tt-detail h4 { flex: 1 1 calc(100% - 150 * var(--u)); margin: calc(4 * var(--u)) 0 0; font-size: calc(17 * var(--u)); line-height: 1.35; }
+#stage .tt-detail-memo { flex: 1 1 100%; font-size: var(--fs); line-height: 1.55; }
+#stage .tetsuko-time .tt-seek { font-size: var(--fs); min-height: calc(48 * var(--u)); margin-top: 0; padding: 0 calc(16 * var(--u)); }
+#stage .tt-book-close { right: calc(22 * var(--u)); bottom: calc(18 * var(--u)); }
+
+/* ───────── あそびかた: 1列。長い時は中だけ送れる ───────── */
+#stage .tetsuko-time .tt-help { display: flex; align-items: center; justify-content: center; left: calc(var(--vl) + var(--pad)); right: calc(var(--vl) + var(--pad)); top: calc(74 * var(--u)); bottom: var(--pad); }
+#stage .tetsuko-time .tt-help[hidden] { display: none; }
+#stage .tt-help-card { display: flex; flex-direction: column; max-height: 100%; box-sizing: border-box; }
+#stage .tt-help-head { flex-wrap: wrap; gap: calc(4 * var(--u)) calc(12 * var(--u)); margin-bottom: calc(8 * var(--u)); }
+#stage .tt-help-head h3 { font-size: calc(17 * var(--u)); }
+#stage .tt-help-mood { font-size: var(--fs-sub); }
+/* 道具と吹き出しの使い方だけ。見出し・決まりごと・引き継ぎの注記・「ごきげん」「なかよし」「帰る」「手帳」の行は出さない */
+#stage .tt-help-group h4, #stage .tt-help-note, #stage .tt-help-row:is([data-test="tetsuko-help-heart"], [data-test="tetsuko-help-paw"], [data-test="tetsuko-help-back"], [data-test="tetsuko-help-book"]), #stage .tt-help-row[data-test="tetsuko-help-treat"] .tt-help-text { display: none; }
+#stage .tt-help-row[data-test="tetsuko-help-treat"] .tt-help-ico { grid-row: auto; }
+#stage .tt-help-groups { grid-template-columns: minmax(0, 1fr); min-height: 0; overflow-y: auto; gap: calc(14 * var(--u)); }
+#stage .tt-help-group:nth-child(2) { grid-row: auto; }
+#stage .tt-help-rows { gap: var(--pad); }
+#stage .tt-help-row { grid-template-columns: calc(34 * var(--u)) minmax(0, 1fr); column-gap: calc(8 * var(--u)); }
+#stage .tt-help-ico { grid-row: 1 / 3; align-self: start; width: calc(34 * var(--u)); height: calc(34 * var(--u)); }
+#stage .tt-help-ico .tt-ico, #stage .tetsuko-time[data-art-ui~="tk_icons"] .tt-help-ico .tt-ico-art { width: calc(24 * var(--u)); height: calc(24 * var(--u)); }
+#stage .tt-help-name, #stage .tt-help-text, #stage .tt-help-note { font-size: var(--fs); line-height: 1.4; }
+#stage .tt-help-groups { padding-bottom: calc(58 * var(--u)); }
+#stage .tt-help-close { right: calc(18 * var(--u)); bottom: calc(16 * var(--u)); }
+
+/* ───────── 「帰る？」の札（共通の一時停止の札）: てつこの紙と茶トラの色に。画面の最前面に出るので、寸法は画面の px ───────── */
+#stage dialog[data-test="tetsuko-pause"] { min-width: min(280px, calc(100vw - 48px)); padding: 22px 22px 20px; border: 3px solid #3b2416; border-radius: 22px; background: #fff5e4; color: #3b2416; box-shadow: 0 6px 0 #3b2416, 0 16px 30px rgba(0, 0, 0, .45); }
+#stage dialog[data-test="tetsuko-pause"]::backdrop { background: rgba(28, 14, 6, .62); }
+#stage dialog[data-test="tetsuko-pause"] h2 { margin: 0 0 16px; font-size: 22px; font-weight: 900; letter-spacing: .08em; }
+#stage dialog[data-test="tetsuko-pause"] .minigame-pause-actions { flex-direction: column; flex-wrap: nowrap; gap: 12px; }
+#stage dialog[data-test="tetsuko-pause"] .btn { min-height: 56px; padding: 0 18px; border: 3px solid #3b2416; border-radius: 16px; background: #fff5e4; color: #3b2416; font-size: 18px; font-weight: 800; box-shadow: 0 4px 0 #3b2416; justify-content: center; }
+#stage dialog[data-test="tetsuko-pause"] .btn.primary { background: linear-gradient(180deg, #ffc57a, #f09a3e); color: #3b2416; }
+#stage dialog[data-test="tetsuko-pause"] .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #3b2416; }
+
+/* ───────── ごきげんとなかよし（2026-11-27・本編の §12）: 縦の寸法 ─────────
+   上の札: ハートの隣に、なかよしの段（肉球と数字）。その下に、付き合ってくれる残りの回数（丸）。
+   撮らせてくれない時の「♥3」のしるし、こぼれるハート、帰りの札（手元の道具の場所に出す）、手帳のなかよし（肉球と節目のしるし）。 */
+#stage .tt-bond { gap: 0; padding: calc(1 * var(--u)) calc(9 * var(--u)) calc(1 * var(--u)) calc(4 * var(--u)); border-width: calc(2 * var(--u)); border-radius: calc(16 * var(--u)); box-shadow: 0 calc(2 * var(--u)) 0 rgba(59, 36, 22, .35); }
+#stage .tt-bond .tt-paw { width: calc(24 * var(--u)); height: calc(24 * var(--u)); }
+#stage .tt-bond b { font-size: calc(17 * var(--u)); }
+#stage .tetsuko-time .tt-turns { gap: calc(4 * var(--u)); padding: calc(6 * var(--u)) calc(8 * var(--u)); border-radius: calc(12 * var(--u)); margin-left: calc(4 * var(--u)); }
+#stage .tt-turns i { width: calc(9 * var(--u)); height: calc(9 * var(--u)); }
+#stage .tt-shot-need { right: calc(-4 * var(--u)); top: calc(-10 * var(--u)); gap: calc(1 * var(--u)); padding: 0 calc(6 * var(--u)) 0 calc(3 * var(--u)); border-width: calc(1.5 * var(--u)); border-radius: calc(10 * var(--u)); }
+#stage .tt-shot-need span { width: calc(14 * var(--u)); height: calc(14 * var(--u)); }
+#stage .tt-shot-need b { font-size: var(--fs-sub); }
+#stage .tt-fall-heart { width: calc(24 * var(--u)); height: calc(24 * var(--u)); margin: calc(-12 * var(--u)) 0 0 calc(-12 * var(--u)); }
+/* 帰りの札: 手元の道具の場所いっぱいに（今日のハート → なかよし。節目なら、おみやげ） */
+#stage .tt-result { left: calc(var(--vl) + var(--pad)); right: calc(var(--vl) + var(--pad)); bottom: var(--pad); box-sizing: border-box; min-height: var(--dock-h); justify-content: center; align-content: center;
+  gap: calc(5 * var(--u)) calc(8 * var(--u)); padding: calc(8 * var(--u)) calc(10 * var(--u)); border-width: calc(2 * var(--u)); border-radius: calc(16 * var(--u));
+  box-shadow: 0 calc(4 * var(--u)) 0 rgba(59, 36, 22, .35), 0 calc(8 * var(--u)) calc(16 * var(--u)) rgba(0, 0, 0, .3); }
+#stage .tt-result-hearts { gap: calc(1 * var(--u)); }
+#stage .tt-result-hearts .tt-heart, #stage .tt-result-bond .tt-paw { width: calc(21 * var(--u)); height: calc(21 * var(--u)); }
+#stage .tt-result-arrow { border-left-width: calc(9 * var(--u)); border-top-width: calc(6 * var(--u)); border-bottom-width: calc(6 * var(--u)); }
+#stage .tt-result-bond { gap: 0 calc(5 * var(--u)); }
+#stage .tt-result-bond small { font-size: var(--fs-sub); }
+#stage .tt-paws { gap: calc(2 * var(--u)); }
+#stage .tt-result-gain { min-width: calc(30 * var(--u)); font-size: calc(19 * var(--u)); }
+#stage .tt-result-gifts { gap: calc(12 * var(--u)); padding-top: calc(4 * var(--u)); border-top-width: calc(1.5 * var(--u)); }
+#stage .tt-result-gift { gap: calc(6 * var(--u)); }
+#stage .tt-result-gift b { font-size: var(--fs); }
+#stage .tt-result-gift .tt-gift { width: calc(40 * var(--u)); height: calc(40 * var(--u)); }
+#stage .tetsuko-time .tt-result-ember .tt-bond-mark { width: calc(40 * var(--u)); height: calc(40 * var(--u)); }
+#stage .tetsuko-time .tt-result-ember .tt-bond-mark[data-mark="ember"] svg { width: calc(30 * var(--u)); height: calc(30 * var(--u)); }
+#stage .tetsuko-time[data-result="1"] .tt-caption { width: calc(var(--vw) - 2 * var(--pad)); }
+/* 手帳: 題の右に、肉球と節目のしるし（「なかよし」の字は出さない。肉球で分かる。読み上げには残る） */
+/* 題の行の右端は、手帳の絵の肉球の飾りがかぶるので空ける */
+#stage .tt-book-head { gap: calc(6 * var(--u)); align-items: center; padding-right: calc(38 * var(--u)); }
+/* 膝の一枚絵は、縦では寄せない（見える幅が狭いので、寄せると、てつこの左右が切れる） */
+#stage .tetsuko-time { --lap-zoom: 1; }
+#stage .tt-book-head h3 { flex: none; white-space: nowrap; }
+#stage .tetsuko-time .tt-book-bond { gap: calc(2 * var(--u)); min-height: calc(48 * var(--u)); align-items: center; padding: calc(1 * var(--u)) calc(5 * var(--u)); border-width: calc(2 * var(--u)); border-radius: calc(10 * var(--u)); }
+#stage .tt-book-bond small { display: none; }
+#stage .tetsuko-time .tt-book-bond .tt-paw { width: calc(19 * var(--u)); height: calc(19 * var(--u)); }
+#stage .tetsuko-time .tt-bond-mark, #stage .tetsuko-time .tt-bond-mark .tt-gift { width: calc(25 * var(--u)); height: calc(25 * var(--u)); }
+#stage .tetsuko-time .tt-bond-mark[data-mark="ember"] svg { width: calc(18 * var(--u)); height: calc(18 * var(--u)); }
+/* 下の紙の「なかよし」: 肉球と、おみやげ3つ（絵・名前・一言） */
+#stage .tetsuko-time .tt-page.right .tt-bond-detail { display: flex; flex-direction: column; flex-wrap: nowrap; align-items: flex-start; gap: calc(5 * var(--u)); }
+#stage .tetsuko-time .tt-bond-detail h4 { flex: none; margin: 0; }
+#stage .tetsuko-time .tt-bond-detail .tt-paws { gap: calc(3 * var(--u)); }
+#stage .tetsuko-time .tt-bond-detail .tt-paws .tt-paw { width: calc(26 * var(--u)); height: calc(26 * var(--u)); }
+#stage .tetsuko-time .tt-gift-list { gap: calc(3 * var(--u)); margin: 0; }
+#stage .tetsuko-time .tt-gift-list li { grid-template-columns: calc(40 * var(--u)) minmax(0, 1fr); column-gap: calc(8 * var(--u)); }
+#stage .tetsuko-time .tt-gift-list .tt-gift { width: calc(40 * var(--u)); height: calc(40 * var(--u)); }
+#stage .tetsuko-time .tt-gift-list b { font-size: var(--fs); line-height: 1.2; }
+#stage .tetsuko-time .tt-gift-memo { font-size: var(--fs-sub); line-height: 1.3; }

@@ -317,7 +317,10 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   assert.deepEqual([...KUJI_ONLY_EQUIPMENT].sort(), equipment.filter((e) => e.kuji_only).map((e) => e.id).sort(), "くじ限定の台の一覧が data と一致");
 
   const src = fs.readFileSync(new URL("remake/js/core/keepsakes.js", root), "utf8");
-  const ids = [...src.matchAll(/([a-z0-9_]+): \{ name:/g)].map((m) => m[1]).sort();
+  // 直書きの記念品に、PEPPERMINTで頼むチェキ（core/minto-cheki-data.js から展開）を足す
+  const { ALL_MINTO_CHEKIS } = await import("../js/core/minto-cheki-data.js");
+  assert.ok(src.includes("...Object.fromEntries(ALL_MINTO_CHEKIS.map("), "チェキは記念品へ展開する");
+  const ids = [...[...src.matchAll(/([a-z0-9_]+): \{ name:/g)].map((m) => m[1]), ...ALL_MINTO_CHEKIS.map((c) => c.id)].sort();
   assert.ok(ids.length > 0);
   assert.deepEqual(Object.keys(KEEPSAKE_ORIGINS).sort(), ids);
 }

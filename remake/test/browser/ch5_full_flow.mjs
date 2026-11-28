@@ -139,8 +139,8 @@ await suite("ch5-full-flow", async check => {
     // ヒロインの店は、会ったことがあれば第5章の通いの小会話で出る（#2033 F）。この保存では会っていない。
     for (const unmet of ["minto", "shishark"])
       assert.equal(await page.locator(dt(`pin-${unmet}`)).count(), 0, `${unmet} only after meeting her`);
-    // KEMURIKUSA は第5章の通いの小会話で出る（第2章の決裂の臨時休業に掛からない・#2033 F）
-    assert.equal(await page.locator(dt("pin-naru")).count(), 1, "KEMURIKUSA reopened for Chapter 5");
+    // KEMURIYA は第5章の通いの小会話で出る（第2章の決裂の臨時休業に掛からない・#2033 F）
+    assert.equal(await page.locator(dt("pin-naru")).count(), 1, "KEMURIYA reopened for Chapter 5");
     // 昼の tonari: ましろの訪問 → 実セーブ → リロード → 再開しても読了と日付が保たれる。
     await go(page, "tonari");
     await committed(page, "ch5_free_mashiro_visit");
@@ -496,7 +496,7 @@ await suite("ch5-full-flow", async check => {
       assert.equal(await page.locator(dt(`pin-${pin}`)).count(), 1, `${pin} is on the Chapter 5 Tokyo map`);
     assert.equal(await page.locator(dt("pin-ch5_call")).count(), 0, "The doctor is called from home");
     assert.equal(await page.locator(dt("pin-ch5_tokyo_club")).count(), 0, "Club SEAM opens only at night");
-    assert.equal(await page.locator(dt("pin-ch5_tokyo_gym")).count(), 0, "The Tokyo CHOI-ZAP is for members only");
+    assert.equal(await page.locator(dt("pin-ch5_tokyo_gym")).count(), 0, "The Tokyo サクッとジム is for members only");
     assert.match(await page.locator(".hud").innerText(), /TOKYO|東京/);
     // 昼: スティーブの店（東京のシーシャ屋は4,000円。帰りの分は取り置かない）。
     await go(page, "ch5_tokyo_steve");
@@ -526,7 +526,7 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5.part, "free", "The Tokyo stay does not move the Chapter 5 story");
   });
 
-  // #2033: 東京に泊まっている間も、第3章の東京と同じ CHOI-ZAP（会員なら・3日間風邪をひきにくい）とクラブSEAM（夜・時間は使わない）。
+  // #2033: 東京に泊まっている間も、第3章の東京と同じ サクッとジム（会員なら・3日間風邪をひきにくい）とクラブSEAM（夜・時間は使わない）。
   await check("chapter-five-tokyo-choizap-and-club-seam", async page => {
     page.setDefaultTimeout(30000);
     await page.evaluate(async () => {
@@ -555,13 +555,13 @@ await suite("ch5-full-flow", async check => {
         && !document.querySelector("#modal.show");
     }, [day, slot], { timeout: 60000 });
     await tokyoMap(51, 0);
-    // 昼: 会員なので東京の CHOI-ZAP に入れる（行動を一つ・体力を使う）。3日間は風邪をひきにくい。
+    // 昼: 会員なので東京の サクッとジム に入れる（行動を一つ・体力を使う）。3日間は風邪をひきにくい。
     const before = await get(page);
     await go(page, "ch5_tokyo_gym");
     await tokyoMap(51, 1);
     let state = await get(page);
     assert.ok(state.stamina < before.stamina, "The gym uses stamina");
-    assert.deepEqual(state.flags._fit_since, { chapter: 5, day: 51 }, "The Tokyo CHOI-ZAP grants the FIT days in Chapter 5 too");
+    assert.deepEqual(state.flags._fit_since, { chapter: 5, day: 51 }, "The Tokyo サクッとジム grants the FIT days in Chapter 5 too");
     assert.equal(state.visitedDay?.ch5_tokyo_gym, 51);
     assert.equal(state.money, before.money, "Members pay nothing more");
     if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled()))
@@ -830,7 +830,7 @@ await suite("ch5-full-flow", async check => {
     assert.equal(read.filter(text => text.includes("ドバイの夕方と、ヌールさんの顔")).length, 1, "The call is read once");
   });
 
-  // #2033 F: KEMURIKUSA（なる）と C.STATION は第5章の通いの小会話。代金・体力・好感度（なるだけ +5）が付き、会話は巡回する。
+  // #2033 F: KEMURIYA（なる）と C.STATION は第5章の通いの小会話。代金・体力・好感度（なるだけ +5）が付き、会話は巡回する。
   await check("chapter-five-kemurikusa-and-c-station-regular-talks", async page => {
     page.setDefaultTimeout(30000);
     await page.evaluate(async () => {
@@ -854,7 +854,7 @@ await suite("ch5-full-flow", async check => {
     await loadSlot(page, 0);
     await mapReady(page, { day: 51, slot: 0 });
     assert.equal(await page.locator(dt("pin-c_station")).count(), 1, "C.STATION after meeting Naru");
-    // 昼: KEMURIKUSA（第2章で決裂していても、第5章は再開した店）。
+    // 昼: KEMURIYA（第2章で決裂していても、第5章は再開した店）。
     await go(page, "naru");
     await mapReady(page, { day: 51, slot: 1 });
     let state = await get(page);
@@ -1102,6 +1102,7 @@ await suite("ch5-full-flow", async check => {
     // 2回目からは練習なしでメニューから。なるとの勝負（裏）は出さない
     await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === "menu", null, { timeout: 90000 });
     assert.equal(await page.locator(dt("desert-start-naru")).count(), 0, "No race against Naru in Chapter 5");
+    assert.equal(await page.locator(dt("desert-tier-naru")).count(), 0, "No Naru card at all in Chapter 5 (DSR107)");
     await page.locator(dt("desert-start")).click();
     await page.evaluate(() => { window.__desertRide.autoplay("perfect"); window.__desertRide.setSpeedUp(8); });
     await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === "result", null, { timeout: 90000 });

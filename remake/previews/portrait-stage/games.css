@@ -1,0 +1,4 @@
+/* 縦画面C案「煙の舞台」: ミニゲームの場面（games.mjs）。縦用のページ（frame/<ゲーム>.html）を枠いっぱいに入れる。 */
+.gm-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: #120c08; }
+/* 一覧（PC）の止め絵は触れない */
+.phone[data-ext] .gm-frame { pointer-events: none; }

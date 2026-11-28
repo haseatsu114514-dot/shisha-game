@@ -12,9 +12,14 @@ import { SE } from "../core/audio.js";
 import { move, svg } from "../core/transition-kit.js";
 import { MG_EASE as E, motionVariant } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
+import { frameOf } from "../core/motion-frame.js";
 
 // 器はスマホとその周りだけ。どの画面でもPCと同じ大きさ（ステージ倍率で縮むだけ）。
 export const BOX_W = 560, BOX_H = 720;
+// 縦画面の縦の舞台（720×H・VPO03）では、スマホを画面の幅の9割ほどまで大きく見せる（器を端末のまわりだけに詰める）。
+// 下から上がる・下へ去る距離も、縦長の舞台の下の端の外まで伸ばす。
+const PORTRAIT_BOX = { w: 440, h: 780 };
+const RISE = { land: 740, portrait: 1040 };
 const ROWS = 6; // 一覧に見せる行（新しい1行を含む）
 const ROW_H = 76;
 // 画面（ステータスバーの下）の中の位置。lime.css と同じ値
@@ -120,7 +125,7 @@ const at = (node, frames, ms, delay, { fill = "both", easing = E.out } = {}) => 
 /** 共通の前半: スマホが上がる → アイコン・名前・ボタンが出る → 指でタップ → ✓。✓の音を鳴らす時刻（ms）を返す */
 function playProfile(back, ui) {
   at(back, [{ opacity: 0 }, { opacity: 1 }], 300, 0, { easing: "linear" });
-  at(ui.phone, [{ transform: "translateY(740px)" }, { transform: "none" }], 560, 0);
+  at(ui.phone, [{ transform: `translateY(${ui.rise}px)` }, { transform: "none" }], 560, 0);
   at(ui.profile, [{ opacity: 1 }, { opacity: 1 }], 1, 0);
   at(ui.big, [
     { opacity: 1, transform: "translate(0px, 0px) scale(0)" },
@@ -207,12 +212,15 @@ export async function exchange(charId, context = null, { still = false } = {}) {
     // stagePlayも最初のフレームを待つため、画面を組む直前にLOADを再確認する。
     if (state !== owner) return;
     const ui = buildPhone(charId, context, ready ? url : null);
+    const { portrait } = frameOf(node);
+    ui.rise = portrait ? RISE.portrait : RISE.land;
     const scene = el("div.mo-lime-scene", { style: {
       position: "absolute", left: "50%", top: "50%", width: `${BOX_W}px`, height: `${BOX_H}px`,
       transformOrigin: "center",
     } }, [ui.phone, ui.finger]);
     const fit = () => {
-      const scale = Math.min(node.clientWidth / BOX_W, node.clientHeight / BOX_H);
+      const box = portrait ? PORTRAIT_BOX : { w: BOX_W, h: BOX_H };
+      const scale = Math.min(node.clientWidth / box.w, node.clientHeight / box.h);
       scene.style.transform = `translate(-50%, -50%) scale(${scale})`;
     };
     const back = backdrop("rgba(5, 4, 10, 0.62)");
@@ -233,11 +241,11 @@ export async function exchange(charId, context = null, { still = false } = {}) {
       SE.phone();
       await sleep(shown - ding + 560);
       await Promise.all([
-        move(ui.phone, [{ transform: "none" }, { transform: "translateY(740px)" }], 380, { easing: E.in, fill: "forwards" }),
+        move(ui.phone, [{ transform: "none" }, { transform: `translateY(${ui.rise}px)` }], 380, { easing: E.in, fill: "forwards" }),
         move(node, [{ opacity: 1 }, { opacity: 0 }], 380, { fill: "forwards" }),
       ]);
     } finally {
       resize.disconnect();
     }
-  });
+  }, { portrait: true });
 }

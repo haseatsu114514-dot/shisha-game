@@ -1,10 +1,10 @@
-// 様式ごとの部品の出し入れ。現行だけで遊ぶ端末には、新版・DS風のコードを読み込ませない。
+// 様式ごとの部品の出し入れ。現行だけで遊ぶ端末には、新版のコードを読み込ませない。
 // 各部品は setActive(on) を公開する。on=false では自分が足した要素・監視・クラスをすべて片付け、現行の画面へ戻す。
 import { LOOK_EVENT, currentLook } from "../core/look.js";
 
 const loaders = {
   neo: () => import("./neo.js"),
-  retro: () => import("./retro.js"),
+  vertical: () => import("./vertical.js"),
 };
 const loaded = new Map();
 let installed = false;

@@ -23,7 +23,6 @@
 .trpg-campaign .venue-host-portrait { height: 96px; }
 .trpg-campaign .venue-host-copy p { font-size: 16px; }
 .trpg-root.trpg-campaign { overflow-y: auto; }
-.trpg-campaign .trpg-campaign-books { flex: none; overflow-y: visible; }
 .trpg-campaign .trpg-club-proposal { margin: 0 auto; padding: 18px 30px; }
 .trpg-campaign .trpg-club-proposal p { margin: 8px 0; font-size: 17px; }
 .trpg-day-trial { padding: 14px 20px; border: 1px solid #829e87; border-radius: 9px; background: #213d37; }

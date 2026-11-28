@@ -1508,6 +1508,11 @@
           "text": "二度目は、細く長く。紙の先に小さな火が立ち、葉へ移った。"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_ch4_longlong_pipe",
+          "portrait_only": true
+        },
+        {
           "speaker": "",
           "text": "王煙楼は水煙袋を受け取り、目を閉じて二口吸った。肩が、ゆっくり下がる。"
         },
@@ -1523,6 +1528,10 @@
         {
           "speaker": "",
           "text": "鼻を近づけると、木の香りと、紅茶の葉の匂いが残っている。"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "speaker": "hajime",

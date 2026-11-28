@@ -136,6 +136,6 @@
   if (sup) {
     const first = ['lemon', 'mint', 'peach', 'white_gummy_bear', 'vanilla', 'double_apple', 'cinnamon', 'black_tea', 'rose', 'spring_water'];
     sup.innerHTML = first.map((id) => { const f = byId[id];
-      return `<div style="background:var(--${f.k});border-radius:1mm;height:11mm;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;font-weight:700;font-size:5pt;line-height:1.2;border:.3mm solid #000;box-shadow:.5mm .5mm 0 #000,1mm 1mm 0 rgba(255,255,255,.25)">${f.n.replace('スプリングウォーター', 'スプリング<br>ウォーター').replace('ホワイトグミベア', 'ホワイト<br>グミベア').replace('ダブルアップル', 'ダブル<br>アップル').replace('ブラックティー', 'ブラック<br>ティー')}</div>`; }).join('');
+      return `<div style="background:var(--${f.k});border-radius:1mm;height:11mm;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;font-weight:700;font-size:5pt;line-height:1.2;border:.3mm solid #000;box-shadow:.5mm .5mm 0 #000,1mm 1mm 0 rgba(255,255,255,.25)">${f.n.replace('スプリングウォーター', 'スプリング<br>ウォーター').replace('しろくまグミ', 'しろくま<br>グミ').replace('ダブルアップル', 'ダブル<br>アップル').replace('ブラックティー', 'ブラック<br>ティー')}</div>`; }).join('');
   }
 })();

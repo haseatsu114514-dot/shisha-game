@@ -210,7 +210,7 @@ await mapMod.evaluate();
 const map = mapMod.namespace;
 
 const axeSpot = { id: "axe_bar", kind: "axe", label: "斧投げBar", x: 38, y: 74, theme: "gym", preview: "bg_axe_lounge_night", openSlots: [1] };
-const naruSpot = { id: "naru", kind: "rival", charId: "naru", label: "KEMURIKUSA", x: 70, y: 24, theme: "rival", preview: "kemurikusa" };
+const naruSpot = { id: "naru", kind: "rival", charId: "naru", label: "KEMURIYA", x: 70, y: 24, theme: "rival", preview: "kemurikusa" };
 const adamSpot = { id: "adam", kind: "rival", charId: "adam", label: "EDEN", x: 46, y: 48, theme: "rival", preview: "bg_eden_shop" };
 const shisharkSpot = { id: "shishark", kind: "samechan", charId: "samechan", label: "SHISHARK", x: 58, y: 38, theme: "shop", preview: "bg_shishark" };
 const lockedCafe = { id: "cafe", kind: "spot", label: "喫茶こはく", x: 72, y: 45, theme: "cafe", preview: "bg_cafe_day" };

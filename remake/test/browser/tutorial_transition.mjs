@@ -18,6 +18,7 @@ async function prepare(page, legacy = false) {
     await ui.setBg(data.bgUrl("bg_tonari_inside"), { instant: true });
     await engine.play("remake_tutorial_result");
     engine.vnTest.turbo = false; core.config.textSpeed = 4;
+    core.config.skipSeenOnly = false; // 未読の台詞も SKIP で送る（既定は既読のみ・#4194。付けないと SKIP が効かず場面が終わらない）
     engine.backlog().length = 0;
     window.V = { core, engine, ui, data };
   }, legacy);
@@ -48,7 +49,8 @@ await suite("tutorial-transition", async check => {
       assert(await page.locator('.portrait[data-speaker="oneesan"]').evaluate(img => img.complete && img.naturalWidth > 0));
       assert.deepEqual(await storageSnapshot(page), before, "Loading changed persisted saves");
       assert(await page.evaluate(() => V.core.state.flags._qa_preserved));
-      await page.evaluate(() => { V.engine.vnTest.turbo = true; document.querySelector('[data-test="vn-skip"]').click(); });
+      // 未読の台詞も SKIP で送る（既定は既読のみ・#4194。spot_encounters.mjs と同じ）
+      await page.evaluate(() => { V.core.config.skipSeenOnly = false; V.engine.vnTest.turbo = true; document.querySelector('[data-test="vn-skip"]').click(); });
       await page.evaluate(() => window.scene);
       assert(await page.evaluate(() => V.core.state.flags._oneesan_id_checked));
       assert.equal(await page.locator('[data-test="vn-loading"]').count(), 0);

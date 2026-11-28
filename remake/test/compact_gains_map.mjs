@@ -64,7 +64,7 @@ try {
         gym: document.querySelector('[data-test="pin-choizap"] .facility-icon img').src,
         leakedShark: !!document.querySelector('[data-test="pin-shishark"], [data-test="pin-samechan"]') };
     });
-    assert.deepEqual(map.labels, ["tonari","KEMURIKUSA","EDEN","PEPPERMINT","Dr.fookah","喫茶こはく","観音堂","CHOI-ZAP","C.STATION","家"]);
+    assert.deepEqual(map.labels, ["tonari","KEMURIYA","EDEN","PEPPERMINT","Dr.fookah","喫茶こはく","観音堂","サクッとジム","C.STATION","家"]);
     assert(map.faces.every(f => f.width === (f.owner ? 32 : 52) && f.loaded), JSON.stringify(map.faces));
     assert(map.icons.every(i => (i.vector || i.logo || i.facility) && i.below && !i.oldGlyph));
     assert(map.badges.length >= 5 && map.badges.every(b => b.text === "!" && b.radius === "50%" && b.width === b.height));
@@ -151,8 +151,12 @@ try {
   assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').count(),1);
   await page.evaluate(async () => {
     for (const id of T.spots.RIO_STORY_EXTRAS) T.core.state.flags[`_spot_seen_${id}`] = true;
+    // 固有会話を読み終えた状態では、みんとの2ショットチェキ（PFC17。2回目の固有会話の後、来店の流れで一本ずつ）も
+    // 本当に「新しい話」として出る。ここでは凛想の印が消えることを見るので、2ショットも読んだことにして地図全体の印を0にする
+    for (const id of T.spots.MINTO_TWOSHOT_EVENTS) T.core.state.flags[`_spot_seen_${id}`] = true;
     await T.openMap();
   });
+  assert.equal(await page.evaluate(() => T.spots.mintoTwoShotDue()), null);
   await page.locator('.map:not(.done) [data-test="pin-shop"]').waitFor();
   assert.equal(await page.evaluate(() => T.spots.rioStoryExtraDue()), null);
   assert.equal(await page.locator(".evt-badge.story").count(),0);
@@ -160,7 +164,7 @@ try {
   // 店名は閉店日も残す。臨時休暇は別の札で伝え、訪問できない理由も一致する。
   await page.evaluate(async () => { T.core.state.flags._temporary_closed_naru="1:4"; await T.openMap(); });
   await page.waitForSelector('[data-test="pin-naru"] .pin-status');
-  assert.equal(await page.locator('[data-test="pin-naru"] .sub-label').textContent(),"KEMURIKUSA");
+  assert.equal(await page.locator('[data-test="pin-naru"] .sub-label').textContent(),"KEMURIYA");
   assert.equal(await page.locator('[data-test="pin-naru"] .pin-status').textContent(),"本日臨時休業");
   await page.locator('[data-test="pin-naru"]').click();
   assert.match(await page.locator(".map-info").getAttribute("aria-label"), /本日臨時休業/);
@@ -179,7 +183,7 @@ try {
   assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge').count(),0);
   assert.equal(await page.locator('[data-test="pin-choizap"]').count(),0);
   assert.equal(await page.locator('[data-test="pin-naru"] .pin-face').count(),0);
-  assert.equal(await page.locator('[data-test="pin-naru"] .sub-label').textContent(),"KEMURIKUSA");
+  assert.equal(await page.locator('[data-test="pin-naru"] .sub-label').textContent(),"KEMURIYA");
   await page.evaluate(async () => { T.core.state.chapter=2; await T.openMap(); });
   await page.waitForSelector('[data-test="pin-shishark"]');
   assert.equal(await page.locator('[data-test="pin-shishark"] .sub-label').textContent(),"SHISHARK");

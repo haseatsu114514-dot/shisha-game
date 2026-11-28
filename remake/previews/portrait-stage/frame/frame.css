@@ -1,0 +1,10 @@
+/* 縦画面の試作: ミニゲームを縦の画面で動かすページの土台（frame/*.html が読む）。
+   本編の土台（css/base.css）は横 1280×720 の固定ステージ。ここでは幅 640 の縦長ステージに替え、高さは画面の縦横比のぶん（frame.mjs の initPortraitFit が --k と --stage-h を入れる）。
+   各ゲームの縦の並べ方は、ゲームごとの CSS（desert.css など）に書く。 */
+html, body { height: 100%; margin: 0; background: #0b0812; }
+#viewport { background: #0b0812; }
+#stage { width: 640px; height: var(--stage-h, 1385px); background: #120c08; }
+/* 縦では横向きの案内を出さない */
+#rotate-hint { display: none !important; }
+/* 一覧（PC）に並べる時は止め絵: 触れない・動きを止めない（止めるのは各ゲームの側） */
+html[data-fixed] body { pointer-events: none; }

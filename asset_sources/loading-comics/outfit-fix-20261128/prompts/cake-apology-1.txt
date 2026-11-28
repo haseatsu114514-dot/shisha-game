@@ -1,0 +1,8 @@
+Edit IMAGE 1, one panel of a two-panel gag comic shown on a game's loading screen. Change only what is listed below and keep everything else exactly the same: the composition and camera, every speech bubble with its exact Japanese text (same characters, same position, same font look), the background, the props, the lighting and colors, and every other person. Keep the same chibi comic style (2 to 3 heads tall, clean thick outlines, cel shading, warm colors). The other images are the official character sprites: use them only for the correct outfit and accessories, drawn in the comic's chibi style. Repaint the panel cleanly at full resolution (no blur, no jpeg noise). Fill the whole canvas with the panel edge to edge, no added border, frame, text or watermark.
+
+CHANGES:
+- Naru (the young man with short tousled silver-ash hair and amber eyes): change ONLY his clothes to his current official outfit shown in the reference sprite: a cropped zip jacket in dark chocolate brown and light beige blocks with a white stripe on each sleeve and a high stand collar, over a dark brown ribbed turtleneck sweater. Remove his old black-and-white track jacket, the black t-shirt, all silver chains and dog-tag necklaces, and any earring. Keep his face, hair, expression, pose and hands.
+
+REFS:
+remake/img/loading/cake-apology-1.webp
+remake/img/sprites/character_variants/new/naru/chr_naru_sad.webp

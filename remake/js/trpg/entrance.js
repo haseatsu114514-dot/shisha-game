@@ -10,7 +10,7 @@ const IDLE = Object.freeze({ finished: Promise.resolve(), cancel() {} });
 let showing = null;
 
 /** 開幕を舞台の演出層に重ねる。返り値の cancel() で途中でも片付ける。 */
-export function playTrpgEntrance(host, { variant = "full", kicker = "TABLETOP RPG", title = "小さな卓の冒険", foot = "" } = {}) {
+export function playTrpgEntrance(host, { variant = "full", kicker = "TABLE TALK RPG", title = "小さな卓の冒険", foot = "" } = {}) {
   // 本番のDOM以外（単体テストの簡易DOMなど）では何もしない。
   if (typeof document?.createElement !== "function" || typeof host?.closest !== "function" || !host.isConnected) return IDLE;
   // 本棚の開幕が出ている間に卓を始めたら、短い開きは重ねない。

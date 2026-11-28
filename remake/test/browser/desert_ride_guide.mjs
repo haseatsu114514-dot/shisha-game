@@ -33,8 +33,9 @@ await suite("desert-ride-guide", async check => {
       await page.locator(t("page-tutorial")).click();
       await page.waitForFunction(() => window.__desertRide?.mode === "practice");
       const cue = page.locator(t("action-cue")), caption = page.locator(t("caption"));
-      assert.equal(await cue.innerText(), suffix === "pc" ? "Space\n跳ぶ" : "ジャンプ\n跳ぶ");
-      assert((await caption.locator("kbd").count()) >= 2, "steering keys have a distinct display");
+      assert.equal(await cue.innerText(), "ジャンプ\n跳ぶ", "the cue names the on-screen button, never a keyboard key");
+      assert((await caption.locator("kbd").count()) >= 2, "the steering buttons have a distinct display");
+      assert.doesNotMatch(await caption.innerText(), /Space|←|→|↓/, "the lesson names on-screen buttons only");
       const layout = await page.locator(t("guide")).evaluate(node => {
         const box = node.getBoundingClientRect(), stage = document.querySelector("#stage").getBoundingClientRect();
         return { top: (box.top - stage.top) / stage.height, bottom: (box.bottom - stage.top) / stage.height };
@@ -45,7 +46,7 @@ await suite("desert-ride-guide", async check => {
       if (suffix === "pc") await page.keyboard.press("Space");
       else await page.locator(t("jump")).tap();
       await page.waitForFunction(() => document.querySelector('[data-test="desert-action-cue"]').textContent.endsWith("着地"));
-      assert.equal(await cue.locator("kbd").innerText(), suffix === "pc" ? "Space" : "LAND");
+      assert.equal(await cue.locator("kbd").innerText(), "LAND");
       await page.waitForFunction(() => window.__desertRide.game.air <= 0);
       await page.waitForFunction(() => document.querySelector('[data-test="desert-action-cue"]').textContent.endsWith("跳ぶ"));
       await page.keyboard.press("Escape");

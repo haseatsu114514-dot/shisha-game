@@ -314,7 +314,7 @@
           {
             "speaker": "sumi",
             "face": "normal",
-            "text": "地元の店のエースが揃う。KEMURIKUSAのなる、EDENのアダム、PEPPERMINTのみんと"
+            "text": "地元の店のエースが揃う。KEMURIYAのなる、EDENのアダム、PEPPERMINTのみんと"
           },
           {
             "speaker": "sumi",
@@ -609,6 +609,7 @@
     },
     {
       "dialogue_id": "ch1_day5_sumi_story",
+      "comment": "VOL21（2026-11-27）: 帰宅後、閉店間際の客（ホースを膝に置いて話し込む人・炭を一つ戻した）をノートに書き、「吸う顔まで見て作れ」を書き写す。大会後に読む保存（_rest_after_tournament）でも通じるよう、大会には触れない。",
       "lines": [
         {
           "speaker": "",
@@ -918,6 +919,26 @@
           "text": "（自分の手元ばかり。……スミさんにも、そんな頃があったのか）"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "家に着いてから、ノートを開いた。閉店間際の、あの客のことを書き足す。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ホースを膝に置いて、長く話し込む人。炭を一つ戻したら、次の一口で眉間がゆるんだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（スミさんは、俺に話す前に、あの人の一口の長さを見てた）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ページの端に、「吸う顔まで見て作れ」と書いた。"
+        },
+        {
           "type": "apply",
           "stats": {
             "technique": 2
@@ -996,6 +1017,7 @@
     },
     {
       "dialogue_id": "ch1_day7_last_night",
+      "comment": "VOL21（2026-11-27）: 4択の前に、ノートの一枚目の鉄仮面さんの「今日の、良かったよ」（ch1_opening）から、自分の欄に「吸う顔を見る」と書く（大会の「相手の顔を見る……」と第4章の帰国後を受ける）。第5夜（ch1_day5_sumi_story）は休養で大会後に回ることがあるので前提にしない。再開時は「今夜、どう過ごす？」と4択だけを再生する（ch1.js lastNight）ので、足す行はその前に置く。",
       "lines": [
         {
           "speaker": "",
@@ -1041,6 +1063,31 @@
           "speaker": "hajime",
           "face": "sad",
           "text": "（俺に何ができるんだろう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ページを最初まで戻すと、一枚目に、大会に出ろと言われた晩の走り書きがあった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "『鉄仮面さん　今日の、良かったよ』"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……この一言で、明日も作りたくなったんだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（審査員が、どんな顔で吸うのかは知らない。でも、座った人の吸う顔なら、毎晩見てきた）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "並んだ名前の一番下に、自分の名前を書いた。横に、「吸う顔を見る」とだけ添える。"
         },
         {
           "type": "reflection"
@@ -1821,7 +1868,7 @@
           {
             "speaker": "naru",
             "face": "smile",
-            "text": "お、あんたが4人目？ 俺はなる。KEMURIKUSAってとこでやってる"
+            "text": "お、あんたが4人目？ 俺はなる。KEMURIYAってとこでやってる"
           },
           {
             "type": "set_flag",

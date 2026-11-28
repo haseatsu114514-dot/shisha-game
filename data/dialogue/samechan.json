@@ -2249,6 +2249,11 @@
           "text": "わしはずっと、立った目でしか、この店を見ておらなんだ"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_bond_samechan",
+          "portrait_only": true
+        },
+        {
           "speaker": "samechan",
           "face": "serious",
           "text": "……座って見る店を教えてくれたのは、お主じゃ"
@@ -2263,6 +2268,10 @@
           "speaker": "samechan",
           "face": "surprise",
           "text": "…むろん、コロちゃんの玉座も、同じくらい大事じゃぞ！"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "type": "condition",

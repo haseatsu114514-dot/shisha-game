@@ -103,7 +103,7 @@ check("the Tokyo daily map (VOL03) also hides the club's name until Yoru is met,
   const manifest = JSON.parse(fs.readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8"));
   assert.ok(manifest.backgrounds.includes(`${spot.preview}.png`), "the preview background exists");
 });
-check("Chapter 5 Tokyo (#2033) has the same club SEAM and CHOI-ZAP as chapter 3: the club only at night and unnamed until Yoru is met, the gym only for members", () => {
+check("Chapter 5 Tokyo (#2033) has the same club SEAM and サクッとジム as chapter 3: the club only at night and unnamed until Yoru is met, the gym only for members", () => {
   const fields = ({ id, place, region, kind, night, hasNew, ...rest }) => rest;
   for (const which of ["club", "gym"]) {
     const ch3 = CH3_TOKYO_SPOTS.find(item => item.place === which), ch5 = CH5_TOKYO_SPOTS.find(item => item.id === `ch5_tokyo_${which}`);
@@ -120,12 +120,12 @@ check("Chapter 5 Tokyo (#2033) has the same club SEAM and CHOI-ZAP as chapter 3:
   Object.assign(core.state, { chapter: 5, day: 60, slot: 0, phase: "daily" });
   core.state.flags._ch2_region = "tokyo";
   assert.ok(!ids().includes("ch5_tokyo_club"), "no club in the daytime");
-  assert.ok(!ids().includes("ch5_tokyo_gym"), "no gym without the CHOI-ZAP membership");
+  assert.ok(!ids().includes("ch5_tokyo_gym"), "no gym without the サクッとジム membership");
   core.state.slot = 1;
   assert.ok(ids().includes("ch5_tokyo_club"), "the club is on the night map before Yoru is met (shown as 地下の店)");
   assert.ok(!ids().includes("ch5_tokyo_steve"), "other people's shops still wait until they are met");
   core.state.flags._gym_member = true;
-  assert.ok(ids().includes("ch5_tokyo_gym"), "members can use the Tokyo CHOI-ZAP at night");
+  assert.ok(ids().includes("ch5_tokyo_gym"), "members can use the Tokyo サクッとジム at night");
   core.state.slot = 0;
   assert.ok(ids().includes("ch5_tokyo_gym") && !ids().includes("ch5_tokyo_club"), "members can use it in the daytime too");
 });

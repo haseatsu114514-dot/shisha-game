@@ -25,6 +25,7 @@ import { AXE_BAR } from "./axe-bar-data.js";
 import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { fortuneHere, fortunePosition } from "./fortune-schedule.js";
 import { openingStatus, rioUnavailable } from "./spot-hours.js";
+import { offerMintoCheki } from "./minto-cheki.js";
 
 import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue, chapterRainScene } from "./spot-encounters.js";
 
@@ -65,7 +66,7 @@ export const SPOTS = [
   AXE_BAR,
   { id: "tonari", kind: "tonari", label: "tonari", area: "バイト先", x: 86, y: 36, theme: "baito", glyph: "店", face: "sumi",
     desc: "バイト先。一服か、シフトに入るか。" },
-  { id: "naru", kind: "rival", charId: "naru", label: "KEMURIKUSA", area: "商店街の外れ", x: 70, y: 24, theme: "rival", glyph: "煙", face: "naru", cost: VISIT_COST, closedOn: 3,
+  { id: "naru", kind: "rival", charId: "naru", label: "KEMURIYA", area: "商店街の外れ", x: 70, y: 24, theme: "rival", glyph: "煙", face: "naru", cost: VISIT_COST, closedOn: 3,
     desc: "甘い香りの人気店。凄腕がいるらしい。", stamina: -16 },
   { id: "adam", kind: "rival", charId: "adam", label: "EDEN", area: "下町", x: 46, y: 48, theme: "rival", glyph: "煙", face: "adam", cost: VISIT_COST, closedOn: 5,
     desc: "アニスが香る店。いつもダブルアップル。", stamina: -16 },
@@ -83,7 +84,7 @@ export const SPOTS = [
     pool: ["kannon_cat", "kannon_pigeons", "kannon_sweep", "kannon_incense", "kannon_steps", "kannon_banners", "kannon_adam", "kannon_oldman"],
     nightPool: ["venue_kannon_night", "venue_kannon_night_c", "venue_kannon_night_b", "venue_kannon_night_d"],
     desc: "心得の盤を開くか、境内で過ごせる。" },
-  { id: "choizap", kind: "spot", label: "CHOI-ZAP", area: "ジム", x: 20, y: 24, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
+  { id: "choizap", kind: "spot", label: "サクッとジム", area: "ジム", x: 20, y: 24, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
     first: "ch1_choizap_first", bg: "bg_choizap",
     pool: ["choizap_lesson", "choizap_scenery", "choizap_mirror", "choizap_dumbbell", "choizap_stretch", "choizap_posture", "choizap_oldman", "choizap_minto"],
     nightPool: ["venue_choizap_night", "venue_choizap_night_c", "venue_choizap_night_b", "venue_choizap_night_d"],
@@ -134,7 +135,7 @@ export function quietTurn(spotId, ids, bundle = "") {
   const count = Math.max(0, Math.floor(Number(state.flags[key]) || 0));
   return { id: pool[count % pool.length], key, count };
 }
-/** 夜の束がある施設の夜か（観音堂・CHOI-ZAP）。夜は雨の回を出さない。 */
+/** 夜の束がある施設の夜か（観音堂・サクッとジム）。夜は雨の回を出さない。 */
 const nightBundle = (spot) => state.slot === 1 && !!spot.nightPool;
 const quietVisit = (spot) => quietTurn(spot.id, quietSpotPool(spot, state.slot), nightBundle(spot) ? "night" : "");
 const rainVisit = (spot) => isRainy() && !nightBundle(spot) ? quietTurn(spot.id, RAIN_SPOT_TEXTS[spot.id], "rain") : null;
@@ -259,6 +260,22 @@ const MINTO_COOL_MINT_SEEN = "_minto_cool_mint_done";
 export const mintoCoolMintDue = () => !state.flags[MINTO_COOL_MINT_SEEN]
   && !!state.flags[MINTO_CHEKI_KEEP_SEEN]
   && !!DB.dialogues[MINTO_COOL_MINT]?.lines?.length;
+/** みんととの2ショットチェキ（PFC17）。2ショットは頼んで出るものではなく、来店の会話の流れで撮って、そのまま渡してくれる。
+ * 2回目の固有会話の後、新しい話が無い来店で、この順に一本ずつ（写真は台本の buy_keepsake が0円で記念品へ入れる）。
+ * あいだに一度は、いつもの来店（チェキを頼める回）を挟む。core/minto-cheki-data.js の MINTO_TWOSHOT_CHEKIS と同じ順。 */
+export const MINTO_TWOSHOT_EVENTS = Object.freeze([
+  "minto_twoshot_half_heart",
+  "minto_twoshot_stiff_peace",
+  "minto_twoshot_drink",
+  "minto_twoshot_horns_prank",
+  "minto_twoshot_side_by_side",
+]);
+export const mintoTwoShotDue = () => {
+  if (storyCount("minto") < 2) return null;
+  const at = state.flags._minto_twoshot_at;
+  if (Number.isInteger(at) && (state.visits.minto || 0) < at + 1) return null;
+  return MINTO_TWOSHOT_EVENTS.find((id) => !state.flags[`_spot_seen_${id}`] && DB.dialogues[id]?.lines?.length) || null;
+};
 /**
  * 章が明けて最初の来店で一度だけ読む後日談（#2026）。第1章で実際に通った店主だけ（regulars は
  * 章の切り替え時の記録。ch2-progress.js）。既読は台本末尾の set_flag。第2章の地元の地図だけが入口。
@@ -413,7 +430,7 @@ export function hasNewStory(charId) {
   if (charId === "rio" && rioBlueberryDue()) return true;
   if (charId === "rio" && rioStoryExtraDue()) return true;
   if (charId === "tsumugi" && (tsumugiPinkDue() || tsumugiStoryExtraDue())) return true;
-  if (charId === "minto" && (mintoSideSeatDue() || mintoQuietHelloDue() || mintoTimerHandDue() || mintoChekiKeepDue() || mintoCoolMintDue())) return true;
+  if (charId === "minto" && (mintoSideSeatDue() || mintoQuietHelloDue() || mintoTimerHandDue() || mintoChekiKeepDue() || mintoCoolMintDue() || mintoTwoShotDue())) return true;
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
   if (id && !visitStorySkipped(state, charId, id)) return storyAvailable(id);
   return questionVisitDue(charId) || finaleAtVisit(charId);
@@ -482,8 +499,24 @@ export function hasNewEvent(spot) {
 }
 
 export function isClosed(spot) {
-  return !openingStatus(spot, state).ok || isTemporaryClosed(spot) || spot.closedOn !== undefined && state.day % 7 === spot.closedOn;
+  return isClosedBase(spot) || isEarlyClosed(spot);
 }
+/** 営業時間・臨時休業・定休日だけで見た閉店（早じまいを除く）。居合わせる人の抽選（daily/roamers.js）が使う。 */
+export function isClosedBase(spot) {
+  return !openingStatus(spot, state).ok || isTemporaryClosed(spot) || isClosedDay(spot);
+}
+/**
+ * 定休日（day % 7 が closedOn の日）か。closedFrom（保存を受け取る関数）がある店は、それが true になってから定休日を取る
+ * （ドバイの FESTA は初めて太陽に会う場面の後から。期限の夜の場面と重ねない）。
+ */
+export const isClosedDay = (spot, save = state) => spot?.closedOn !== undefined && (save?.day ?? 0) % 7 === spot.closedOn
+  && (typeof spot.closedFrom !== "function" || !!spot.closedFrom(save));
+// 早じまい（2026-11-28 オーナー「ライバルは定休日とか早じまいした日に、よその店で居合わせる」）。
+// 店主がよその店へ居合わせに出た夜だけ閉める。判定は daily/roamers.js が登録する（循環importを避ける）。
+let earlyClosure = () => false;
+export function setEarlyClosure(check) { earlyClosure = typeof check === "function" ? check : () => false; }
+/** 今夜は店主が早じまいして、よその店へ出ている。 */
+export const isEarlyClosed = spot => !!spot && !!earlyClosure(spot);
 
 export function naruRiftActive(save = state) {
   const flags = save?.flags;
@@ -675,6 +708,13 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
       if (!await read(MINTO_COOL_MINT, DB.dialogues[MINTO_COOL_MINT].metadata?.bg ? {} : { bg })) return false;
       state.flags[MINTO_COOL_MINT_SEEN] = true;
       gainAffinity(charId, visitAffinity("story"), affinityOptions);
+    } else if (charId === "minto" && mintoTwoShotDue()) {
+      // 2ショットの回（PFC17）。完読してから既読。中断では旗を残さず、次の来店で読み直せる。
+      const scene = mintoTwoShotDue();
+      if (!await read(scene, DB.dialogues[scene].metadata?.bg ? {} : { bg })) return false;
+      state.flags[`_spot_seen_${scene}`] = true;
+      state.flags._minto_twoshot_at = visit;
+      gainAffinity(charId, visitAffinity("talk"), affinityOptions);
     } else if (bondAfter) {
       if (!await read(bondAfter.scene, DB.dialogues[bondAfter.scene].metadata?.bg ? {} : { bg })) return false;
       markBondAfterRead(state, charId, bondAfter);
@@ -757,12 +797,18 @@ export async function visitRival(spot, { expense = false } = {}) {
   // 相席予定の日には「一人占め」の昼挨拶を出さない。台詞正本・実遭遇の処理は維持する。
   const welcome = spot.charId === "minto" && state.slot === 0 && hiyoriShopEncounterDue(spot)
     ? null : `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;
+  // 初来店（台本の中に記念のチェキがある）と、正体がつながった日の来店では、チェキを頼む選択を出さない。
+  // 2ショットの回（その場で撮って渡してくれる）を読んだ来店でも出さない。
+  const chekiBefore = spot.charId === "minto" && !expense && storyCount("minto") >= 1 && !mintoRevealAtVisit("minto");
+  const twoShotBefore = state.flags._minto_twoshot_at;
   const completed = await visitChar(spot.charId, { welcome });
   // 配達やチュートリアルの面識ではなく、自主来店の会話を終えてから地図に出す。
   if (completed && state === owner) {
     if (!expense) addMoney(-(spot.cost || 0));
     addStamina(spot.stamina || -16);
     state.flags[`_spot_guide_${spot.charId}`] = true;
+    // 来店の精算のあとで、チェキを頼むか選ぶ（PFC14）
+    if (chekiBefore && state.flags._minto_twoshot_at === twoShotBefore) await offerMintoCheki();
   }
   return completed;
 }
@@ -774,7 +820,7 @@ export async function visitSpot(spot) {
   refreshPlaceCue(spot.id);
   const n = (state.spotVisits?.[spot.id] || 0) + 1;
   const owner = state;
-  // 初回は場所の紹介（CHOI-ZAP は入会まで）。再訪と夜は、静かな回を束ごとに順番に読む（quietTurn）。
+  // 初回は場所の紹介（サクッとジム は入会まで）。再訪と夜は、静かな回を束ごとに順番に読む（quietTurn）。
   let id = spot.first, turn = null;
   const revisit = spot.id === "choizap" ? !!state.flags._gym_member : n > 1 || spot.id !== "kannon" && nightBundle(spot);
   if (revisit) turn = quietVisit(spot);
