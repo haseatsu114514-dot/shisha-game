@@ -8,8 +8,15 @@ import { DB, portraitInfo } from "../../core/data.js";
 import { icon, mirrorBackground, textOf, cssUrl, placeOf } from "./frame.js";
 import { portraitStillUrl } from "./stills.js";
 import { FRAMES } from "../../vn/conversation-cutin.js";
+import { activeDialogueId } from "../../vn/engine.js";
 
 const DEFAULT_ACC = "#c3b0ff";
+const CH1_PAKKI_DIALOGUES = new Set(["ch1_tournament_opening", "ch1_tournament_r1_end"]);
+const CH1_TONARI_PAIR = new Map([
+  ["ch1_tsumugi_research", "tsumugi"],
+  ["remake_first_brew_order", "oneesan"],
+  ["ch1_tutorial_oneesan", "oneesan"],
+]);
 /** 人物の色（登場カットインの色を少し明るくした物）。会話の名前の線・送りの印・返事の光に使う。 */
 export function accentOf(id) {
   const color = DB.manifest?.introArt?.[id]?.color || DB.characters?.[id]?.intro_cutin?.color;
@@ -66,14 +73,20 @@ export function createTalkScene(frame) {
       .sort((a, b) => Number(a.dataset.slot || 0) - Number(b.dataset.slot || 0));
     const w = actors.clientWidth, h = actors.clientHeight;
     const speaking = imgs.find((img) => img.classList.contains("active"))?.dataset.speaker || null;
-    const sig = JSON.stringify([w, h, speaking, imgs.map((img) => [img.dataset.speaker, img.currentSrc || img.src])]);
+    const dialogue = activeDialogueId();
+    const sig = JSON.stringify([w, h, dialogue, speaking, imgs.map((img) => [img.dataset.speaker, img.currentSrc || img.src])]);
     if (!force && sig === castSig) return speaking;
     castSig = sig;
     if (!w || !h) return speaking;
     const pair = imgs.length >= 2;
-    const body = h * (pair ? 1.08 : 1.3);     // 身長比 1.0 の人の「頭の先〜足元」の長さ
-    const feet = h * (pair ? 1.28 : 1.46);    // 足元の高さ（絵の下にはみ出す）
+    // 第1章の連絡先交換・初回接客では、両端の腕を残すため横幅に合わせて少し引く。
+    const partner = CH1_TONARI_PAIR.get(dialogue);
+    const tonariPair = partner && pair && imgs.some((img) => img.dataset.speaker === "sumi")
+      && imgs.some((img) => img.dataset.speaker === partner);
+    const body = tonariPair ? Math.min(h * 0.90, w * 1.36) : h * (pair ? 1.08 : 1.3);
+    const feet = h * (tonariPair ? 1.07 : pair ? 1.28 : 1.46);
     const safeTop = h * (pair ? 0.13 : 0.07); // 頭がこれより上へ行かない
+    const slots = tonariPair ? [0.27, 0.72] : [0.24, 0.76];
     const keep = new Set();
     imgs.forEach((source, index) => {
       const id = source.dataset.speaker;
@@ -82,10 +95,13 @@ export function createTalkScene(frame) {
       const c = { h: info.h || 0.9, b: info.b ?? 0.05, ax: info.ax ?? 0.5, scale: info.scale || 1 };
       const aspect = source.naturalWidth / source.naturalHeight || 896 / 1200;
       const scale = pair ? c.scale : 1 + (c.scale - 1) * 0.5;
-      const content = body * scale, imgH = content / c.h, imgW = imgH * aspect;
-      const head = Math.max(safeTop, feet - content);
+      // 煙の頭が人より広く、顔が低い。開会と準備のアナウンスでは高さを抑え、目と口をテロップの上へ。
+      const pakki = id === "pakki" && CH1_PAKKI_DIALOGUES.has(dialogue);
+      const imgH = pakki ? Math.min(h * (pair ? 0.64 : 0.80), w * (pair ? 0.84 : 1.2)) : body * scale / c.h;
+      const imgW = imgH * aspect;
+      const head = pakki ? h * 0.16 : Math.max(safeTop, feet - body * scale);
       const top = head - (1 - c.b - c.h) * imgH;
-      const slot = pair ? (index === 0 ? 0.24 : 0.76) : 0.5;
+      const slot = pair ? slots[index] : 0.5;
       let img = actors.querySelector(`img[data-id="${id}"]`);
       const src = source.currentSrc || source.src;
       if (!img) {
@@ -114,15 +130,17 @@ export function createTalkScene(frame) {
     const node = document.querySelector("#vn .vn-cg");
     const cs = node ? getComputedStyle(node) : null;
     const landscape = cs ? cssUrl(cs.backgroundImage) : "";
-    const portrait = portraitStillUrl(node?.dataset.portraitCg || node?.dataset.cg);
+    const id = node?.dataset.portraitCg || node?.dataset.cg || "";
+    const portrait = portraitStillUrl(id);
     const portraitOnly = !!(node?.dataset.portraitCg && portrait);
     const opacity = cs ? (portraitOnly ? 1 : parseFloat(cs.opacity)) * parseFloat(getComputedStyle(node.parentElement).opacity) : 0;
     const on = !!(landscape || portraitOnly) && opacity > 0.05;
     const url = portrait || landscape;
     cg.hidden = !on;
     actors.hidden = on;
-    if (on && cg.dataset.url !== url) {
+    if (on && (cg.dataset.url !== url || cg.dataset.cg !== id)) {
       cg.dataset.url = url;
+      cg.dataset.cg = id;
       cg.classList.toggle("tall", !!portrait); // "portrait" は本編の立ち絵のクラス名なので使わない
       cg.replaceChildren(el("i.vt-cg-fill", { style: { backgroundImage: `url("${url}")` } }), el("i.vt-cg-art", { style: { backgroundImage: `url("${url}")` } }));
     }
@@ -177,7 +195,7 @@ export function createTalkScene(frame) {
     const box = document.querySelector("#vn .vn-box");
     if (!box) return;
     // 上の絵: 背景と立ち絵（一枚絵の間は一枚絵だけ）
-    const url = mirrorBackground(bg);
+    const url = mirrorBackground(bg, { dialogueId: activeDialogueId() });
     frame.setAmbient(url);
     syncCg();
     syncCutin();

@@ -181,7 +181,9 @@ export function createCoverScene(frame, own) {
     const roots = [...(document.getElementById("fx")?.children || [])].filter((node) => !node.matches(HARMLESS));
     const cutin = roots.find((node) => node.matches(".cutin.art-intro"));
     const title = cutin ? null : readChapterTitle(roots);
-    frame.root.dataset.cover = cutin ? "cutin" : title ? "title" : gap ? "gap" : roots.some((node) => node.matches(".chapter-poem.has-panel")) ? "poem" : "cover";
+    const titleLoading = document.body.dataset.screen === "title" && roots.some((node) => node.matches(".vn-loading"));
+    frame.root.dataset.cover = cutin ? "cutin" : title ? "title" : gap ? "gap"
+      : titleLoading ? "title-loading" : roots.some((node) => node.matches(".chapter-poem.has-panel")) ? "poem" : "cover";
     if (title) {
       const next = JSON.stringify([title.chapter, title.art]);
       if (next !== callSig) { callSig = next; renderCall(title); }
@@ -201,7 +203,8 @@ export function createCoverScene(frame, own) {
       poster.hidden = true;
       posterHost = null;
     }
-    const url = mirrorBackground(bg);
+    // タイトルから本編を待つ間は、背景の右寄りにあるシーシャを縦の絵に収める。
+    const url = mirrorBackground(bg, titleLoading ? { focusX: 80 } : undefined);
     frame.setAmbient(url);
     const read = cutin || title || gap ? [] : readLines(roots.filter((node) => !node.matches(".cutin")));
     const pics = cutin || title || gap ? [] : readArt(roots);
