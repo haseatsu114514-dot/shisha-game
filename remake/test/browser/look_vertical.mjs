@@ -502,7 +502,7 @@ await suite("look_vertical", async (check) => {
     await page.locator(t("vt-row-minto")).tap();
     await page.waitForFunction(() => document.querySelector('.vt-pin[aria-current="true"]')?.dataset.spot === "minto");
     assert.match(await page.locator(t("vt-dest")).textContent(), /みんと/);
-    await pad(page, "up");
+    await page.locator(t("vt-chip-wide")).tap();
     await page.waitForFunction(() => document.querySelector(".vt-map.overview"));
     const action = page.locator(t("vt-a"));
     assert.equal(await action.textContent(), "拡大");
