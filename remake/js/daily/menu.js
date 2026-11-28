@@ -68,7 +68,7 @@ export async function openMenu({ tab = "status", canSave = () => true, current =
   const owner = state;
   const stillCurrent = () => state === owner && current();
   try {
-    SE.select();
+    SE.uiDecide?.();
     // 紙の絵（img/ui/paper/menu-bg.webp）は起動時に他のUIの絵と一緒に読んである（core/ui.js）。読めなくても同じ色の紙と帯で開く。
     const action = await showMenu(MENU_TABS.some((t) => t.id === tab) ? tab : "status", { saveOk: !!canSave(), saveRule });
     if (!action || !stillCurrent()) return null;
@@ -130,7 +130,7 @@ function showMenu(initial, { saveOk, saveRule }) {
       if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
       resolve(value);
     };
-    const choose = (value) => { SE.select(); finish(value); };
+    const choose = (value) => { SE.uiDecide?.(); finish(value); };
     const close = () => { SE.cancel(); finish(null); };
 
     const show = (id, { focus = false } = {}) => {
@@ -180,7 +180,7 @@ function showMenu(initial, { saveOk, saveRule }) {
         const button = el("button.dm-tab", {
           type: "button", role: "tab", id: `dm-tab-${t.id}`, "aria-controls": "dm-panel",
           title: `${t.label}（${i + 1}）`, dataset: { tab: t.id, test: `menu-tab-${t.id}` },
-          onclick: () => { if (active !== t.id) { SE.click(); show(t.id); } },
+          onclick: () => { if (active !== t.id) { SE.uiDecide?.(); show(t.id); } },
         }, [el("span.dm-icon", { text: t.icon, "aria-hidden": "true" }), el("span.dm-label", { text: t.label })]);
         tabs.set(t.id, button);
         return button;
@@ -212,7 +212,7 @@ function showMenu(initial, { saveOk, saveRule }) {
       if (next === null || (e.repeat && !arrow)) return;
       e.preventDefault(); e.stopPropagation();
       const target = MENU_TABS[(next + MENU_TABS.length) % MENU_TABS.length].id;
-      if (target !== active) SE.click();
+      if (target !== active) SE.uiCursor?.();
       show(target, { focus: true });
     };
 

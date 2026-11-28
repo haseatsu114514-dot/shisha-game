@@ -16,6 +16,7 @@ let noiseBuffer = null;
 let bgmDuck = 1;
 let bgmPaused = false;
 let bgmSilences = 0;
+let uiSilences = 0;
 const seBuffers = new Map();
 const seLoads = new Map();
 const seRetryAt = new Map();
@@ -23,9 +24,12 @@ const seVoices = new Set();
 const activePulls = new Set();
 const lastVariant = new Map();
 const SE_ROOT = "../assets/audio/se/";
+const isUiSe = (file) => file.startsWith("ui_");
 const RECORDED_SE = {
   click: { files: ["ui_click.wav"], gain: .3 },
   select: { files: ["ui_select.wav"], gain: .3 },
+  uiCursor: { files: ["ui_cursor.wav"], gain: .22 },
+  uiDecide: { files: ["ui_decide.wav"], gain: .3 },
   cancel: { files: ["ui_back.wav"], gain: .3 },
   whoosh: { files: ["ui_whoosh.wav"], gain: .35 },
   jingle: { files: ["ui_jingle.wav"], gain: .4 },
@@ -96,7 +100,7 @@ function loadSeBuffer(file) {
 
 const allSeFiles = () => [...new Set([...Object.values(RECORDED_SE).flatMap(s => s.files), INTRO_DRUM, WATER_LOOP, WATER_END])];
 // タイトル・メニュー・保存の音と、早い段階で鳴る登場の太鼓を先に読む（#3500 D-1）。
-const FIRST_SE = ["click", "select", "cancel", "whoosh", "jingle", "ch1Title", "card", "save"];
+const FIRST_SE = ["uiCursor", "uiDecide", "click", "select", "cancel", "whoosh", "jingle", "ch1Title", "card", "save"];
 let seWarm = null;
 
 /** 録音SEを全部、今すぐ読む（音の確認ページ・検査用）。全部読めたら true。 */
@@ -125,7 +129,7 @@ function warmSe() {
 }
 
 function recordedVoice(file, { gain = 1, rate = 1, loop = false, delay = 0 } = {}) {
-  if (!seEnabled() || !seBuffers.has(file)) return null;
+  if (!seEnabled() || (uiSilences && isUiSe(file)) || !seBuffers.has(file)) return null;
   const source = ctx.createBufferSource(), output = ctx.createGain();
   source.buffer = seBuffers.get(file);
   source.loop = loop;
@@ -133,7 +137,7 @@ function recordedVoice(file, { gain = 1, rate = 1, loop = false, delay = 0 } = {
   output.gain.setValueAtTime(loop ? 0 : gain, ctx.currentTime);
   if (loop) output.gain.linearRampToValueAtTime(gain, ctx.currentTime + .04);
   source.connect(output).connect(seBus);
-  const voice = { source, output, stop(fade = 0) {
+  const voice = { file, source, output, stop(fade = 0) {
     if (!seVoices.has(voice)) return;
     output.gain.cancelScheduledValues(ctx.currentTime);
     output.gain.setValueAtTime(fade ? output.gain.value : 0, ctx.currentTime);
@@ -156,6 +160,7 @@ function fadeRecordedVoice(voice, gain, seconds, fade) {
 function recordedSe(id, sec) {
   if (!seEnabled()) return true; // ミュートや非表示中に代用音へ回さない。
   const { files, gain, fit, seconds } = RECORDED_SE[id];
+  if (uiSilences && isUiSe(files[0])) return true;
   const ready = files.filter(file => seBuffers.has(file));
   if (!ready.length) { files.forEach(loadSeBuffer); return false; }
   const choices = ready.filter(file => file !== lastVariant.get(id));
@@ -843,6 +848,8 @@ export const SYNTH_SE = {};
 export const recordedSeFiles = () => Object.fromEntries(Object.entries(RECORDED_SE).map(([id, cue]) => [id, [...cue.files]]));
 const lastPlayedAt = new Map();
 SE.ch1Title = SE.jingle; // 章題の録音が未読込なら、従来の合成ジングルで補う。
+SE.uiCursor = SE.click;
+SE.uiDecide = SE.select;
 for (const id of Object.keys(RECORDED_SE)) {
   const fallback = SE[id];
   if (fallback) SYNTH_SE[id] = fallback;
@@ -1371,9 +1378,12 @@ export function playBgm(key) {
   }
 }
 
-/** 一時的に BGM だけを無音にする。曲切替や音声解禁をまたぎ、解除関数は一度だけ有効。 */
-export function silenceBgm() {
+/** 一時的に BGM を無音にする。ui を指定すると、同じ範囲の UI 効果音も止める。 */
+export function silenceBgm({ ui = false } = {}) {
   bgmSilences++;
+  if (ui && ++uiSilences === 1) {
+    for (const voice of seVoices) if (isUiSe(voice.file)) voice.stop();
+  }
   if (currentEl) currentEl.muted = true;
   for (const a of retiringBgm) a.muted = true;
   bgmBus?.gain.cancelScheduledValues?.(ctx.currentTime);
@@ -1382,6 +1392,7 @@ export function silenceBgm() {
   return () => {
     if (released) return;
     released = true;
+    if (ui) uiSilences--;
     if (--bgmSilences) return;
     if (currentEl) currentEl.muted = false;
     for (const a of retiringBgm) a.muted = false;

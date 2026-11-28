@@ -233,8 +233,9 @@ const liveItems = () => [...document.querySelectorAll("#screen > .title .title-m
 // 押せない行と、まだ開いていない行（EXTRA の「？？？」・.is-locked）にはカーソルを乗せない（↑↓・Tab でも飛ばす）
 const selectable = (node) => !!node && !node.disabled && !node.classList.contains("is-locked");
 
-function setCursor(nodes, node, { focus = false } = {}) {
+function setCursor(nodes, node, { focus = false, sound = false } = {}) {
   if (!selectable(node)) return;
+  if (sound && !node.classList.contains("is-current")) SE.uiCursor?.();
   for (const n of nodes) n.classList.toggle("is-current", n === node);
   cursorTest = node.dataset.test;
   if (focus) node.focus?.({ preventScroll: true });
@@ -269,9 +270,8 @@ function bindTitleKeys() {
     if (step || edge != null) {
       e.preventDefault();
       const next = usable[edge ?? (at < 0 ? 0 : (at + step + usable.length) % usable.length)];
-      if (next !== usable[at]) SE.click?.();
       nodes[0].closest(".title")?.setAttribute("data-nav", "key");
-      setCursor(nodes, next, { focus: true });
+      setCursor(nodes, next, { focus: true, sound: true });
     } else if ((e.key === "Enter" || e.key === " ") && !e.repeat && at >= 0) {
       // ボタンにフォーカスがある時はブラウザが押してくれる。どこにも無い時だけ代わりに押す。
       const active = document.activeElement;
@@ -315,10 +315,10 @@ export function showTitle(preparedArt = null) {
       onclick: () => {
         setCursor(rows, node);
         if (locked) { SE.cancel?.(); toast("本編を進めると開きます"); return; }
-        SE.select(); node.classList.add("is-picked"); fn();
+        SE.uiDecide?.(); node.classList.add("is-picked"); fn();
       },
-      onpointerenter: (e) => { if (e.pointerType !== "touch") setCursor(rows, node); },
-      onfocus: () => setCursor(rows, node),
+      onpointerenter: (e) => { if (e.pointerType !== "touch") setCursor(rows, node, { sound: !e.buttons }); },
+      onfocus: () => setCursor(rows, node, { sound: node.matches(":focus-visible") }),
     }, [
       el("span.ti-en", { text: en }),
       el("span.ti-ja", { text: ja }),
@@ -381,7 +381,7 @@ export function showTitle(preparedArt = null) {
     onclick: (e) => {
       e?.stopPropagation?.(); e?.preventDefault?.();
       if (!latest || continueItem.disabled) return;
-      SE.select(); setCursor(rows, continueItem); loadSub.classList.add("is-picked");
+      SE.uiDecide?.(); setCursor(rows, continueItem); loadSub.classList.add("is-picked");
       void loadGame();
     } });
   const syncLoadSub = () => { loadSub.hidden = !latest; loadSub.toggleAttribute("disabled", !latest); loadSub.setAttribute("aria-disabled", String(!latest)); };
@@ -578,6 +578,7 @@ export async function openConfig(opts = {}) {
     ]),
     options: [{ label: "閉じる", value: true, primary: true, test: "cfg-close" }],
     className: "cfg-modal",
+    confirmSe: "uiDecide",
   });
 }
 
