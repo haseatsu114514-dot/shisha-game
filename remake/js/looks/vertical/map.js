@@ -6,7 +6,7 @@ import { el } from "../../core/util.js";
 import { state } from "../../core/state.js";
 import { gaugeInfo, growthEnabled, growthView } from "../../core/growth.js";
 import { icon, escapeHtml, textOf, shown, liveBackground, cssUrl } from "./frame.js";
-import { readHud } from "../retro/hud.js";
+import { readHud } from "../neo/portrait-shell/hud.js";
 
 const ACC = "#c3b0ff";
 let spotsModule = null;

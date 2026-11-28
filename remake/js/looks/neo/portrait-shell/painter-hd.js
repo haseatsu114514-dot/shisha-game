@@ -1,8 +1,7 @@
-// 上画面の高解像度の描き方（新版の縦持ち・LK11）。DS風の外枠のまま、上画面だけを新版と同じ絵で描く。
-// 操作（paintVn・paintMap・paintTitle・paintCover・drawIcon・enter・refresh・stats・version・dispose）は retro/painter.js と同じ。
-// 現行ステージの読み取りと会話の窓は retro/stage-read.js を共有する（DS風と同じ場面の写し方）。
+// 上画面の高解像度の描き方（新版の縦持ち・LK11）。上下2画面の外枠で、上画面を新版と同じ絵で描く。
+// 現行ステージの読み取りと会話の窓は neo/portrait-shell/stage-read.js を共有する。
 //
-// canvas の裏画面は「CSS の大きさ × devicePixelRatio」（retro/shell.js が決める）。減色・網点・2値化はしない。
+// canvas の裏画面は「CSS の大きさ × devicePixelRatio」（neo/portrait-shell/shell.js が決める）。減色・網点・2値化はしない。
 // 重い処理（背景の暗さ・ぼかし、立ち絵の柔らかい影）は絵ごと・大きさごとに一度だけ作って覚え、
 // 毎回は覚えた絵を今の窓の位置へ重ねるだけにする。描き直すのは入力が変わった時と動きの途中だけ（30fps まで）。
 // 寄り・引きは滑らかに（280ms）、場面の切り替えはクロスフェード（200ms）。動きを減らす設定では即時。

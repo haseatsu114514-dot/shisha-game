@@ -258,6 +258,12 @@ await suite("spot-encounters", async check => {
       const r = await page.evaluate(async ({ ex, answer }) => {
         const s = E.core.state; s.spotVisits = { [ex.spot]: 1 };
         s.flags._minto_identity_revealed = s.flags._minto_name_known = true;
+        // みんとのチェキ（PFC14〜17）は集め終えた状態にする。頼むとたまに無料の私服の一枚が出るため、
+        // 二回の来店で代金が食い違わないよう、この検査の外の話（チェキの申し出）を出さない
+        if (ex.char === "minto") {
+          const { ALL_MINTO_CHEKIS } = await import("./js/core/minto-cheki-data.js");
+          s.keepsakes = [...new Set([...(s.keepsakes || []), ...ALL_MINTO_CHEKIS.map(cheki => cheki.id)])];
+        }
         E.vn.vnTest.choose = () => answer;
         const before = E.relationship(); await E.facility(ex.spot);
         const facilityUnchanged = before === E.relationship();

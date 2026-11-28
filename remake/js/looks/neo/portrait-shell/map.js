@@ -1,6 +1,6 @@
 // 日常の地図（行き先選び）。現行のピン（daily/map.js の .spot-pin）を読み、上画面に街の絵と四角い目印、
 // 下画面に行き先の一覧と「◯◯ へ行く」を出す。選ぶ・行くは現行のピンへの click として中継する（1回目で選択、2回目で移動）。
-import { el } from "../../core/util.js";
+import { el } from "../../../core/util.js";
 import { SCREEN_W, SCREEN_H } from "./shell.js";
 import { readHud } from "./hud.js";
 
@@ -8,7 +8,7 @@ const STAGE_W = 1280, STAGE_H = 720;
 const FACE = 24;
 const text = (node) => node?.textContent?.trim() || "";
 
-// 体力の枠の全長（ドット）。css/look-retro.css の .retro-gauge i と同じ。
+// 体力の枠の全長（ドット）。css/look-neo-portrait.css の .retro-gauge i と同じ。
 const GAUGE_DOTS = 34;
 // 体力の印（7×6 ドットのハート）。絵文字に化けないよう図形で描く。
 const HEART = '<svg viewBox="0 0 7 6" width="7" height="6" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/></svg>';
@@ -37,7 +37,7 @@ export function createMapScene(shell, painter) {
   function loadAreas() {
     if (areaRequested) return;
     areaRequested = true;
-    import("../../daily/spots.js").then((spots) => {
+    import("../../../daily/spots.js").then((spots) => {
       areaOf = (id) => { try { return spots.spotById(id)?.area || ""; } catch { return ""; } };
       rowSig = "";
     }).catch(() => {});

@@ -1,13 +1,13 @@
-// DS風を出してよい状態かどうかの見分け。現行の DOM を読むだけで、何も書き換えない。
+// 縦持ちの外枠に写せる状態かどうかの見分け。現行の DOM を読むだけで、何も書き換えない。
 // 戻り値の kind:
 //   "scene" … 対応済みの場面（name: "title" | "vn" | "map" | "menu"）。外枠に写す。
 //   "cover" … 見るだけの覆い（場面転換・日付の札・章タイトル・詩・登場カットイン・読み込みの一言）。外枠のまま暗くして、
-//             見えている文字と絵だけを写す（retro/cover.js）。pressable は、覆いがステージ中央でタップを受ける状態かどうか。
+//             見えている文字と絵だけを写す（neo/portrait-shell/cover.js）。pressable は、覆いがステージ中央でタップを受ける状態かどうか。
 //   "gap"   … 場面と場面のあいだの、何も出ていない短い間。外枠のまま少し待つ。
 //   "none"  … 未対応（シーシャ作り・大会・ミニゲームなど）。現行の画面をそのまま見せる（新版の縦持ちは回転案内）。
 // MENU・LIME・小窓（設定・用語集・セーブ／ロード・セーブの引っ越し・規則の紙・確認）・会話の LOG・店・
 // LIME の初回の案内・章のクリアの画面は "scene"（name: "sheet"）として
-// 下画面や縦長のシート（retro/sheet.js）へ写す。
+// 下画面や縦長のシート（neo/portrait-shell/sheet.js）へ写す。
 const byId = (id) => document.getElementById(id);
 const media = (query) => typeof window.matchMedia === "function" && window.matchMedia(query).matches;
 
@@ -34,16 +34,9 @@ const VN_PARTS = ".vn-effect, .vn-cg, .vn-portraits, .vn-cutin-layer, .vn-box, .
 
 const NONE = Object.freeze({ kind: "none" }), GAP = Object.freeze({ kind: "gap" });
 
-/**
- * 外枠を使える端末・向きか。mode は "retro"（様式 DS風）か "portrait"（新版の縦持ち）。
- * "on": DS風は縦長の画面、またはタッチ端末でない（PC）。新版の縦持ちは縦長の画面だけ（タッチかどうかは問わない）。
- * "off": それ以外（現行のまま）。
- * （古い2画面表示（表示設定の「DS風」・body.game-ds）は #3078 で無くなったので、その見分けはもう無い）
- */
-export function engageState(mode = "retro") {
-  if (mode === "portrait") return media("(orientation: portrait)") ? "on" : "off";
-  const touch = media("(hover: none) and (pointer: coarse)");
-  return media("(orientation: portrait)") || !touch ? "on" : "off";
+/** 新版の縦持ちで外枠を使える向きか。 */
+export function engageState() {
+  return media("(orientation: portrait)") ? "on" : "off";
 }
 
 export const isPortrait = () => media("(orientation: portrait)");
@@ -112,7 +105,7 @@ function simpleDialog(modal) {
   if (!box || modal.children.length !== 2 || !modal.querySelector(":scope > .modal-backdrop")) return false;
   const body = box.querySelector(":scope > .modal-body"), actions = box.querySelectorAll(":scope > .modal-actions > button");
   if (!actions.length || actions.length > 6) return false;
-  // 読み物（規則の紙・一覧・表・見出しのある文）は選択肢の画面に縮めず、シート（retro/sheet.js）で出す
+  // 読み物（規則の紙・一覧・表・見出しのある文）は選択肢の画面に縮めず、シート（neo/portrait-shell/sheet.js）で出す
   if (body && body.querySelector("button, input, select, textarea, canvas, img, svg, video, iframe, [contenteditable], article, section, ul, ol, table, h1, h2, h3, h4, h5, h6")) return false;
   return [...box.children].every((node) => node.matches("h3, .modal-body, .modal-actions"));
 }
@@ -121,7 +114,7 @@ function simpleDialog(modal) {
 // 複数行の入力欄（セーブの引っ越しの文字列）と、隠したファイル選び（ボタンから開く）は写せる。
 const SHEET_BLOCKERS = "canvas, video, iframe, [contenteditable], [draggable='true'], input:not([type='range']):not([type='checkbox']):not([type='file'])";
 /**
- * #modal に出ている物のうち、シート（retro/sheet.js）に写せる種類。写せなければ ""。
+ * #modal に出ている物のうち、シート（neo/portrait-shell/sheet.js）に写せる種類。写せなければ ""。
  *   "menu": 全画面 MENU（daily/menu.js の .dmenu。チェキの拡大を含む）
  *   "lime": LIME（daily/phone.js の .phone-overlay）
  *   "modal": core/ui.js の modal とセーブ／ロードの枠（.modal-box。設定・用語集・規則の紙・確認の問いなど）。
@@ -148,7 +141,7 @@ function knownBase() {
 
 /**
  * いまの状態。own は自分の外枠の要素（重なりの確認から除く）。
- * 第2〜5章の地図の案内の箱のボタン、場面カード、確かめの小窓も写せる場面として扱う（新版の縦持ち・DS風とも。LK13・LK21）。
+ * 第2〜5章の地図の案内の箱のボタン、場面カード、確かめの小窓も写せる場面として扱う（新版の縦持ち。LK13）。
  */
 export function detectState(own = []) {
   const body = document.body, stage = byId("stage");
@@ -201,7 +194,7 @@ export function detectState(own = []) {
     const live = screen?.querySelector(":scope > :not(.done)");
     if (!live || !live.childElementCount && !live.textContent.trim()) return GAP; // 前の画面を片付けて、次が出るまでの間
     if (body.dataset.screen === "map" && live.matches(".map")) {
-      // 案内の箱のボタン（駅の行き先・第2章の配達メモなど）は、一覧に写す（retro/map.js）
+      // 案内の箱のボタン（駅の行き先・第2章の配達メモなど）は、一覧に写す（neo/portrait-shell/map.js）
       if (live.dataset.revealing === "true" || reelBusy(live, performance.now())) return NONE;
       if (!live.querySelector(".map-pins > .spot-pin")) return NONE; // ピンの無い作りの地図は写さない
       scene = "map";

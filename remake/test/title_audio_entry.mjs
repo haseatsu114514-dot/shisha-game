@@ -184,7 +184,7 @@ const title = await load(await read("../js/scenes/title.js"), {
   openGallery: () => new Promise(resolve => galleryCloses.push(resolve)),
   pickTitleArt: () => ({ ready: true, file: `art-${++picks}`, character: `character-${picks}`, url: "test" }),
   createUiThemeSelect: () => el("select"),
-  LOOKS: [{ id: "classic", label: "現行" }, { id: "neo", label: "新版" }, { id: "retro", label: "DS風" }], DISABLED_LOOKS: ["neo"], normalizeLook: (value) => value || "classic", setLook() {},
+  LOOKS: [{ id: "classic", label: "現行" }, { id: "neo", label: "新版" }], DISABLED_LOOKS: ["neo"], normalizeLook: (value) => value || "classic", setLook() {},
   CRAFT_VERSIONS: craftVersion.CRAFT_VERSIONS, normalizeCraftVersion: craftVersion.normalizeCraftVersion,
   config: {},
 }, { document: { body }, performance: { now: () => 0 }, window: {} });

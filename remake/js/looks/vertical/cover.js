@@ -7,7 +7,7 @@
 import { el } from "../../core/util.js";
 import { CHAPTER_TITLE_ART } from "../../core/chapter-title-art.js";
 import { textOf, mirrorBackground, relayTap } from "./frame.js";
-import { readLines as readBlockLines } from "../retro/cover.js";
+import { readLines as readBlockLines } from "../neo/portrait-shell/cover.js";
 
 const HARMLESS = ".flash, .stat-flight, .lvup, .gfx-fly, .gfx-ring, .gfx-spark";
 

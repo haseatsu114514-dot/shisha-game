@@ -14,8 +14,8 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const ALLOWED = [
   { file: "remake/css/vn.css", selector: ".vn-text", reason: "会話の本文は vn/text.js の autoWrap が改行を入れる" },
-  { file: "remake/css/look-retro.css", selector: ".retro-vn-", reason: "DS風の会話も autoWrap が改行を入れる（looks/retro/vn.js）" },
-  { file: "remake/css/look-retro.css", selector: ".retro-shell", reason: "DS風（ドット書体）の外枠の既存の指定（2026-11-11 時点）。DS風の画面を変える時に見直す" },
+  { file: "remake/css/look-neo-portrait.css", selector: ".retro-vn-", reason: "新版の縦持ちの会話も autoWrap が改行を入れる（looks/neo/portrait-shell/vn.js）" },
+  { file: "remake/css/look-neo-portrait.css", selector: ".retro-shell", reason: "新版の縦持ちの外枠で使う既存の指定" },
   { file: "remake/css/craft.css", selector: ".audience-note", reason: "審査員の一言は craft/audience.js が autoWrap で改行を入れる（シーシャ作りは保留中）" },
   { file: "remake/css/daily.css", selector: ".xfer-text", reason: "セーブの引っ越しの英数字の文字列。どこで折れてもよい" },
   { file: "remake/css/daily-menu.css", selector: ".dm-flavor-name", reason: "フレーバー名を一語として保つ（overflow-wrap: anywhere で溢れだけ防ぐ）" },
