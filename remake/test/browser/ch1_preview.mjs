@@ -1,7 +1,43 @@
 // 第1章末: 予告なしでクリア画面→既存の第2章タイトルへ。旧予告フラグは無視して保全する。
 import assert from "node:assert/strict";
-import { suite, assertFits, storageSnapshot } from "./support.mjs";
+import { suite, baseURL, assertFits, storageSnapshot } from "./support.mjs";
 await suite("ch1-preview",async check=>{
+  for (const [width, height] of [[390, 844], [320, 568]]) {
+    await check(`portrait-clear-${width}`, async page => {
+      await page.evaluate(async () => {
+        const core = await import("./js/core/state.js");
+        core.newGame().phase = "cleared";
+        core.save();
+        await (await import("./js/chapters/ch1.js")).showClear();
+      });
+      await page.waitForSelector("html[data-vt-clear]");
+      const body = page.locator(".end-body");
+      for (const selector of [".end-notes p", ".next-teaser b"]) {
+        const [region, text] = await Promise.all([body.boundingBox(), page.locator(selector).boundingBox()]);
+        assert(text.y >= region.y && text.y + text.height <= region.y + region.height,
+          `${selector} must be readable at the initial scroll position`);
+      }
+      const buttons = page.locator(".end-actions button");
+      const footer = await buttons.first().boundingBox();
+      await body.evaluate(node => { node.scrollTop = node.scrollHeight; });
+      assert.deepEqual(await buttons.first().boundingBox(), footer);
+      for (const button of await buttons.all()) {
+        const box = await button.boundingBox();
+        assert(box.height >= 44 && box.y + box.height <= height && box.x >= 0 && box.x + box.width <= width);
+      }
+      await page.locator('[data-test="end-save"]').tap();
+      await page.locator('[data-test="sheet-slot-1"]').tap();
+      await page.waitForFunction(() => JSON.parse(localStorage.getItem("suien_remake_slot1"))?.phase === "cleared");
+      await page.waitForSelector("html[data-vt-clear]");
+      await page.setViewportSize({ width: 844, height: 390 });
+      await page.waitForSelector("html[data-vt-clear]", { state: "detached" });
+      await page.setViewportSize({ width, height });
+      await page.waitForSelector("html[data-vt-clear]");
+      await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.turbo = true; });
+      await page.locator('[data-test="end-chapter2"]').tap();
+      await page.waitForFunction(() => __remake.state.chapter === 2);
+    }, { viewport: { width, height }, isMobile: true, hasTouch: true, pageEntry: `${baseURL}?look=vertical` });
+  }
   for(const seen of [undefined,false,true]) for(const touch of [false,true]) {
     await check(`clear-${String(seen)}-${touch?"touch":"pc"}`,async page=>{
       await page.evaluate(async seen=>{

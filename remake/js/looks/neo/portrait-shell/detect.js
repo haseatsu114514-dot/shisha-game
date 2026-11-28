@@ -185,7 +185,8 @@ export function detectState(own = []) {
     }
     const show = overlays.some(node => node.matches(".ts-eyecatch, .round-cut, .entrance, .standings.tournament-board, .sui-cut.ts-final"));
     const board = screen?.querySelector(":scope > :is(.count-screen.ts-count, .ch2-contest:has(> .ch2-contest-board)):not(.done)");
-    if (!dialog && (show || (active && board))) return { kind: "scene", name: "tournament" };
+    const exhibition = screen?.querySelector(':scope > :is([data-test="ch5-second-cup"], [data-test="ch5-match"]:has(> .tournament-result-details)):not(.done)');
+    if (!dialog && (show || (active && (board || exhibition)))) return { kind: "scene", name: "tournament" };
   }
   if (overlays.some((node) => node.matches(FX_INTERACTIVE) || node.querySelector(CONTROLS))) return NONE;
   const wipe = byId("wipe");

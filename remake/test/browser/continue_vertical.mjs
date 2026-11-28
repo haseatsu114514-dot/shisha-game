@@ -61,7 +61,8 @@ try {
   await page.locator('[data-test="vt-title-continue"]:enabled .vt-tt-en').tap();
   await page.locator(".vt-resume-smoke .wipe-smoke").waitFor();
   await page.locator('.loading-gate.is-viewport.is-ready .loading-proceed[aria-hidden="false"]').tap();
-  await page.waitForFunction(() => window.__verticalLook?.scene() === "sheet" && document.querySelector('[data-test="end-chapter2"]'));
+  await page.waitForFunction(() => window.__verticalLook?.scene() === "chapterClear");
+  await page.locator('[data-test="end-chapter2"]:enabled').tap({ trial: true });
   assert.equal(await page.evaluate(() => window.__remake.state.day), 7);
   await page.locator(".vt-resume-smoke:empty").waitFor({ state: "attached" });
 
