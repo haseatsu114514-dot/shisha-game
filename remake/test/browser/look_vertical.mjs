@@ -418,6 +418,23 @@ await suite("look_vertical", async (check) => {
     await page.locator(t("vt-row-minto")).waitFor();
   }, { ...SHORT, pageEntry: entry });
 
+  await check("national-entrant-title-on-portrait-poster", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      const { ENTRANCE_CARDS, playEntrance } = await import("./js/chapters/tournament-entrance.js");
+      state.chapter = 3;
+      window.sequence = playEntrance([ENTRANCE_CARDS[3].at(-1)], { auto: false });
+    });
+    await waitScene(page, "interlude");
+    const card = page.locator(".ent-card.in");
+    assert.equal(await card.locator(".ent-ring").innerText(), "A県を背負う職人");
+    const name = await card.locator(".ent-name").boundingBox();
+    const portrait = await card.locator(".ent-portrait").boundingBox();
+    assert(portrait.y < name.y && portrait.width > SHORT.viewport.width * .9, "national entrant uses the full-width portrait composition");
+    await page.evaluate(() => window.sequence);
+  }, { ...SHORT, pageEntry: entry });
+
   await check("tonari-menu-lime-and-menu-sheets", async (page) => {
     await setupDaily(page, { talk: true });
     const home = await assertPadHome(page, "map");
