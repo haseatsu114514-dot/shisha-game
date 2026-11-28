@@ -228,7 +228,9 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "tournament");
     const next = page.locator(t("standings-next"));
     assert(await next.isDisabled());
-    await page.locator(".standings .sd-row").first().tap();
+    // 入場中の行へ自動スクロールすると舞台が横へずれる。画面に見えている順位行を指で押す。
+    const row = await page.locator(".standings .sd-row").first().boundingBox();
+    await page.touchscreen.tap(row.x + row.width / 2, row.y + row.height / 2);
     await next.and(page.locator(":enabled")).waitFor();
     assert.equal(await page.locator(".sd-row").count(), 4);
     const board = page.locator(".standings");
@@ -488,7 +490,7 @@ await suite("look_vertical", async (check) => {
         assert((await image.getAttribute("src")).includes(`/character_intros/graphic/${stem}.webp`));
         assert(await image.evaluate(img => img.complete && img.naturalWidth > 0));
       }
-      assert.equal(await card.locator(".ent-speaker").textContent(), "スミ");
+      assert.equal(await card.locator(".ent-speaker").textContent(), "はじめ");
       const ordered = await card.evaluate(node => {
         const box = selector => node.querySelector(selector).getBoundingClientRect();
         return box(".ent-ring").bottom <= box(".ent-name").top + 1 &&
@@ -757,6 +759,8 @@ await suite("look_vertical", async (check) => {
       (await import("./js/core/ui.js")).clearScreen();
       const cs = (await import("./js/craft/practice.js")).newCarePracticeSession("rehearsal");
       cs.practiceKind = "midcheck";
+      cs.holes.score = 93;
+      cs.heat.score = 93;
       (await import("./js/craft/session.js")).openBench(cs, {});
       const { runCare } = await import("./js/craft/pull.js");
       window.careRun = (async () => {
@@ -767,6 +771,15 @@ await suite("look_vertical", async (check) => {
     for (const round of [1, 2]) {
       await page.locator(t("vt-care-place-std")).tap();
       await page.locator(t("vt-care-coal-1")).tap();
+      if (round === 1) {
+        await page.evaluate(async () => (await import("./js/core/ui.js")).toast("なる「……っし、出した。お前は？」", { ms: 3200 }));
+        const notice = page.locator(".vt-notice").filter({ hasText: "お前は？" });
+        await notice.waitFor();
+        const meter = await page.locator(".vtc-rank-meter").boundingBox();
+        const card = await notice.boundingBox();
+        assert(meter?.width > 0 && card.x + card.width <= meter.x, "Naru's whole notice fits beside the visible rank meter");
+        assert(await notice.evaluate(el => el.scrollWidth <= el.clientWidth && el.scrollHeight <= el.clientHeight));
+      }
       await page.locator(t("vt-pull-stop")).tap();
       await page.locator(t("vt-pull-serve")).tap();
       await page.locator(t("vt-craft-result-next")).tap();
@@ -774,6 +787,42 @@ await suite("look_vertical", async (check) => {
     }
     const history = await page.evaluate(() => window.careRun);
     assert.deepEqual(history.map(({ count, place }) => [count, place]), [[1, "std"], [1, "std"]]);
+  }, { ...TALL, pageEntry: entry });
+
+  await check("portrait-transitions-keep-the-rotate-hint-hidden", async (page) => {
+    await waitScene(page, "title");
+    await page.evaluate(async () => {
+      const { newGame } = await import("./js/core/state.js");
+      Object.assign(newGame(), { chapter: 1, day: 8, slot: 2, phase: "daily" });
+      const { tonariMenu } = await import("./js/daily/tonari.js");
+      void tonariMenu();
+    });
+    await waitScene(page, "menu");
+    await page.evaluate(() => {
+      window.rotateFlashes = [];
+      document.addEventListener("rotateguardchange", () => {
+        if (document.documentElement.dataset.rotateGuard) window.rotateFlashes.push(document.body.dataset.screen);
+      });
+    });
+    await page.locator(t("vt-chip-back")).tap();
+    await page.locator("#screen > .sub-menu.done").waitFor({ state: "attached" });
+    await page.waitForTimeout(3500); // 次の場面の素材を待つ。旧版では3秒で回転案内が出た。
+    await page.evaluate(async () => {
+      const { newSession, openBench } = await import("./js/craft/session.js");
+      const { stepVent } = await import("./js/craft/steps.js");
+      const cs = newSession("practice");
+      openBench(cs, {});
+      window.chooseVent = stepVent(cs);
+    });
+    await page.locator(t("opt-closed")).tap();
+    await page.evaluate(async () => {
+      await window.chooseVent;
+      (await import("./js/core/ui.js")).retireScreen();
+    });
+    await waitScene(page, "cover");
+    await page.evaluate(async () => { void (await import("./js/daily/tonari.js")).tonariMenu(); });
+    await waitScene(page, "menu");
+    assert.deepEqual(await page.evaluate(() => window.rotateFlashes), []);
   }, { ...TALL, pageEntry: entry });
 
   await check("unsupported-scenes-show-the-rotate-hint", async (page) => {

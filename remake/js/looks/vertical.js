@@ -31,7 +31,7 @@ const PORTRAIT = "(orientation: portrait)";
 const DETECT_MS = 110;      // 場面の確認は 1 秒に 9 回ほど
 const SYNC_MS = 250;        // 変化の通知が無くても、この間隔で写し直す
 const HOLD_MS = 600;        // 短い場面転換の間は回転案内を出さない
-const GAP_MS = 3000;        // 場面と場面のあいだの何も出ていない間は、ここまで外枠のまま待つ
+const GAP_MS = 3000;        // 横持ちで画面が空いた時、横での操作を許すまでの待ち時間
 const STUCK_MS = 6000;      // 何も写せない覆いがタップを待ったままなら、回転案内へ切り替える
 const COVER_MAX_MS = 20000; // 覆いの中身が変わらないまま続く上限
 const HINT_MAIN = "この場面は横向きで遊びます";
@@ -241,24 +241,30 @@ function start() {
       candidate = null; streak = 0; noneSince = 0; fresh = true;
       return;
     }
+    const wasLive = !!document.getElementById("stage")?.dataset.portraitScene;
     setLivePortraitScene("");
     const dialogOpen = found.kind === "none" && topDialogOpen();
     if (found.kind !== "none") noneSince = 0;
-    if (found.kind === "scene" || found.kind === "none") coverBlocked = false;
+    if (found.kind !== "cover") coverBlocked = false;
     hold = false;
+    gap = found.kind === "gap";
     // 縦の舞台で演出（モーショングラフィックス）が出ている間は、外枠を引っ込めない（回転案内を演出の上に出さない・VPO02）。
     // 演出の下が場面の切り替えの途中でも待ちすぎと判断しないよう、待つ時間は演出が終わってから数え直す
     const motionOn = motionLayer.root.childElementCount > 0;
     if (motionOn) { noneSince = 0; if (holdSince) holdSince = now; coverBlocked = false; }
-    if (scene) {
+    if (gap || scene || wasLive) {
       if (found.kind === "scene") setScene(found.name);
-      else if (found.kind === "cover" || found.kind === "gap") {
-        if (!holdSince || gap !== (found.kind === "gap")) holdSince = now;
-        gap = found.kind === "gap";
+      else if (gap) {
+        // 前の画面は片付け済み。次の画面や会話の素材を待つ間は縦の幕を保つ。
+        holdSince = 0;
+        pressable = false;
+        setScene("cover");
+      } else if (found.kind === "cover") {
+        holdSince ||= now;
         pressable = !!found.pressable;
         const cover = scenes.cover;
         const since = now - Math.max(holdSince, sceneName === "cover" ? cover.activeAt() : 0);
-        const limit = gap ? GAP_MS : pressable && !(sceneName === "cover" && cover.hasContent()) ? STUCK_MS : COVER_MAX_MS;
+        const limit = pressable && !(sceneName === "cover" && cover.hasContent()) ? STUCK_MS : COVER_MAX_MS;
         if (since > limit) coverBlocked = true;
         setScene(since > limit ? null : "cover");
       } else if (dialogOpen) setScene(null);
@@ -274,11 +280,11 @@ function start() {
       if (found.name !== candidate) { candidate = found.name; streak = 0; }
       if (periodic) streak++;
       if (found.name === "interlude" || fresh || streak >= 2) { setScene(found.name); candidate = null; streak = 0; fresh = false; }
-    } else if (!coverBlocked && (found.kind === "gap" || (found.kind === "cover" && found.base))) {
+    } else if (!coverBlocked && found.kind === "cover" && found.base) {
       if (found.kind !== candidate) { candidate = found.kind; streak = 0; }
       if (periodic) streak++;
       if (streak >= 2) {
-        holdSince = now; gap = found.kind === "gap"; pressable = !!found.pressable;
+        holdSince = now; pressable = !!found.pressable;
         setScene("cover");
         candidate = null; streak = 0;
       }
@@ -288,8 +294,8 @@ function start() {
       setScene("cover");
       candidate = null; streak = 0;
     } else { candidate = null; streak = 0; }
-    // 外枠や端末に合わせて表示する小窓の上には回転案内を出さない
-    const holdHint = !!scene || dialogOpen;
+    // 対応場面を確認して外枠を戻すまでの間も、回転案内を挟まない。
+    const holdHint = !!scene || found.kind === "scene" || dialogOpen;
     if ((root.dataset.vtHint === "hold") !== holdHint) {
       if (holdHint) root.dataset.vtHint = "hold"; else delete root.dataset.vtHint;
       window.dispatchEvent(new Event("resize"));
