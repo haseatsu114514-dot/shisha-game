@@ -16,7 +16,8 @@ const active = new WeakSet();
 const visitStamp = () => `${state.chapter}:${state.day}:${state.slot}`;
 
 // 店の初回だけ無料。モード・相手で無料枠を作り直さず、行動消費は増やさない。
-export async function offerAgehaPurikura(background, spot = { id: "ch2_ageha", kind: "rival", charId: "ageha" }, { signal } = {}) {
+// guests: 来店の中で先に話した、居合わせた人（daily/roamers.js）。会った後は地図の在店から外れるので、ここで渡す。
+export async function offerAgehaPurikura(background, spot = { id: "ch2_ageha", kind: "rival", charId: "ageha" }, { signal, guests = [] } = {}) {
   const owner = state, stamp = visitStamp(), phase = state.phase;
   if (signal?.aborted || active.has(owner)) return false;
   const live = () => state === owner && visitStamp() === stamp && state.phase === phase && !signal?.aborted;
@@ -37,7 +38,7 @@ export async function offerAgehaPurikura(background, spot = { id: "ch2_ageha", k
       state.flags._kuraudo_melty_greeting = state.day;
       save();
     }
-    if (state.flags._ageha_first_purikura) return await revisitPurikura(background, spot, { live, read, stamp });
+    if (state.flags._ageha_first_purikura) return await revisitPurikura(background, spot, { live, read, stamp, extra: guests });
     if (!await read("remake_ch2_ageha_purikura")) return false;
     if (!buyKeepsake("ageha_first_purikura")) return false;
     state.flags._ageha_first_purikura = true;
@@ -67,10 +68,14 @@ export function pickPurikuraPhoto(partner, { rand = Math.random, save: s = state
 
 // 審査員（characters.json の role が judge…。上園・千須会長・チャコール博士など）はプリクラの対象外（PFC22 オーナー）。
 const purikuraJudge = id => /^judge/.test(DB.characters[id]?.role || "");
-export const purikuraGuests = spot => spotPeople(spot).filter(person => person.role === "guest" && person.known
-  && person.id !== "ageha" && !!DB.characters[person.id] && !purikuraJudge(person.id));
+export function purikuraGuests(spot, extra = []) {
+  const people = spotPeople(spot);
+  for (const id of extra) if (id && !people.some(person => person.id === id)) people.push({ id, known: true, role: "guest", name: displayName(id, state) });
+  return people.filter(person => person.role === "guest" && person.known
+    && person.id !== "ageha" && !!DB.characters[person.id] && !purikuraJudge(person.id));
+}
 
-async function revisitPurikura(background, spot, { live, read, stamp }) {
+async function revisitPurikura(background, spot, { live, read, stamp, extra = [] }) {
   if (state.flags._ageha_purikura_offer === stamp) return true;
   // 呼出し元は写真の後に店代を確定する。帰りの運賃と、その店代は写真に使わない。
   const available = () => Math.max(0, spendableMoney(state) - Math.max(0, Number(spot.cost) || 0));
@@ -94,7 +99,7 @@ async function revisitPurikura(background, spot, { live, read, stamp }) {
   let mode = null;
   const people = ["hajime"];
   if (shoot) {
-    const guests = purikuraGuests(spot);
+    const guests = purikuraGuests(spot, extra);
     if (!await read(guests.length ? "remake_ch2_purikura_match" : "remake_ch2_purikura_choose")) return false;
     // ソロは、あげはから勧めない。はじめが言い出して驚かれる（2回目からは「ソロプリハマっちゃったんだね」と笑われる・PFC23）。
     const partner = await modal({ title: "誰と撮る？", body: guests.length ? "あげはのおすすめは、居合わせた知り合いとの2ショット。あげはとも撮れます。" : "あげはは、2ショットのつもりでいる。", options: [
@@ -106,7 +111,7 @@ async function revisitPurikura(background, spot, { live, read, stamp }) {
     if (!live()) return false;
     if (partner === "solo" || partner === "pair") mode = partner;
     else if (partner) {
-      if (!purikuraGuests(spot).some(person => person.id === partner)) return false;
+      if (!purikuraGuests(spot, extra).some(person => person.id === partner)) return false;
       mode = "guest";
       people.push(partner);
     }
@@ -128,7 +133,7 @@ async function revisitPurikura(background, spot, { live, read, stamp }) {
       { label: "受け取る（400円）", value: true, test: "purikura-receive", primary: true },
     ] });
     if (!live() || received !== true) return false;
-    if (mode === "guest" && !purikuraGuests(spot).some(person => person.id === people[1])) return false;
+    if (mode === "guest" && !purikuraGuests(spot, extra).some(person => person.id === people[1])) return false;
     if (!canPay()) return shortage();
     if (ryuji && !buyKeepsake("ryuji_purikura")) return false;
     addMoney(-REVISIT_FEE);

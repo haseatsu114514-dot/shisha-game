@@ -686,6 +686,9 @@ async function performSpotAction(spot, saveGate) {
   }
   if (chapterDef.performSpot) {
     const result = await chapterDef.performSpot(spot, { staminaGuard,
+      // 居合わせた人と、来店の途中で先に話す（あげはの店ではプリクラの前。その人とも撮れる）。読んだら true。保存は来店の精算に任せる
+      roamer: scheduledRoamer,
+      meetRoamerNow: () => meetRoamer(spot, scheduledRoamer, { bg: roamerBg(), deferSave: true }),
       // 移動先・同行の会話・使った行動を、同じ時点のセーブにする。
       holdSaveUntilActionEnds: () => { saveGate.release ??= holdActionSave(actionOwner); },
     });
