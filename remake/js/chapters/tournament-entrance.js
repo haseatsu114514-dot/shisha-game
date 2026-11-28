@@ -58,10 +58,11 @@ function ticketImage(name) {
 }
 
 function entryTag(number) {
+  const folio = String(number).padStart(2, "0");
   return el("span.ent-tag", [
-    el("span.ent-tag-label", [el("span", { text: "エントリー" }), el("span", { text: "ナンバー" })]),
-    ticketImage("lettering"),
-    el("b.ent-number", [String(number), number <= 4 ? ticketImage(`digit-${number}`) : null]),
+    el("span.ent-tag-label", { text: "エントリーナンバー" }),
+    ticketImage("caption"),
+    el("b.ent-number", [folio, number <= 4 ? ticketImage(`number-${folio}`) : null]),
   ]);
 }
 

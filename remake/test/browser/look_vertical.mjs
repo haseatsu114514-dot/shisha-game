@@ -390,9 +390,10 @@ await suite("look_vertical", async (check) => {
     for (const [i, name] of ["なる", "アダム", "みんと", "はじめ"].entries()) {
       const card = page.locator(".ent-card.in").filter({ has: page.locator(".ent-name", { hasText: name }) });
       await card.waitFor();
-      assert.equal(await card.locator(".ent-tag").textContent(), `エントリーナンバー${i + 1}`);
+      const folio = String(i + 1).padStart(2, "0");
+      assert.equal(await card.locator(".ent-tag").textContent(), `エントリーナンバー${folio}`);
       await card.locator(".ent-tag.printed > img").waitFor();
-      assert.equal(await card.locator(".ent-number.printed > img").getAttribute("src"), `img/ui/tournament-show/entry-digit-${i + 1}.webp`);
+      assert.equal(await card.locator(".ent-number.printed > img").getAttribute("src"), `img/ui/tournament-show/entry-number-${folio}.webp`);
       assert.equal(await card.locator(".ent-name").textContent(), name);
       const id = ["naru", "adam", "minto", "hajime"][i];
       for (const [selector, stem] of [[".ent-portrait", id], [".ent-backdrop", "bg_" + id]]) {
