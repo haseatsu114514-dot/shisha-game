@@ -9,6 +9,7 @@ import { SE } from "../core/audio.js";
 import { HIDANE_NAME } from "../core/growth-board-data.js";
 import { vnTest } from "../vn/engine.js";
 import { prizeArt } from "./kuji-prize-art.js";
+import { portraitMotion, mountMotion, frameOf } from "../core/motion-frame.js";
 
 /** 持っていた機材をお金（限定の台はくじ券）に替えた賞か。札に出す文は kuji.js が賞に添えている（dupText・dupShort） */
 const isDupe = (prize) => prize.dupText != null;
@@ -21,6 +22,35 @@ const prizeName = (prize) => (prize.rank === "LAST" ? prize.name.replace(/^ラ�
 const hidaneText = (prize) => prize.hidane?.map(({ kind, n }) => `火種 ${HIDANE_NAME[kind]} +${n}`).join("・") || "";
 const ORDER = ["LAST", "S", "A", "B", "C"];
 const bestRank = (results) => ORDER.find((r) => results.some((p) => p.rank === r)) || "C";
+
+/**
+ * 縦画面を縦持ちで使っている間は、くじの画面を縦の舞台（core/motion-frame.js・VPO17）に出す（今までは回転案内だった）。
+ * ガラガラ（1280×720 の舞台）は、抽選器・受け皿・係の人の鐘のまわり（舞台の x 340〜1040・縦の試作 previews/portrait-stage/kuji.mjs と同じ）を
+ * 画面の幅いっぱいに写し、賞の札は縦の画面に収まる大きさで真ん中に開く（css/motions/garagara.css の .vt-kj）。横の本編は今までどおり #modal。
+ */
+const PORTRAIT_VIEW = { x: 340, w: 700, cy: 404 };
+function openOverlay(ov) {
+  if (!portraitMotion()) {
+    layers.modal.replaceChildren(ov);
+    layers.modal.classList.add("show");
+    return () => { layers.modal.classList.remove("show"); layers.modal.replaceChildren(); };
+  }
+  ov.classList.add("vt-kj");
+  const mounted = mountMotion(ov, { portrait: true });
+  return () => mounted.remove();
+}
+/** ガラガラを置く器。縦の舞台では抽選器のまわりを幅いっぱいに写す 1280×720 の箱（上から 4 割の所に抽選器） */
+function machineHost(ov) {
+  if (!ov.classList.contains("vt-kj")) return { host: ov, done() {} };
+  const { W, H } = frameOf(ov), k = W / PORTRAIT_VIEW.w;
+  const box = el("div.vt-kj-stage", { "aria-hidden": "true", style: {
+    transform: `translate(${(-PORTRAIT_VIEW.x * k).toFixed(1)}px, ${(H * 0.4 - PORTRAIT_VIEW.cy * k).toFixed(1)}px) scale(${k.toFixed(4)})`,
+  } });
+  ov.append(box);
+  return { host: box, done: () => box.remove() };
+}
+/** 札が開いた時の粒の中心と札の半分の大きさ（粒の座標は 1280 幅の舞台の真ん中に合わせてある）。縦の舞台では札は縮めて画面の真ん中 */
+const cardSpot = (host) => (host.closest?.(".vt-kj") ? [640, host.clientHeight / 2 - 20, 440 * 0.8, 190 * 0.8] : [640, 330, 440, 190]);
 
 // 演出の部品は引くときに読み込む（高速送りでは読まない）
 const loadMotion = () => Promise.all([import("../motions/garagara.js"), import("../motions/kuji-fx.js"), import("../motions/garagara-stage.js")])
@@ -108,14 +138,15 @@ function revealOne(ov, prize, skip, prev, machine = {}) {
         // 光の粒は札の後ろ（明るい紙の上に重ねると濁って見える）。札のまわりにだけ見える
         fx = kit.createFx(ov, { className: "kj-fx kj-fx-card" });
         back.after(fx.canvas);
-        twinkle = celebrate(fx, kit.light, prize.rank);
+        twinkle = celebrate(fx, kit.light, prize.rank, ...cardSpot(ov));
       }
       done(stage);
     };
     if (skip) { sleep(300).then(() => show(null)); return; }
     // ガラガラが消え始めたところで札を下で開き、重ねて受け渡す
-    loadMotion().then((kit) => kit.garagara(ov, prize.rank, { ...machine, onHandoff: () => show(kit) }).then(() => show(kit)))
-      .catch((e) => { console.error(e); show(null); });
+    const spot = machineHost(ov);
+    loadMotion().then((kit) => kit.garagara(spot.host, prize.rank, { ...machine, onHandoff: () => show(kit) }).then(() => { spot.done(); show(kit); }))
+      .catch((e) => { console.error(e); spot.done(); show(null); });
   });
 }
 
@@ -124,8 +155,7 @@ function revealOne(ov, prize, skip, prev, machine = {}) {
 export function reveal(prize, extras = [], machine = {}) {
   return new Promise((resolve) => {
     const ov = el("div.kuji-overlay", { dataset: { test: "kuji-reveal" } });
-    layers.modal.replaceChildren(ov);
-    layers.modal.classList.add("show");
+    const closeOverlay = openOverlay(ov);
     const skip = instant();
     const queue = skip ? [prize] : [prize, ...extras];
     let open = false, stage = null;
@@ -133,8 +163,7 @@ export function reveal(prize, extras = [], machine = {}) {
       const p = queue.shift();
       if (!p) {
         stage?.end();
-        layers.modal.classList.remove("show");
-        layers.modal.replaceChildren();
+        closeOverlay();
         resolve();
         return;
       }
@@ -162,12 +191,12 @@ export function revealMany(results, count, machine = {}) {
     const quick = instant();
     const best = bestRank(results);
     let fx = null, showFx = null, kit = null, timer = 0, twinkle = 0, flipping = !quick, closeShow = null, started = false, index = 0;
+    let closeOverlay = () => {};
     const finish = () => {
       flipping = false;
       clearTimeout(timer); clearInterval(twinkle);
       fx?.destroy(); showFx?.destroy();
-      layers.modal.classList.remove("show");
-      layers.modal.replaceChildren();
+      closeOverlay();
       resolve();
     };
     const close = el("button.btn.kj-done", { text: "結果を閉じる", onclick: finish });
@@ -184,8 +213,7 @@ export function revealMany(results, count, machine = {}) {
       el("div.kj-actions", [close]),
     ]);
     const ov = el("div.kuji-overlay.kuji-multi", { dataset: { test: "kuji-multi-reveal", rank: best } }, [back, panel]);
-    layers.modal.replaceChildren(ov);
-    layers.modal.classList.add("show");
+    closeOverlay = openOverlay(ov);
     if (quick) return;
 
     /** 札の中心（ステージの座標） */
@@ -235,7 +263,7 @@ export function revealMany(results, count, machine = {}) {
       if (fx) {
         showFx = kit.createFx(layer, { className: "kj-fx kj-fx-card" });
         glow.after(showFx.canvas);
-        twinkle = celebrate(showFx, kit.light, prize.rank);
+        twinkle = celebrate(showFx, kit.light, prize.rank, ...cardSpot(layer));
       }
     });
     const step = async () => {
@@ -274,7 +302,8 @@ export function revealMany(results, count, machine = {}) {
       }
       timer = setTimeout(step, stillOnly() ? 200 : 300 + cards.length * 45);
     };
-    loadMotion().then((loaded) => loaded.garagara(ov, results.map((p) => p.rank), { ...machine, onHandoff: () => start(loaded) }).then(() => start(loaded)))
-      .catch((e) => { console.error(e); start(null); });
+    const spot = machineHost(ov);
+    loadMotion().then((loaded) => loaded.garagara(spot.host, results.map((p) => p.rank), { ...machine, onHandoff: () => start(loaded) }).then(() => { spot.done(); start(loaded); }))
+      .catch((e) => { console.error(e); spot.done(); start(null); });
   });
 }

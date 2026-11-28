@@ -648,6 +648,30 @@ html:root[data-density="phone"] body:not(.game-ds) .kj-actions .btn { min-height
   .kuji-card.reveal, .kuji-card.reveal *, .kuji-card::after, .kuji-multi-panel .kuji-short, .kj-ball, .kj-rays, .kj-halo { animation: none !important; transition: none !important; }
 }
 
+/* ---- 縦画面の縦の舞台（VPO17・daily/kuji-reveal.js の openOverlay・machineHost）: 幅 720 の縦長の画面で、くじを引いて見る ----
+   ガラガラの舞台（1280×720）は抽選器のまわりだけを幅いっぱいに写す（倍率と位置は JS）。賞の札は縦の画面に収まる大きさで真ん中に。
+   字は縦の画面の実寸で読める大きさへ上げる（舞台の 1px は 390 幅の画面で約 0.54px） */
+.kuji-overlay.vt-kj { inset: 0; padding: 0; background: radial-gradient(ellipse 120% 60% at 50% 40%, #1d1410f2, #0e0a09fa 70%); }
+/* 抽選器の舞台の上下の端は、暗い地へ溶かす（切れ目を見せない） */
+.vt-kj-stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; pointer-events: none;
+  -webkit-mask-image: linear-gradient(transparent, #000 9%, #000 91%, transparent); mask-image: linear-gradient(transparent, #000 9%, #000 91%, transparent); }
+.vt-kj-stage .kj-skip { right: 270px; bottom: 30px; min-width: 170px; min-height: 76px; font-size: 30px; }
+.vt-kj .kuji-card:not(.kuji-short) { zoom: 0.8; }
+.vt-kj .kuji-card:not(.kuji-short) .kuji-desc { display: none; }
+.vt-kj .kuji-card:not(.kuji-short) .kuji-name { font-size: 38px; }
+.vt-kj .kuji-card:not(.kuji-short) .kuji-dupe { font-size: 26px; }
+.vt-kj .kuji-close { font-size: 40px; }
+.kuji-overlay.vt-kj.kuji-multi { padding: 60px 18px 40px; }
+.vt-kj .kuji-multi-panel { width: 100%; }
+.vt-kj .kuji-multi-panel h2 { font-size: 40px; }
+.vt-kj .kuji-multi-panel h2::before, .vt-kj .kuji-multi-panel h2::after { width: 80px; }
+.vt-kj .kuji-multi-cards .kuji-card.kuji-short, .vt-kj .kuji-multi-cards[data-n="11"] .kuji-card.kuji-short { flex-basis: calc((100% - 24px) / 3); min-height: 270px; }
+.vt-kj .kuji-short .kuji-rank { font-size: 28px; }
+.vt-kj .kuji-short.rank-LAST .kuji-rank { font-size: 22px; }
+.vt-kj .kuji-short :is(.kuji-name, .kuji-dupe) { font-size: 25px; }
+.vt-kj .kj-actions { flex-direction: column; gap: 18px; }
+html:root .kuji-overlay.vt-kj.kuji-multi .kj-actions .btn { min-width: 440px; min-height: 88px; font-size: 32px; }
+
 /* ===== css/motions/purikura.css ===== */
 /* プリクラ（remake/js/motions/purikura.js・#939）。紫は使わず、ピンク・豹柄・金のラメ・白の平成ギャル寄り。
    位置の数値は purikura.js の VIEW・SLOT・TOOL_X と同じ。DOMの初期値は「撮り終えた画面」 */

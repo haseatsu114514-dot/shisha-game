@@ -13,7 +13,7 @@ export const PORTRAIT_W = 720;
 export const PORTRAIT_MIN_H = 1100;
 
 /** 縦の舞台（縦画面を縦持ちで使っている間だけある）。 */
-const portraitLayer = () => (typeof document !== "undefined" && document.documentElement.dataset.vt === "on" && document.getElementById("vt-motion")) || null;
+const portraitLayer = () => (typeof document !== "undefined" && document.documentElement?.dataset?.vt === "on" && document.getElementById?.("vt-motion")) || null;
 
 /** いま演出を縦の舞台で見せるか。 */
 export const portraitMotion = () => !!portraitLayer();

@@ -750,6 +750,18 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .tr-dawn-sub > .tr-flip { font-family: "Suien Name", var(--font); font-size: 38px; letter-spacing: 0.04em; color: #ffe2a7; padding: 0 0.15em; }
 .tr-dawn-wx { margin-left: 1.4em; letter-spacing: 0.3em; color: #ffe2a7; }
 .tr-dawn-forecast { font-size: 20px; color: #f1e7d6; }
+/* 縦画面の縦の舞台（720×H・VPO18・core/motion-frame.js）: 部屋の絵は画面いっぱい（窓の位置は JS で寄せる）、日付の題字は画面の下の方に大きく。
+   窓の形に合わせた光の筋と窓の雨は横の絵の位置で描いているので、縦では出さない（窓の光・青みは出す）。長い小見出しは折り返す */
+.mo-portrait.tr-dawn :is(.tr-dawn-beam, .tr-dawn-rainpane) { display: none; }
+.mo-portrait.tr-dawn .tr-dawn-card { left: 56px; right: 44px; bottom: 15%; }
+.mo-portrait.tr-dawn .tr-dawn-sub { flex-wrap: wrap; row-gap: 10px; white-space: normal; font-size: 28px; letter-spacing: 0.08em; }
+.mo-portrait.tr-dawn .tr-dawn-sub > .tr-flip { font-size: 44px; }
+.mo-portrait.tr-dawn .tr-dawn-wx { flex-basis: 100%; margin-left: 0; } /* 天気は次の行に（「あと N 日」を途中で折らない） */
+.mo-portrait.tr-dawn .tr-dawn-forecast { font-size: 26px; }
+/* 朝の日付カード（dayCard）は、縦の外枠の上の絵の下の方に（下の操作の段にかけない） */
+.mo-portrait.day-card { left: 56px; right: 44px; bottom: 42%; }
+.mo-portrait.day-card .dc-sub { flex-wrap: wrap; row-gap: 8px; white-space: normal; font-size: 30px; }
+.mo-portrait.day-card small.dc-sub { font-size: 26px; }
 .tr-flip { display: inline-grid; overflow: hidden; }
 .tr-flip > i { grid-area: 1 / 1; font-style: normal; }
 /* 波: 時間が過ぎる（つなぎの一行・#2688 F3 の時間経過の型）。一行は波の上を左から滑ってくる */

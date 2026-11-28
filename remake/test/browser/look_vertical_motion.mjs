@@ -124,6 +124,35 @@ await suite("look-vertical-motion", async (check) => {
     assert.deepEqual(await page.evaluate(() => window.__hintOverMotion.slice(0, 3)), [], "演出の間は、回転案内を演出の上に出さない");
   }, { ...TALL, pageEntry: withLook("vertical") });
 
+  await check("kuji-and-dawn-on-the-portrait-stage", async (page) => {
+    // VPO17: シーシャくじは縦の舞台で引ける（今までは回転案内）。抽選器のまわりを幅いっぱいに写し、賞の札は画面の中に開き、タップで閉じる
+    await waitScene(page, "title");
+    await page.evaluate(() => { window.__kuji = window.__remake.dev.motion("garagara-C"); });
+    await page.locator("#vt-motion > .kuji-overlay.vt-kj").waitFor({ state: "attached" });
+    await page.locator("#vt-motion .vt-kj-stage .mo-garagara").waitFor({ state: "attached" });
+    const stage = await page.locator("#vt-motion .vt-kj-stage").boundingBox();
+    const w = await page.evaluate(() => innerWidth), h = await page.evaluate(() => innerHeight);
+    assert(Math.abs(stage.x + (340 / 700) * w) <= 2 && stage.width >= w * 1.8, `抽選器のまわり（舞台の x 340〜1040）が画面の幅いっぱい ${JSON.stringify(stage)}`);
+    assert.equal(await hintShown(page), false, "くじの間は回転案内を出さない");
+    await page.locator("#vt-motion .kuji-card.reveal").waitFor({ timeout: 20000 });
+    await page.waitForTimeout(900);
+    const card = await page.locator("#vt-motion .kuji-card.reveal").boundingBox();
+    assert(card.x >= -1 && card.x + card.width <= w + 1 && card.y >= -1 && card.y + card.height <= h + 1 && card.width >= w * 0.85,
+      `賞の札が縦の画面の中に幅いっぱい近くで開く ${JSON.stringify(card)}`);
+    await page.locator("#vt-motion .kuji-overlay").click();
+    await page.evaluate(() => window.__kuji);
+    assert.equal(await page.locator("#vt-motion > *").count(), 0, "札を閉じると縦の舞台は空");
+
+    // VPO18: 夜明けの日付の札は、縦の舞台いっぱいの部屋の絵の上に、画面の下の方に出る
+    await page.evaluate(() => { window.__dawn = window.__remake.dev.motion("dawn-sun"); });
+    await page.locator("#vt-motion > .tr-dawn.mo-portrait .tr-dawn-card").waitFor({ timeout: 15000 });
+    await page.waitForTimeout(700);
+    const dawn = await page.locator("#vt-motion .tr-dawn-card").boundingBox();
+    assert(dawn.x >= 0 && dawn.x + dawn.width <= w + 1 && dawn.y >= h * 0.5 && dawn.y + dawn.height <= h, `日付の題字が画面の下の方に収まる ${JSON.stringify(dawn)}`);
+    assert.equal(await hintShown(page), false);
+    await page.evaluate(() => window.__dawn);
+  }, { ...TALL, pageEntry: withLook("vertical") });
+
   await check("landscape-keeps-motions-on-the-stage", async (page) => {
     const placed = await page.evaluate(async () => {
       const { stagePlay } = await import("./js/motions/stage.js");
