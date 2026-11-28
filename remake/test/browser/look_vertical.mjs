@@ -228,7 +228,12 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "tournament");
     const next = page.locator(t("standings-next"));
     assert(await next.isDisabled());
-    await page.locator(".standings .sd-row").first().tap();
+    // 実際のタップと同じように、順位行を自動スクロールせずに押す。
+    const firstRow = page.locator(".standings.show .sd-row").first();
+    await firstRow.waitFor();
+    const rowBox = await firstRow.boundingBox();
+    assert(rowBox, "the first standings row has a touch target");
+    await page.touchscreen.tap(rowBox.x + rowBox.width / 2, rowBox.y + rowBox.height / 2);
     await next.and(page.locator(":enabled")).waitFor();
     assert.equal(await page.locator(".sd-row").count(), 4);
     const board = page.locator(".standings");
