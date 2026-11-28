@@ -95,6 +95,33 @@ await suite("save-load", async check => {
     }
   });
 
+  await check("manual-slot-changed-while-chapter-loads", async page => {
+    await prepare(page);
+    await page.evaluate(async () => {
+      QA.core.saveToSlot(QA.core.SAVE_SLOTS[1].key);
+      (await import("./js/scenes/title.js")).showTitle();
+    });
+    const chapter = page.waitForEvent("request", req => req.url().endsWith("/js/chapters/ch1.js"));
+    let release;
+    const gate = new Promise(resolve => { release = resolve; });
+    await page.route("**/js/chapters/ch1.js", async route => { await gate; await route.continue(); });
+    try {
+      await page.locator('[data-test="title-load"]').click();
+      await page.locator('[data-test="slot-1"]').click();
+      await chapter;
+      await page.evaluate(() => {
+        const key = QA.core.SAVE_SLOTS[1].key;
+        QA.beforeLoad = { state: QA.core.state, auto: localStorage.getItem(QA.core.SAVE_KEY) };
+        localStorage.setItem(key, JSON.stringify({ ...QA.core.readSlot(key), day: 12 }));
+      });
+    } finally { release(); }
+    await page.locator('[data-test="retry-load"]').waitFor();
+    assert.deepEqual(await page.evaluate(() => [
+      QA.core.state === QA.beforeLoad.state, localStorage.getItem(QA.core.SAVE_KEY) === QA.beforeLoad.auto,
+      QA.core.readSlot(QA.core.SAVE_SLOTS[1].key).day,
+    ]), [true, true, 12]);
+  });
+
   await check("three-manual-slots-keep-slot-one-and-retired-data", async page => {
     await prepare(page);
     const retired = await page.evaluate(async () => {

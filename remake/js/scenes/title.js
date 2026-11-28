@@ -330,9 +330,12 @@ export function showTitle(preparedArt = null) {
   };
   const loadGame = async (initialSlot = null) => {
     if (!current()) return;
-    const chapter = await loadFirstChapter();
-    if (!chapter || !current()) return;
-    if (!await loadWithRecovery({ initialSlot })) { refresh(); return; }
+    let chapter;
+    const loaded = await loadWithRecovery({ initialSlot, beforeLoad: async () => {
+      chapter ??= await loadFirstChapter();
+      return !!chapter && current();
+    } });
+    if (!loaded) { refresh(); return; }
     if (!current()) return;
     leaving = true;
     smokeWipe(() => { stopBgm(0); chapter.resumeGame(); }, { color: "dark", resume: true });
