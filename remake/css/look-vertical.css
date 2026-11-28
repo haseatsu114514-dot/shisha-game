@@ -514,6 +514,18 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-sheet-host .retro-sheet .rs-fill { border-radius: inherit; }
 .vt-sheet-host .retro-sheet img { border-radius: calc(0.6 * var(--u)); }
 .vt-shell[data-scene="sheet"] .vt-telop { visibility: hidden; }
+/* 章末は下段まで読める一枚のシート。次章へ進む・セーブする操作は本文の下に固定する。 */
+.vt-shell[data-sheet="end"][data-layout="full"] .vt-sheet-host {
+  inset: max(var(--u), env(safe-area-inset-top)) var(--u) max(var(--u), env(safe-area-inset-bottom));
+}
+.vt-shell[data-sheet="end"][data-layout="full"] .rs-body {
+  justify-content: safe center;
+  padding: calc(1.6 * var(--u));
+  scrollbar-width: thin;
+  scrollbar-color: var(--r-gold) var(--r-body);
+}
+.vt-shell[data-sheet="end"][data-layout="full"] .rs-body::-webkit-scrollbar { display: block; width: 6px; }
+.vt-shell[data-sheet="end"][data-layout="full"] .rs-svg { margin-inline: auto; max-width: min(100%, 32dvh, 26rem); }
 /* LIME（VPN15。試作 previews/portrait-stage/lime.css と同じ見た目・VPM10「ライムの画面はあえてLINEの色とかに寄せたい」）:
    画面いっぱいのアプリ。一覧は白地に黒い名前・灰色の一言・緑の印、トークは青みのある背景に白（相手）と緑（自分）の吹き出し、下に緑の札 */
 .vt-shell[data-sheet="lime"] .vt-sheet-host.retro-shell { --ln-green: #06c755; --ln-green-ink: #04913f; --ln-green-soft: #e7f8ed; --ln-chat: #8cabd8; --ln-me: #8de055; --ln-ink: #111; --ln-sub: #8a929e; --ln-faint: #b2b8c1; --ln-line: #eceef1;
