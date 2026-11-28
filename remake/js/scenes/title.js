@@ -16,7 +16,6 @@ import { extraUnlocked } from "../core/extra-games.js";
 import { loadWithRecovery, saveHeadline } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
 import { createUiThemeSelect } from "../core/ui-theme.js";
-import { LOOKS, DISABLED_LOOKS, normalizeLook, setLook } from "../core/look.js";
 import { CRAFT_VERSIONS, normalizeCraftVersion } from "../core/craft-version.js";
 import { refreshSideArea } from "../core/side-area.js";
 import { comicLoadingRequired, setLoadingComicsMode } from "../core/loading.js";
@@ -504,9 +503,6 @@ export async function openConfig(opts = {}) {
   const loadingComics = document.body?.dataset?.screen === "preview" ? null :
     segRow("ロード画面の漫画", "cfg-loading-comics", [["always", "いつも"], ["wait", "待つ時だけ"]],
       comicLoadingRequired() ? "always" : "wait", setLoadingComicsMode);
-  // 見た目の様式（LK01）。既定は縦画面（LK24。旧版へはここで戻せる）。新版は選べない（コードは残してある）。
-  const look = segRow("見た目", "cfg-look", LOOKS.filter(({ id }) => !DISABLED_LOOKS.includes(id)).map(({ id, label }) => [id, label]),
-    normalizeLook(config.look), (v) => { setConfig("look", v); setLook(v); });
   // #3795: 通常制作は桜井版。第1章大会の既存の切替だけ残し、次の試合から効かせる。
   const craftVersion = segRow("第1章大会の版", "cfg-craft-version", CRAFT_VERSIONS.map(({ id, label }) => [id, label]),
     normalizeCraftVersion(config.craftVersion), (v) => setConfig("craftVersion", v));
@@ -561,7 +557,6 @@ export async function openConfig(opts = {}) {
     body: el("div.cfg", [
       saveTransferRow(),
       row("UIデザイン", createUiThemeSelect(config.uiTheme, value => { config.uiTheme = value; persist(); opts.onChange?.("uiTheme", value); })),
-      look,
       row("ミュート（すべての音を消す）", mute),
       row("BGM 音量", range("bgmVolume", 0, 1, 0.05, "cfg-bgm-volume")),
       row("効果音 音量", range("seVolume", 0, 1, 0.05, "cfg-se-volume")),

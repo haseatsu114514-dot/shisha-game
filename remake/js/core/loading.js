@@ -253,7 +253,8 @@ export async function withLoading(prepare, {
   for (const type of ["pointerdown", "pointerup", "click"]) {
     overlay.addEventListener(type, event => {
       event.stopPropagation();
-      if (awaitingProceed && type === "pointerdown") proceedNow();
+      // 指が離れた後の click をここで受け取ってから閉じる。同じタップを次の画面に渡さない。
+      if (awaitingProceed && type === "click") proceedNow();
     });
   }
   let comic;

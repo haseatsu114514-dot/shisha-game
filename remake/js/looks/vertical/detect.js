@@ -42,7 +42,7 @@ export function topDialogOpen() {
 }
 
 /** 読み込み・起動の画面（自前の縦長の配置を持つ）。この間は「横向きにすると…」の一言も出さない。 */
-export const isLoading = () => !!(byId("boot") || document.querySelector(".loading-gate"));
+export const isLoading = () => !!document.querySelector("#boot:not(.done), .loading-gate");
 
 function layerOf(node, stage) {
   if (!stage.contains(node)) return "outside";
@@ -135,14 +135,12 @@ function knownBase() {
  * いまの状態。own は自分の外枠の要素（重なりの確認から除く）。
  * 第2〜5章の地図の案内の箱のボタン、場面カード、確かめの小窓も写せる場面として扱う（新版の縦持ち。LK13）。
  */
-export function detectState(own = []) {
+export function detectState(own = [], vertical = document.documentElement.dataset.vt === "on") {
   const body = document.body, stage = byId("stage");
-  if (!stage || byId("boot")) return NONE;
-  if (document.querySelector(".loading-gate")) return NONE;
+  if (!stage || isLoading()) return NONE;
   const modal = byId("modal");
   const rect = stage.getBoundingClientRect();
   if (!rect.width || !rect.height) return NONE;
-  const vertical = document.documentElement.dataset.vt === "on";
   if (modal?.classList.contains("show")) {
     // 演出の層の操作する画面（心得の盤など）が上に出ていれば、そちらを現行の画面で見せる
     if (byId("fx")?.querySelector(FX_INTERACTIVE)) return NONE;

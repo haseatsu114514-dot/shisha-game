@@ -46,7 +46,7 @@ if (!process.env.CASE_FILTER?.startsWith("layout-")) await suite('lime-evening',
       const msg = QA.data.DB.dialogues.interaction_minto_noon_01;
       QA.core.save(); const loaded = QA.core.load();
       return { money: s.money, affinity: s.affinity.minto, day: s.day, slot: s.slot, pending: s.pendingInvite,
-        result: s.inbox[0].result, count: entries.length, canonical: msg.lines[0].text,
+        result: s.inbox[0].result, count: entries.length, canonical: msg.lines.find(line => typeof line.text === "string").text,
         afterLoad: { money: loaded.money, result: loaded.inbox[0].result, pending: loaded.pendingInvite } };
     });
     assert.equal(result.money, 27000); assert.equal(result.affinity, 13);

@@ -267,6 +267,58 @@ await suite("look_vertical", async (check) => {
     assert.equal(await page.locator(".result-table:not(.done)").count(), 0);
   }, { ...SHORT, pageEntry: entry });
 
+  await check("boot-fades-onto-portrait-title", async (page) => {
+    // 通常の検査は #boot が消えてから始まる。開き直してフェード中も1フレームずつ調べる。
+    await page.addInitScript(() => {
+      window.wideTitleFrames = 0;
+      const sample = () => {
+        const boot = document.getElementById("boot");
+        if (document.querySelector("#screen > .title") && (!boot || Number(getComputedStyle(boot).opacity) < 0.98)
+          && Number(getComputedStyle(document.getElementById("viewport")).opacity) > 0) window.wideTitleFrames++;
+        if (boot || !document.querySelector('[data-test="vt-title-new"]')) requestAnimationFrame(sample);
+      };
+      requestAnimationFrame(sample);
+    });
+    await page.reload();
+    await page.locator("#boot").waitFor({ state: "detached" });
+    await waitScene(page, "title");
+    assert.equal(await page.evaluate(() => window.wideTitleFrames), 0);
+
+    // ロード画面の「進む」にタップが届き、閉じるとすぐにタイトルに戻る。
+    await page.evaluate(async () => {
+      const { withLoading } = await import("./js/core/loading.js");
+      window.gateTest = withLoading(() => new Promise(resolve => { window.finishGate = resolve; }),
+        { delayMs: 0, comics: [] });
+    });
+    await page.locator(".loading-gate:not(.is-preparing)").waitFor();
+    assert(await page.evaluate(() => {
+      const button = document.querySelector(".loading-gate .loading-proceed").getBoundingClientRect();
+      return !!document.elementFromPoint(button.x + button.width / 2, button.y + button.height / 2)?.closest(".loading-gate");
+    }));
+    await page.waitForFunction(() => typeof window.finishGate === "function");
+    await page.evaluate(() => { window.finishGate(); return window.gateTest; });
+    await page.locator(t("vt-title-config")).tap();
+    await waitScene(page, "sheet");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("first-rotation-waits-for-portrait-styles", async (page) => {
+    let release;
+    const paused = new Promise(resolve => { release = resolve; });
+    await page.route("**/css/look-vertical.css*", async route => { await paused; await route.continue(); });
+    const request = page.waitForRequest("**/css/look-vertical.css*");
+    await page.setViewportSize(TALL.viewport);
+    await request;
+    try {
+      assert.equal(await page.locator("#viewport").isVisible(), false);
+      await page.setViewportSize(WIDE.viewport);
+      await page.locator(t("title-new")).waitFor();
+      await page.setViewportSize(TALL.viewport);
+    } finally { release(); }
+    await waitScene(page, "title");
+    await page.locator(t("vt-title-config")).tap();
+    await waitScene(page, "sheet");
+  }, { ...WIDE, pageEntry: entry });
+
   await check("title-and-conversation-in-two-line-pages", async (page) => {
     await waitScene(page, "title");
     assert.equal(await page.evaluate(() => document.documentElement.dataset.look), "vertical");
@@ -727,18 +779,21 @@ await suite("look_vertical", async (check) => {
   await check("unsupported-scenes-show-the-rotate-hint", async (page) => {
     await waitScene(page, "title");
     await page.evaluate(async () => {
-      const core = await import("./js/core/state.js");
-      const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 1, day: 2, slot: 0 });
-      (await import("./js/core/ui.js")).clearScreen();
-      const { newSession, openBench } = await import("./js/craft/session.js");
-      const { stepPlace } = await import("./js/craft/steps.js");
-      const cs = newSession("tutorial"); openBench(cs, {}); window.placeRun = stepPlace(cs);
+      const { runIchidai } = await import("./js/minigames/ichidai.js");
+      window.stopCards = new AbortController();
+      void runIchidai({ signal: window.stopCards.signal });
     });
     await page.waitForFunction(() => getComputedStyle(document.getElementById("rotate-hint")).display !== "none", null, { timeout: 10000 });
     assert.equal(await scene(page), "");
     const hint = await page.evaluate(() => document.getElementById("rotate-hint").innerText.replace(/\s+/g, " "));
     assert(hint.includes("この場面は横向きで遊びます"), hint);
     await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true");
+    await page.setViewportSize(WIDE.viewport);
+    await page.locator("#rotate-hint").waitFor({ state: "hidden" });
+    await page.locator(t("ichi-help")).tap();
+    await page.locator(t("ichi-help-close")).tap();
+    await page.evaluate(() => window.stopCards.abort());
+    await page.locator("#rotate-hint .portrait-required").waitFor();
   }, { ...TALL, pageEntry: entry });
 
   await check("craft-pack-and-steam-timer-in-the-shell", async (page) => {
@@ -1242,12 +1297,16 @@ await suite("look_vertical", async (check) => {
     await assertPadHome(page, "short map");
   }, { ...SHORT, pageEntry: entry });
 
-  await check("landscape-uses-the-current-screen", async (page) => {
-    // 横持ち: 外枠を出さず、本編の画面のまま
-    await page.locator(t("title-new")).waitFor();
-    await page.waitForTimeout(400);
-    const state = await page.evaluate(() => ({ shell: !!document.querySelector(".vt-shell"), vt: document.documentElement.dataset.vt || "", opacity: getComputedStyle(document.getElementById("viewport")).opacity }));
-    assert.deepEqual(state, { shell: false, vt: "", opacity: "1" });
+  await check("landscape-blocks-title-input", async (page) => {
+    await page.locator("#rotate-hint .portrait-required").waitFor();
+    await page.locator(t("title-config")).focus();
+    await page.keyboard.press("Enter");
+    const box = await page.locator(t("title-config")).boundingBox();
+    await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+    assert.equal(await page.locator("#modal.show").count(), 0);
+    await page.setViewportSize(TALL.viewport);
+    await page.locator(t("vt-title-config")).tap();
+    await waitScene(page, "sheet");
   }, { ...WIDE, pageEntry: entry });
 
   await check("switching-looks-leaves-no-trace", async (page) => {

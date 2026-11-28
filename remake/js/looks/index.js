@@ -19,7 +19,7 @@ async function apply(look) {
     catch (error) { console.error(`[look] ${look} を読み込めませんでした`, error); return; }
   }
   // 読み込みを待つ間に別の様式へ切り替わっていたら、古いほうは出さない。
-  if (mine === revision) loaded.get(look).setActive(true);
+  if (mine === revision) return loaded.get(look).setActive(true);
 }
 
 /** 起動時に一度呼ぶ（core/look.js の initLook の後）。 */
@@ -27,5 +27,5 @@ export function installLooks() {
   if (installed) return;
   installed = true;
   document.addEventListener(LOOK_EVENT, (event) => apply(event.detail.look));
-  apply(currentLook());
+  return apply(currentLook());
 }
