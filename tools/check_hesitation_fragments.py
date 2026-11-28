@@ -13,7 +13,9 @@ remake/js/ 配下の JS 文字列リテラル）から、文節の頭にある
 
 許可リストに残っているのは、感嘆・相づち・擬音など言いよどみではないと
 仕分け済みのものだけ。新しく正当な感嘆などを書いて落ちた場合は、
-その「かな＋次の1文字」の組を許可リストへ1行追加する。
+その「かな＋次の1文字」の組を許可リストへ1行追加する。「かな＋、」が
+連続する場合は別に検査し、正当な組み合わせだけを「連続:」に続けて
+最初のかなから発話末尾まで記録する。
 言いよどみを書きたい場合は、許可リストへ足すのではなく「…」表記にする。
 
 使い方: python3 tools/check_hesitation_fragments.py [--write-allowlist]
@@ -33,7 +35,7 @@ KANA = re.compile(r"([ぁ-んァ-ヶ])、")
 
 
 def segments_start_fragments(text):
-    """文節の頭にある「かな1文字＋、」と、その次の1文字の組を返す。"""
+    """文節頭の断片と、断片が連続する場合の候補を返す。"""
     found = []
     starts = [0]
     for i, ch in enumerate(text):
@@ -45,7 +47,10 @@ def segments_start_fragments(text):
             nxt = text[m.end():m.end() + 1]
             if nxt.isspace():
                 nxt = ""
-            found.append(m.group(1) + "、" + nxt)
+            found.append(m.group() + nxt)
+            if KANA.match(text, m.end()):
+                # 許可済みの感嘆詞の次にある断片は別の候補として扱う。
+                found.append("連続:" + text[s:].rstrip())
     return found
 
 
@@ -145,6 +150,7 @@ def main():
         lines = [
             "# 言いよどみ断片の許可リスト（tools/check_hesitation_fragments.py が参照）",
             "# 1行 = 「かな＋、＋次の1文字」。言いよどみではないと仕分け済みの組だけを残す。",
+            "# 連続: に続けて最初のかなから発話末尾まで書くと、個別の連続候補を許可する。",
             "# 言いよどみはここへ足さず「…」表記で書くこと（2026-11-24 オーナー決定）。",
         ]
         lines += sorted(hits)
