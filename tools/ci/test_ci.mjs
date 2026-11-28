@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { test } from "node:test";
-import { BASE_SPARSE, PR_BROWSER_MAX_WEIGHT, browserSuites, globToRegExp, loadManifest, matchesAny, ROOT, selectSuites, shard } from "./lib.mjs";
+import { BASE_SPARSE, PR_BROWSER_MAX_WEIGHT, browserSuites, estimatedMinutes, globToRegExp, loadManifest, matchesAny, ROOT, selectSuites, shard } from "./lib.mjs";
 
 const manifest = loadManifest();
 
@@ -31,6 +31,7 @@ test("suite manifest is complete and consistent", () => {
     if (s.kind === "browser") {
       assert.ok(s.paths?.length, `${s.id}: browser suites need paths`);
       assert.ok(typeof s.weight === "number" && s.weight > 0, `${s.id}: weight`);
+      assert.ok(Number.isFinite(estimatedMinutes(s)) && estimatedMinutes(s) > 0, `${s.id}: estimated minutes`);
       assert.ok(typeof s.timeout === "number" && s.timeout > 0, `${s.id}: timeout`);
       assert.ok(!s.chrome || ["playwright", "system"].includes(s.chrome), `${s.id}: chrome`);
     }
@@ -97,4 +98,16 @@ test("sharding keeps every suite once and stays within the group limit", () => {
   const extra = shard(suites.filter((s) => s.id === "hud-fortune"));
   assert.ok(extra[0].sparse.includes("/asset_sources/fortune-teller-682/"));
   assert.equal(extra[0].pillow, true);
+});
+
+test("measured runtimes guide the shards and preserve path-related PR coverage", () => {
+  const suite = (id, weight, minutes) => ({
+    id, kind: "browser", paths: ["game.js"], weight, estimatedMinutes: minutes,
+  });
+  const suites = [suite("long", 2, 28), suite("medium", 5, 10), suite("short", 3)];
+  assert.deepEqual(selectSuites({ suites, always_all: [] }, ["game.js"]), suites);
+  const groups = shard(suites, { maxShards: 2 });
+  assert.deepEqual(groups.map(({ suites, weight }) => [suites, weight]), [
+    ["long", 28], ["medium,short", 13],
+  ]);
 });

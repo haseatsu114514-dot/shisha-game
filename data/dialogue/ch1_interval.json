@@ -63,7 +63,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（県大会でも勝ったら、今度は何て呼ばれるんだろう）"
+          "text": "（次の大会でも勝ったら、今度は何て呼ばれるんだろう）"
         }
       ],
       "branches": {
@@ -117,7 +117,7 @@
           {
             "speaker": "hiyori",
             "face": "normal",
-            "text": "朝のお話は、また今度、……儚く、待ってるね"
+            "text": "朝のお話は、また今度。……儚く、待ってるね"
           },
           {
             "speaker": "hajime",
@@ -198,7 +198,7 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "はじめ。次の大会、どこで開催されるか知ってるか？",
+          "text": "はじめよ。次の大会、どこで開催されるか知っておるか？",
           "portrait": false
         },
         {
@@ -209,7 +209,7 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "……まだ正式発表前だから、詳しくは言えないが",
+          "text": "……まだ正式発表前ゆえ、詳しくは言えぬが",
           "portrait": false
         },
         {
@@ -428,7 +428,7 @@
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "はい、……俺です"
+            "text": "はい……俺です"
           },
           {
             "speaker": "customer",

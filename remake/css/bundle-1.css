@@ -4144,9 +4144,9 @@ body[data-scene-mood="dread"] #bg::after { content: ""; position: absolute; inse
 .tx-red { color: #ff7a7a; }
 .tx-blue { color: #8fb8ff; }
 .tx-sub { font-size: 0.8em; color: var(--text-dim); }
-/* 会話演出（#2828）: 「（」で始まる心の声は薄墨・少し小さく。震え文字は行ごとに小刻みに揺らし、
+/* 会話演出（#2828）: 「（」で始まる心の声は明るい薄紫で、本文と同じ大きさ。震え文字は行ごとに小刻みに揺らし、
    設定「揺れ・閃光を減らす」・端末の「動きを減らす」・SKIP中は止める。 */
-.tx-voice { color: #9aa0b8; font-size: 0.9em; text-shadow: none; }
+.tx-voice { color: #e4daf7; font-weight: 700; }
 .tx-shiver { display: inline-block; animation: tx-shiver 0.08s steps(2) infinite; }
 @keyframes tx-shiver { 0% { translate: -1px 0; } 50% { translate: 1px 1px; } 100% { translate: 0 -1px; } }
 body:is(.reduce-shake, .vn-skip) .tx-shiver { animation: none; }
@@ -11705,24 +11705,18 @@ html:root body:not(:root) #stage #modal > .modal-box.ts-contest-modal .modal-act
 .ent-card[data-art="classic"] .ent-portrait { height: 145%; bottom: -38%; }
 .entrance .ent-tag {
   position: relative; inset: auto; grid-column: 2; grid-row: 1; align-self: end; justify-self: start;
-  display: grid; grid-template-columns: 30% 1fr; align-items: center;
-  width: 366px; aspect-ratio: 2136 / 612; padding: 0; isolation: isolate;
-  color: #fff1d4; background: #1a121a; transform: rotate(-2deg); transform-origin: 16% 70%;
+  display: grid; grid-template-rows: 23px 84px; row-gap: 10px; justify-items: start;
+  width: 207px; padding: 0; background: transparent; color: #eee8d9;
 }
-.entrance .ent-tag.printed { background: transparent; }
-.ent-tag > img, .ent-number > img {
-  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none;
-}
-.ent-tag-label {
-  grid-column: 2; grid-row: 1; display: grid;
-  font: 900 28px/1.05 var(--font); letter-spacing: .06em;
-}
+.ent-tag-label, .ent-tag > img { grid-area: 1 / 1; }
+.ent-tag-label { align-self: center; font: 500 19px/1 var(--font); letter-spacing: .12em; white-space: nowrap; }
+.ent-tag > img, .ent-number > img { width: 100%; height: 100%; object-fit: contain; object-position: left center; pointer-events: none; }
 .ent-tag.printed > .ent-tag-label, .ent-number.printed { color: transparent; }
 .ent-number {
-  position: relative; grid-column: 1; grid-row: 1; justify-self: center;
-  width: 83%; height: 80%; display: grid; place-items: center;
-  font: 900 78px/1 var(--font); color: #f9df98;
+  position: relative; grid-area: 2 / 1; width: 88px; height: 100%;
+  font: 400 88px/.9 "Suien Name", serif; letter-spacing: -.04em;
 }
+.ent-number > img { position: absolute; inset: 0; }
 .entrance .ent-meta {
   grid-column: 2; grid-row: 2; max-width: 100%; min-width: 0;
   text-align: left; transform: none;
@@ -11734,17 +11728,8 @@ html:root body:not(:root) #stage #modal > .modal-box.ts-contest-modal .modal-act
 }
 .entrance .ent-note { margin: 0; padding: 12px 20px; background: #100c19e8; color: #fff2dc; font-size: 24px; line-height: 1.55; }
 .entrance .ent-speaker { display: block; margin-bottom: 3px; color: #f3cf87; font-size: .85em; font-weight: 700; }
-.ent-card.in .ent-tag { animation: ent-tag-in .42s cubic-bezier(.16, .8, .24, 1) both; }
-.ent-card.in .ent-number { animation: ent-number-stamp .38s ease-out both; }
-@keyframes ent-tag-in {
-  from { translate: -48px 0; opacity: 0; }
-  to { translate: 0 0; opacity: 1; }
-}
-@keyframes ent-number-stamp {
-  0% { scale: 1.45; }
-  65% { scale: .94; }
-  100% { scale: 1; }
-}
+.ent-card.in .ent-tag { animation: ent-ink-in .38s ease-out both; }
+@keyframes ent-ink-in { from { opacity: 0; } to { opacity: 1; } }
 .ent-card.in .ent-portrait { animation: ent-arrive .5s var(--ease-snap) both; }
 .ent-card.in .ent-meta { animation: ent-name-in .4s .1s var(--ease-snap) both; }
 @keyframes ent-arrive { from { transform: translateX(-10%); opacity: .15; } to { transform: none; opacity: 1; } }

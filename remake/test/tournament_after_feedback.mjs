@@ -12,7 +12,7 @@ assert(after);
 const lines = after.lines.map(line => (line.text || "").replace(/\[\/?[a-z]+\]/g, ""));
 assert(lines.includes("……今日の煙、すごかったです。きれいでした。……でも"));
 assert(lines.includes("……最後の方の、はじめさんの顔。少しだけ、浮かれて見えました"));
-assert(lines.includes("ドアベルが鳴って、彼女は夜に消えた。浮かれてた？ 優勝した日の、俺の顔が？"));
+assert(lines.includes("ドアベルが鳴って、彼女は夜に消えた。浮かれていたのか、優勝した日の俺の顔が。"));
 assert(!lines.some(text => text.includes("濁ってた") || text.includes("優勝した日の煙が")));
 for (const flag of ["_met_tsumugi", "_tsumugi_contest_submitted"]) {
   assert(after.lines.some(line => line.type === "condition" && line.condition_type === "flag" && line.flag === flag));

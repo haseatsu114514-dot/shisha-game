@@ -244,7 +244,9 @@ await suite("ch5-full-flow", async check => {
     assert.equal((await get(page)).day, 55);
     await page.locator(dt("ch5-go-venue")).click();
     await page.locator(dt("ch5-venue-go")).click();
-    await page.locator(matchScene("ch5_match_day_arrival")).waitFor();
+    const matchDay = page.locator(matchScene("ch5_match_day_arrival"));
+    await matchDay.waitFor();
+    assert.equal(await matchDay.locator("h1").textContent(), "tonariの店長　はじめ");
     state = await get(page);
     assert.equal(state.flags._ch5.part, "match");
     assert.equal(state.flags._ch5_match_started, true);

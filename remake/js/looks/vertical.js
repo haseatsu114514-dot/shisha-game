@@ -91,7 +91,7 @@ function start() {
   const scenes = {
     // CONTINUE は本編の文字・ボタン・アニメーションを直接表示する。
     continue: { native: true }, tournament: { native: true }, tournamentResult: createTournamentResultScene(),
-    interlude: { native: true },
+    interlude: { native: true }, chapterClear: { native: true },
     title: createTitleScene(frame), vn: createTalkScene(frame), map: createMapScene(frame), menu: createMenuScene(frame),
     sheet: createSheetScene(frame), cover: createCoverScene(frame, own), board: createBoardScene(frame), craft: createCraftScene(frame),
   };
@@ -126,6 +126,7 @@ function start() {
     root.toggleAttribute("data-vt-tournament", next === "tournament");
     root.toggleAttribute("data-vt-result", next === "tournamentResult");
     root.toggleAttribute("data-vt-interlude", next === "interlude");
+    root.toggleAttribute("data-vt-clear", next === "chapterClear");
     if (next !== "cover") holdSince = 0; // 覆いを待つ時間は、覆いに入るたびに数え直す（前の転換から数えると、すぐ待ちすぎと判断してしまう）
     if (scene && !scene.native) {
       root.dataset.vtShell = "on";
@@ -142,12 +143,13 @@ function start() {
   function evaluate(now, periodic) {
     const wipe = document.querySelector("#wipe.resume");
     if (wipe) resumeSmoke.append(...wipe.querySelectorAll(".wipe-smoke, .wipe-haze"));
-    // 第1章の幕は本編の札をそのまま全面に出す。重なった小窓や操作画面があれば通常の判定に任せる。
+    // 大会入場は全章で同じ縦ポスターを使う。日付や幕の札は第1章だけを全面に出す。
     const frontMotion = motionLayer.root.lastElementChild;
     const frontFx = document.getElementById("fx")?.lastElementChild;
-    const interlude = state?.chapter === 1 && !isLoading() && !topDialogOpen() && !document.querySelector("#modal.show") &&
-      (frontMotion ? frontMotion.matches(".day-card, .tr-dawn") :
-        frontFx?.matches('.beat, .round-cut, .entrance, .day-card, .tr-dawn, .chapter-poem[data-poem="poem_ch1"]'));
+    const entrance = !frontMotion && frontFx?.matches(".entrance");
+    const chapterOneCard = state?.chapter === 1 && (frontMotion ? frontMotion.matches(".day-card, .tr-dawn") :
+      frontFx?.matches('.beat, .round-cut, .day-card, .tr-dawn, .chapter-poem[data-poem="poem_ch1"]'));
+    const interlude = (entrance || chapterOneCard) && !isLoading() && !topDialogOpen() && !document.querySelector("#modal.show");
     let found = interlude ? { kind: "scene", name: "interlude" } : boardOpen() ? { kind: "scene", name: "board" } : detectState(wipe ? [...own, wipe] : own);
     // 作業台に重なった大会中継・投票は、前面の大会用レイアウトで操作する。
     const tournament = found.name === "tournament" || found.name === "tournamentResult";
@@ -163,6 +165,8 @@ function start() {
     setLivePortraitScene("");
     if (found.variant === "end" && document.querySelector('#screen > .gameover[data-layout="manga"]:not(.done)')) {
       found = { kind: "scene", name: "continue" };
+    } else if (found.variant === "end" && document.querySelector("#screen > .end-screen.clear:not(.done) [data-test=end-chapter2]")) {
+      found = { kind: "scene", name: "chapterClear" };
     }
     // シーシャ作り: 作業台の今の工程に縦の画面があれば、作る場面として写す（会話・写せる小窓が上に出ている間と、画面の一番上の小窓の間は除く）
     if (found.kind !== "scene" && !topDialogOpen() && craftOpen()) found = { kind: "scene", name: "craft" };

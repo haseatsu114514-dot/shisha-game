@@ -60,7 +60,7 @@ const test = name => `ch5-${name}`;
 
 // 試合当日の場面カード文案（到着→一杯目→二杯目の前の順）。
 const MATCH_CARDS = {
-  arrival: { title: "試合当日", description: "会場に着いた。あとは、二台の煙だけ。" },
+  arrival: { title: "tonariの店長　はじめ", description: "試合当日。SHISHA-9000との二本勝負に向かう。" },
   firstCup: { title: "一台目", description: "一台目は、9000が、はじめの待ち方を再現する。" },
   beforeSecond: { title: "二台目の前に", description: "ここまでの日々が、二台目を作る。" },
 };

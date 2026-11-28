@@ -14,6 +14,8 @@ const idsOf = chapter => {
 };
 const sorted = list => [...list].sort();
 assert.deepEqual(idsOf(1), ["naru", "adam", "minto", "hajime"]);
+const hajimeTitles = [...block.matchAll(/\{ id: "hajime", ring: "([^"]+)"/g)].map(match => match[1]);
+assert.deepEqual(hajimeTitles, ["tonariの新星", "橙須の新星", "A県を背負う職人", "日本を背負う職人"]);
 for (const [chapter, roster] of [[2, CH2], [3, CH3], [4, CH4]]) {
   const ids = idsOf(chapter);
   assert.deepEqual(sorted(ids), sorted(roster), `第${chapter}章の入場カードが出場者と一致しない`);
@@ -32,7 +34,7 @@ for (const note of Object.values(eveNotes)) {
 // 正本: スミさんの入場メッセージは「目の前の一人に届けてこい」。優勝の場面がこの言葉を回収するので、
 // 前夜の選択で一言が差し替わっても、はじめの入場カードには必ずこの言葉が出る。
 const sendOff = "目の前の一人に届けてこい";
-assert.ok(block.includes(`{ id: "hajime", ring: "tonari の新星", note: "──行ってこい。${sendOff}" }`));
+assert.ok(block.includes(`{ id: "hajime", ring: "tonariの新星", note: "──行ってこい。${sendOff}" }`));
 for (const [choice, note] of Object.entries(eveNotes)) assert.ok(note.endsWith(sendOff), `${choice}: ${note}`);
 const reveal = JSON.parse(read("../../data/dialogue/ch1_tournament.json")).dialogues.find(d => d.dialogue_id === "ch1_tournament_reveal");
 assert.ok(reveal.lines.some(line => line.speaker === "hajime" && line.text?.includes(`${sendOff}、か`)), "優勝の場面が入場の言葉を回収する");

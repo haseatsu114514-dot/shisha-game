@@ -171,6 +171,33 @@ const manual = (page) => page.evaluate(async () => {
 const typed = (page) => page.waitForFunction(() => document.querySelector("#vn .vn-next")?.classList.contains("show") || document.querySelector("#vn .vn-choices.show"));
 
 await suite("look_vertical", async (check) => {
+  await check("exhibition-audience-vote-details-and-next", async page => {
+    await seedChapterFive(page);
+    await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      Object.assign(state, { phase: "tournament", day: 52 });
+      Object.assign(state.flags, { _ch5_match_started: true, _ch5_match_scheduled: true });
+      const progress = state.flags._ch5;
+      Object.assign(progress, { part: "match", scheduleDecision: "decide" });
+      for (const id of ["ch5_schedule_contact", "ch5_match_day_arrival", "ch5_copy_first_cup", "ch5_relationship_before_second_cup"]) progress.read[id] = true;
+      await (await import("./js/chapters/ch5.js")).resumeChapterFive();
+    });
+    await waitScene(page, "tournament");
+    const first = page.locator(t("ch5-second-cup"));
+    assert.match(await first.innerText(), /はじめ 19／9000 21/);
+    await page.locator(t("ch5-second-cup-start")).tap({ trial: true });
+    await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      state.flags._ch5.secondCup = { total: 90, category: "steady", votes: { hajime: 26, machine: 14 } };
+      await (await import("./js/chapters/ch5.js")).resumeChapterFive();
+    });
+    const panel = page.locator(t("ch5-match"));
+    await panel.locator("summary").tap();
+    assert.match(await panel.locator("details[open]").innerText(), /合計 はじめ 45／9000 35/);
+    await page.locator(t("ch5-continue")).tap();
+    await waitScene(page, "vn");
+  }, { ...SHORT, pageEntry: entry });
+
   await check("tournament-live-frame-survives-rotation", async (page) => {
     await page.evaluate(() => { void window.__remake.dev.show("interval"); });
     await waitScene(page, "tournament");
@@ -390,9 +417,10 @@ await suite("look_vertical", async (check) => {
     for (const [i, name] of ["なる", "アダム", "みんと", "はじめ"].entries()) {
       const card = page.locator(".ent-card.in").filter({ has: page.locator(".ent-name", { hasText: name }) });
       await card.waitFor();
-      assert.equal(await card.locator(".ent-tag").textContent(), `エントリーナンバー${i + 1}`);
+      const folio = String(i + 1).padStart(2, "0");
+      assert.equal(await card.locator(".ent-tag").textContent(), `エントリーナンバー${folio}`);
       await card.locator(".ent-tag.printed > img").waitFor();
-      assert.equal(await card.locator(".ent-number.printed > img").getAttribute("src"), `img/ui/tournament-show/entry-digit-${i + 1}.webp`);
+      assert.equal(await card.locator(".ent-number.printed > img").getAttribute("src"), `img/ui/tournament-show/entry-number-${folio}.webp`);
       assert.equal(await card.locator(".ent-name").textContent(), name);
       const id = ["naru", "adam", "minto", "hajime"][i];
       for (const [selector, stem] of [[".ent-portrait", id], [".ent-backdrop", "bg_" + id]]) {
@@ -416,6 +444,23 @@ await suite("look_vertical", async (check) => {
     assert.deepEqual(await page.locator(t("vt-dpad")).boundingBox(), padBox);
     await pad(page, "down");
     await page.locator(t("vt-row-minto")).waitFor();
+  }, { ...SHORT, pageEntry: entry });
+
+  await check("national-entrant-title-on-portrait-poster", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      const { ENTRANCE_CARDS, playEntrance } = await import("./js/chapters/tournament-entrance.js");
+      state.chapter = 3;
+      window.sequence = playEntrance([ENTRANCE_CARDS[3].at(-1)], { auto: false });
+    });
+    await waitScene(page, "interlude");
+    const card = page.locator(".ent-card.in");
+    assert.equal(await card.locator(".ent-ring").innerText(), "A県を背負う職人");
+    const name = await card.locator(".ent-name").boundingBox();
+    const portrait = await card.locator(".ent-portrait").boundingBox();
+    assert(portrait.y < name.y && portrait.width > SHORT.viewport.width * .9, "national entrant uses the full-width portrait composition");
+    await page.evaluate(() => window.sequence);
   }, { ...SHORT, pageEntry: entry });
 
   await check("tonari-menu-lime-and-menu-sheets", async (page) => {
