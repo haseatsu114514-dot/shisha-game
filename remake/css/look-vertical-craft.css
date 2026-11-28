@@ -278,6 +278,58 @@
 .vtc-ht-card b { font-size: calc(1.3 * var(--u)); line-height: 1.25; white-space: normal; text-align: center; word-break: keep-all; overflow-wrap: anywhere; }
 .vtc-ht-ok { right: var(--edge); bottom: var(--low); }
 
+/* ───────── 炭焼き（試作の coal・VPL54・VPL55・VPL57・VPL65・VPL104）: 上に炭壺とトングを持つはじめ、下に寄りのコンロと炭 ───────── */
+.vtc[data-step="heat"] .vtc-pic { -webkit-mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); }
+.vtc[data-step="heat"] .vtc-veil { top: calc(100% - var(--cp) - 12.2 * var(--u) - var(--safe-b)); }
+.vtc-heat-pic, .vtc-coal-up { position: absolute; inset: 0; }
+/* はじめ（背景なしの人物）。コンロが点くと、下から熱の明かりが差す */
+.vtc-coal-hero { --hw: min(calc(35 * var(--u)), calc((100cqh - var(--cp) - 11.8 * var(--u)) * 0.7)); position: absolute; left: 50%; top: calc(4.4 * var(--u)); width: var(--hw); aspect-ratio: 2 / 3; transform: translateX(-50%); }
+.vtc-coal-hero > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 var(--u) calc(2 * var(--u)) #000a) brightness(0.86); transition: filter 0.8s; }
+.vtc-coal-up.on .vtc-coal-hero > img { filter: drop-shadow(0 var(--u) calc(2 * var(--u)) #000a) brightness(1.04); }
+.vtc-heat-glow { position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; height: 52%; background: radial-gradient(ellipse 75% 100% at 50% 100%, #ff6a2a80, #ff6a2a2e 48%, transparent 74%);
+  mix-blend-mode: screen; opacity: 0; transition: opacity 0.8s; pointer-events: none; }
+.vtc-coal-up.on .vtc-heat-glow { opacity: 1; animation: vtc-heat-breathe 2.6s ease-in-out infinite; }
+@keyframes vtc-heat-breathe { 50% { opacity: 0.72; } }
+/* 取った炭は炭壺の中へ（取った時の焼け具合の段階で光り方が替わる） */
+.vtc-slots { position: absolute; inset: 0; }
+.vtc-slot { position: absolute; transform: translate(-50%, -50%); animation: vtc-slot-in 0.45s var(--ease-out); }
+@keyframes vtc-slot-in { from { transform: translate(-50%, 240%) scale(1.5); opacity: 0.2; } }
+.vtc-tcoal { --tw: calc(var(--hw) * 0.135); position: relative; display: block; width: var(--tw); height: calc(var(--tw) * 0.805); }
+.vtc-tcoal img { position: absolute; left: calc(var(--tw) * -0.3638); top: calc(var(--tw) * -0.3737); width: calc(var(--tw) * 1.7241); max-width: none; }
+.vtc-tcoal .lit { opacity: 1; filter: drop-shadow(0 0 calc(0.8 * var(--u)) #ff5a2acc); }
+.vtc-tcoal.pre .lit { opacity: 0.8; } .vtc-tcoal:is(.raw, .early) .lit { opacity: 0.35; filter: none; }
+.vtc-tcoal.hot .lit { filter: saturate(0.7) drop-shadow(0 0 calc(0.6 * var(--u)) #ff5a2a99); } .vtc-tcoal.over .lit { opacity: 0.4; filter: grayscale(0.8); }
+/* 判定の札（左上に炭ごとに積む） */
+.vtc-coal-judges { position: absolute; z-index: 2; left: calc(1.4 * var(--u)); top: calc(7.4 * var(--u)); display: grid; justify-items: start; gap: calc(0.5 * var(--u)); pointer-events: none; }
+@container vtshell (min-aspect-ratio: 39 / 71) { .vtc-coal-judges { top: calc(6.6 * var(--u)); } .vtc-jtag { font-size: calc(1.5 * var(--u)); } }
+/* コンロ（絵は 3:2）: 下の端にそろえ、パネルの高さに収める。点くとコイルの赤い明かりが灯る */
+.vtc-heat-ctrl .vtc-stove { position: absolute; inset: auto; left: 50%; bottom: calc(1.4 * var(--u)); width: calc((var(--cp) - 0.6 * var(--u)) * 1.5); aspect-ratio: 1536 / 1024; transform: translateX(-50%);
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 calc(3.4 * var(--u))); mask-image: linear-gradient(180deg, transparent, #000 calc(3.4 * var(--u))); }
+.vtc-stove > img { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 var(--u) calc(1.6 * var(--u)) #000b) brightness(0.8); transition: filter 0.6s; pointer-events: none; }
+.vtc-stove.on > img { filter: drop-shadow(0 var(--u) calc(1.6 * var(--u)) #000b) brightness(1); }
+.vtc-stove::after { content: ""; position: absolute; left: 18%; top: 14%; width: 64%; height: 76%; border-radius: 50%; background: radial-gradient(closest-side, #ff5a2a59, transparent); opacity: 0; transition: opacity 0.8s; pointer-events: none; }
+.vtc-stove.on::after { opacity: 1; }
+/* 炭（本編の炭の --red・--ash で、黒い面から赤へ、過ぎると灰をまとう） */
+.vtc-coal { --cw: calc(9.4 * var(--u)); position: absolute; z-index: 1; width: var(--cw); height: calc(var(--cw) * 0.805); transform: translate(-50%, -50%); padding: 0; border: 0; background: none; touch-action: manipulation; }
+.vtc-coal::before { content: ""; position: absolute; inset: calc(-1.3 * var(--u)); border-radius: 30%; }
+.vtc-coal img { position: absolute; left: calc(var(--cw) * -0.3638); top: calc(var(--cw) * -0.3737); width: calc(var(--cw) * 1.7241); max-width: none; pointer-events: none; }
+.vtc-c-lit { opacity: var(--red, 0); filter: saturate(calc(1 - var(--ash, 0) * 0.7)) drop-shadow(0 0 calc(var(--red, 0) * 1.4 * var(--u)) #ff5a2acc); }
+.vtc-c-ash { position: absolute; inset: 6% 4%; border-radius: 22%; background: radial-gradient(ellipse at 50% 40%, #e9e4e0, #b9b2ad 70%, #8f8884); mix-blend-mode: screen; opacity: calc(var(--ash, 0) * 0.85); pointer-events: none; }
+.vtc-c-seat { position: absolute; left: -10%; right: -10%; bottom: -16%; height: 52%; border-radius: 50%; background: radial-gradient(closest-side, #000000b3, #00000059 55%, transparent); pointer-events: none; }
+.vtc-c-seat::after { content: ""; position: absolute; inset: -18% -8%; border-radius: 50%; background: radial-gradient(closest-side, #ff5a2a8c, transparent 72%); mix-blend-mode: screen; opacity: calc(0.35 + var(--red, 0) * 0.65); }
+/* 枠の光: 取り頃の少し前に一度だけ瞬き（本編の構え）、取り頃の間は明滅する（本編の取り頃の光） */
+.vtc-coal::after { content: ""; position: absolute; inset: calc(-0.6 * var(--u)); border-radius: 30%; box-shadow: 0 0 0 calc(0.25 * var(--u)) #fff3b0, 0 0 calc(1.4 * var(--u)) #ffcf6b; opacity: 0; pointer-events: none; }
+.vtc-coal.blink::after { animation: vtc-coal-blink 0.32s ease-out; }
+.vtc-coal.pikan::after { animation: vtc-coal-ready 0.35s ease-in-out infinite alternate; }
+.vtc-coal.soon::after { opacity: 0.3; }
+@keyframes vtc-coal-blink { 40% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes vtc-coal-ready { from { opacity: 0.4; } to { opacity: 1; } }
+.vtc-coal:active { scale: 0.95; }
+.vtc-coal.taken { animation: vtc-coal-take 0.36s var(--ease-out) forwards; pointer-events: none; }
+@keyframes vtc-coal-take { to { transform: translate(-50%, -260%) scale(0.6); opacity: 0; } }
+.vtc-coal.dropped { animation: vtc-coal-drop 0.6s ease-in forwards; pointer-events: none; }
+@keyframes vtc-coal-drop { to { transform: translate(-50%, -30%) scale(0.85); opacity: 0; filter: grayscale(1); } }
+
 /* ───────── 工程の結果（本編の結果の札を、下の段の代わりに出す）と始まりの数え ───────── */
 .vtc[data-result="on"] .vtc-body { visibility: hidden; }
 .vtc-result { position: absolute; z-index: 20; left: 0; right: 0; bottom: 0; padding: 0 calc(1.2 * var(--u)) calc(var(--low) + var(--safe-b)); animation: vtc-fade 0.25s ease-out; }

@@ -5563,9 +5563,9 @@
     },
     {
       "id": "look-vertical",
-      "title": "縦画面（煙の舞台・C案）: 会話を2行ずつ・返事・地図と店へ・tonari の行動選び・LIME と MENU のシート・心得の盤を十字キーで灯す・登場カットインの縦のポスター・シーシャ作りの水入れ・詰め・穴あけ・蒸らし時間（縦の作る場面で長押し・札・タイマー・結果の札を本編へ中継）・ほかの工程は回転案内・横持ちは旧版・第2〜5章の朝の小窓・駅から隣町・場面カード・東京の地図の小窓・第5章の地図・タイトルコール（上にロゴ・真ん中に正方形の章の絵・下に章の情報）",
+      "title": "縦画面（煙の舞台・C案）: 会話を2行ずつ・返事・地図と店へ・tonari の行動選び・LIME と MENU のシート・心得の盤を十字キーで灯す・登場カットインの縦のポスター・シーシャ作りの水入れ・詰め・穴あけ・炭焼き・蒸らし時間（縦の作る場面で長押し・札・炭・タイマー・結果の札を本編へ中継）・ほかの工程は回転案内・横持ちは旧版・第2〜5章の朝の小窓・駅から隣町・場面カード・東京の地図の小窓・第5章の地図・タイトルコール（上にロゴ・真ん中に正方形の章の絵・下に章の情報）",
       "kind": "browser",
-      "weight": 3.6,
+      "weight": 4.5,
       "timeout": 10,
       "paths": [
         "remake/css/look-vertical.css",
@@ -5578,6 +5578,8 @@
         "remake/js/craft/holes.js",
         "remake/js/craft/holes_logic.js",
         "remake/js/craft/holes_templates.js",
+        "remake/js/craft/heat.js",
+        "remake/js/craft/heat_view.js",
         "remake/js/craft/common.js",
         "remake/js/craft/bench-ui.js",
         "remake/js/craft/progress.js",

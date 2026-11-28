@@ -15,6 +15,7 @@ import { createThermo } from "./craft/thermo.js";
 import { waterView } from "./craft/water.js";
 import { packView } from "./craft/pack.js";
 import { holesView } from "./craft/holes.js";
+import { heatView } from "./craft/heat.js";
 import { timerView } from "./craft/timer.js";
 
 /**
@@ -33,7 +34,7 @@ import { timerView } from "./craft/timer.js";
  *                   押す操作は kit.relay(本編の要素) で中継する。長押しは kit.hold(外枠のボタン, () => 本編の要素) で、
  *                   押した時に本編の要素へ pointerdown、離した時に pointerup を送る）
  */
-const VIEWS = [waterView, packView, holesView, timerView];
+const VIEWS = [waterView, packView, holesView, heatView, timerView];
 
 const IMG = new URL("../../../img/", import.meta.url).href;
 const SUMI_FACE = `${IMG}ui/face_icons/new/face_sumi.webp`;
