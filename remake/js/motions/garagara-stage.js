@@ -187,10 +187,10 @@ function signPart(last, title = "シーシャくじ") {
   return node;
 }
 
-/** 連続で引くときの玉置き（手前の細長い木の盆）。n 個の玉が順に並ぶ */
-export function railPart(n) {
-  const gap = Math.min(78, 920 / n), y = 652, width = (n - 1) * gap + 92, left = 640 - width / 2;
-  const xs = [...Array(n)].map((_, i) => 640 + (i - (n - 1) / 2) * gap);
+/** 連続で引くときの玉置き（手前の細長い木の盆）。n 個の玉が順に並ぶ。span は玉を並べる幅（縦画面では見える幅に収める・VPO20） */
+export function railPart(n, { span = 920, center = 640 } = {}) {
+  const gap = Math.min(78, span / n), y = 652, width = (n - 1) * gap + 92, left = center - width / 2;
+  const xs = [...Array(n)].map((_, i) => center + (i - (n - 1) / 2) * gap);
   const count = el("b.kj-rail-count", { text: `0 / ${n}` });
   const node = artPart("rail", "kj-rail", () => el("i.kj-rail-wood", xs.map((x) => el("i.kj-rail-pit", { style: { left: `${x - left - 20}px` } }))));
   Object.assign(node.style, { left: `${left}px`, top: `${y - 24}px`, width: `${width}px` });

@@ -261,5 +261,5 @@ export async function c(mid) {
     SE.select();
     move(set, S_OUT, 560, { easing: E.inOut });
     await move(band, S_OUT, 560, { easing: E.inOut, delay: 70 });
-  }, { cover: true });
+  }, { cover: true, portrait: true }); // 画面いっぱいの絵柄と斜めの帯だけなので、縦の舞台でもそのまま（VPO07）
 }

@@ -9,7 +9,7 @@ import path from "node:path";
 
 const read = file => readFile(new URL(file, import.meta.url), "utf8");
 const strip = source => source.replace(/^import .*;\s*$/gm, "").replace(/\bexport /g, "");
-const [kuji, core, util, stats, data, travelBudget, galleryProgress, kujiTickets, equipment, kujiReveal, flavorMastery, growthStarter, legacyCastSave, chapterSave] = await Promise.all([
+const [kuji, core, util, stats, data, travelBudget, galleryProgress, kujiTickets, equipment, kujiReveal, flavorMastery, growthStarter, legacyCastSave, chapterSave, mintoCheki, motionFrame] = await Promise.all([
   read("../js/daily/kuji.js"), read("../js/core/state.js"), read("../js/core/util.js"),
   read("../js/core/stats.js"), read("../../data/kuji.json"), read("../js/core/travel-budget.js"),
   read("../js/core/gallery-progress.js"), read("../js/daily/kuji-tickets.js"), read("../../data/equipment.json"),
@@ -17,6 +17,8 @@ const [kuji, core, util, stats, data, travelBudget, galleryProgress, kujiTickets
   // state.js と gallery-progress.js の依存も埋め込み、本番の SAVE/LOAD を通す。
   read("../js/core/flavor-mastery.js"), read("../js/core/growth-starter.js"),
   read("../js/core/legacy-cast-save.js"), read("../js/core/chapter-save.js"),
+  read("../js/core/minto-cheki-data.js"), // gallery-progress.js がチェキの絵の一覧（ALL_MINTO_CHEKIS）を読む（PFC14 から）
+  read("../js/core/motion-frame.js"), // kuji-reveal.js が縦の舞台かを見る（VPO17。この検査は横の #modal のまま）
 ]);
 // くじ限定の台（KJ05）だけ実データを渡す（重複でくじ券に替わるかの判定に使う）
 const kujiOnly = Object.fromEntries(JSON.parse(equipment).equipment.filter(e => e.kuji_only).map(e => [e.id, e]));
@@ -29,6 +31,7 @@ const emit = event => {
   if (event === 'money') { moneyEvents++; const callback=reentry; reentry=null; callback?.(); }
 };
 const setPortraitStyleSource = () => {}; // state.js registers a config reader at module level; unrelated to kuji.
+${strip(mintoCheki)}
 ${strip(galleryProgress)}
 ${strip(flavorMastery)}
 ${strip(growthStarter)}
@@ -56,6 +59,7 @@ function addFlavorStock(id, grams) {
   if (!state.flavors.includes(id)) state.flavors.push(id);
 }
 ${strip(kujiTickets)}
+${strip(motionFrame)}
 ${strip(kujiReveal)}
 ${strip(kuji)}
 let root, old, oldTicket, shop = 'home';

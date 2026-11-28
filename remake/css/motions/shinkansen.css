@@ -8,3 +8,5 @@
 .mo-shn-win.near { -webkit-mask-image: linear-gradient(to bottom, transparent 43%, #000 55%); mask-image: linear-gradient(to bottom, transparent 43%, #000 55%); opacity: 0; }
 .mo-shn-pole { position: absolute; left: 0; top: -4%; width: 77px; height: 108%; background: linear-gradient(to right, transparent, #1a2236 50%, transparent); filter: blur(10px); opacity: 0; }
 .mo-shn-flick { background: linear-gradient(80deg, transparent 30%, #fff8e633 46%, transparent 60%); mix-blend-mode: soft-light; opacity: 0; }
+/* 縦画面の縦の舞台（VPO11）: 車内の絵（1280×720）を k 倍で画面の高さいっぱいに。横の位置と倍率は JS（窓を真ん中に） */
+.mo-shn-view { position: absolute; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; }
