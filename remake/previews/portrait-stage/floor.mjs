@@ -8,7 +8,7 @@
 // 上の画面（画面の上半分ほど）は、tonari のフロアの絵（カウンターの中から見た店内。この画面に合わせて作った正方形の絵。VPM25・VPM26）。
 //   席は、奥の壁に沿って3つ、手前の左右に内向きで2つ。客は、席ごとの横長のカード（顔・気分や用件の札・残り秒か満足の顔）で出す。
 //   用件があるカードには「押す」の印（指の印と、聞く・整える・会計）が出て、上の画面を押せば進むと分かる（VPM26）。空いた席は、番号の小さな札だけ。
-//   ほかに置くのは、残り時間・店の評判・店の売上。はじめの印が、選んだ席へ動く（VPM23）。
+//   ほかに置くのは、残り時間・店の評判・店の売上。選んでいる席は、カードの白い枠で分かる（VPM23 のはじめの印は VPM38 で外した）。
 // ── 試作だけの決まり（本編の規則 tonari-floor-model.js は変えていない。合格したら本編へ移す） ──
 //   評判（VPM20・VPM27）: ◎を出すと＋2、○を出すと＋1。**店の評判として、営業をまたいで積み上がる**（ゲージは無い。数字だけ）。
 //     積み上がった評判が多いほど、客が増える（25ごとに一人。3人まで）。10からは、本編の人物（レア客）が遊びに来る。
@@ -52,8 +52,8 @@ const SALES_STEP = 10000;
 //   seats＝絵の中の5つの席（x・y＝席のカードの「下の辺のまん中」を置く所。絵の幅・高さに対する %。カードは席のソファに重ね、下の辺は座面の手前。
 //     奥の壁に沿って3つ＝row 0、手前の左右に内向きで2つ＝row 1）、
 //   chapter＝その店に来る章（並ぶミックスとレア客が変わる）、night＝夜だけの店（はじめから夜の絵）、visitors＝遊びに来る本編の人物（顔のアイコンがある人だけ）、boss＝精算で一言いう人の顔。
-//   奥の3つは、カードの間をあけるため（VPM32）、ソファのまん中（絵の幅の約25%・75%）より少し外の 20%・80%（カードはソファより幅が広いので、ソファの上に乗ったまま）。
-//   手前の左右の2つは、少し内側の 24%・76%（VPM34。壁ぎわのソファの内側の小さな卓のあたり）。
+//   奥の3つは 20%・50%・80%（カードの間をあけた。VPM32）、手前の左右の2つは 24%・76%（少し内側。VPM34）。
+//   絵は、この席に家具がそろうように作り直した（VPM39。奥のソファのまん中・手前の脇の卓のまん中が、席の x。空いた席の番号の丸がそこに乗る）。
 //   絵を替える時は、席の表も合わせる
 const VENUE_VIEW = {
   tonari: { art: "tonari", chapter: 1, night: false, boss: "sumi",
@@ -242,7 +242,7 @@ export class FloorScene {
     try { localStorage.setItem(REP_KEY, JSON.stringify({ ...JSON.parse(localStorage.getItem(REP_KEY) || "{}"), [this.venue.id]: this.rep })); } catch { /* 残せない時は、この回だけ */ }
   }
 
-  /** 営業を作る。本編の規則をそのまま呼び、試作だけの決まり（ミックス案の数・評判で来る客・客の呼び名）は「店の差し替え」で渡す。
+  /** 営業を作る。本編の規則をそのまま呼び、試作だけの決まり（ミックス案の数・評判で来る客・客の呼び名・好きな席に座る）は「店の差し替え」で渡す。
    *  評判で来る客（VPM20・VPM27）: 客の並びのうしろに3人足しておく。店の評判（積み上げ）が 25・50・75 に届いている分は、はじめから来る。
    *  届いていない分は来店の列から外して取っておき、営業の途中で届いたら列へ戻す。本編の人物（レア客）は、評判10から（届いていなければ取っておく）。
    *  その人が入れ替わった3人めの客の刻みには、足した1人めが来る（もとの客足は減らさない）。?visitor=adam で、来る人物を指定できる。 */
@@ -259,7 +259,8 @@ export class FloorScene {
     const plan = { ...def, cast: [...def.cast, ...extra], arrive: [...def.arrive, visitor && thirdAt !== null ? thirdAt : late, late, late] };
     const rename = GUEST_NAME[this.venue.id] || {};
     const guests = Object.fromEntries(Object.entries(this.venue.guests).map(([id, g]) => [id, rename[id] ? { ...g, name: rename[id] } : g]));
-    const venue = { id: this.venue.id, rules: { handSize: this.handSize }, nights: { ...this.venue.nights, [def.id]: plan }, guests };
+    // seatPick: "random"＝客は空いている席に、ばらばらに座る（VPM40。本編は1番から）
+    const venue = { id: this.venue.id, rules: { handSize: this.handSize, seatPick: "random" }, nights: { ...this.venue.nights, [def.id]: plan }, guests };
     // 昼から夜まで通しの店（tonari・ドバイ）は、営業の半ばで日が暮れる。夜だけの店（mukai）は、はじめから夜
     const night = this.view.night;
     const s = createFloorNight({ venue, seed, level: opts.level, chapter: this.view.chapter, daytime: !night, dusk: !night, night: def.id, visitor, floorPerks: this.perks });
@@ -305,7 +306,7 @@ export class FloorScene {
         <span class="fl-box"><i class="fl-burst"></i><span class="fl-who"></span>
           <span class="fl-side"><span class="fl-cell"></span><span class="fl-cue"></span></span>
           <i class="fl-anger">${icon("anger")}</i></span>
-        <i class="fl-no">${i + 1}</i><span class="fl-count"></span>
+        <i class="fl-no"><span>${i + 1}</span></i><span class="fl-count"></span>
       </button>`).join("");
     return `
       <img class="amb" src="${this.roomDay}" alt="">
@@ -320,7 +321,7 @@ export class FloorScene {
             <i class="fl-outlook" role="img" aria-label="いまの調子: まだ分からない">${this.venue.ranks.filter((r) => r.min > 0).map((r) => `<u style="left:${r.min}%"></u>`).join("")}<i></i></i></span>
         </span>
       </div>
-      <div class="fl-tables" role="group" aria-label="全${this.rules.tableCount}卓">${tables}<i class="fl-me" aria-hidden="true"><img src="${this.face("hajime")}" alt=""></i></div>
+      <div class="fl-tables" role="group" aria-label="全${this.rules.tableCount}卓">${tables}</div>
       <span class="pill fl-door" data-on="false">${icon("guest")}<b>まもなく来店</b></span>
       <div class="fl-band" data-on="false"></div>
       <div class="fl-notice" data-on="false"></div>
@@ -350,13 +351,12 @@ export class FloorScene {
         who: root.querySelector(".fl-who"), cell: root.querySelector(".fl-cell"), cue: root.querySelector(".fl-cue"), count: root.querySelector(".fl-count"), keys: {} })),
       clock: q(".fl-clock b"), timebar: q(".fl-timebar i"), sales: q(".fl-sales b"), outlook: q(".fl-outlook"),
       band: q(".fl-band"), notice: q(".fl-notice"), flash: q(".fl-flash"), line: q(".fl-line"),
-      coach: q(".fl-coach"), coachText: q(".fl-coach .say-text"), deck: q(".fl-deck"), who: q(".fl-guest"), rows: q(".fl-rows"), head: q(".fl-mixhead"), busy: q(".fl-busy"), me: q(".fl-me"), door: q(".fl-door"),
+      coach: q(".fl-coach"), coachText: q(".fl-coach .say-text"), deck: q(".fl-deck"), who: q(".fl-guest"), rows: q(".fl-rows"), head: q(".fl-mixhead"), busy: q(".fl-busy"), door: q(".fl-door"),
       rep: { root: q(".fl-rep"), num: q(".fl-rep b") },
       acts: q('[data-slot="acts"]'), layer: q('[data-slot="layer"]'),
     };
     if (this.view.night) { this.duskShown = true; this.refs.room.dataset.dusk = "true"; } // 夜だけの店（mukai）は、はじめから夜の絵
     if (this.shot) this.pose(this.shot);
-    this.moveMe();
     this.renderActs();
     this.renderLayer();
     this.sync();
@@ -455,7 +455,6 @@ export class FloorScene {
     const next = floorAct(this.s, action);
     if (next === this.s) return false;
     this.s = next;
-    this.hopMe();
     this.play(this.s.log);
     this.sync();
     if (this.s.done) this.closeNight();
@@ -579,6 +578,8 @@ export class FloorScene {
       const guest = e.guestId ? s.guests[e.guestId] : null;
       switch (e.type) {
         case "arrive":
+          // 客は好きな席に座る（VPM40）ので、選んでいる席が空いている間に客が来たら、その客の席を選ぶ（下の画面が空席のままにならないように）
+          if (this.mode === "live" && !this.phone.fixed && this.sel !== e.tableId && ["empty", "cool"].includes(this.s.tables[this.sel - 1]?.phase)) this.select(e.tableId);
           this.pop(e.tableId, e.line, "say"); // 来店した客は、気分を吹き出しで言う
           this.remember(e.tableId, e.line);
           this.log(e.rare ? `${guest.name}が遊びに来た！ ${e.tableId}卓へ` : `${e.tableId}卓　${guest.name}「${e.line}」`);
@@ -855,7 +856,7 @@ export class FloorScene {
     const mood = stage ? `<img class="fl-guest-mood" src="${this.art(MOOD_ART[stage.id])}" alt="${stage.label}">` : ""; // 満足の顔は、客の顔の右下に
     const GO = { order: ["order", "聞く"], care: ["ask", "聞く"], tend: ["add", "整える"], bill: ["bill", "会計"] };
     const go = need ? `<button class="fl-go" data-act="fl-table" data-id="${table.id}" data-need="${need}"${shuffling ? " disabled" : ""}${glow ? ` data-coach="true"` : ""}>${icon(GO[need][0])}<b>${shuffling ? "入替中" : GO[need][1]}</b></button>` : "";
-    who.innerHTML = `<span class="fl-guest-face">${guest ? this.guestImg(guest, happy) : ""}<b class="fl-guest-no" aria-label="${table.id}卓">${table.id}</b>${mood}<i class="fl-guest-mark" aria-hidden="true"></i></span>
+    who.innerHTML = `<span class="fl-guest-face">${guest ? this.guestImg(guest, happy) : ""}<b class="fl-guest-no" aria-label="${table.id}卓"><span>${table.id}</span></b>${mood}<i class="fl-guest-mark" aria-hidden="true"></i></span>
       <div class="fl-guest-side">${need
         // 用件がある席（まだ聞いていない）: 上の行は呼び名だけ、下の行に用件の札（会計は金額も）。右の押す所と並んでも切れないように
         ? `<div class="fl-guest-top"><b class="fl-guest-name">${esc(guest.name)}</b></div><div class="fl-guest-need">${chip}${side}</div>`
@@ -935,29 +936,13 @@ export class FloorScene {
       { transform: `translate(${x1}px, ${y1}px) scale(0.7)`, opacity: 0.9 }], { duration: 560, easing: "ease-in-out" }).onfinish = () => node.remove();
   }
 
-  /* ── はじめの印（VPM23）: 選んでいる卓の見出しの左にいて、卓を替えると、そこへ動く。操作すると弾む ── */
-
-  moveMe() {
-    const me = this.refs?.me;
-    if (!me) return;
-    const { x, y, row } = this.seats[this.sel - 1];
-    me.style.setProperty("--x", `${x}%`);
-    me.style.setProperty("--y", `${y}%`);
-    Object.assign(me.dataset, { row: String(row), off: String(["empty", "cool"].includes(this.s.tables[this.sel - 1].phase)) });
-  }
-
-  hopMe() {
-    const me = this.refs?.me;
-    if (!me || this.phone.fixed) return;
-    me.dataset.hop = "false"; void me.offsetWidth; me.dataset.hop = "true";
-  }
+  // はじめの印（VPM23。選んでいる席のカードの左下にいた、はじめの小さな顔）は、VPM38 で外した（オーナー「はじめの○アイコンはいらない」）。選んでいる席は、カードの白い枠で分かる
 
   sync() {
     const s = this.s, r = this.refs;
     if (!r) return;
     s.tables.forEach((table, i) => this.syncTable(r.tables[i], table));
     this.syncDeck();
-    this.moveMe();
     this.syncRep();
     // まもなく来店: 次の客が4秒以内に来て、空いた卓がある時だけ出す
     const nextIn = s.upcoming.length ? s.guests[s.upcoming[0]].arrive - s.t : null;
@@ -1065,7 +1050,6 @@ export class FloorScene {
     if (id !== this.reopen) this.reopen = 0;
     this.sel = id;
     for (const spot of this.refs.tables) spot.root.dataset.sel = String(spot.root.dataset.id === String(id));
-    this.moveMe();
     this.syncDeck(); // 下の画面を、その卓のものに替える
   }
 

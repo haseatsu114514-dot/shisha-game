@@ -1107,6 +1107,21 @@ test("チュートリアル（TFL64）: 客と並びが決まっていて、待�
   }
 });
 
+test("席の選び方: ふだんは1卓から座る。店の規則が seatPick: random なら、空いている席にばらばらに座る（VPM40）", () => {
+  const firstSeat = (venue, seed) => {
+    const s = until(createFloorNight({ venue, seed, level: 3, night: "full" }), (x) => x.came >= 1);
+    return s.tables.find((t) => t.guestId).id;
+  };
+  for (let seed = 0; seed < 8; seed++) assert.equal(firstSeat("tonari", seed), 1, "本編は1卓から座る");
+  const random = { id: "tonari", rules: { seatPick: "random" } };
+  const seats = new Set(Array.from({ length: 16 }, (_, seed) => firstSeat(random, seed)));
+  assert.ok(seats.size >= 3, `抽選なら、最初の客の席がばらつく: ${[...seats]}`);
+  // 満席の日も、全員が空いた席に一人ずつ座る（同じ席に二人は座らない）
+  let s = createFloorNight({ venue: random, seed: 5, level: 3, night: "full" });
+  s = until(s, (x) => x.tables.every((t) => t.guestId));
+  assert.equal(new Set(s.tables.map((t) => t.guestId)).size, s.tables.length);
+});
+
 test("締め: 全組を送り出すか時間で終わる。早じまいもできる。評価は満足の平均", () => {
   let s = createFloorNight({ seed: 9, level: 0 });
   s = until(s, (x) => x.done, 700);

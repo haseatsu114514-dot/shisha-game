@@ -20,13 +20,15 @@ export function createTitleScene(shell, painter) {
     const sig = items.map((item) => `${item.dataset.test}|${item.disabled}|${item.textContent}`).join("\n");
     if (sig !== menuSig) {
       menuSig = sig;
-      pane.replaceChildren(...items.map((item) => el("button.retro-menu", {
+      pane.replaceChildren(...items.map((item) => el(`button.retro-menu${item.classList.contains("is-locked") ? ".is-locked" : ""}`, {
         type: "button", disabled: item.disabled, dataset: { test: `retro-${item.dataset.test}` },
         onclick: () => liveItems().find((live) => live.dataset.test === item.dataset.test)?.click(),
       }, [el("b", { text: text(item.querySelector(".ti-en")) }), el("small", { text: text(item.querySelector(".ti-ja")) })])));
     }
     shell.setStatus("タイトル", text(document.querySelector("#screen > .title .title-ver")));
-    shell.setKeys([]);
+    // 「つづきから」の行の右下の「セーブを選ぶ」（ロードの行の代わり・EXT02）は、下画面の本体のボタンに出す
+    const sub = document.querySelector('#screen > .title .title-item[data-test="title-continue"] .ti-sub');
+    shell.setKeys(sub && !sub.hidden ? [{ id: "load", label: "セーブを選ぶ", name: "セーブを選んでつづける", run: () => sub.click() }] : []);
     shell.setCaption("");
   }
 

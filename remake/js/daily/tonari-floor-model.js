@@ -544,9 +544,12 @@ function tickOnce(s) {
   }
   // 来店: 卓が空いていれば、そのまま座る（ワンオペなので案内はしない）。閉店が近づいたら新しい客は来ない
   if (s.length - s.t < r.lastCall) s.upcoming = [];
+  // 座る席: 店の規則の seatPick が "random" なら、空いている席から抽選（縦画面の試作。2026-11-27 オーナー「1から座らせてくってよりはランダムに埋まってく感じで」・VPM40）。
+  // 無ければ、いちばん番号の小さい空き席（本編。検査は卓1から座る前提）
   while (s.upcoming.length && s.guests[s.upcoming[0]].arrive <= s.t) {
-    const table = s.tables.find((x) => x.phase === "empty");
-    if (!table) break;
+    const free = s.tables.filter((x) => x.phase === "empty");
+    if (!free.length) break;
+    const table = r.seatPick === "random" ? free[Math.floor(roll(s) * free.length)] : free[0];
     const id = s.upcoming.shift();
     Object.assign(table, emptyTable(table.id), { phase: "order", guestId: id, since: s.t, mood: r.mood.start, line: s.guests[id].order.quote });
     s.came += 1;

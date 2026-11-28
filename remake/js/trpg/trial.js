@@ -13,8 +13,11 @@ export { TRPG_TRIAL_PRESETS, trpgTrialState };
 /**
  * 試遊を host に出す。本棚の「試遊の設定へ」で始め方を選び直せ、卓を遊び終えたら次の夜の本棚へ進む。
  * exitLabel を渡すと、設定の画面に「タイトルへ戻る」などの出口を出す（押すと finished が解決する）。
+ * from（セーブの写し）を渡すと、そのセーブの本棚・部員・遊び終えた物語のまま夜の店を開く（タイトルの EXTRA・EXT04）。
+ * この時は始め方を選び直せず（ほかの始め方は、まだ買っていない本も並ぶため）、本棚を閉じると出口（finished）になる。
+ * 部を作っていないセーブは「部を作ったばかり」の始め方で開く。どちらも元のセーブは書き換えない。
  */
-export function mountTrpgTrial(host, { preset = "ready", exitLabel = "", signal = null, resources: supplied = null } = {}) {
+export function mountTrpgTrial(host, { preset = "ready", exitLabel = "", signal = null, resources: supplied = null, from = null } = {}) {
   let controller = null, state = null, resources = supplied, disposed = false, resolveFinished;
   const finished = new Promise(resolve => { resolveFinished = resolve; });
   function destroy() {
@@ -30,6 +33,14 @@ export function mountTrpgTrial(host, { preset = "ready", exitLabel = "", signal 
     state = trpgTrialState(newState(), resources.catalog, id);
     shelf();
   }
+  function openFrom(saved) {
+    if (disposed) return;
+    if (!saved?.trpg?.club?.founded) { open("fresh"); return; }
+    state = JSON.parse(JSON.stringify(saved));
+    // 卓を囲める夜の店から（昼・大会中などで止めたセーブでも）
+    Object.assign(state, { phase: "daily", slot: 1 });
+    shelf();
+  }
   function shelf() {
     if (disposed) return;
     controller?.destroy();
@@ -37,14 +48,14 @@ export function mountTrpgTrial(host, { preset = "ready", exitLabel = "", signal 
     // 本編では街で会って誘う。試遊では、まだ誘っていない人がいる時だけ、本棚から会いに行ける。
     const canRecruit = resources.catalog.participants.some(person => person.interested === true && !owner.trpg.club.members[person.id]);
     controller = mountTrpgCampaign(host, {
-      getState: () => owner, save: () => true, closeLabel: "試遊の設定へ", signal, resources: null,
+      getState: () => owner, save: () => true, closeLabel: from ? (exitLabel || "閉じる") : "試遊の設定へ", signal, resources: null,
       visitMember: canRecruit ? async (personId, shared, visitSignal) =>
         mountTrpgRecruitment(host, { getState: () => owner, personId, ...shared, save: () => true, signal: visitSignal }).finished : null,
     });
     controller.finished.then(result => {
       if (disposed || state !== owner) return;
       // 卓を遊び終えた夜は、本編と同じく終わる。試遊では、そのまま次の夜の本棚へ。
-      if (result?.completed) { owner.day++; owner.slot = 1; shelf(); } else setup();
+      if (result?.completed) { owner.day++; owner.slot = 1; shelf(); } else if (from) destroy(); else setup();
     });
   }
   function setup() {
@@ -69,7 +80,7 @@ export function mountTrpgTrial(host, { preset = "ready", exitLabel = "", signal 
   const ready = (async () => {
     resources ||= await loadTrpgClubResources({ signal });
     if (disposed) return;
-    open(preset);
+    if (from) openFrom(from); else open(preset);
     await controller?.ready;
   })();
   ready.catch(() => { if (!disposed) { host.replaceChildren(el("p.trpg-loading", { text: "試遊を準備できませんでした。読み込み直してください。" })); } });

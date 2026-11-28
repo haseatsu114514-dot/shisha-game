@@ -529,8 +529,8 @@
 .retro-menu b { font-weight: 400; font-size: calc(var(--d) * 16); letter-spacing: .06em; }
 .retro-menu small { color: var(--r-violet); font-size: calc(var(--d) * 12); }
 .retro-shell .retro-menu:active { transform: translate(calc(var(--d) * 2), calc(var(--d) * 2)); box-shadow: calc(var(--d) * 1) calc(var(--d) * 1) 0 var(--r-deep); }
-.retro-shell .retro-menu[disabled] { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); box-shadow: none; color: var(--r-dim); cursor: default; transform: none; }
-.retro-menu[disabled] small { color: var(--r-dim); }
+.retro-shell .retro-menu:is([disabled], .is-locked) { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); box-shadow: none; color: var(--r-dim); cursor: default; transform: none; }
+.retro-menu:is([disabled], .is-locked) small { color: var(--r-dim); }
 
 .retro-toptext {
   position: absolute;

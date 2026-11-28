@@ -1070,7 +1070,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .thermo.forecast .th-now { display: none; }
 .thermo.forecast[data-selected="false"] :is(.th-range, .th-pointer) { opacity: 0; }
 
-/* 縦長のキッチンタイマー（VPL127 で縦長に決め、VPL129 で実物に合わせた絵に描き直した）。ランクの下から一言の上までの高さに合わせ、まん中にそろえる。絵ごとの縦横比は --ar（液晶とボタンの位置は app.mjs の TIMER_LOOKS） */
+/* 縦長のキッチンタイマー（VPL127 で縦長に決め、VPL129 で実物に合わせた絵に描き直し、VPL130 で案1に決めて縦を少し詰めた）。ランクの下から一言の上までの高さに合わせ、まん中にそろえる。絵の縦横比は --ar（液晶とボタンの位置は app.mjs の KTIMER） */
 .phone[data-scene="timer"] .veil { top: calc(100% - var(--cp) - 5rem); } /* 紫の幕は一言のすぐ上から下だけ（上の画面を暗くしない） */
 .phone[data-scene="timer"] .pic { -webkit-mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 93%, transparent 100%); } /* 上の絵の下のぼかしは、一言のすぐ上だけ（初期値の 66% からだと、タイマーの下半分が暗くなる） */
 .phone[data-scene="timer"] .timer-a { top: 9.4rem; bottom: 2.4rem; justify-content: center; container-type: size; }

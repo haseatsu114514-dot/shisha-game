@@ -374,9 +374,9 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "vn", 15000);
   }, { ...TALL, pageEntry: entry });
 
-  await check("chapter-title-call-plan-a", async (page) => {
-    // VPN19: 章タイトル（タイトルコール）は画面いっぱいの案A。上に章タイトルの絵から切り出した人物、下に章名を本編の明朝で組む。
-    // 十字キーと丸ボタンは隠し、絵に描き込まれた題字を文字で二重に出さない
+  await check("chapter-title-call-wide-art", async (page) => {
+    // VPN27: 章タイトル（タイトルコール）は画面いっぱいの3段。上にゲームタイトルのロゴ、縦の真ん中に章タイトルの横長の絵を幅いっぱいに切らずに、
+    // 下に章の情報（CHAPTER n・章名を本編の明朝で・英題。「〇〇編」は出さない・VPN23）。十字キーと丸ボタンは隠し、本編の覆いの文字は二重に出さない
     await waitScene(page, "title");
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js"); const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 2, day: 15 });
@@ -391,22 +391,63 @@ await suite("look_vertical", async (check) => {
       const root = document.querySelector(".vt-ct"), shell = document.querySelector(".vt-shell").getBoundingClientRect(), box = root.getBoundingClientRect();
       const a = document.querySelector(".vt-a").getBoundingClientRect();
       const onA = document.elementFromPoint(a.left + a.width / 2, a.top + a.height / 2);
+      const rect = (q) => root.querySelector(q).getBoundingClientRect();
+      const logo = rect(".vt-ct-logo"), pic = rect(".vt-ct-pic"), art = rect(".vt-ct-art"), copy = rect(".vt-ct-name");
       return { scene: window.__verticalLook.scene(), cover: document.querySelector(".vt-shell").dataset.cover,
         en: root.querySelector(".vt-ct-en").textContent, name: root.querySelector(".vt-ct-name").textContent, read: root.querySelector(".vt-ct-read").textContent,
         sub: root.querySelector(".vt-ct-sub")?.textContent || "", art: root.querySelector("img.vt-ct-art").getAttribute("src"),
+        logo: root.querySelector(".vt-ct-logo").getAttribute("src"), text: [...root.childNodes].filter((n) => n.nodeType === Node.TEXT_NODE).map((n) => n.textContent).join(""),
         full: Math.abs(box.top - shell.top) <= 1 && Math.abs(box.bottom - shell.bottom) <= 1, padCovered: !onA?.closest(".vt-a"),
-        lines: document.querySelector(".vt-cover-lines").hidden, nameFont: getComputedStyle(root.querySelector(".vt-ct-name")).fontFamily };
+        lines: document.querySelector(".vt-cover-lines").hidden, nameFont: getComputedStyle(root.querySelector(".vt-ct-name")).fontFamily,
+        // 絵は幅いっぱい・16:9 のまま（切らない）で、縦の真ん中。ロゴは絵の上、章名は絵の下
+        artWhole: Math.abs(art.width - shell.width) <= 1 && Math.abs(art.height - shell.width * 9 / 16) <= 1.5 && Math.abs(pic.height - art.height) <= 1,
+        centered: Math.abs((pic.top + pic.bottom) / 2 - (shell.top + shell.bottom) / 2) <= 2,
+        order: logo.bottom <= pic.top && copy.top >= pic.bottom };
     });
     assert.equal(call.scene, "cover");
     assert.equal(call.cover, "title");
-    assert.deepEqual([call.en, call.name, call.read, call.sub], ["CHAPTER 2", "才能の壁", "Hollow Crown", "HAZE: OPEN CLOUD 編"]);
+    assert.deepEqual([call.en, call.name, call.read, call.sub], ["CHAPTER 2", "才能の壁", "Hollow Crown", ""], "no 「〇〇編」 line (VPN23)");
     assert.match(call.art, /ch2-title\.webp/);
+    assert.match(call.logo, /ui_title_logo_rich\.webp/, "the game title is the title screen's logo");
+    assert.equal(call.text, "", "no stray text (such as \"null\") in the call");
     assert(call.full, "the title call covers the whole frame");
     assert(call.padCovered, "the pad is hidden under the title call");
     assert.equal(call.lines, true, "the chapter name is not repeated as plain text lines");
     assert.match(call.nameFont, /Suien Name/, "the chapter name uses the game's Mincho");
+    assert(call.artWhole, "the wide art is shown whole at full width");
+    assert(call.centered, "the art sits in the vertical middle");
+    assert(call.order, "logo above the art, chapter info below it");
     await page.evaluate(() => window.titleRun);
     await page.waitForFunction(() => document.querySelector(".vt-ct")?.hidden !== false || !document.querySelector(".chapter-title-shield"));
+  }, { ...TALL, pageEntry: entry });
+
+  await check("chapter-one-title-call-figure-strip", async (page) => {
+    // VPN27: 第1章の専用の演出（ch1-title-motion）の間も同じ3段。第1章の白地の絵は上に題字が描き込まれているので、人物が並ぶ帯だけを切り出す
+    await waitScene(page, "title");
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"); const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 1, day: 1 });
+      document.body.dataset.screen = "none"; (await import("./js/core/ui.js")).clearScreen();
+      window.titleRun = (await import("./js/chapters/ch1-title-motion.js")).playCh1Title();
+    });
+    await page.locator('.vt-ct:not([hidden])[data-chapter="1"] img.vt-ct-art').waitFor({ timeout: 20000 });
+    await page.waitForTimeout(1800);
+    const call = await page.evaluate(() => {
+      const root = document.querySelector(".vt-ct"), shell = document.querySelector(".vt-shell").getBoundingClientRect();
+      const pic = root.querySelector(".vt-ct-pic").getBoundingClientRect(), art = root.querySelector(".vt-ct-art").getBoundingClientRect();
+      return { cover: document.querySelector(".vt-shell").dataset.cover, en: root.querySelector(".vt-ct-en").textContent, name: root.querySelector(".vt-ct-name").textContent,
+        read: root.querySelector(".vt-ct-read").textContent, art: root.querySelector(".vt-ct-art").getAttribute("src"),
+        amb: !!root.querySelector(".vt-ct-amb"), text: [...root.childNodes].filter((n) => n.nodeType === Node.TEXT_NODE).map((n) => n.textContent).join(""),
+        // 帯は絵の高さの 36%〜94%: 絵の上の題字（0〜36%）は帯の外
+        hiddenTop: +((pic.top - art.top) / art.height).toFixed(2), shown: +(pic.height / art.height).toFixed(2), wide: Math.abs(art.width - shell.width) <= 1,
+        centered: Math.abs((pic.top + pic.bottom) / 2 - (shell.top + shell.bottom) / 2) <= 2 };
+    });
+    assert.equal(call.cover, "title");
+    assert.deepEqual([call.en, call.name, call.read], ["CHAPTER 1", "煙がつなぐ街", "Smoke & Ties"]);
+    assert.match(call.art, /ch1-title\.webp/, "the existing wide chapter-one art");
+    assert.equal(call.text, "", "no stray text (such as \"null\") in the call");
+    assert.equal(call.amb, false, "no blurred copy of the white art behind");
+    assert.deepEqual([call.hiddenTop, call.shown, call.wide, call.centered], [0.36, 0.58, true, true], `only the figure strip is shown ${JSON.stringify(call)}`);
+    await page.evaluate(() => window.titleRun);
   }, { ...TALL, pageEntry: entry });
 
   await check("unsupported-scenes-show-the-rotate-hint", async (page) => {

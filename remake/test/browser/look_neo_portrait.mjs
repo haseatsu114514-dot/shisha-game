@@ -171,7 +171,7 @@ async function loadSlot(page) {
   await page.locator(shellFor("title")).waitFor({ timeout: 30000 });
   await page.locator("#boot").waitFor({ state: "detached" });
   await arm(page);
-  await page.locator(t("retro-title-load")).tap();
+  await page.locator(t("retro-key-load")).tap(); // ロードは「つづきから」の行の押し所（EXT02）。外枠では下画面の本体のボタン「セーブを選ぶ」
   await page.locator(t("slot-0")).waitFor({ state: "attached" });
   await clickDom(page, "slot-0");
 }

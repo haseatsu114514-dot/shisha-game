@@ -49,19 +49,26 @@ export async function offerAgehaPurikura(background, spot = { id: "ch2_ageha", k
 
 /**
  * 撮った相手の写真（core/purikura-data.js）から、まだ撮っていない1枚。そろった後は同じ相手の写真から（PFC18）。
+ * 恋人と撮る時は恋人の距離感の写真（lover）から、それ以外は友達の写真から選ぶ。恋人の写真がまだ無い相手は友達の写真（PFC19）。
  * 絵の無い相手（審査員など）は null で、立ち絵の顔を並べた写真のまま。撮った絵は履歴の cg に残り、ギャラリーにも出る。
  */
 export function pickPurikuraPhoto(partner, { rand = Math.random, save: s = state } = {}) {
-  const pool = PURIKURA_PHOTOS.filter(p => p.with === partner && (p.slot === undefined || p.slot === s.slot));
+  const all = PURIKURA_PHOTOS.filter(p => p.with === partner && (p.slot === undefined || p.slot === s.slot));
+  const lover = partner !== "solo" && Array.isArray(s.lovers) && s.lovers.includes(partner);
+  const pool = lover && all.some(p => p.lover) ? all.filter(p => p.lover) : all.filter(p => !p.lover);
   if (!pool.length) return null;
   const taken = new Set((s.flags?._ageha_purikura_history || []).map(h => h?.cg).filter(Boolean));
   const fresh = pool.filter(p => !taken.has(p.cg));
-  const from = fresh.length ? fresh : pool;
+  // その相手と初めて撮る一枚（ソロの「一人で初挑戦！」）は、最初に必ず出す
+  const first = fresh.filter(p => p.first);
+  const from = first.length ? first : fresh.length ? fresh : pool;
   return from[Math.min(from.length - 1, Math.floor(rand() * from.length))];
 }
 
+// 審査員（characters.json の role が judge…。上園・千須会長・チャコール博士など）はプリクラの対象外（PFC22 オーナー）。
+const purikuraJudge = id => /^judge/.test(DB.characters[id]?.role || "");
 export const purikuraGuests = spot => spotPeople(spot).filter(person => person.role === "guest" && person.known
-  && person.id !== "ageha" && !!DB.characters[person.id]);
+  && person.id !== "ageha" && !!DB.characters[person.id] && !purikuraJudge(person.id));
 
 async function revisitPurikura(background, spot, { live, read, stamp }) {
   if (state.flags._ageha_purikura_offer === stamp) return true;
@@ -76,25 +83,34 @@ async function revisitPurikura(background, spot, { live, read, stamp }) {
   };
   if (!canPay()) return shortage();
   if (!await read("remake_ch2_purikura_invite")) return false;
-  const guests = purikuraGuests(spot);
-  const mode = await modal({ title: "プリクラ、撮っていく？", body: "2回目からは1回400円。撮影・落書き・シール込みです。追加の行動・体力は使いません。", options: [
-    { label: "一人で撮る（400円）", value: "solo", test: "purikura-solo" },
-    { label: "あげはと撮る（400円）", value: "pair", test: "purikura-pair" },
-    ...guests.length ? [{ label: "相席した人と撮る（400円）", value: "guest", test: "purikura-guest" }] : [],
+  // 来店の会話の後に、まず撮るかを聞く（1回400円）。撮るなら、あげはが居合わせた知り合いとの2ショットを勧め、
+  // あげはとの2ショット・一人でも選べる（PFC19 オーナー「400円払うとあげはから居合わせた人で撮るよう…マッチしてくれる」）。
+  // お金は写真を受け取った時に払う（途中でやめたら払わない）。
+  const shoot = await modal({ title: "プリクラ、撮っていく？", body: "2回目からは1回400円。撮影・落書き・シール込みです。追加の行動・体力は使いません。", options: [
+    { label: "撮る（400円）", value: true, test: "purikura-shoot", primary: true },
     { label: "今日は撮らない", value: null, test: "purikura-skip" },
   ] });
   if (!live()) return false;
-  let people = ["hajime"];
-  if (mode === "pair") people.push("ageha");
-  if (mode === "guest") {
-    const guest = await modal({ title: "誰と撮る？", body: "今、相席している相手。撮影は二人で400円です。", options: [
-      ...guests.map(person => ({ label: person.name, value: person.id, test: `purikura-with-${person.id}` })),
-      { label: "今日は撮らない", value: null, test: "purikura-guest-back" },
+  let mode = null;
+  const people = ["hajime"];
+  if (shoot) {
+    const guests = purikuraGuests(spot);
+    if (!await read(guests.length ? "remake_ch2_purikura_match" : "remake_ch2_purikura_choose")) return false;
+    // ソロは、あげはから勧めない。はじめが言い出して驚かれる（2回目からは「ソロプリハマっちゃったんだね」と笑われる・PFC23）。
+    const partner = await modal({ title: "誰と撮る？", body: guests.length ? "あげはのおすすめは、居合わせた知り合いとの2ショット。あげはとも撮れます。" : "あげはは、2ショットのつもりでいる。", options: [
+      ...guests.map((person, i) => ({ label: `${person.name}と撮る`, value: person.id, test: `purikura-with-${person.id}`, primary: i === 0 })),
+      { label: "あげはと撮る", value: "pair", test: "purikura-pair", primary: !guests.length },
+      { label: "一人で撮りたい", value: "solo", test: "purikura-solo" },
+      { label: "やっぱり撮らない", value: null, test: "purikura-guest-back" },
     ] });
     if (!live()) return false;
-    if (!guest) { state.flags._ageha_purikura_offer = stamp; save(); return true; }
-    if (!purikuraGuests(spot).some(person => person.id === guest)) return false;
-    people.push(guest);
+    if (partner === "solo" || partner === "pair") mode = partner;
+    else if (partner) {
+      if (!purikuraGuests(spot).some(person => person.id === partner)) return false;
+      mode = "guest";
+      people.push(partner);
+    }
+    if (mode === "pair") people.push("ageha");
   }
   if (mode) {
     if (!["solo", "pair", "guest"].includes(mode)) return false;
@@ -102,10 +118,13 @@ async function revisitPurikura(background, spot, { live, read, stamp }) {
     // 神崎と初めて撮る回は、職人プリ（記念品）の場面。2回目からは、神崎の写真（あげはが入る3人の一枚も）から選ぶ。
     const ryuji = people.includes("kumicho") && !(state.keepsakes || []).includes("ryuji_purikura");
     const pick = ryuji ? null : pickPurikuraPhoto(mode === "solo" ? "solo" : people[1]);
-    const scene = ryuji ? "remake_ch2_purikura_ryuji" : pick?.trio ? "remake_ch2_purikura_trio" : `remake_ch2_purikura_${mode}`;
+    const firstSolo = mode === "solo" && !(state.flags._ageha_purikura_history || []).some(row => row?.mode === "solo");
+    const scene = ryuji ? "remake_ch2_purikura_ryuji" : pick?.trio ? "remake_ch2_purikura_trio"
+      : mode === "solo" && !firstSolo ? "remake_ch2_purikura_solo_again" : `remake_ch2_purikura_${mode}`;
     if (!await read(scene)) return false;
     const cg = ryuji ? "cg_ryuji_purikura" : pick?.cg || null;
-    const received = await modal({ title: mode === "solo" ? "一人で初挑戦！" : pick?.trio ? "3人ぷり☆" : "今日のプリクラ", body: purikuraPhoto(cg, people, mode, id => displayName(id, state)), options: [
+    const title = mode === "solo" ? (firstSolo ? "一人で初挑戦！" : "今日のソロぷり") : pick?.trio ? "3人ぷり☆" : "今日のプリクラ";
+    const received = await modal({ title, body: purikuraPhoto(cg, people, mode, id => displayName(id, state)), options: [
       { label: "受け取る（400円）", value: true, test: "purikura-receive", primary: true },
     ] });
     if (!live() || received !== true) return false;
