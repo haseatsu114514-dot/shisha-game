@@ -4285,16 +4285,16 @@
         "remake/js/craft/**",
         "remake/css/craft*.css",
         "data/equipment.json",
-        "remake/test/steam_attack_lesson.mjs",
+        "remake/test/browser/steam_attack_lesson.mjs",
         "remake/test/steam_slash.mjs",
-        "remake/test/steam_attack_growth.mjs",
+        "remake/test/browser/steam_attack_growth.mjs",
         "remake/test/steam_refresh.mjs",
         "remake/test/browser/thermometer_alignment.mjs"
       ],
       "run": [
-        "node remake/test/steam_attack_lesson.mjs",
+        "node remake/test/browser/steam_attack_lesson.mjs",
         "node remake/test/steam_slash.mjs",
-        "node remake/test/steam_attack_growth.mjs",
+        "node remake/test/browser/steam_attack_growth.mjs",
         "node remake/test/steam_refresh.mjs",
         "node remake/test/browser/thermometer_alignment.mjs"
       ],
