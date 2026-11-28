@@ -48,7 +48,6 @@ export const CH1_EVE_NOTES = Object.freeze({
 });
 
 function faceOf(card) {
-  if (card.id === "hajime") return el("span.ent-face.ph", { text: "YOU" });
   const id = card.face || card.id;
   const src = faceIconUrl(id) || portraitInfo(id, "normal")?.src;
   return src ? el("img.ent-face", { src, alt: "" }) : el("span.ent-face.ph", { text: (NAME[card.id] || realName(id)).slice(0, 1) });
@@ -63,14 +62,14 @@ export async function playEntrance(chapterOrCards, { auto = Boolean(window.__rem
   stageLights(host, { beams: 4, dust: 16 });
   layers.fx.append(host);
   try {
-    for (const c of cards) {
+    for (const [index, c] of cards.entries()) {
       const me = c.id === "hajime";
       const card = el(`div.ent-card${me ? ".me" : ""}`, [
-        el("div.ent-cut", [faceOf(c), el("span.ent-tag", { text: me ? "CHALLENGER" : "RIVAL" })]),
+        el("div.ent-cut", [faceOf(c), el("span.ent-tag", { text: `エントリーナンバー${index + 1}` })]),
         el("div.ent-meta", [
           el("div.ent-ring", { text: c.ring }),
           el("div.ent-name", { text: me ? "はじめ" : (NAME[c.id] || realName(c.face || c.id)) }),
-          el("div.ent-note", { text: `スミ「${me && heroNote ? heroNote : c.note}」` }),
+          el("div.ent-note", [el("small.ent-speaker", { text: "スミ" }), el("span", { text: `「${me && heroNote ? heroNote : c.note}」` })]),
         ]),
       ]);
       host.querySelector(".ent-card")?.remove();

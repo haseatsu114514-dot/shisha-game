@@ -793,3 +793,43 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-mo-wide::before { top: calc(50% - 204px); }
 .vt-mo-wide::after { top: calc(50% + 202px); }
 .vt-mo-wide-box { position: absolute; left: 0; top: calc(50% - 202.5px); width: 1280px; height: 720px; overflow: hidden; transform: scale(0.5625); transform-origin: 0 0; }
+
+/* 第1章の自動演出。顔・二つ名・台詞や ROUND の帯を持つ本編の舞台を幅640で組む。 */
+:root[data-vt-interlude] #stage {
+  --interlude-scale: calc(2 * var(--k));
+  width: 640px; height: calc(100dvh / var(--interlude-scale));
+  transform: translate(-50%, -50%) scale(var(--interlude-scale));
+}
+:root[data-vt-interlude] #stage > :not(#bg, #weather, #fx, #wipe) { visibility: hidden; }
+:root[data-vt-interlude] #fx { pointer-events: auto; }
+:root[data-vt-interlude] #stage .beat {
+  inset: 0; padding: 36px; display: grid; place-items: center;
+  font-size: 30px; line-height: 1.75; text-wrap: balance;
+}
+:root[data-vt-interlude] #stage .round-cut-band { top: calc(50% - 80px); height: 160px; }
+:root[data-vt-interlude] #stage .round-cut-band b { font-size: 90px; }
+:root[data-vt-interlude] #stage .entrance {
+  background: radial-gradient(ellipse at 50% 35%, #23152d66, #100a19d9 78%);
+}
+:root[data-vt-interlude] .ent-card {
+  width: 84%; flex-direction: column; align-items: stretch; gap: 46px;
+}
+:root[data-vt-interlude] .ent-cut { align-self: center; width: 240px; height: 240px; }
+:root[data-vt-interlude] .ent-face { width: 196px; height: 196px; }
+:root[data-vt-interlude] .ent-tag {
+  left: 50%; transform: translateX(-50%); font-size: 22px;
+}
+:root[data-vt-interlude] .ent-meta { text-align: center; }
+:root[data-vt-interlude] .ent-meta::after { width: 100%; }
+:root[data-vt-interlude] .ent-ring { font-size: 24px; }
+:root[data-vt-interlude] .ent-name { font-size: 68px; line-height: 1.4; }
+:root[data-vt-interlude] .ent-note {
+  margin: 20px auto 0; padding: 16px 24px; background: #140c1ee6;
+  text-align: left; font-size: 25px; line-height: 1.55;
+}
+:root[data-vt-interlude] .ent-speaker {
+  display: block; margin-bottom: 4px; font-size: 21px; font-weight: 700; color: #f5d592;
+}
+/* 横から縦へ戻した時は、横の #fx に残っている日付の札にも位置を当てる。 */
+:root[data-vt-interlude] #fx > .day-card { left: 8%; right: 6%; bottom: 42%; }
+:root[data-vt-interlude] #fx > .day-card .dc-sub { white-space: normal; flex-wrap: wrap; }
