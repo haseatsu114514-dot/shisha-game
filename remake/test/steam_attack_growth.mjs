@@ -141,7 +141,7 @@ try {
       assert(result.removed);assert.equal(result.after,result.before+result.words);
       assert.equal(result.pieces,result.words);assert(result.split,'Each cut word should leave two matching clipped halves');
       if(mobile)assert(result.still,'Reduced-motion word halves must not animate');
-      if(result.words===0){objectOnly=true;assert.equal(result.after,result.before);}
+      if(result.near>0&&result.words===0){objectOnly=true;assert.equal(result.after,result.before);}
       if(afterglow&&!result.wasGlow&&Math.floor(result.after/3)>Math.floor(result.before/3)){
         measuredSlow=true;assert.equal(result.glow,"true");assert(result.slowRatios.length>0,"observe surviving real bullets");
         // CSS transform行列の丸め誤差は0.2%未満。速度が0.65倍かを実移動で検査する。
@@ -151,7 +151,8 @@ try {
       total=result.after;cumulative+=result.words;maxSeen=Math.max(maxSeen,result.after);
       const p=slashProfile(total),newTier=!tiers.has(p.tier);tiers.add(p.tier);
       assert.equal(result.reach,p.reach);assert(result.recharge>=p.recharge && result.recharge<=p.recharge+.1+1e-9);
-      assert.match(result.feedback,shark?/個噛んだ/:/個斬った/);
+      const feedback = result.near ? `${result.near}個${shark ? "噛んだ" : "斬った"}` : "空振り";
+      assert.equal(result.feedback.split("・")[0], feedback, "範囲内の弾の個数と空振りを区別する");
       if(newTier)await shot(page,`tier-${p.tier}-${mobile?'mobile-reduced':'desktop'}`);
       await shelter();
     }
