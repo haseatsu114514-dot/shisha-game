@@ -4,8 +4,12 @@
 // 本編の runSteamTimer（craft/timer.js）の画面を読んで描き（液晶の時間・押せるか・目安の幅・雑念回避の長さ）、押した操作は本編のボタン
 // （data-test timer-minute-up／timer-second-up／timer-reset／timer-start／timer-preset-N・steam-shorten）へ中継する。
 // 時間の刻み・上限・最短・目安の計算は本編のまま（ここでは数えない）。
+// 工程の初回の説明（本編はタイマーを出す前に開く）の間は、説明が指すボタンを押せる形で見せる（本編のボタンが無いので押しても何も起きない）。
+// 説明のスポットライト（craft/tutorial.js・VPN32）は、タイマーの絵と液晶→分・秒→早見→温度計（無ければ液晶）→スタートの順に明るく抜く。
 import { el } from "../../../core/util.js";
+import { TUTORIAL_STEP_HELP } from "../../../craft/bench-ui.js";
 import { textOf } from "../frame.js";
+import { speech } from "./tutorial.js";
 
 const ART = new URL("../../../../img/ui/vertical-craft/", import.meta.url).href;
 // 縦長のキッチンタイマーの絵（試作の KTIMER）。液晶＝左・上・幅・高さ（絵に対する %）、ボタン＝中心の横・縦・幅・高さ（%）・字の大きさ（cqw）
@@ -23,12 +27,37 @@ const lcdSvg = (digits) => `<svg viewBox="-4 -2 223 80" aria-hidden="true">${[2,
   Object.entries(SEG_PATHS).map(([k, p]) => `<path class="${SEG_DIGITS[Number(digits[i])]?.includes(k) ? "on" : ""}" d="${p}"/>`).join("")}</g>`).join("")
 }<circle class="on" cx="108" cy="25" r="3"/><circle class="on" cx="108" cy="50" r="3"/></svg>`;
 const pc = (v) => `${v}%`;
+// 本編の説明。チュートリアル・練習の初回は TUTORIAL_STEP_HELP.timer、大会・リハーサルの初回とチュートリアル以外の「?」は
+// 本編 craft/timer.js の runSteamTimer が stepPanel に渡す文（TIMER_HINT。本編の文が変わったら、既定の段＝「。」で区切って操作の段を指す、に戻る）。
+// この2つの文の時は段を分けて、指す所を決める
+const TIMER_HELP = speech(TUTORIAL_STEP_HELP.timer.detail);
+const TIMER_HINT = "分・秒ボタンか下の時間で蒸らし時間を設定し、スタートで開始する";
+const ABOUT_HEAT = /温度|目安/;
 
 export const timerView = {
   id: "timer",
   step: "steam", // 本編は蒸らしの工程の中で時間を決める（パネルの工程は steam のまま）
   match: (panel) => !!panel.querySelector(`.steam-timer [data-test="${LIVE.start}"]`),
   intro: true, // runSteamTimer はタイマーを出す前に初回の説明を開く（雑念回避の説明は場を出してから）
+  // 説明のスポットライトの段（craft/tutorial.js）。温度計は、蒸らし時間を決め始めてから本編が出す（初回の説明の間は無いので液晶を指す）
+  tutorial: ({ text, lines, extras }) => {
+    // 補足（「?」に本編が足す雑念回避と温度の話）: 温度の話なら温度計、ほかは液晶を指す
+    const extra = extras.map((line) => ({ ...line, target: ABOUT_HEAT.test(line.say) ? ["thermo", "lcd"] : "lcd" }));
+    if (text === TIMER_HELP) return [
+      { target: "timer", say: "葉全体に熱をなじませる工程だ" }, // 本編の文のまま
+      { target: "dial", say: "分は1分、秒は10秒ずつ" }, // 本編の文のまま
+      { target: "presets", say: "3分・5分・8分は押せば一発だ。迷ったら5分" }, // 足した文（早見の札。「迷ったら5分」は作る場面の一言と同じ）
+      { target: ["thermo", "lcd"], say: "熱の目安を見て、3〜10分の範囲で時間を決めろ" }, // 本編の文のまま
+      { target: "start", say: "時間を決めたら、スタートだ" }, // 作る場面の一言（大会・リハーサル）と同じ
+    ];
+    // 本編の文は一文で3行になるので、スミさんの口調の2つの段に分ける（練習の時間は案内しない）
+    if (text === TIMER_HINT) return [
+      { target: "set", say: "分・秒か下の時間で、蒸らし時間を決めろ" }, // 足した文（本編の「分・秒ボタンか下の時間で蒸らし時間を設定し」を口調に）
+      ...extra,
+      { target: "start", say: "時間を決めたら、スタートだ" }, // 作る場面の一言（大会・リハーサル）と同じ
+    ];
+    return [...lines.map((say) => ({ target: "ctrl", say })), ...extra];
+  },
   create({ relay }) {
     let panel = null, sig = "", started = false;
     const lcd = el("output.vtc-lcd", { "aria-live": "polite", dataset: { test: "vt-timer-lcd" },
@@ -77,6 +106,7 @@ export const timerView = {
 
     return {
       pic, ctrl,
+      spots: { timer: ktimer, lcd, dial: [tMin, tSec], presets: presets[0].parentElement, set: [presets[0].parentElement, tMin, tSec], start: tStart },
       // 大会とリハーサルは、本編も練習の決まった時間を案内しない（craft/session.js の explainStepOnce）
       coach: (bench) => ["tournament", "rehearsal"].includes(bench.dataset.mode) ? "時間を決めたら、スタートだ" : "時間を決めろ。迷ったら5分",
       thermo: (bench) => {
@@ -92,7 +122,9 @@ export const timerView = {
         const [mm, ss] = clock.split(":").map(Number);
         const seconds = (mm || 0) * 60 + (ss || 0);
         const shortLive = liveOf("shorten");
-        const state = Object.fromEntries(["min", "sec", "start", "reset"].map((key) => [key, !liveOf(key) || liveOf(key).disabled]));
+        // 本編がタイマーを出す前（初回の説明の間）は、押せる形で見せる（押しても本編のボタンが無いので何も起きない）
+        const preview = !panel.querySelector(`[data-test="${LIVE.start}"]`);
+        const state = Object.fromEntries(["min", "sec", "start", "reset"].map((key) => [key, !preview && (!liveOf(key) || liveOf(key).disabled)]));
         const next = JSON.stringify([clock, state, shortLive ? shortLive.getAttribute("aria-pressed") : null, started]);
         if (next === sig) return;
         sig = next;
