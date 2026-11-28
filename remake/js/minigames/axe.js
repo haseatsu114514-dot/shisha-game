@@ -1,3 +1,4 @@
+import { withMinigameStyles } from "./minigame-styles.js";
 import { openMinigamePause } from "./minigame-pause.js";
 // Caller awaits preceding VN. Practice never reads or writes story/save state.
 import { el } from "../core/util.js";
@@ -124,7 +125,11 @@ function shortHiyori(text, phase, shot, called, context, actor) {
   return actor === "opponent" ? "私も投げるね" : "肩の力を抜いてね";
 }
 
-export function runAxeThrow({ host = document.getElementById("stage") || document.getElementById("axe-app"),
+export function runAxeThrow(options = {}) {
+  return withMinigameStyles("axe", options.signal, () => startAxeThrow(options));
+}
+
+function startAxeThrow({ host = document.getElementById("stage") || document.getElementById("axe-app"),
   signal, mode = "practice", tutorial = false, opponent = tutorial ? null : "hiyori", allowRetry = true, difficulty = "normal", seed,
   division = "rec", bestOf = 1, lessonContext = null, steady, gearId = "house", inputMode = "tap-pull", autoAdvance = true, reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches,
   onMatchComplete } = {}) {

@@ -454,7 +454,7 @@ await suite("home-rig-backgrounds", async check => {
       await page.locator("#boot").waitFor({ state: "detached" });
       await page.evaluate(() => { __remake.vnTest.turbo = true; });
       await hit(page, label, '[data-test="title-load"]'); await hit(page, label, '[data-test="slot-0"]');
-      await page.waitForFunction(() => __remake.state.day === 9 && document.querySelector('[data-destination-selection]:not(.done)'), null, { timeout: 30000 });
+      await page.waitForFunction(() => __remake.state?.day === 9 && document.querySelector('[data-destination-selection]:not(.done)'), null, { timeout: 30000 });
       const frames = await page.evaluate(() => homeWakeFrames);
       // 朝の自室でも、所持している最新の台が置かれる。
       assert(frames.some(f => /bg_home_(?:overcast_)?day\.webp$/.test(f.url)

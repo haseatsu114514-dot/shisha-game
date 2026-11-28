@@ -1409,7 +1409,7 @@ await suite("growth-levelup", async (runCheck) => {
     await page.reload(); await page.locator(t("title-load")).click();
     await page.evaluate(async () => { const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0; });
     await page.locator(t("slot-0")).click();
-    const tokyoMap = slot => page.waitForFunction(slot => __remake.state.day === 44 && __remake.state.slot === slot
+    const tokyoMap = slot => page.waitForFunction(slot => __remake.state?.day === 44 && __remake.state.slot === slot
       && document.querySelector('.map:not(.done) [data-test="pin-ch3_tokyo_mukai"]') && !document.querySelector("#modal.show"), slot, { timeout: 60000 });
     const readUntil = async id => {
       for (let i = 0; i < 200 && !(await page.evaluate(id => !!__remake.state.growth?.read?.includes(id), id)); i++) {
@@ -1489,7 +1489,7 @@ await suite("growth-levelup", async (runCheck) => {
     assert.deepEqual(cancelled, { old: { met: false, count: 0, read: false }, loaded: { met: false, count: 0, read: false }, same: true },
       "途中の LOAD では、古い保存にも読み込んだ保存にも経験値・既読・合流を残さない");
     await startVisit(false);
-    await page.waitForFunction(() => __remake.state.day === __remake.state.tokyoVisits.plans[0].arrivalDay && __remake.state.slot === 1
+    await page.waitForFunction(() => __remake.state?.slot === 1 && __remake.state.day === __remake.state.tokyoVisits.plans[0].arrivalDay
       && document.querySelector('.map:not(.done) [data-test="pin-ch3_tokyo_mukai"]') && !document.querySelector("#modal.show"), null, { timeout: 60000 });
     const state = await page.evaluate(() => ({ ...visitExp(__remake.state), growth: structuredClone(__remake.state.growth) }));
     assert.deepEqual({ met: state.met, count: state.count, read: state.read }, { met: true, count: 1, read: true }, "合流を読み終えると、つむぎの鍵で一回・場面の X5");

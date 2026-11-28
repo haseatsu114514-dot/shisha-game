@@ -3,8 +3,7 @@
   {
    "out": "bundle-base.css",
    "files": [
-    "base.css",
-    "axe-throw.css"
+    "base.css"
    ]
   },
   {
