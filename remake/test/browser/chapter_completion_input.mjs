@@ -36,9 +36,13 @@ async function openLastScene(page, chapter, tap = (...point) => page.touchscreen
   const point = [Math.round(box.x + box.width / 2), Math.round(box.y + box.height / 2)];
   // The existing opening guard intentionally ignores taps for the first 320ms.
   await page.waitForTimeout(375);
-  for (let n = 0; n < 80; n++) {
+  // 途中のスチル（第2章は cg_ch2_ageha_white_bear）を出している間はタップで進まない。遅い CI では絵の読み込みと表示の間に
+  // 何十回も空振りするので、回数ではなく時間で打ち切り、10回ごとに少し待つ（最後の行まで届くことは今までどおり確かめる）
+  const deadline = Date.now() + 30000;
+  for (let n = 0; Date.now() < deadline; n++) {
     if ((await vn.innerText()).includes(lastLine[chapter])) return point;
     await tap(...point);
+    if (n % 10 === 9) await page.waitForTimeout(150);
   }
   assert.fail(`Chapter ${chapter} did not reach its last line`);
 }

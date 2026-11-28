@@ -5,7 +5,8 @@ import { buyKeepsake } from "../core/keepsakes.js";
 import { addMoney } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { DB, displayName } from "../core/data.js";
-import { purikuraPhoto } from "../core/purikura-photo.js";
+import { chooseBooth, finishBooth, receivePrint } from "../core/purikura-doodle.js";
+import { printedPurikura } from "../core/purikura-photo.js";
 import { PURIKURA_PHOTOS } from "../core/purikura-data.js";
 import { modal } from "../core/ui.js";
 import { spotPeople } from "../daily/spot-people.js";
@@ -38,7 +39,7 @@ export async function offerAgehaPurikura(background, spot = { id: "ch2_ageha", k
       state.flags._kuraudo_melty_greeting = state.day;
       save();
     }
-    if (state.flags._ageha_first_purikura) return await revisitPurikura(background, spot, { live, read, stamp, extra: guests });
+    if (state.flags._ageha_first_purikura) return await revisitPurikura(background, spot, { live, read, stamp, signal, extra: guests });
     if (!await read("remake_ch2_ageha_purikura")) return false;
     if (!buyKeepsake("ageha_first_purikura")) return false;
     state.flags._ageha_first_purikura = true;
@@ -75,7 +76,12 @@ export function purikuraGuests(spot, extra = []) {
     && person.id !== "ageha" && !!DB.characters[person.id] && !purikuraJudge(person.id));
 }
 
-async function revisitPurikura(background, spot, { live, read, stamp, extra = [] }) {
+function recordPhoto(photo) {
+  const history = state.flags._ageha_purikura_history ||= [];
+  history.push({ chapter: state.chapter, day: state.day, chapterDay: chapterDay(state), slot: state.slot, ...photo });
+}
+
+async function revisitPurikura(background, spot, { live, read, stamp, signal, extra = [] }) {
   if (state.flags._ageha_purikura_offer === stamp) return true;
   // 呼出し元は写真の後に店代を確定する。帰りの運賃と、その店代は写真に使わない。
   const available = () => Math.max(0, spendableMoney(state) - Math.max(0, Number(spot.cost) || 0));
@@ -126,19 +132,25 @@ async function revisitPurikura(background, spot, { live, read, stamp, extra = []
     const firstSolo = mode === "solo" && !(state.flags._ageha_purikura_history || []).some(row => row?.mode === "solo");
     const scene = ryuji ? "remake_ch2_purikura_ryuji" : pick?.trio ? "remake_ch2_purikura_trio"
       : mode === "solo" && !firstSolo ? "remake_ch2_purikura_solo_again" : `remake_ch2_purikura_${mode}`;
-    if (!await read(scene)) return false;
     const cg = ryuji ? "cg_ryuji_purikura" : pick?.cg || null;
+    const photo = { people, mode, ...(cg ? { cg } : {}) };
+    const nameFor = id => displayName(id === "minto" ? "oneesan" : id, state);
+    const setup = await chooseBooth(photo, state.owned || [], nameFor, signal);
+    if (!live() || !setup || !await read(scene)) return false;
+    const design = await finishBooth(photo, setup, nameFor, signal);
+    if (!live() || design === null) return false;
+    if (design) photo.design = design;
     const title = mode === "solo" ? (firstSolo ? "一人で初挑戦！" : "今日のソロぷり") : pick?.trio ? "3人ぷり☆" : "今日のプリクラ";
-    const received = await modal({ title, body: purikuraPhoto(cg, people, mode, id => displayName(id, state)), options: [
+    const received = design ? await receivePrint(title, photo, nameFor, signal) : await modal({ title, signal, body: printedPurikura(photo, nameFor), options: [
       { label: "受け取る（400円）", value: true, test: "purikura-receive", primary: true },
     ] });
     if (!live() || received !== true) return false;
     if (mode === "guest" && !purikuraGuests(spot, extra).some(person => person.id === people[1])) return false;
     if (!canPay()) return shortage();
     if (ryuji && !buyKeepsake("ryuji_purikura")) return false;
+    if (design) photo.printId = Array.from(crypto.getRandomValues(new Uint32Array(2)), n => n.toString(16).padStart(8, "0")).join("");
     addMoney(-REVISIT_FEE);
-    const history = state.flags._ageha_purikura_history ||= [];
-    history.push({ chapter: state.chapter, day: state.day, chapterDay: chapterDay(state), slot: state.slot, people, mode, ...(cg ? { cg } : {}) });
+    recordPhoto(photo);
   }
   state.flags._ageha_purikura_offer = stamp;
   save();

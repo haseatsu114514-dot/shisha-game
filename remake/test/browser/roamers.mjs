@@ -460,6 +460,7 @@ await suite("roamers", async check => {
     assert(plan, "MELTY PUFF に、店の休み・早じまいのライバルが居合わせる種が見つからない");
     await page.locator('[data-test="purikura-shoot"]').click();
     await page.locator(`[data-test="purikura-with-${plan.id}"]`).click();
+    await page.getByRole("button", { name: "このまま撮る" }).click();
     await page.locator('[data-test="purikura-receive"]').click();
     await page.waitForFunction(() => R.done);
     const result = await page.evaluate(() => ({ scenes: [...new Set(R.trace)], done: R.done,

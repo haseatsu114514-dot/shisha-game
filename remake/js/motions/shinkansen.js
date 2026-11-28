@@ -7,6 +7,7 @@ import { el, sleep } from "../core/util.js";
 import { smokeOut } from "../core/transitions.js";
 import { MONO } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
+import { frameOf } from "../core/motion-frame.js";
 
 /** 色: bg 車内の暗がり・seat 座席・win 窓の外の暗がり・sky 高速で流れる車窓・streak 流れる光・
  * sign 行先表示の板・signText 表示の文字・ink 輪郭・rim 縁の光 */
@@ -214,7 +215,11 @@ export async function c(mid, opts = {}) {
       const train = el("div.mo-shn-train", [car, far, near, poles, flick]);
       const title = el("div.mo-ride-title.shn", { dataset: { test: "ride-title" } }, [el("small", { text: "新幹線 のぞみ" }), el("b", { text: DEST_LABEL[opts.to] ? `${DEST_LABEL[opts.to]}へ` : "のぞみ" }), el("i")]);
       const from = sceneCopy();
-      node.append(train, title, ...(from ? [from] : []));
+      // 縦画面の縦の舞台（720×H・VPO11）: 車内の絵（1280×720）を画面の高さいっぱいに置き、横は窓（絵の右寄り）を真ん中に見せる
+      const { W: FW, H: FH, portrait } = frameOf(node);
+      const k = FH / 720, focus = 0.62;
+      const view = portrait ? el("div.mo-shn-view", { style: { left: `${(FW / 2 - 1280 * focus * k).toFixed(1)}px`, transform: `scale(${k.toFixed(4)})` } }, [train]) : train;
+      node.append(view, title, ...(from ? [from] : []));
       // 1. 走っている車内へ。前の場面は煙のにじみでほどける（車内が覆っている間に裏で次の場面へ替える）
       SE.shinkansen?.(RUN / 1000);
       move(near.firstChild, [{ transform: "translateX(0)" }, { transform: "translateX(72%)" }], RUN, { easing: slowing });
@@ -237,7 +242,7 @@ export async function c(mid, opts = {}) {
       const out = move(title, [{ opacity: 1 }, { opacity: 0 }], 420, { easing: "ease" });
       if (outbound) await Promise.all([out, sleep(Math.max(0, RUN - 2780))]);
       else await Promise.all([out, smokeOut(train, 780)]);
-    }, { cover: true });
+    }, { cover: true, portrait: true });
   } finally {
     if (streak) URL.revokeObjectURL(streak);
   }

@@ -36,3 +36,6 @@
 .mo-unveil-stand { position: absolute; inset: 0; overflow: hidden; opacity: 0; }
 .mo-unveil-figure { position: absolute; left: 69%; width: auto; max-width: none; transform: translateX(var(--ax, -50%)); opacity: 0; -webkit-user-drag: none; }
 .mo-unveil-figure.shadow { opacity: 1; filter: brightness(0); }
+/* 縦画面の縦の舞台（720×H・VPO13）: 混ざる煙は画面の真ん中から立ちのぼる（横の間は JS で詰める）。味が遠のく煙は、横の舞台の大きさのまま真ん中に置く */
+.mo-portrait .mo-mixed-plume { left: -20px; top: calc(55% - 210px); }
+.mo-portrait .mo-taste-puff { inset: auto; left: -280px; top: calc(46% - 360px); width: 1280px; height: 720px; overflow: visible; }

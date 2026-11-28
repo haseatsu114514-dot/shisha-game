@@ -43,3 +43,7 @@
 .mo-tc-band small { position: absolute; left: 54px; bottom: 100%; background: #2a1638; color: #f4ecda; font-size: 20px; line-height: 1.5; letter-spacing: 0.22em;
   font-weight: 700; padding: 4px 15px 4px; white-space: nowrap; }
 .mo-tc-band .t { display: block; color: #1a0f24; font-size: 84px; line-height: 1.2; letter-spacing: 0.14em; white-space: nowrap; font-family: "Suien Name", var(--font); font-weight: 700; }
+/* 縦画面の縦の舞台（720×H・VPO04）: 3枚は画面の上 1/3 に横一列、めくった札は真ん中で大きく。帯は下の 1/8 あたり。卓は上下に暗く沈める */
+.mo-portrait.mo-tarot .mo-tc-shade { background: linear-gradient(to bottom, #0a0410b3 0%, #0a041059 34%, #0a0410a6 68%, #0a0410e6 100%); }
+.mo-portrait.mo-tarot .mo-tc-table { transform-origin: 50% 40%; }
+.mo-portrait.mo-tarot .mo-tc-band { bottom: 11%; width: 640px; }

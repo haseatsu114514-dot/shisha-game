@@ -5,6 +5,7 @@ import { SE } from "../core/audio.js";
 import { W, svg, stageSvg, move } from "../core/transition-kit.js";
 import { MG_EASE as E, pick, burst, ring, kinetic, playKinetic } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
+import { frameOf } from "../core/motion-frame.js";
 
 // ---------------------------------------------------------------- a: バイトの終わり: 吊り札が下りて揺れ、くるっと回って CLOSED
 
@@ -190,11 +191,16 @@ export async function c({ brief = false } = {}) {
     const flip = el("div.mo-shop-flip", brief ? { style: { transform: "rotateY(180deg)" } } : {}, [signFace("open", "OPEN"), signFace("closed", "CLOSED")]);
     const swing = el("div.mo-shop-swing", [flip]);
     const sign = el("div.mo-shop-sign", [swing]);
+    // 縦画面の縦の舞台（720×H・VPO08）: 札は画面の幅の真ん中・上から 3 割の所で止まる。出入りは画面の上の外まで
+    const { H: FH, portrait } = frameOf(node);
+    const top = portrait ? Math.round(FH * 0.3) : 84;
+    const off = portrait ? `translateY(${-(top + 480)}px)` : SHOP_SIGN_OFF;
+    if (portrait) Object.assign(sign.style, { left: "60px", top: `${top}px` });
     node.append(shade, sign);
     // 1. 上から下りてきて、吊り輪を軸に小さく揺れる
     move(shade, [{ opacity: 0 }, { opacity: 1 }], 220, { easing: "ease" });
     move(swing, [{ transform: "rotate(-5deg)" }, { transform: "rotate(3deg)", offset: 0.45 }, { transform: "rotate(-1.5deg)", offset: 0.75 }, { transform: "rotate(0deg)" }], brief ? 520 : 760, { easing: "ease-out" });
-    await move(sign, [{ transform: SHOP_SIGN_OFF }, { transform: "translateY(0)" }], brief ? 280 : 300, { easing: E.out });
+    await move(sign, [{ transform: off }, { transform: "translateY(0)" }], brief ? 280 : 300, { easing: E.out });
     if (brief) {
       SE.select();
       await sleep(480);
@@ -207,6 +213,6 @@ export async function c({ brief = false } = {}) {
     }
     // 3. 上へ戻る
     move(shade, [{ opacity: 1 }, { opacity: 0 }], 240, { delay: 40, easing: "ease" });
-    await move(sign, [{ transform: "translateY(0)" }, { transform: SHOP_SIGN_OFF }], 280, { easing: E.in });
-  });
+    await move(sign, [{ transform: "translateY(0)" }, { transform: off }], 280, { easing: E.in });
+  }, { portrait: true });
 }
