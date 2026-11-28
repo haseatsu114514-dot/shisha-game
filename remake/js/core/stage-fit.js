@@ -23,11 +23,14 @@ export function fitStage(stage, region = null) {
   if (region) { w = region.clientWidth; h = region.clientHeight; }
   else if (viewport?.width > 0 && viewport?.height > 0) { w = viewport.width; h = viewport.height; }
   else { w = window.innerWidth; h = window.innerHeight; }
-  const k = Math.min(w / 1280, h / 720);
+  const portrait = !!stage.dataset.portraitScene;
+  const k = portrait ? w / 640 : Math.min(w / 1280, h / 720);
+  if (portrait) stage.style.setProperty("--stage-h", Math.round(h / k) + "px");
+  else stage.style.removeProperty("--stage-h");
   stage.style.setProperty("--k", String(k));
   // スマホ規格（#2851）: 横持ちスマホ（Plus/Pro Max の 0.60 も含む）で共通部品の文字・タップ部品を大きくする。css/phone-density.css
   // 横長の画面だけ（PC の縦長ウィンドウや縦持ちは対象外。縦持ちのスマホは横向きの案内になる）
-  if (k < PHONE_DENSITY_K && w > h) document.documentElement.dataset.density = "phone";
+  if (portrait || (k < PHONE_DENSITY_K && w > h)) document.documentElement.dataset.density = "phone";
   else delete document.documentElement.dataset.density;
   // ワイド拡張（#2861: ステージを最大1600まで広げる方式）は廃止した（#3035）。
   stage.style.removeProperty("--stage-w");

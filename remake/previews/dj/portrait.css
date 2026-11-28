@@ -107,3 +107,5 @@ html[data-layout=portrait] .judge { font-size: 56px; }
 html[data-layout=portrait] .voice[data-slot="0"] { left: 2%; top: calc(var(--floor-h, 420px) * .28); } html[data-layout=portrait] .voice[data-slot="2"] { right: 2%; top: calc(var(--floor-h, 420px) * .3); }
 html[data-layout=portrait] .voice[data-slot="1"] { left: calc(50% - 135px); top: calc(var(--floor-h, 420px) * .44); }
 html[data-layout=portrait] .voice[data-slot="3"] { left: 6%; top: calc(var(--floor-h, 420px) * .48); } html[data-layout=portrait] .voice[data-slot="4"] { right: 6%; top: calc(var(--floor-h, 420px) * .46); }
+
+html:not([data-layout="portrait"]) .p-coach { display: none; }

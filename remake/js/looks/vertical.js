@@ -19,6 +19,7 @@ import { createCoverScene } from "./vertical/cover.js";
 import { createSheetScene } from "./vertical/sheet.js";
 import { createBoardScene, boardOpen } from "./vertical/board.js";
 import { createCraftScene, craftOpen } from "./vertical/craft.js";
+import { livePortraitScene, setLivePortraitScene } from "./vertical/live-stage.js";
 import { createMotionLayer } from "./vertical/motion-layer.js";
 
 const PORTRAIT = "(orientation: portrait)";
@@ -29,7 +30,7 @@ const GAP_MS = 3000;        // 場面と場面のあいだの何も出ていな�
 const STUCK_MS = 6000;      // 何も写せない覆いがタップを待ったままなら、回転案内へ切り替える
 const COVER_MAX_MS = 20000; // 覆いの中身が変わらないまま続く上限
 const HINT_MAIN = "この場面は横向きで遊びます";
-const HINT_SUB = "機材選び・炭の配置などの工程・店番・ミニゲームの縦画面は準備中です";
+const HINT_SUB = "この場面では端末を横向きにしてください";
 
 let active = false, query = null, session = null;
 
@@ -56,10 +57,10 @@ function syncOrientation() {
   if (session) return;
   const mine = ++loadToken;
   // 見た目の CSS は縦画面を使う時だけ読み込む（index.html の styles-look-vertical。ほかの端末には読ませない）
-  withMinigameStyles("look-vertical", null, async () => {
+  Promise.resolve(withMinigameStyles("look-vertical", null, async () => {
     if (mine !== loadToken || !active || !query?.matches || session) return;
     session = start();
-  }).catch((error) => console.error("[look] 縦画面の見た目を読み込めませんでした", error));
+  })).catch((error) => console.error("[look] 縦画面の見た目を読み込めませんでした", error));
 }
 
 function start() {
@@ -100,7 +101,7 @@ function start() {
   let holdSince = 0, pressable = false, gap = false, noneSince = 0, hold = false, coverBlocked = false;
 
   function setScene(next) {
-    if (next === sceneName) return;
+    if ((next || "") === sceneName) return;
     scene?.leave?.();
     frame.reset();
     sceneName = next || "";
@@ -122,6 +123,15 @@ function start() {
 
   /** 定期の確認（1 秒に 9 回ほど）。DOM の変化を受けた臨時の確認では、外枠を引っ込める・つなぐ判断だけを行う。 */
   function evaluate(now, periodic) {
+    const live = livePortraitScene();
+    if (live) {
+      root.dataset.vtHint = "hold";
+      setScene(null);
+      setLivePortraitScene(live);
+      candidate = null; streak = 0; noneSince = 0; fresh = true;
+      return;
+    }
+    setLivePortraitScene("");
     let found = boardOpen() ? { kind: "scene", name: "board" } : detectState(own);
     // シーシャ作り: 作業台の今の工程に縦の画面があれば、作る場面として写す（会話・写せる小窓が上に出ている間と、画面の一番上の小窓の間は除く）
     if (found.kind !== "scene" && !topDialogOpen() && craftOpen()) found = { kind: "scene", name: "craft" };
@@ -265,6 +275,7 @@ function start() {
     stop() {
       if (stopped) return;
       stopped = true;
+      setLivePortraitScene("");
       cancelAnimationFrame(frameId);
       clearTimeout(timer);
       observer.disconnect();

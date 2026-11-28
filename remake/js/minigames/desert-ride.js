@@ -381,18 +381,17 @@ export function runDesertRide(options = {}) {
 
 function startDesertRide({ host = document.getElementById("stage"), signal = null, tutorial = false, startRival = null, best = null, legacyBest = null, seed, courseId, rivals = ["noor"],
   tiers = TIERS, tier = "normal", cleared = [], tierNotes = null, easyBest = null, bests = null, onTier = null,
-  reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = "ヌール", speedUp = 1, layout = "landscape",
+  reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = "ヌール", speedUp = 1, layout = "auto",
   naruSlot = true, downhill = null } = {}) {
-  // layout: "portrait" は縦画面の試作（remake/previews/portrait-stage/frame/desert.html）だけが渡す。画面の並べ方は data-layout を見るCSSが決め、
-  // 規則・採点・描く中身は横と同じ。縦では横向きの案内（回転ガード）を見張らない。既定（横）の動きは変えない。
-  const portrait = layout === "portrait";
+  const portraitNow = () => layout === "portrait" || (layout === "auto" && document.documentElement.dataset.look === "vertical" && matchMedia("(orientation: portrait)").matches);
+  let portrait = portraitNow();
   // 下り坂の見え方（DOWNHILL）は縦・横とも既定で当てる（値は縦横で別。横は人物の画面上の高さを平らな作りと同じに保つ）。
   // downhill: false で前の平らな見え方（見比べ用）
   const sloped = downhill ?? true;
-  const tilt = DOWNHILL[portrait ? "portrait" : "landscape"];
-  const EYE_Y = sloped ? tilt.eye : HORIZON;       // 目の高さの地平線（空と遠くの稜線の境。遠景の絵を合わせる）
-  const GROUND_Y = sloped ? tilt.ground : HORIZON; // 路面の消失線（坂の下の端）。EYE_Y より下にあるほど急な下りに見える
-  const CAM_H = sloped ? tilt.height : CAM.height; // 斜面から測ったカメラの高さ（m）
+  let tilt = DOWNHILL[portrait ? "portrait" : "landscape"];
+  let EYE_Y = sloped ? tilt.eye : HORIZON;       // 目の高さの地平線（空と遠くの稜線の境。遠景の絵を合わせる）
+  let GROUND_Y = sloped ? tilt.ground : HORIZON; // 路面の消失線（坂の下の端）。EYE_Y より下にあるほど急な下りに見える
+  let CAM_H = sloped ? tilt.height : CAM.height; // 斜面から測ったカメラの高さ（m）
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   if (signal?.aborted) return Promise.resolve({ results: [], practiced: false });
@@ -498,10 +497,20 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     const view = { depth: CAM.depth, back: CAM.back, roll: 0, kick: 0, rise: 0 };
     // 縦では、横長の絵の左右を切って真ん中だけを見せる（css の側）。見えている幅の半分（絵の画素）を持ち、人物の横の字をその内側に置く。横は絵の幅いっぱい
     let safeHalf = W / 2;
-    if (portrait && typeof ResizeObserver !== "undefined") {
-      const watch = new ResizeObserver(() => { const shown = canvas.clientWidth; safeHalf = shown > 0 ? W / 2 * Math.min(1, root.clientWidth / shown) : W / 2; });
-      watch.observe(root); watch.observe(canvas);
-    }
+    const measureView = () => {
+      portrait = portraitNow();
+      if (portrait) root.dataset.layout = "portrait";
+      else delete root.dataset.layout;
+      tilt = DOWNHILL[portrait ? "portrait" : "landscape"];
+      EYE_Y = sloped ? tilt.eye : HORIZON;
+      GROUND_Y = sloped ? tilt.ground : HORIZON;
+      CAM_H = sloped ? tilt.height : CAM.height;
+      const shown = canvas.clientWidth;
+      safeHalf = portrait && shown > 0 ? W / 2 * Math.min(1, root.clientWidth / shown) : W / 2;
+    };
+    const resize = new ResizeObserver(measureView);
+    resize.observe(root);
+    resize.observe(canvas);
     let fxShots = [];                       // 一度きりの絵の演出（踏み切りの砂の柱・着地の砂）。人物の足元の点に置く
     const riderPx = { unit: 120, lift: 0, ground: 0 }; // 人物の 1m の画素と、地面から持ち上げて描いている量、足元の地面の画面の高さ（drawPlayerBody が毎コマ更新）
     let fxDt = 1 / 60;                      // 砂を出す量の計算に使う、直前のコマの長さ // 速さで広がる視界。back を depth に比例させ、人物の大きさは変えない
@@ -511,6 +520,7 @@ function startDesertRide({ host = document.getElementById("stage"), signal = nul
     const finish = () => {
       if (done) return;
       done = true;
+      resize.disconnect();
       cancelMenuWarm();
       cancelAnimationFrame(frame);
       clearTimeout(cutinTimer);

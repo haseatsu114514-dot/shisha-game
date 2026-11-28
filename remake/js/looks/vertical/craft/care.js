@@ -5,8 +5,8 @@ import { textOf } from "../frame.js";
 export const careView = {
   id: "care",
   step: "care",
-  match: (panel) => !!panel.closest('.bench[data-chapter="1"][data-practice-kind="midcheck"]')
-    && !!panel.querySelector(".pull-care, .result-card"),
+  intro: true,
+  match: (panel) => !!panel.querySelector(".pull-care, .result-card"),
   create({ relay }) {
     const info = el("p");
     const dial = el("div.vtc-care-dial");
@@ -27,9 +27,10 @@ export const careView = {
         const choice = panel.querySelector(".care-coals");
         const svg = panel.querySelector(".pull-dial > svg");
         dial.hidden = !!choice || !svg;
-        if (svg && !dial.firstChild) {
+        if (svg && dial.dataset.source !== svg.querySelector("linearGradient").id) {
           // use は本編の針を描画フレームごとに追う。外枠の同期周期で針を間引かない。
           const id = svg.querySelector("linearGradient").id;
+          dial.dataset.source = id;
           svg.id = `vt-source-${id}`;
           dial.innerHTML = `<svg viewBox="0 0 480 240" aria-hidden="true"><use href="#${svg.id}"/></svg>`;
         }
