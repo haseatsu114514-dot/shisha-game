@@ -404,7 +404,9 @@ await suite('ch2-main', async check => {
       };
       void window.__offerPhoto();
     });
-    await page.locator('[data-test="purikura-guest"]').click();
+    // PFC19: まず「撮る（400円）」→ あげはが居合わせた知り合いとの2ショットを勧める → 相手を選ぶ
+    await page.locator('[data-test="purikura-shoot"]').click();
+    await page.locator('[data-test="purikura-with-kumicho"]').waitFor();
     assert.equal(await page.locator('[data-test^="purikura-with-"]').count(), 1);
     await page.locator('[data-test="purikura-with-kumicho"]').click();
     await page.locator('[data-test="purikura-receive"]').click();
@@ -417,8 +419,9 @@ await suite('ch2-main', async check => {
     assert(trace.some(row => row.id === 'remake_ch2_ryuji_melty_greeting'));
     assert(trace.some(row => row.text?.includes('左右の高さ')));
     await page.evaluate(() => { __remake.state.slot = 1; void window.__offerPhoto(); });
+    await page.locator('[data-test="purikura-shoot"]').click();
     await page.locator('[data-test="purikura-solo"]').waitFor();
-    assert.equal(await page.locator('[data-test="purikura-guest"]').count(), 0, 'A past visitor is not a current guest');
+    assert.equal(await page.locator('[data-test^="purikura-with-"]').count(), 0, 'A past visitor is not a current guest');
     await page.locator('[data-test="purikura-solo"]').click();
     await page.locator('[data-test="purikura-receive"]').click();
     await page.waitForFunction(() => window.__photoDone);

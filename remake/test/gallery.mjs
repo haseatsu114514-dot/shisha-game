@@ -231,7 +231,7 @@ for (const c of ALL_MINTO_CHEKIS) {
 }
 // MELTY PUFF のプリクラ（PFC18）。第2章・プリクラの札で、撮影の記録に絵があれば解放（絵のある記録は撮影ごとの項目に重ねない）。
 const { PURIKURA_PHOTOS } = modules.get(new URL("purikura-data.js", root).href).namespace;
-assert.equal(PURIKURA_PHOTOS.length, 13);
+assert.equal(PURIKURA_PHOTOS.length, 32); // 13枚（PFC18）＋ソロ5・あげは友達4・恋人版10（PFC20）
 const purikuraChar = { ageha: "ageha", tsumugi: "tsumugi", rio: "rio" };
 for (const p of PURIKURA_PHOTOS) {
   const entry = actualEntries.find(item => item.id === p.cg);
