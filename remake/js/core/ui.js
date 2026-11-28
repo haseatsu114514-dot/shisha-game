@@ -106,9 +106,11 @@ function trimImages(pin) {
   }
 }
 const expiredImageWaits = new WeakMap(); // 同じ通信に対し、使い切った待ち時間を繰り返さない
+const expiredUnscaledImageWaits = new WeakMap();
+const setUnscaledTimeout = globalThis.setTimeout?.bind(globalThis);
 
 /** 画像を読み込み＋デコードし終えるまで待つ（最大 ms）。成功時 true、失敗・時間切れは false。 */
-export function imageReady(url, ms = 1500, { keep = false, pin = false } = {}) {
+export function imageReady(url, ms = 1500, { keep = false, pin = false, unscaled = false } = {}) {
   if (!url) return Promise.resolve(false);
   let entry = bgReady.get(url);
   if (entry) { bgReady.delete(url); bgReady.set(url, entry); }
@@ -138,14 +140,17 @@ export function imageReady(url, ms = 1500, { keep = false, pin = false } = {}) {
   }
   const p = entry.promise;
   if (ms === null) return p; // explicit retry: observe this transfer until it settles
-  if (expiredImageWaits.has(p) && expiredImageWaits.get(p) >= ms) return Promise.resolve(false);
+  // 倍速で先読みの待ち時間を使い切っても、実時間で待つ指定は同じ画像の取得を待てる。
+  const expiredWaits = unscaled ? expiredUnscaledImageWaits : expiredImageWaits;
+  if (expiredWaits.has(p) && expiredWaits.get(p) >= ms) return Promise.resolve(false);
+  const schedule = unscaled ? setUnscaledTimeout : setTimeout;
   return new Promise((resolve) => {
-    const timer = setTimeout(() => {
-      expiredImageWaits.set(p, Math.max(ms, expiredImageWaits.get(p) || 0));
+    const timer = schedule(() => {
+      expiredWaits.set(p, Math.max(ms, expiredWaits.get(p) || 0));
       resolve(false);
     }, ms);
     // 通信は継続する。遅れて届いた画像は通常のキャッシュへ戻し、通信失敗後の再試行も妨げない。
-    p.then((loaded) => { expiredImageWaits.delete(p); clearTimeout(timer); resolve(loaded); });
+    p.then((loaded) => { expiredWaits.delete(p); clearTimeout(timer); resolve(loaded); });
   });
 }
 
@@ -267,11 +272,14 @@ function playOutdoorArrival(cued, url, tint) {
  * 新しい場面が始まって見えるのを防ぐ）。戻り値は画像の用意と幕が開き終わるまで待つ。
  * assetsReady は画像の取得・デコードだけを待つ。読み込み表示と操作解禁の条件を混同しない。
  */
-export function setBg(url, { instant = false, tint = null, fast = false, brief = false, ready = [], homeRigs = true, mapBackdrop = false } = {}) {
+export function setBg(url, {
+  instant = false, tint = null, fast = false, brief = false, ready = [], homeRigs = true, mapBackdrop = false, unscaledBgWait = false,
+} = {}) {
   const host = layers.bg;
   const art = { homeRigs };
+  const sceneImages = sceneArtUrls(url, art);
   const isShown = () => !!url && bgShown === key;
-  const key = `${url}|${tint || ""}|${sceneArtUrls(url, art).join("|")}`;
+  const key = `${url}|${tint || ""}|${sceneImages.join("|")}`;
   const sceneArrival = takeSceneArrival(); // consume even on redraw; never carry an entry into a later scene
   // 時間が過ぎる波（transitions.waveBeat）が覆ったまま預けた幕。新しい背景を描いてから開く（#2688 F3）
   const handoff = takeParkedCover();
@@ -286,7 +294,11 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
   if (curtain) activeCurtain = curtain;
   bgNow = key;
   const revision = ++bgRevision;
-  bgAssetsReady = Promise.all([...sceneArtUrls(url, art), ...ready].map((u) => imageReady(u, mapBackdrop ? 1800 : 15000)));
+  const assetTimeout = mapBackdrop ? 1800 : 15000;
+  bgAssetsReady = Promise.all([
+    ...sceneImages.map((u) => imageReady(u, assetTimeout, { unscaled: unscaledBgWait })),
+    ...ready.map((u) => imageReady(u, assetTimeout)),
+  ]);
   bgTask = Promise.all([curtain?.covered, bgAssetsReady]).then(([, loaded]) => {
     if (bgRevision !== revision) return; // 待っている間に別の背景が指定された
     // 背景の絵そのもの（先頭）が読めなかった（通信失敗・時間切れ）ときは、前の背景を残す。読めない絵の層を重ねて

@@ -343,6 +343,7 @@ function waitSceneAssets(task, owner = running, assets = task.assetsReady || tas
  * 会話を再生する。
  * @param idOrDlg dialogue_id か dialogue オブジェクト
  * @param opts.bg  背景の上書き（res:// パス可）
+ * @param opts.unscaledBgWait  背景画像の待ち時間はデバッグの倍速に連動させない
  * @param opts.signal 呼出し元が場面を破棄したとき、読了・末尾報酬なしで閉じる
  * @param opts.portraitCostume この会話の立ち絵だけに使う衣装指定（{ speaker, key }）
  * @param opts.cancelOnSkip SKIPを中断として扱い、呼出し元で次回の再読を可能にする
@@ -431,7 +432,7 @@ export function play(idOrDlg, opts = {}) {
     const meta = dlg.metadata || {};
     const bg = opts.bg || meta.bg;
     const portraitsReady = firstPortraits(dlg);
-    const bgReady = bg ? sceneSetBg(bg, portraitsReady) : Promise.resolve();
+    const bgReady = bg ? sceneSetBg(bg, portraitsReady, opts.unscaledBgWait) : Promise.resolve();
     dom.effect.dataset.effect = meta.effect || "";
     // #2447 item10: metadata.lift_scene_props の場面だけ、背景の台（卓上・床）を本文ボックスの
     // 上辺まで持ち上げて、下半分が会話ウィンドウに隠れないようにする。既定の家の場面には付けない。
@@ -521,9 +522,9 @@ function firstPortraits(dlg) {
 }
 
 /** 会話の背景（昼夜の差分・夜の色調補正つき） */
-function sceneSetBg(ref, ready = []) {
+function sceneSetBg(ref, ready = [], unscaledBgWait = false) {
   const { url, tint } = sceneBg(ref, timeOfDay());
-  return url ? setBg(url, { tint, ready }) : Promise.resolve();
+  return url ? setBg(url, { tint, ready, unscaledBgWait }) : Promise.resolve();
 }
 
 const PREFETCH_FIRST = 16; // 会話の入口（開始・jump）で先に読む枚数

@@ -289,7 +289,7 @@ export function mirrorBackground(host, { focusX = 50, focusY = 40 } = {}) {
 
 // 会話・行動選びの上の表示に出す場所の名前（試作 VPL12: 会話は場所の名前だけ）。背景の絵の名前から決める（第1章の場所）。
 const PLACES = [
-  [/bg_tonari/, "tonari"], [/peppermint/, "PEPPERMINT"], [/kemurikusa/, "KEMURIKUSA"], [/(^|\/)eden|bg_eden_shop/, "EDEN"],
+  [/bg_tonari/, "tonari"], [/peppermint/, "PEPPERMINT"], [/kemurikusa/, "KEMURIYA"], [/(^|\/)eden|bg_eden_shop/, "EDEN"],
   [/bg_shop|fookah_showroom/, "Dr.fookah"], [/bg_cafe/, "喫茶こはく"], [/bg_kannon/, "観音堂"], [/bg_choizap/, "CHOI-ZAP"],
   [/bg_c_station/, "C.STATION"], [/bg_home/, "家"], [/bg_tournament_stage/, "大会の会場"], [/bg_street|bg_toosu_park/, "橙須"],
   [/bg_rojiura_cinema/, "路地裏シネマ"], [/bg_axe_lane/, "斧投げ"], [/bg_smoke_lab/, "Dr.fookah 2階"],

@@ -178,7 +178,7 @@ export function createCoverScene(frame, own) {
   function sync(state = {}) {
     holding = !!state.hold;
     gap = !!state.gap;
-    const roots = [...(document.getElementById("fx")?.children || [])].filter((node) => !node.matches(HARMLESS));
+    const roots = state.preparation ? [] : [...(document.getElementById("fx")?.children || [])].filter((node) => !node.matches(HARMLESS));
     const cutin = roots.find((node) => node.matches(".cutin.art-intro"));
     const title = cutin ? null : readChapterTitle(roots);
     frame.root.dataset.cover = cutin ? "cutin" : title ? "title" : gap ? "gap" : roots.some((node) => node.matches(".chapter-poem.has-panel")) ? "poem" : "cover";
@@ -203,7 +203,8 @@ export function createCoverScene(frame, own) {
     }
     const url = mirrorBackground(bg);
     frame.setAmbient(url);
-    const read = cutin || title || gap ? [] : readLines(roots.filter((node) => !node.matches(".cutin")));
+    const label = state.preparation?.label;
+    const read = label ? [{ text: label, size: 0 }] : cutin || title || gap ? [] : readLines(roots.filter((node) => !node.matches(".cutin")));
     const pics = cutin || title || gap ? [] : readArt(roots);
     const next = JSON.stringify([read, pics.map((p) => p.url)]);
     if (next !== sig) {

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { suite } from './support.mjs';
+import { baseURL, suite } from './support.mjs';
 
 const artifacts = process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser';
 const summaries = [];
@@ -179,6 +179,50 @@ async function startDay2(page, touch) {
 }
 
 await suite('reel-registration-load', async check => {
+  const portraitEntry = new URL(baseURL);
+  portraitEntry.searchParams.set('look', 'vertical');
+  await check('portrait-day2-briefing-slow-background', async page => {
+    // 曇天の差分を使い、タイトルで先読みする晴天版が検査に影響しないようにする。
+    const tonariArt = /\/img\/backgrounds\/bg_tonari_inside_overcast_day\.webp(?:\?|$)/;
+    let releaseBackground;
+    const holdBackground = new Promise(resolve => { releaseBackground = resolve; });
+    await page.route(tonariArt, async route => { await holdBackground; await route.continue(); });
+    try {
+      await page.evaluate(async () => {
+        const [core, data, ui, calendar, time] = await Promise.all([
+          import('./js/core/state.js'), import('./js/core/data.js'), import('./js/core/ui.js'),
+          import('./js/daily/calendar.js'), import('./js/dev/time-warp.js'),
+        ]);
+        // 1日目の帰宅を終え、2日目の配達説明に入る直前の状態。
+        const s = core.newGame();
+        Object.assign(s, { phase: 'daily', day: 2, slot: 0, weatherSeed: 1 });
+        Object.assign(s.flags, { _errand_scout_done: true, _morning_2: true });
+        core.config.textSpeed = 4;
+        ui.showScreen('none');
+        await ui.setBg(data.bgUrl('bg_home', 'night'), { instant: true });
+        time.installTimeWarp();
+        time.setSpeed(8);
+        void calendar.runDaily({ untilDay: 3, nightEvents: {} });
+      });
+      const mainText = page.locator('#vn.active .vn-text');
+      await page.locator('#fx > .vn-loading').waitFor({ state: 'attached' });
+      // 15秒を8倍速にした従来の上限（実時間で約1.9秒）を越えてから、画像を正常に返す。
+      await page.waitForTimeout(2500);
+      assert.equal(await mainText.count(), 0, 'The briefing started before the shop background arrived');
+      const response = page.waitForResponse(tonariArt);
+      releaseBackground();
+      assert.equal((await response).status(), 200);
+      await mainText.filter({ hasText: 'カウンターの横に、' }).waitFor({ state: 'attached' });
+      await page.waitForFunction(() => document.querySelector('.vt-where b')?.textContent === 'tonari');
+      assert.equal(await page.locator('#bg .bg-img.show').last().getAttribute('data-scene-bg'), 'bg_tonari_inside_overcast_day.png');
+    } finally {
+      releaseBackground();
+    }
+  }, {
+    pageEntry: portraitEntry.href, pageReadySelector: '[data-test="vt-title-new"]',
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  });
+
   for (const touch of [false, true]) await check(`${touch ? 'touch' : 'pc'}-day2-guide`, async page => {
     errandGain = emptyGain();
     await startDay2(page, touch);
