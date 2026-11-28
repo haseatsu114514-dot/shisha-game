@@ -8,7 +8,11 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 const read = file => readFile(new URL(file, import.meta.url), "utf8");
-const strip = source => source.replace(/^import .*;\s*$/gm, "").replace(/\bexport /g, "");
+// The fixture shares one classic script scope. Keep the declarations and omit module-only export lists.
+const strip = source => source
+  .replace(/^import .*;\s*$/gm, "")
+  .replace(/^export\s*\{[^}]*\};\s*$/gm, "")
+  .replace(/^export /gm, "");
 const [kuji, core, util, stats, data, travelBudget, galleryProgress, kujiTickets, equipment, kujiReveal, flavorMastery, growthStarter, legacyCastSave, chapterSave, mintoCheki, motionFrame] = await Promise.all([
   read("../js/daily/kuji.js"), read("../js/core/state.js"), read("../js/core/util.js"),
   read("../js/core/stats.js"), read("../../data/kuji.json"), read("../js/core/travel-budget.js"),
