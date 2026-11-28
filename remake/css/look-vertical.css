@@ -355,8 +355,11 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-tt-side { margin-left: auto; display: grid; justify-items: end; gap: calc(0.35 * var(--u)); line-height: 1; }
 .vt-tt-ja { font-size: calc(1.36 * var(--u)); font-weight: 500; letter-spacing: 0.04em; color: #ffffffb3; white-space: nowrap; }
 .vt-tt-note { font-size: calc(1.3 * var(--u)); letter-spacing: 0.06em; color: var(--acc); white-space: nowrap; }
+/* 「つづきから」の行の「セーブを選ぶ」（EXT02）。日本語の名前の段の代わりに、小さな札で出す */
+.vt-tt-sub { padding: calc(0.25 * var(--u)) calc(1 * var(--u)) calc(0.3 * var(--u)); border: calc(0.1 * var(--u)) solid color-mix(in srgb, var(--acc) 60%, transparent); border-radius: 999px; font-size: calc(1.25 * var(--u)); font-weight: 600; letter-spacing: 0.06em; color: var(--acc); background: #0b081299; white-space: nowrap; }
+.vt-tt-sub:active { background: color-mix(in srgb, var(--acc) 26%, #0b0812); color: #fff3cf; }
 .vt-tt-item[aria-current="true"] .vt-tt-en { color: #fff3cf; }
-.vt-tt-item[disabled] { opacity: 0.4; cursor: default; }
+.vt-tt-item[disabled], .vt-tt-item.is-locked { opacity: 0.4; cursor: default; }
 .vt-tt-item.is-picked { animation: vt-tt-pick 0.32s ease-out; }
 @keyframes vt-tt-pick { 0% { filter: brightness(1); } 40% { filter: brightness(1.9); } 100% { filter: brightness(1); } }
 /* 入ってきた時: 絵 → ロゴ → メニュー の順に出す */

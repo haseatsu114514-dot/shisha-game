@@ -39,6 +39,7 @@ export async function playHiyoriAxeSequence(event, { signal } = {}) {
     const bgmBefore = currentBgm() || "tonari"; playBgm("bgm_axe"); // #788 実プレイ中だけ斧投げ曲。終了・中断でtonariの曲へ
     const restoreBgm = () => { if (state === owner && currentBgm() === "bgm_axe") playBgm(bgmBefore); };
     // 台本の「スタッフの説明を聞いて」の所で、店主マキの1投レッスン。面識がある時だけ（初対面の紹介はBarの来店が担う）。
+    void import("../core/extra-games.js").then((m) => m.recordExtraPlay("axe")).catch(() => {}); // タイトルの EXTRA の解禁（端末に残す・EXT01）
     if (!owner.flags._axe_lesson_done && owner.flags._intro_maki) {
       await runAxeThrow({ host: document.getElementById("stage"), signal: abort.signal, tutorial: true, opponent: null,
         lessonContext: "event", allowRetry: false }).catch(error => { restoreBgm(); throw error; });

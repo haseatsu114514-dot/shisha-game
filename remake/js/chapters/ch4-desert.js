@@ -170,6 +170,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     // 段の解放（旧保存のヌールへの勝ち＝中級クリアを先に取り込む。何度呼んでも同じ）。上級の札には、まだなら白火の案内
     syncPlayTiers(owner);
     const tierState = () => ({ tiers: openTiers(owner, "desert"), cleared: tierRecord(owner, "desert").cleared });
+    void import("../core/extra-games.js").then((m) => m.recordExtraPlay("desert")).catch(() => {}); // タイトルの EXTRA（EXT01）
     const { results } = await runDesertRide({
       host: host || document.getElementById("stage") || layers.screen, signal, tutorial: status.first,
       best: before.best, legacyBest: before.legacyBest, easyBest: before.easyBest, bests: before.bests,

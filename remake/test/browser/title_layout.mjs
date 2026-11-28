@@ -275,7 +275,7 @@ try {
     assert.deepEqual(await cursor(), ["title-new"]);
     assert.equal(await p.locator(".ti-note").count(), 0);
     if (device === "pc") {
-      // ↑↓は押せない「つづきから」と「ロード」を飛ばして一巡し、Home／End で端へ。
+      // ↑↓は押せない「つづきから」と、まだ開いていない「？？？」（EXTRA）を飛ばして一巡し、Home／End で端へ。
       const focused = () => p.evaluate(() => document.activeElement?.dataset?.test ?? null);
       await p.keyboard.press("ArrowDown"); assert.deepEqual([await cursor(), await focused()], [["title-gallery"], "title-gallery"]);
       await p.keyboard.press("ArrowDown"); assert.deepEqual(await cursor(), ["title-config"]);
@@ -307,12 +307,10 @@ try {
     assert.match(note.text, /^第1章　DAY 6・(昼|夜)$/);
     assert(note.count === 1 && note.real >= 11 - 1e-6 && note.real < note.enReal && note.below && note.alignedWithMain && note.inRow && note.oneLine, JSON.stringify(note));
     if (device === "pc") {
-      // 「ロード」は枠選びを開き、「つづきから」はそのまま再開する。
-      await p.keyboard.press("ArrowDown"); assert.deepEqual(await cursor(), ["title-load"]);
-      await p.keyboard.press("Enter"); await button(p, "slot-cancel").waitFor(); await button(p, "slot-cancel").click();
+      // 「つづきから」の行で → は「セーブを選ぶ」（ロードの行の代わり・EXT02）で枠選びを開き、Enter はそのまま再開する。
+      await p.keyboard.press("ArrowRight"); await button(p, "slot-cancel").waitFor(); await button(p, "slot-cancel").click();
       await p.waitForFunction(() => !document.querySelector("#modal.show"));
-      assert.deepEqual(await cursor(), ["title-load"]);
-      await p.keyboard.press("ArrowUp"); assert.deepEqual(await cursor(), ["title-continue"]);
+      assert.deepEqual(await cursor(), ["title-continue"]);
       await p.keyboard.press("Enter"); await p.locator("body.vn-open").waitFor();
     } else {
       // スマホ（タッチ）: 押した行にカーソルが移る。添え書きが入っても行の高さと間隔は変わらない（72px以上・16px）。
