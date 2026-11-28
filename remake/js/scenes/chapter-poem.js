@@ -195,8 +195,24 @@ async function showChapterPoem(key, { owner = null, current = () => true } = {})
   window.addEventListener("keyup", onKeyUp, true);
 
   const wait = (ms, ...others) => Promise.race([sleep(ms), aborted, fastSignal, ...others]);
+  // 縦持ちでも同じ札を使う。top layer に載せると横用の舞台の縮尺を受けず、
+  // 回転しても途中の連・行・入力待ちを引き継げる。
+  const root = document.documentElement;
+  function fitOrientation() {
+    if (!card.showPopover || !card.isConnected) return;
+    if (root.dataset.vt === "on") {
+      card.popover = "manual";
+      if (!card.matches(":popover-open")) card.showPopover();
+    } else if (card.hasAttribute("popover")) {
+      card.hidePopover();
+      card.removeAttribute("popover");
+    }
+  }
+  const orientation = new MutationObserver(fitOrientation);
   try {
     layers.fx.append(card);
+    orientation.observe(root, { attributes: true, attributeFilter: ["data-vt"] });
+    fitOrientation();
     void card.offsetWidth;
     if (vnTest.turbo) {
       // テスト・自動送り: 演出を飛ばし、最後の場面を全行出してすぐ閉じる。
@@ -247,6 +263,7 @@ async function showChapterPoem(key, { owner = null, current = () => true } = {})
   } finally {
     window.removeEventListener("keydown", onKey, true);
     window.removeEventListener("keyup", onKeyUp, true);
+    orientation.disconnect();
     card.remove();
     if (owner && owner.controller === controller) owner.controller = null;
   }

@@ -235,6 +235,19 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-shell[data-scene="cover"] .vt-over:has(> .vt-cv:not([hidden])) { inset: 0; }
 .vt-shell[data-scene="cover"] .vt-over:has(> .vt-ct:not([hidden])) { inset: 0; }
 
+/* 章頭詩は本編の札のまま、上に横長のコマ、下に連の列を置く。 */
+.chapter-poem:popover-open {
+  position: fixed; inset: 0; box-sizing: border-box; margin: 0;
+  width: 100%; height: 100%; max-width: none; max-height: none; border: 0;
+  padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  pointer-events: auto;
+}
+.chapter-poem:popover-open .cp-panel { width: 90%; margin-top: 12dvh; }
+.chapter-poem:popover-open .cp-body {
+  max-height: none; font-size: min(5.7vw, 2.8dvh, 32px); line-height: 2; letter-spacing: .12em;
+}
+.chapter-poem:popover-open .cp-page { inset: 0 0 5dvh; }
+
 /* 知らせ（トースト・報酬の札） */
 .vt-notices { position: absolute; z-index: 30; left: calc(2 * var(--u)); right: calc(2 * var(--u)); top: calc(7.4 * var(--u) + env(safe-area-inset-top, 0px)); display: grid; justify-items: center; gap: calc(0.6 * var(--u)); pointer-events: none; }
 .vt-notice { max-width: 100%; padding: calc(0.9 * var(--u)) calc(1.6 * var(--u)); border: calc(0.1 * var(--u)) solid #ffffff40; border-radius: calc(1.4 * var(--u)); font-size: calc(1.4 * var(--u)); font-weight: 700; line-height: 1.45; text-align: center; color: #fff; background: #120c1df0; box-shadow: 0 var(--u) calc(2.4 * var(--u)) #000b; animation: vt-pop 0.3s var(--ease-out); }
