@@ -68,7 +68,7 @@ function framePortrait(img, p) {
 }
 
 /** 紹介に出す人物の絵と背景。playIntro と先読み（prefetchIntro）で同じものを選ぶ */
-function introSources(id, intro) {
+export function introSources(id, intro = introOf(id) || {}) {
   // 登場カットインの配置は現行原画用。会話の画風設定と独立して選ぶ。
   let p = portraitInfo(id, intro.face || "normal", "classic");
   let art = DB.manifest.introArt?.[id];

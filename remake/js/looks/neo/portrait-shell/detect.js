@@ -171,7 +171,7 @@ export function detectState(own = []) {
   const overlays = [...(byId("fx")?.children || [])].filter((node) => !node.matches(FX_HARMLESS));
   if (overlays.some((node) => node.matches(FX_INTERACTIVE) || node.querySelector(CONTROLS))) return NONE;
   const wipe = byId("wipe");
-  if (overlays.length || (wipe && (wipe.classList.contains("black") || wipe.classList.contains("cover")))) {
+  if (overlays.length || (wipe && !own.includes(wipe) && (wipe.classList.contains("black") || wipe.classList.contains("cover")))) {
     const layer = topLayer(stage, rect, 0.5, 0.5, own);
     // base: 覆いの下が写せる場面（会話・地図・タイトル・ボタンの画面・空き）か。新版の縦持ちは、回転案内から外枠へ戻すかをこれで決める
     return { kind: "cover", pressable: layer === "fx" || layer === "wipe" || layer === "unknown", base: knownBase() };

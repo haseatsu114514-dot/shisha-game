@@ -6241,6 +6241,1419 @@
         { "speaker": "hajime", "face": "normal", "text": "だったら、膝の内側で立ててみましょうか" },
         { "speaker": "hiyori", "face": "smile", "text": "……うん。手を離しても倒れない。今度もやってみる", "inner": "明日もこの鞄、持つことにしよ" }
       ]
+    },
+    {
+      "dialogue_id": "roam_dubai_naru_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるが丸い焼き菓子を割り、こんがりした縁が多い方を俺の皿に載せた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いいの？　そっち、ひと口しかないけど"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "そっちからかじれ。端と真ん中、どっちがうまい？"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "free",
+          "next_true": "free",
+          "next_false": "shop"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "歯を立てたら、縁だけぱきっと鳴った。真ん中は舌で押すとほどける。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺、端が好きだ。こっちは焼けたところが多いな"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "そりゃ困ったな。俺も端だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なんだ。なるも好きな方、くれたんだ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "食わせてから悔しくなった。ちょっと返せ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "端をひとかけ渡した。なるはそれを大事そうに、最後まで皿に残した。"
+        }
+      ],
+      "branches": {
+        "free": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "宿まで持って帰るつもりが、袋の底で割れそうでさ"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "店が休みだと、焼きたてが買えるんだ。いつも残りもんだからな"
+          }
+        ],
+        "early": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "今日は店、早く閉めたんだ。まだ温かいのが買えた"
+          }
+        ],
+        "shop": [
+          {
+            "type": "condition",
+            "condition_type": "roam_reason",
+            "reason": "early",
+            "next_true": "early",
+            "next_false": "closed"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_dubai_naru_a",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるがメニューから目を離さずに、隣の椅子を引いてくれた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "はじめ。お前、今なら何頼む？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺はもう吸ったよ。桃。なるは？"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "free",
+          "next_true": "free",
+          "next_false": "shop"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "だから甘くねえのを頼もうと思ってたんだけどな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "けど？"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "お前が桃って言ったら、桃のジャムまで浮かんできた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "パン屋にも寄ってく？"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "おう。……俺、今日何しにここ来たんだろうな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは桃を指さして注文した。空いた欄に指で丸いパンをひとつ描き足した。"
+        }
+      ],
+      "branches": {
+        "free": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "宿の朝飯でジャムを山ほど塗っちまった。まだ口が甘い"
+          }
+        ],
+        "early": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "店を早く閉めて、片づけながらジャムの瓶をさらった。まだ口が甘い"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "休みで朝飯が遅くてさ。パンに山ほどジャム塗っちまった"
+          }
+        ],
+        "shop": [
+          {
+            "type": "condition",
+            "condition_type": "roam_reason",
+            "reason": "early",
+            "next_true": "early",
+            "next_false": "closed"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_dubai_naru_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるが小さな紙袋の口を俺に向けた。甘い匂いがする。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "中、何が入ってると思う？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "バニラの匂いだ。中、空っぽなのに"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "free",
+          "next_true": "free",
+          "next_false": "shop"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "紙にまで移るんだな。これ嗅いだら、食べたくなるよ"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "そうなると思って、場所は覚えてある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ地図に印つけて。次は俺が買う"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "待て。道で覚えたんだ。上から見ると、どれだ？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人でスマホを横にした。なるは指を引っ込めて、店の外を指した。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "もう一袋買いに行くか。その方が早い"
+        }
+      ],
+      "branches": {
+        "free": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "宿を出る時に最後の一枚を食った。袋までうまそうだろ"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "休みのたびに買ってるビスケット。さっき全部食っちまった"
+          }
+        ],
+        "early": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "早じまいして買いに走ったのに、ここまでに全部食っちまった"
+          }
+        ],
+        "shop": [
+          {
+            "type": "condition",
+            "condition_type": "roam_reason",
+            "reason": "early",
+            "next_true": "early",
+            "next_false": "closed"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_dubai_naru_c",
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "free",
+          "next_true": "tournament",
+          "next_false": "return"
+        }
+      ],
+      "branches": {
+        "closed": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "今日は店休み。机が片づくと、こいつを開く場所がなくてさ"
+          }
+        ],
+        "early": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "今日は早じまい。店のノートまで持って出ちまった"
+          }
+        ],
+        "tournament": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "隣でなるが手帳を閉じた。端に油の染みた紙が挟まっている。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "なる、それレシピ？"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "包み紙。うまかったものを挟んでたら、手帳が太ってさ"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "宿に置いてくると、どこで何を食ったか忘れるんだよ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なるが一枚抜いた。日付の下に「半分」とだけ書いてあった。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "半分じゃ、味わかんないだろ"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "わかるよ。半分しか食ってねえの、だいたいお前といる時だから"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……それ、俺も一枚もらっていい？"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "新しいの作れよ。今日の分、まだ頼めるぞ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "俺が選んで、なるが割った。包み紙には俺の字で名前を書いた。"
+          }
+        ],
+        "return": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なるが手帳を開いた。油の染みた包み紙が、どの頁からもはみ出している。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "分厚くなったな。閉めるのにゴムが要るじゃん"
+          },
+          {
+            "type": "condition",
+            "condition_type": "roam_reason",
+            "reason": "early",
+            "next_true": "early",
+            "next_false": "closed"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "ドバイで食った菓子の包みもあるぞ。名前は忘れたけどな"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なるが一枚抜いた。店の名前の横に、小さく「端がうまい」とある。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……俺も旅先でこれ書いとけばよかったな"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "今からでも遅くねえよ。ほら、一口食ってみな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "うまい。俺も書くよ。端は二人で分ける、って"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "先に書きやがったな。じゃあ、きっちり半分で"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なるは包み紙を広げて、俺の皿をすぐ横に寄せた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_master_hookah_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えると、王煙楼が卓の下に手を伸ばしていた。落ちた匙を拾い、店員に渡す。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "ああ、君か。足元に気をつけて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "王煙楼さん。ここで会うとは思いませんでした"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "free",
+          "next_true": "free",
+          "next_false": "shop"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "ここは匙がよく落ちる。私のも一度落ちた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼が皿の縁に匙を置いてみせた。手を離すと、柄からずり落ちた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……受け皿が、ちょっと反ってるんだ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "私の指が鈍ったかと思ったよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "次から、こうですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "柄を卓につけて置くと、王煙楼が片手でそっと卓を揺らした。今度は落ちなかった。"
+        }
+      ],
+      "branches": {
+        "free": [
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "今日はシェイクに会いに来てね。帰る前にお茶を一杯"
+          }
+        ],
+        "early": [
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "今日は早く店を閉めて、こちらへお茶を飲みに来てね"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "私の店は今日は休みでね。こちらの窓際が空くのを待っていた"
+          }
+        ],
+        "shop": [
+          {
+            "type": "condition",
+            "condition_type": "roam_reason",
+            "reason": "early",
+            "next_true": "early",
+            "next_false": "closed"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_master_hookah_a",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼の卓で、茶の湯気が二筋立っていた。向かいの椅子が引いてある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お連れの方ですか？"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "いや。そこに座って、二つの器を見てくれるかな"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "free",
+          "next_true": "free",
+          "next_false": "shop"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "右の方が、色が濃いですね"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "同じ茶だよ。白い器と、底に絵のある器だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入れ替えると、濃い方まで引っ越した。俺は白い方を手に取った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "味まで薄い気がします。もう片方もいいですか"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "ああ。私もさっきから二杯ずつ飲んでいる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "空いた急須を二人で見た。答えが出る前に、茶のお代わりが要りそうだった。"
+        }
+      ],
+      "branches": {
+        "free": [
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "余裕を見て出てきたら、約束まで時間ができてね"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "店が休みの日くらいは、ゆっくり茶を飲み比べたいと思ってね"
+          }
+        ],
+        "early": [
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "今日は店を早めに閉めた。茶が冷めるまで座っていられる"
+          }
+        ],
+        "shop": [
+          {
+            "type": "condition",
+            "condition_type": "roam_reason",
+            "reason": "early",
+            "next_true": "early",
+            "next_false": "closed"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_master_hookah_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼が両手を膝に置いていた。目の前の茶に、一枚だけ葉が浮いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "茶柱ですか？"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "横になっているね。起きるまで待とうかと思って"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "free",
+          "next_true": "free",
+          "next_false": "shop"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺も腰を下ろした。葉はゆっくり回って、器の縁にぴたりとついた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "起きないですね"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "……私も喉が渇いた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼がふっと息を吹いた。葉が向こうへ滑ったところで、ひと口飲んだ。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "うん。これくらい冷めたのも好きだ"
+        }
+      ],
+      "branches": {
+        "free": [
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "帰るまでに、もう一杯飲んでおきたくてね"
+          }
+        ],
+        "early": [
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "早めに店を閉めた日くらい、湯気が消えるまで見ていたくてね"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "今日は店が休みだからね。私の卓にタイマーはいらない"
+          }
+        ],
+        "shop": [
+          {
+            "type": "condition",
+            "condition_type": "roam_reason",
+            "reason": "early",
+            "next_true": "early",
+            "next_false": "closed"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_master_hookah_c",
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "free",
+          "next_true": "return",
+          "next_false": "tournament"
+        }
+      ],
+      "branches": {
+        "closed": [
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "休みの日は、よその店の床を踏むのが楽しみでね"
+          }
+        ],
+        "early": [
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "店を早く閉めた日は、耳にまだ自分の店の音が残っている"
+          }
+        ],
+        "tournament": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "椅子を引くと、王煙楼が俺の手元を見て笑った。"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "君も音を立てないね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "下の階に響くって、店でよく言われたんです"
+          },
+          {
+            "type": "condition",
+            "condition_type": "roam_reason",
+            "reason": "early",
+            "next_true": "early",
+            "next_false": "closed"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "ここは、給仕が卓に来る直前に一度鳴る"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "王煙楼が口を閉じた。きゅ、と鳴って、俺の横に水が置かれた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "ほんとだ。板が浮いてるんですかね"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "床かと思ったが……あの人の靴かもしれないな"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "向こうの卓でも、きゅ、と鳴った。俺たちは顔を見合わせて、水を飲んだ。"
+          }
+        ],
+        "return": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "声をかける前に、王煙楼が椅子を引いた。俺の顔はまだ見ていない。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……どうして俺だってわかったんですか"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "わからなかったよ。店の人がお茶を持ってきたと思ってね"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "向かいには、伏せた茶碗が二つあった。俺も椅子を寄せて、通り道を広げる。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "大会でも、俺の台がどんな味か、吸う前から分かってるのかと"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "分かれば楽だよ。私も君の卓を見て、客の顔を確かめた"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "俺も見ました。王煙楼さん、客が吸うまでずっと待ってましたね"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "王煙楼がふっと笑った。店員が来ると、二つの茶碗を表に返す。"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "なら、今度は私の顔を見ててくれ。ここの茶はいい香りがする"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "店員が急須を傾けると、王煙楼はひと口飲む前から笑っていた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_da_silva_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "卓の下から、とん、とん、と音がする。のぞくと太陽の膝が跳ねていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "太陽さん、ここでも踊ってるんですか"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "しーっ。今いいとこなんだ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "free",
+          "next_true": "free",
+          "next_false": "shop"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "曲はかかっていない。耳を澄ますと、奥で茶碗を重ねる音がした。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "カチ、カチ、もういっこ来て……ほら！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後のひとつだけ、低い音がした。俺の膝まで一緒に跳ねた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "今の、大きい皿ですよね"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "いい耳だ！　じゃあ次、お前が頭を取れ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "卓の下で、靴が二足そろった。洗い場の人だけが俺たちの楽隊を知らなかった。"
+        }
+      ],
+      "branches": {
+        "free": [
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "今日は客。ここ、よく聞くと面白い音するんだ"
+          }
+        ],
+        "early": [
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "ブース、早く閉めてきた。今日は聞く方、な"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "今日はブースが休みだ。たまには人の演奏も聞かねえとな"
+          }
+        ],
+        "shop": [
+          {
+            "type": "condition",
+            "condition_type": "roam_reason",
+            "reason": "early",
+            "next_true": "early",
+            "next_false": "closed"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_da_silva_a",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "太陽が俺の顔を見るなり、人さし指を唇に当てた。肩だけが笑っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……今日は静かですね"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "小さい声でも届くか、試してんの"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "free",
+          "next_true": "free",
+          "next_false": "shop"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "太陽が口を小さく丸めた。俺は耳を寄せた。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "……その水、取ってくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "それだけですか"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "それだけ。ちゃんと聞こえたな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水を渡すと、太陽は親指を立てた。声を出すより遠くの席からも見えた。"
+        }
+      ],
+      "branches": {
+        "free": [
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "外で話す癖、ついててな。店の中だと声がでかいんだ"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "ブース、休み。呼び込みの声も、置いてきたつもりだぜ"
+          }
+        ],
+        "early": [
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "早じまいしてきたんだ。最後の呼び込みがまだ喉に残ってる"
+          }
+        ],
+        "shop": [
+          {
+            "type": "condition",
+            "condition_type": "roam_reason",
+            "reason": "early",
+            "next_true": "early",
+            "next_false": "closed"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_da_silva_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "太陽の前に小銭が三枚並んでいた。一枚ずつ指で押すと、短い線になる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何かの拍子ですか？"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "いや、こいつは真面目な計算だ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "free",
+          "next_true": "free",
+          "next_false": "shop"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何人分です？"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "五人。……あ、俺入れてねえや"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ六つですね"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "いや、七つだ。そういう顔して見てるやつがもう一人いる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "太陽が俺の前にも一枚置いた。代金を数え直すのを、今度は俺も手伝った。"
+        }
+      ],
+      "branches": {
+        "free": [
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "土産、持って帰るんだ。甘いの、いくつ買えるかな"
+          }
+        ],
+        "early": [
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "早じまいにつきあわせた連中に、甘いもん持って帰ろうと思ってな"
+          }
+        ],
+        "closed": [
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "ブース、今日は休み。あいつらに甘いもん買っとくんだ"
+          }
+        ],
+        "shop": [
+          {
+            "type": "condition",
+            "condition_type": "roam_reason",
+            "reason": "early",
+            "next_true": "early",
+            "next_false": "closed"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_da_silva_c",
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "roam_reason",
+          "reason": "free",
+          "next_true": "return",
+          "next_false": "tournament"
+        }
+      ],
+      "branches": {
+        "closed": [
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "ブースが休みだと、拍手の相手にも苦労すんだ。ちょっと貸せよ"
+          }
+        ],
+        "early": [
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "早じまいして出てきたら、どうも締めの一発が足りなくてよ"
+          }
+        ],
+        "tournament": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "店を出ようとしたら、太陽が片手を上げた。手のひらを合わせると、いい音がした。"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "もういっぺん。今の、狙ってできるか？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "真ん中を狙うんですかね"
+          },
+          {
+            "type": "condition",
+            "condition_type": "roam_reason",
+            "reason": "early",
+            "next_true": "early",
+            "next_false": "closed"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "俺は太陽の手をよく見て振った。ぱす、と気の抜けた音がした。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……最初の方がよかったですね"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "手ばっか見てたろ。顔見てやってみな"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "太陽と目が合った。ぱん、と鳴って、二人そろって振り返った。"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "smile",
+            "text": "いけねえ。いちばん驚いたの、店の兄ちゃんだ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "店員も笑って手を上げた。帰るまでに、いい音がもうひとつ増えた。"
+          }
+        ],
+        "return": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "太陽が手を振った。俺が振り返すと、その手を自分の膝におろしてぽんと打った。"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "審査の席でも、膝こうしてた。見えたか？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "手を振ったのは見えました。膝まではちょっと"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "よかった。あの机の下じゃ、足まで鳴ってたんだ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "試しに俺たちの卓の下で打ってみせる。水の表面に小さな輪ができた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あ、これなら前の席の人には見えますよ"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "smile",
+            "text": "ほんとだ。審査員、向いてねえかなあ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの紹介まで、太陽さんも出場するって信じてたんですよ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "太陽が手を止めた。今度は卓の上に手のひらを出した。"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "smile",
+            "text": "じゃあ今日はちゃんと聞こえるとこで、一発くれよ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ぱん、と鳴った。あとから膝がもう一度鳴った。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "roam_sheikh_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "路地裏のカフェで、シェイクが背をかがめて椅子の脚に紙を噛ませていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "卓にスマホを置き、通訳アプリを開いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そういうの、ご自分でやるんですね"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "私の椅子は直った。ハジメ、そっちにも座ってみてくれ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われた通りに座ると、右の膝が少し下がった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "もう一枚、要りそうです"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "そうか。押してみるのと座るのとでは違うな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙をもう一折りした。腰をずらしても、今度は器の水が揺れない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "直りました。どうぞ"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "いや、そこは君の席だ。私はいつもこっちだよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "向かいに座ったシェイクに、やっと同じ高さで目が合った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "roam_sheikh_a",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シェイクが二冊のメニューを並べていた。片方は隅が丸く、紙が柔らかい。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "古い方なら、目を閉じてグレープの頁を開ける"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "毎回頼んでたんですか？"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "何度も開いた。頼むかどうかは、また別だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "親指を入れると、ほんとにグレープの絵が出た。新しい冊子を俺が差し出す。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、こっちでも"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開いたのは飲み物の頁だった。シェイクの指の下に、冷たいレモンの絵がある。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "……これもいいな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "グレープはいいんですか"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "君に当てて見せたぶんで、今日はもう満足した"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シェイクは冊子を開いたまま、冷たいレモンを二つ頼んだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "roam_sheikh_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シェイクがメニューの角に小皿を置いた。扇風機がこちらを向くたびに紙が浮く。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そこ、風が来ますか？"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "来るよ。君もここに座るといい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "腰を下ろすと、扇風機はちょうど向こうを向いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……行っちゃいました"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "すぐ戻る。ほら"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "次も、ここに座っていいですか"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "もちろん。小皿は二枚ある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "風が戻った。シェイクが、俺のメニューにも小皿を置いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "roam_sheikh_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "路地の奥の卓で、シェイクが手紙を広げていた。俺が腰を下ろすと、白い裏側を向けてくれた。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "今の店の入口を、ここに描いてくれないか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "入口だけでいいんですか？"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "昔の扉なら覚えている。今は、開けると何が見える"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "扉と、その奥のカウンターを描いた。紙の隅に、葉っぱの耳の猫を足した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "猫はおまけです。つむぎちゃんなら、もっとうまく描きます"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "いい顔だ。私なら、猫のそばに座るよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、椅子も描いておきますね"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "そこは空けておいてくれ。私が座れるように"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "椅子だけ描いて返した。シェイクは絵を内側にして、手紙を畳んだ。"
+        }
+      ]
     }
   ]
 }

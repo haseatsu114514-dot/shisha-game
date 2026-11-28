@@ -80,10 +80,15 @@ function start() {
     tapPicture: () => { scene?.tap?.(); wake(400); },
     tapTelop: () => { scene?.tap?.(); wake(400); },
   });
+  // タイトルからのロードでは本編の煙そのものを縦の舞台に重ねる。時計も SE も本編が所有する。
+  const resumeSmoke = el("div.vt-resume-smoke", { "aria-hidden": "true" });
+  document.body.append(resumeSmoke);
   // 演出（モーショングラフィックス）の縦の舞台（VPO02）。場面の確認・中継・DOM の見張りでは、外枠と同じく自分の物として除く
   const motionLayer = createMotionLayer();
-  const own = [frame.root, motionLayer.root];
+  const own = [frame.root, resumeSmoke, motionLayer.root];
   const scenes = {
+    // CONTINUE は本編の文字・ボタン・アニメーションを直接表示する。
+    continue: { native: true },
     interlude: { native: true },
     title: createTitleScene(frame), vn: createTalkScene(frame), map: createMapScene(frame), menu: createMenuScene(frame),
     sheet: createSheetScene(frame), cover: createCoverScene(frame, own), board: createBoardScene(frame), craft: createCraftScene(frame),
@@ -115,6 +120,7 @@ function start() {
     frame.root.dataset.scene = sceneName;
     frame.root.dataset.layout = scene?.layout || ""; // "full": 下画面を出さない場面（試作どおりのタイトルなど）
     frame.root.hidden = !scene || !!scene.native;
+    root.toggleAttribute("data-vt-continue", next === "continue");
     root.toggleAttribute("data-vt-interlude", next === "interlude");
     if (next !== "cover") holdSince = 0; // 覆いを待つ時間は、覆いに入るたびに数え直す（前の転換から数えると、すぐ待ちすぎと判断してしまう）
     if (scene && !scene.native) {
@@ -130,6 +136,8 @@ function start() {
 
   /** 定期の確認（1 秒に 9 回ほど）。DOM の変化を受けた臨時の確認では、外枠を引っ込める・つなぐ判断だけを行う。 */
   function evaluate(now, periodic) {
+    const wipe = document.querySelector("#wipe.resume");
+    if (wipe) resumeSmoke.append(...wipe.querySelectorAll(".wipe-smoke, .wipe-haze"));
     // 第1章の幕は本編の札をそのまま全面に出す。重なった小窓や操作画面があれば通常の判定に任せる。
     const frontMotion = motionLayer.root.lastElementChild;
     const frontFx = document.getElementById("fx")?.lastElementChild;
@@ -145,7 +153,10 @@ function start() {
       return;
     }
     setLivePortraitScene("");
-    let found = interlude ? { kind: "scene", name: "interlude" } : boardOpen() ? { kind: "scene", name: "board" } : detectState(own);
+    let found = interlude ? { kind: "scene", name: "interlude" } : boardOpen() ? { kind: "scene", name: "board" } : detectState(wipe ? [...own, wipe] : own);
+    if (found.variant === "end" && document.querySelector('#screen > .gameover[data-layout="manga"]:not(.done)')) {
+      found = { kind: "scene", name: "continue" };
+    }
     // シーシャ作り: 作業台の今の工程に縦の画面があれば、作る場面として写す（会話・写せる小窓が上に出ている間と、画面の一番上の小窓の間は除く）
     if (found.kind !== "scene" && !topDialogOpen() && craftOpen()) found = { kind: "scene", name: "craft" };
     // 地図のピンが現れる演出・地図の上のスロットの間も、地図のまま写す
@@ -228,7 +239,7 @@ function start() {
     if (dirty || now - lastSync >= SYNC_MS) {
       dirty = false;
       lastSync = now;
-      scene.sync({ pressable, gap, hold });
+      scene.sync?.({ pressable, gap, hold });
       syncNotices();
     }
   }
@@ -264,7 +275,7 @@ function start() {
     if (typed && scene?.sync && !stopped && !other) {
       dirty = false;
       lastSync = performance.now();
-      scene.sync({ pressable, gap, hold });
+      scene.sync?.({ pressable, gap, hold });
       return;
     }
     if (dirty) wake();
@@ -298,6 +309,8 @@ function start() {
       document.removeEventListener("visibilitychange", onVisibility);
       setScene(null);
       frame.unmount();
+      document.getElementById("wipe")?.append(...resumeSmoke.children);
+      resumeSmoke.remove();
       motionLayer.unmount();
       hintText?.remove();
       delete window.__verticalLook;

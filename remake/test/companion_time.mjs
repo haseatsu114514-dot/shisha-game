@@ -136,7 +136,7 @@ function dubai(lovers = ["minto"], pick = "minto", extra = {}) {
 
 // ---- 第5章の地元: ひよりがよその店に居合わせる（tonari で再会した後）-------------------------------
 {
-  const roam = byId("roaming_guests"), source = text("../js/daily/roamers.js");
+  const roam = byId("roaming_guests");
   for (const id of ["roam_hiyori_first", "roam_hiyori_a", "roam_hiyori_b", "roam_hiyori_c"]) {
     const scene = roam[id];
     assert(scene?.lines?.length >= 6, id);
@@ -144,6 +144,25 @@ function dubai(lovers = ["minto"], pick = "minto", extra = {}) {
     assert(scene.lines.some(line => line.speaker === "hiyori" && line.inner), `${id}: ひよりの本心がある`);
     assert.doesNotMatch(scene.lines.map(line => line.text).join(""), /店員|店主|マスター/, `${id}: どの店でも合うよう店の人に触れない`);
   }
-  assert.match(source, /\{ id: "hiyori", chapters: \[5\], at: shishaShop, ready: value => metStory\("hiyori"\)\(value\) && !!value\.flags\?\._hiyori_tonari_return_done, bond: true \}/);
+  globalThis.document ??= { addEventListener() {}, querySelector() { return null; } };
+  globalThis.window ??= {};
+  const { ROAMERS } = await import("../js/daily/roamers.js");
+  const hiyori = ROAMERS.find(entry => entry.id === "hiyori");
+  assert.deepEqual(hiyori.chapters, [5]);
+  assert.equal(hiyori.bond, true);
+  assert(hiyori.at({ id: "adam", kind: "rival" }));
+  assert(!hiyori.at({ id: "home", kind: "home" }));
+  const value = newState();
+  value.chapter = 5;
+  assert(!hiyori.ready(value));
+  value.flags._hiyori_tonari_return_done = true;
+  assert(!hiyori.ready(value), "Needs a record of meeting Hiyori");
+  value.met.hiyori = true;
+  assert(hiyori.ready(value), "Can roam after the tonari reunion");
+  delete value.flags._hiyori_tonari_return_done;
+  assert(!hiyori.ready(value), "Meeting Hiyori before Chapter 5 is insufficient");
+  value.flags._hiyori_tonari_return_done = true;
+  value.flags._ch2_region = "dubai";
+  assert(!hiyori.ready(value), "Hiyori stays in the hometown");
 }
 console.log("PASS companion time: Dubai companion scenes once a day (4 each, date-sized bond, no milestones), ch5 Rio showroom talks, ch5 Hiyori roaming");
