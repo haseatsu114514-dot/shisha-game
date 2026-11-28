@@ -37,7 +37,7 @@ const fit = (specs, k) => specs.map((b) => ({ ...b, size: b.size * k, speed: b.s
  * host は会話の層（#vn）、portraits は立ち絵の入れ物。
  */
 export function vnBreath(line, { host, portraits }) {
-  if (!host || !smokeAllowed() || document.documentElement.dataset.retroShell === "on") return 0;
+  if (!host || !smokeAllowed()) return 0;
   const imgs = [...(portraits?.querySelectorAll("img.portrait") || [])];
   const img = line.who ? imgs.find((i) => i.dataset.speaker === line.who) : imgs.find((i) => i.classList.contains("active")) || (imgs.length === 1 ? imgs[0] : null);
   if (!img || img.classList.contains("enter")) return 0;

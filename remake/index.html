@@ -9,8 +9,8 @@
 <!-- 最初の画面（タイトル）に必要なものだけ先読みする。本文フォント（font-display: block のため
      届くまで文字が出ない）と、タイトルの背景・ロゴ。公開時は stamp_deploy が起動 JS を
      js-<版>/bundle/main.js に差し替えて先読みする（#3552）。手元と検査は正本のモジュールを読む。 -->
-<link rel="preload" as="font" type="font/woff2" href="fonts/NotoSansJP-Medium.woff2?v=20261122" crossorigin>
-<link rel="preload" as="font" type="font/woff2" href="fonts/NotoSansJP-Bold.woff2?v=20261122" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="fonts/Title-Medium.woff2?v=20261122" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="fonts/Title-Bold.woff2?v=20261122" crossorigin>
 <!-- 起動画面の背景とロゴ（css/loading.css の --loading-backdrop-art / --loading-logo。タイトル背景より先に取り始める） -->
 <link rel="preload" as="image" href="img/ui/loading/loading_bg.webp" fetchpriority="high">
 <link rel="preload" as="image" href="img/ui/ui_title_logo_rich.webp">
@@ -91,6 +91,7 @@
 <!-- 文字は同梱フォントのみ（remake/fonts/）。外部フォントは読まない＝端末で見た目が変わらない -->
   <link rel="stylesheet" href="css/bundle-base.css">
   <!-- 各ゲームの初回に、この位置で CSS を有効にする。後続の共通スタイルとの優先順も保つ。 -->
+  <template id="styles-axe"><link href="css/axe-throw.css" rel="stylesheet"></template>
   <template id="styles-camel-race"><link href="css/camel-race.css" rel="stylesheet"></template>
   <template id="styles-ichidai">
     <link href="css/ichidai.css" rel="stylesheet">
@@ -189,7 +190,7 @@
   for (const query of queries) query.addEventListener("change", place);
   const fontsReady = document.fonts
     ? Promise.race([
-        Promise.all(["500", "700", "900"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線似顔絵LOADING…準備完了クリックタップで進む"))),
+        Promise.all(["500", "700"].map((w) => document.fonts.load(`${w} 20px "Suien Title"`, "水煙前線似顔絵LOADING…準備完了クリックタップで進む"))),
         new Promise((resolve) => setTimeout(resolve, 15000)),
       ]).catch(() => {})
     : Promise.resolve();
@@ -226,7 +227,7 @@
   });
 })();
 </script>
-<div id="rotate-hint"><div>📱 スマホは横向きでお楽しみください</div></div>
+<div id="rotate-hint"><div>📱 スマホは横向きでお楽しみください</div><div class="portrait-required" role="status">縦向きにしてください<br><small>PCではウィンドウを縦長にすると遊べます</small></div></div>
 <noscript>このゲームは JavaScript が必要です。</noscript>
 <script>
 // 公開版をインストール可能にする。更新確認は起動ごとに行い、プレイ中の再読み込みはしない。

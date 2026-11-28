@@ -51,7 +51,7 @@ let haze = null;
 /** 見えている背景と画面に合わせて、漂う煙を出す・濃さを変える・消す（ui.js が背景や画面を替えるたびに呼ぶ） */
 export function syncShopHaze(background, screen, tint) {
   const stage = document.getElementById("stage");
-  const level = stage && hazeAllowed() && smokeAllowed() && !document.hidden && document.documentElement.dataset.retroShell !== "on" ? hazeLevel(background, screen, tint) : 0;
+  const level = stage && hazeAllowed() && smokeAllowed() && !document.hidden ? hazeLevel(background, screen, tint) : 0;
   if (!level) { haze?.stop(); haze = null; return; }
   if (haze?.canvas.isConnected) { if (haze.level !== level) haze.setLevel(level); return; }
   let host = document.getElementById("haze");

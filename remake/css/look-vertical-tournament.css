@@ -69,6 +69,8 @@
   .sd-feed-lines { flex: 1 1 72%; }
   .sd-feed .btn, .ch2-contest-actions .primary, .modal-actions .primary {
     width: 100%; min-height: calc(44px / var(--page-scale));
+    /* 標準ボタンと章カードの文字サイズを保ち、舞台の縮小後も最低16pxを確保する。 */
+    font-size: max(18px, 1em, 16px / var(--page-scale));
   }
   /* 第2・3章の持ち点カードと第4章の小窓。最終の票も同じ紙面で開示する。 */
   #screen > .ch2-contest:has(> .ch2-contest-board),

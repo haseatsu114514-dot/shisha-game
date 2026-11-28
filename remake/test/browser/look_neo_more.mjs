@@ -47,11 +47,11 @@ function checkNeoOnly(name, prefix, least) {
   assert(!/!important/.test(css), `${name} は !important に頼らない`);
   return { file, css };
 }
-checkNeoOnly("look-neo-board.css", ':root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard', 40);
+checkNeoOnly("look-neo-board.css", ':root[data-look="neo"] body:not(:root) #stage #fx .gboard', 40);
 // 7. 絵の部品: 規則は新版の中だけ。絵は制作・大会と同じ夜紫の部品（img/ui/craft-night）で、ファイルがある。
 const ART_FILES = [];
 {
-  const { file, css } = checkNeoOnly("look-neo-art.css", ':root[data-look="neo"] body:not(.game-ds) #viewport #stage', 8);
+  const { file, css } = checkNeoOnly("look-neo-art.css", ':root[data-look="neo"] body:not(:root) #viewport #stage', 8);
   for (const [, path] of css.matchAll(/url\("([^"]+)"\)/g)) {
     // 夜紫の部品（制作・大会と共通）か、新版のために生成した部品（会話の帯の煙・見出しの飾り罫。LK19 第2弾）。
     assert(/^\.\.\/img\/ui\/(craft-night|neo)\//.test(path), `絵の部品は夜紫の部品か新版の部品のフォルダから読む: ${path}`);

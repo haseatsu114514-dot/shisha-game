@@ -5,20 +5,9 @@
 //     （押している途中のボタンを作り直さない。スクロールの位置も保つ）
 //   - 写しのボタンを押すと元の要素の click()、範囲・チェック・選択は元の入力へ値を入れて input / change を送る
 //     （保存・反映は元の処理がそのまま行う。進行・判定・セーブには触れない）
-//   - 元の CSS は #stage の中でしか効かないので、写しは look-neo-portrait.css の .retro-sheet の規則だけで組む。
+//   - 元の CSS は #stage の中でしか効かないので、写しは look-vertical-sheet.css の .vt-sheet-pane の規則だけで組む。
 //     元のクラスは「s-元の名前」として写しに付ける（画面ごとの見た目の調整に使う）
-// 置き方:
-//   MENU … 上画面にタブに合った絵（ステータスははじめ、人間関係は選んだ相手の立ち絵。ほかは背景を暗く）、
-//          下画面に今のタブの中身、本体のボタンに4つのタブと「閉じる」。
-//   LIME・小窓・LOG … 上画面と下画面をつないだ1枚の縦長のシート（見出し・中身（送れる）・下のボタン）。
-//   店 … 縦長のシート（見出しに店名・所持金・種類の絞り込み、中身に商品の一覧、下に「店を出る」・合計・購入）。
-//          本体のボタンは売り場のタブ（フレーバー・機材・くじ・売却）。商品の絵は元の切り抜きの窓のまま写す。
-//   章のクリア … 縦長のシート。LIME の初回の案内 … 下画面に吹き出し（上画面はその場の絵を暗く）。
-// 写さない物: くじを引く演出（ガラガラ）・心得の盤（動かして見る盤）・シーシャ作り・大会・ミニゲームは回転案内のまま。
-import { el } from "../../../core/util.js";
-import { portraitInfo, realName } from "../../../core/data.js";
-import { readBackgrounds, stageMetrics, STAGE_W } from "./stage-read.js";
-
+import { el } from "../../core/util.js";
 const SKIP_TAGS = new Set(["script", "style", "svg", "canvas", "video", "audio", "iframe", "template", "noscript", "rt", "rp", "dialog"]);
 // 写さない飾り（端末の枠・幕・入力中の点々の顔の空き）。新版（looks/neo）が現行の画面に足す飾り（neo- で始まるクラス）も写さない
 const SKIP = ".phone-notch, .phone-status, .modal-backdrop, .dm-backdrop, .lime-face.gap, .modal-ghost, [class^='neo-'], [class*=' neo-']";
@@ -377,34 +366,14 @@ function createMirror({ testPrefix = "sheet-", onRelay = () => {} } = {}) {
   };
 }
 
-/** MENU の上画面に出す人（ステータスははじめ、人間関係は開いた相手か一覧の先頭）。looks/neo/menu-figure.js と同じ選び方。 */
-function menuSubject(menu) {
-  const tab = menu.dataset.tab;
-  if (tab === "status") return { id: "hajime", name: realName("hajime") };
-  if (tab !== "people") return null;
-  const rows = [...menu.querySelectorAll(".dm-panel .dm-person[data-person]")];
-  const row = rows.find((node) => node.getAttribute("aria-expanded") === "true") || rows[0];
-  return row ? { id: row.dataset.person, name: text(row.querySelector(".dm-name")) } : null;
-}
-
-/** 今の背景の絵（#bg）。MENU の上画面の下地にする。 */
-function backgroundUrl() {
-  for (const layer of readBackgrounds(stageMetrics())) {
-    const part = layer.parts.find((p) => p.url && (p.type === "cover" || p.type === "image"));
-    if (part) return part.url;
-  }
-  return "";
-}
-
-export function createSheetScene(shell, painter) {
-  const head = el("div.rs-region.rs-head", { dataset: { test: "retro-sheet-head" } });
-  const body = el("div.rs-region.rs-body", { dataset: { test: "retro-sheet-body" } });
-  const foot = el("div.rs-region.rs-foot", { dataset: { test: "retro-sheet-foot" } });
-  const pane = el("div.retro-pane.retro-sheet", { hidden: true, dataset: { test: "retro-sheet" } }, [head, body, foot]);
+export function createSheetMirror(shell) {
+  const head = el("div.rs-region.rs-head", { dataset: { test: "vt-sheet-pane-head" } });
+  const body = el("div.rs-region.rs-body", { dataset: { test: "vt-sheet-pane-body" } });
+  const foot = el("div.rs-region.rs-foot", { dataset: { test: "vt-sheet-pane-foot" } });
+  const pane = el("div.vt-sheet-pane", { hidden: true, dataset: { test: "vt-sheet-pane" } }, [head, body, foot]);
   let live = null, kind = "", identity = null, version = 0, drawn = -1, pressing = false, pressAt = 0;
   const mirror = createMirror({ onRelay: () => { version++; pressing = false; } });
   let observer = null;
-  let picture = [];
 
   const watch = () => {
     observer?.disconnect();
@@ -544,28 +513,6 @@ export function createSheetScene(shell, painter) {
     };
   }
 
-  /** MENU の上画面: チェキの拡大中はその絵、ステータス・人間関係は立ち絵、ほかは暗くした背景。 */
-  function menuPicture(sheet) {
-    const out = [];
-    if (sheet.viewer) {
-      const url = sheet.viewer.querySelector("img")?.currentSrc || sheet.viewer.querySelector("img")?.src;
-      if (url) out.push({ url, x: 0, y: -120, w: STAGE_W, h: 960, fit: "contain", pos: "50% 50%", opacity: 1 });
-      return { images: out, name: clean(sheet.viewer.querySelector("img")?.alt || "") };
-    }
-    const who = menuSubject(sheet.root);
-    const bg = backgroundUrl();
-    if (bg) out.push({ url: bg, x: 0, y: -120, w: STAGE_W, h: 960, fit: "cover", pos: "50% 50%", opacity: who ? 0.5 : 0.32 });
-    const info = who ? portraitInfo(who.id, "normal") : null;
-    if (info) {
-      // 頭の上を枠の上端の少し下へ、体の中心を真ん中へ（会話の立ち絵と同じ寸法の読み方）
-      const h = Math.min(1.5 * (info.scale || 1) / info.h, 2.4) * 720;
-      const headroom = Math.max(0, 1 - info.b - info.h - (info.topOverhang || 0));
-      const w = h * (info.aspect || 0.75);
-      out.push({ url: info.src, x: Math.round(STAGE_W / 2 - w * (info.ax ?? 0.5)), y: Math.round(24 - h * headroom), w: Math.round(w), h: Math.round(h), opacity: 1 });
-    }
-    return { images: out, name: info ? who.name : "" };
-  }
-
   function sync() {
     const sheet = liveSheet();
     if (!sheet) return;
@@ -585,26 +532,11 @@ export function createSheetScene(shell, painter) {
     mirror.refreshFields();
     shell.setStatus(parts.status[0] || "", parts.status[1] || "");
     shell.setKeys(parts.keys);
-    if (sheet.kind === "menu") {
-      const { images, name } = menuPicture(sheet);
-      picture = images;
-      shell.setCaption("", name);
-    } else if (!parts.tall) {
-      // 下画面だけのシート（LIME の初回の案内）: 上画面はその場の背景を暗くして
-      const bg = backgroundUrl();
-      picture = bg ? [{ url: bg, x: 0, y: -120, w: STAGE_W, h: 960, fit: "cover", pos: "50% 50%", opacity: 0.45 }] : [];
-      shell.setCaption("");
-    } else {
-      picture = [];
-      shell.setCaption("");
-    }
   }
 
   return {
     pane,
     sync,
-    // 縦長のシートは上画面を覆うので描かない。MENU は上画面にタブに合った絵
-    paint: (now) => (pane.dataset.tall === "false" ? painter.paintCover(now, picture) : false),
     enter() {
       live = null; identity = null; drawn = -1; version = 0; kind = ""; pressing = false;
       watch();
@@ -617,7 +549,7 @@ export function createSheetScene(shell, painter) {
       if (pane.parentElement !== shell.bottom) shell.bottom.append(pane);
       pane.style.cssText = "";
       delete pane.dataset.kind; delete pane.dataset.tall;
-      live = null; identity = null; kind = ""; picture = [];
+      live = null; identity = null; kind = "";
     },
     get kind() { return kind; },
   };

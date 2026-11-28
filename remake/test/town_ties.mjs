@@ -97,7 +97,7 @@ check("Naru and Rio, the order (#3468 E): names unchanged, Rio never reads it as
   const remember = rows.findIndex((l) => l.speaker === "rio" && l.text.includes("焦げた砂糖"));
   const stop = rows.findIndex((l) => l.text.includes("揃えかけて"));
   const terms = rows.findIndex((l) => l.speaker === "naru" && l.text.includes("条件を先に"));
-  const tea = rows.findIndex((l) => l.text.includes("湯のみを二つ"));
+  const tea = rows.findIndex((l) => l.text.includes("湯呑みを二つ"));
   assert(remember >= 0 && stop > remember && terms > stop && tea > terms, "remembered → stops tidying → states his terms → tea");
   // お茶は相談を続けるため。座った後も、二人の話は仕入れのまま
   assert(rows[tea + 1].speaker === "rio" && rows[tea + 1].text.includes("座って話そう"));

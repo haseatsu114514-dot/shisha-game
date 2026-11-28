@@ -300,8 +300,7 @@ const UI_ART_CLASSES = Object.freeze([
   // （押下の絵を先に読んでおくので、押した瞬間に替わる）。
   ["cr-remote", ["voice-normal", "voice-pressed", "whip-normal", "whip-pressed"].map(name => `ui/camel_race/ui/remote-${name}.webp`)],
 ]);
-const TUTORIAL_ART_FILES = Object.freeze(TUTORIAL.map(step => step.art));
-const CUP_BADGE_FILES = Object.freeze(CAMEL_CUPS.map(cup => cup.id));
+const menuArtTasks = new Map();
 let artTask = null, artCache = null, artReady = false, preparedRivalSuvs = null, sharedLighting = null;
 let uiTask = null, uiClasses = null, remoteArt = null;
 const preloadedTutorialArt = new Set();
@@ -316,7 +315,24 @@ const decodeOptionalImage = rel => {
   image.src = imgFileUrl(rel);
   return image.decode().then(() => image, () => null);
 };
-/** 部品ごとの UI 画像（cr-*）・遊び方の絵・大会の紋章を一度だけ先読みしてデコードする。欠けた画像だけ CSS 表示へ戻す。 */
+// The entrance waits only for the menu it will actually show. Other help pages warm one page ahead.
+function menuArt(file, tutorialKey = null) {
+  if (!menuArtTasks.has(file)) {
+    menuArtTasks.set(file, decodeOptionalImage(file).then(image => {
+      if (image && tutorialKey) preloadedTutorialArt.add(tutorialKey);
+      menuArtTasks.set(file, null);
+    }));
+  }
+  return menuArtTasks.get(file);
+}
+function tutorialArt(step) {
+  return menuArt(`ui/camel_race/ui/${step.art}.webp`, step.art);
+}
+function cupArt() {
+  const pending = CAMEL_CUPS.map(cup => menuArt(`ui/camel_race/world/cup-${cup.id}.webp`)).filter(Boolean);
+  return pending.length ? Promise.all(pending) : null;
+}
+/** 部品ごとの UI 画像（cr-*）を一度だけ先読みしてデコードする。欠けた画像だけ CSS 表示へ戻す。 */
 function loadCamelUiArt() {
   if (typeof Image === "undefined") return Promise.resolve(uiClasses ??= new Set());
   if (uiTask) return uiTask;
@@ -330,9 +346,7 @@ function loadCamelUiArt() {
       else loaded.add(cls);
     });
   });
-  const tutorialJobs = TUTORIAL_ART_FILES.map(key => decodeOptionalImage(`ui/camel_race/ui/${key}.webp`).then(image => { if (image) preloadedTutorialArt.add(key); }));
-  const cupJobs = CUP_BADGE_FILES.map(id => decodeOptionalImage(`ui/camel_race/world/cup-${id}.webp`));
-  uiTask = Promise.all([...uiJobs, ...tutorialJobs, ...cupJobs]).then(() => {
+  uiTask = Promise.all(uiJobs).then(() => {
     uiClasses = loaded;
     return loaded;
   });
@@ -353,8 +367,7 @@ export function loadCamelArt() {
   const balloon = load(ART_FILES.balloon).catch(() => null);
   const dust = Promise.all(ART_FILES.dust.map(load)).catch(() => null);
   // 門の字は1枚ずつ（読めた字だけ絵、読めない字は従来の文字）。旗の柱は読めなければ立てない。
-  const words = Promise.all(Object.entries(ART_FILES.words).map(([word, rel]) => load(rel).then(image => [word, image], () => [word, null])))
-    .then(entries => Object.fromEntries(entries.filter(([, image]) => image)));
+  const startWord = decodeOptionalImage(ART_FILES.words.START);
   const pole = load(ART_FILES.pole).catch(() => null);
   const sand = load(ART_FILES.sand).catch(() => null);
   // スタートとゴールの柱は2枚そろった時だけ絵にする（片方だけ絵だと門の描き方が混ざる）。
@@ -365,12 +378,16 @@ export function loadCamelArt() {
   // 距離板と道は、読めなければそれぞれコードの描画のまま。
   const marker = load(ART_FILES.marker).catch(() => null);
   const road = load(ART_FILES.road).catch(() => null);
-  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), balloon, dust, words, pole, sand, posts, rivalSuvs, marker, road])
-    .then(([camel, jockey, suv, wheel, track, balloonImage, dustImages, wordImages, poleImage, sandImage, postImages, rivalImages, markerImage, roadImage]) => {
+  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), balloon, dust, startWord, pole, sand, posts, rivalSuvs, marker, road])
+    .then(([camel, jockey, suv, wheel, track, balloonImage, dustImages, startImage, poleImage, sandImage, postImages, rivalImages, markerImage, roadImage]) => {
       if (rivalImages) preparedRivalSuvs ??= prepareRivalSuvs(rivalImages);
       artCache = { camel, jockey, suv, wheel, track, balloon: balloonImage, dust: dustImages,
-        words: wordImages, pole: poleImage, ground: groundTiles(sandImage, roadImage), posts: postImages, rivalSuvs: rivalImages, marker: markerImage, skins: camelSkins(camel) };
+        words: { START: startImage }, pole: poleImage, ground: groundTiles(sandImage, roadImage), posts: postImages, rivalSuvs: rivalImages, marker: markerImage, skins: camelSkins(camel) };
       artReady = true;
+      const words = artCache.words;
+      for (const key of ["FINISH", "VS"]) {
+        void decodeOptionalImage(ART_FILES.words[key]).then(image => { words[key] = image; });
+      }
       return artCache;
     })
     .catch(() => { artCache = null; artReady = true; return null; });
@@ -1127,6 +1144,7 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   function openTutorial(page = 0, back = null) {
     setPhase("tutorial");
     const step = TUTORIAL[page];
+    if (TUTORIAL[page + 1]) void tutorialArt(TUTORIAL[page + 1]);
     const lastPage = page === TUTORIAL.length - 1;
     const next = el("button.btn.primary", { type: "button", text: lastPage ? back ? "閉じる" : "スタート" : "次へ", dataset: { test: "camel-tutorial-next" },
       onclick: () => { sfx(lastPage && !back ? "select" : "click"); lastPage ? back ? back() : startRace() : openTutorial(page + 1, back); } });
@@ -2724,10 +2742,11 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
     draw();
     if (tutorial) openTutorial(0); else if (cups) openCups(); else startRace();
   };
-  if (camelAssetsReady()) {
+  const menuReady = tutorial ? tutorialArt(TUTORIAL[0]) : cups ? cupArt() : null;
+  if (camelAssetsReady() && !menuReady) {
     enterInitial();
   } else {
-    const assets = loadAllCamelAssets();
+    const assets = Promise.all([loadAllCamelAssets(), menuReady]);
     void preloadCamelRaceSe();
     // ロード画面を開けないときも、素材の準備が終わるまで本体を伏せておく。
     void withMinigameLoading(() => assets, { host, label: "レース場へ向かっています…", signal })

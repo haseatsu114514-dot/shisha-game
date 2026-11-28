@@ -148,7 +148,7 @@ try {
   assert.deepEqual(rule, {
     hajime: "逢縁はじめ", sumi: "炭吉丈一郎", naru: "鳴切亮太（なる）", adam: "アダム", minto: "みんと", shisha_9000: "SHISHA-9000",
     ayatori: "綾取陣", steve: "スティーブ・A・アッシュ", volk: "ヴォルク・イヴァノフ", kuraudo: "†黒羅雨℃†", master_hookah: "王煙楼",
-    tsumugi: "猫洞つむぎ", rio: "円頓寺凛想", ageha: "あげは", kumicho: "神崎竜二（組長）", dr_charcoal: "チャコール博士", pakki: "パッキー",
+    tsumugi: "猫洞つむぎ", rio: "円頓寺凛想", ageha: "あげは", kumicho: "神崎竜二", dr_charcoal: "チャコール博士", pakki: "パッキー",
     sensu: "千須豪", emil: "エミル・ユルマズ", sheikh: "シェイク・ナジュム", da_silva: "ダ・シルヴァ・太陽", mashiro: "黒葉ましろ",
     uranaishi: "占いオババ", mukai_master: "向井然", uezono: "上園文太郎", oneesan: "お姉さん", hiyori: "泡沫ひより",
     maki: "斧崎マキ", sai: "六角サイ", salaryman: "鉄仮面さん", yoru: "針間ヨル", noor: "ヌール・サーリム", samechan: "サメちゃん",
@@ -209,8 +209,8 @@ try {
     await p;
     return out;
   });
-  assert.deepEqual(ruby, { text: "神崎竜二（組長）", label: "神崎竜二（組長）", small: true,
-    ruby: [["神崎", "かんざき", '"かんざき"'], ["竜二", "りゅうじ", '"りゅうじ"'], ["組長", "くみちょう", '"くみちょう"']] });
+  assert.deepEqual(ruby, { text: "神崎竜二", label: "神崎竜二", small: true,
+    ruby: [["神崎", "かんざき", '"かんざき"'], ["竜二", "りゅうじ", '"りゅうじ"']] });
   const hidden = await page.evaluate(async () => {
     const out = {};
     for (const id of ["minto", "kuraudo"]) {

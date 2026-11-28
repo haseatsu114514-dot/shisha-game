@@ -4,15 +4,16 @@
 // 名前・二つ名・一言・好きなフレーバー・色・絵は、本編が出したカットイン（vn/intro-art.js の .cutin.art-intro）からそのまま読む。
 // 章タイトル（タイトルコール）は VPN27 の形: 上にゲームタイトル（本編のタイトルのロゴ）、真ん中に章タイトルの横長の絵をそのまま、下の空きに章の情報。
 // どの章かは本編の章タイトル（core/ui.js chapterTitle の .chapter-card）から読み、章名・英題は core/chapter-title-art.js の登録から（「〇〇編」は出さない・VPN23）。
+import { introQuote } from "./intro-quote.js";
 import { imgFileUrl } from "../../core/img-file.js";
 import { el } from "../../core/util.js";
 import { CHAPTER_TITLE_ART } from "../../core/chapter-title-art.js";
 import { textOf, mirrorBackground, relayTap } from "./frame.js";
-import { readLines as readBlockLines } from "../neo/portrait-shell/cover.js";
+import { readLines as readBlockLines } from "./block-lines.js";
 
 const HARMLESS = ".flash, .stat-flight, .lvup, .gfx-fly, .gfx-ring, .gfx-spark";
 
-/** 覆いの中に見えている文字を、ブロックごとの行として読む（DS風と同じ読み方。ふりがな・隠れている所は除く）。戻り値: [{ text, size }] */
+/** 覆いの中に見えている文字を、ブロックごとの行として読む（ふりがな・隠れている所は除く）。戻り値: [{ text, size }] */
 function readLines(roots) {
   const lines = [];
   for (const root of roots) readBlockLines(root, 1, lines);
@@ -56,7 +57,7 @@ function readCutin(host) {
     name,
     plainName: name?.getAttribute("aria-label") || textOf(name),
     title: textOf(host.querySelector(".ci-title")),
-    line: textOf(host.querySelector(".ci-line")),
+    line: host.querySelector(".ci-line")?.dataset.line,
     flavorLabel: textOf(flavor?.querySelector(".ci-flavor-label")) || "好きなフレーバー",
     flavor: textOf(flavor?.querySelector(".ci-flavor-name")),
   };
@@ -134,7 +135,7 @@ export function createCoverScene(frame, own) {
 
   function renderPoster(card) {
     const len = [...card.plainName.replace(/\s/g, "")].reduce((n, ch) => n + (/[\x20-\x7e]/.test(ch) ? 0.55 : 1), 0);
-    const size = Math.min(8.4, 31 / Math.max(1, len));
+    const size = Math.min(9, 35 / Math.max(1, len));
     poster.dataset.m = card.motion;
     poster.style.cssText = `--ci:${card.color};--ci2:${card.secondary};--ci-shadow:${card.shadow};--name-size:${size.toFixed(2)}`;
     poster.setAttribute("aria-label", `${card.plainName}の紹介`);
@@ -142,11 +143,11 @@ export function createCoverScene(frame, own) {
       el("i.vt-cv-flash"),
       card.bg ? el("img.vt-cv-bg", { src: card.bg, alt: "", draggable: "false" }) : null,
       el("i.vt-cv-veil"),
-      card.art ? el("img.vt-cv-art", { src: card.art, alt: "", draggable: "false" }) : null,
+      card.art ? el("div.vt-cv-figure", [el("img.vt-cv-art", { src: card.art, alt: "", draggable: "false" })]) : null,
       el("div.vt-cv-band", [el("i.vt-cv-accent"), nameHtml(card.name)]),
       card.title ? el("div.vt-cv-tag", { text: card.title }) : null,
       el("div.vt-cv-say", [
-        card.line ? el("p.vt-cv-quote", { text: card.line }) : null,
+        card.line ? introQuote(card.line) : null,
         card.flavor ? el("p.vt-cv-flavor", [el("small", { text: card.flavorLabel }), el("b", { text: card.flavor })]) : null,
       ]),
     ].filter(Boolean));

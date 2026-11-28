@@ -566,6 +566,8 @@ function readRaw(key) {
   try { return localStorage.getItem(key); } catch { return null; }
 }
 
+export { readRaw as readSlotRaw };
+
 /** 現在のプレイが読み込んだ、または書き込んだ AUTO の原文。 */
 export const currentAutoSaveSource = () => currentAutoRaw;
 

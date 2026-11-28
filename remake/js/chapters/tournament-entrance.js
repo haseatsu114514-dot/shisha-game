@@ -8,44 +8,42 @@ import { vnTest } from "../vn/engine.js";
 import { introSources } from "../vn/intro.js";
 import { stageLights } from "../craft/tournament-show.js";
 
-// 章ごとの入場カード。ring＝二つ名、note＝スミさんの一言。face は人物素材の id（内部名と違う人物だけ）。
+// 章ごとの入場カード。ring＝二つ名、note＝はじめの心の声。face は人物素材の id（内部名と違う人物だけ）。
 export const ENTRANCE_CARDS = Object.freeze({
   1: [
-    { id: "naru", ring: "孤高の探求者", note: "なる……人格者だが、煙は別人だ。基礎が異常に堅い" },
-    { id: "adam", ring: "ダブルアップルの匠", note: "アダムは一点突破。正面から殴り合うな" },
-    { id: "minto", ring: "甘い嵐", note: "みんとは緩急で揺さぶってくる。乗せられるな" },
-    { id: "hajime", ring: "tonariの新星", note: "──行ってこい。目の前の一人に届けてこい" },
+    { id: "naru", ring: "孤高の探求者", note: "なるさんなら、レモンの香りをどこまで拾うだろう" },
+    { id: "adam", ring: "ダブルアップルの匠", note: "ダブルアップルにレモンか。俺ならどっちを立てるだろう" },
+    { id: "minto", ring: "甘い嵐", note: "甘い煙であれだけ評判の人だ。酸味をどう使うんだろう" },
+    { id: "hajime", ring: "tonariの新星", note: "……俺だ。よし、行こう" },
   ],
   2: [
-    { id: "ageha", ring: "MELTY PUFF の直感", note: "あげはは理屈より先に手が動く。あれを真似しようとするな" },
-    { id: "kumicho", ring: "スジを通す煙", note: "神崎さんの煙は穏やかだ。派手さで勝とうとしたら負ける" },
-    { id: "kuraudo", ring: "カシスの余韻", note: "クラウドは間で聴かせる。お前は自分の拍で作れ" },
-    { id: "hajime", ring: "橙須の新星", note: "前の大会の自分と比べろ。隣は見なくていい" },
+    { id: "ageha", ring: "MELTY PUFF の直感", note: "あげはさん、もう葉を決めてるのかな。迷いが顔に出ない" },
+    { id: "kumicho", ring: "スジを通す煙", note: "神崎さんの煙、あんなに穏やかなのに味が残るんだよな" },
+    { id: "kuraudo", ring: "カシスの余韻", note: "吸い終わった後の香りか。クラウドさんならそこまで考えてそうだ" },
+    { id: "hajime", ring: "橙須の新星", note: "手順は頭に入ってる。よし、最後まで作りきろ" },
   ],
   3: [
-    { id: "ayatori", ring: "煙幕の勝負師", note: "綾取は相手の判断を動かしてくる。味の名前に釣られるな" },
-    { id: "steve", ring: "低温の研究家", note: "スティーブは熱を急がない。最後の一口まで崩れないぞ" },
-    { id: "volk", ring: "鉄の煙", note: "ヴォルクの精度は本物だ。数字で張り合っても仕方ない" },
-    { id: "hajime", ring: "A県を背負う職人", note: "全国だろうが、やることは一台だ。いつもどおり作ってこい" },
+    { id: "ayatori", ring: "煙幕の勝負師", note: "綾取さん、何を混ぜたんだろう。……もう考えさせられてる" },
+    { id: "steve", ring: "低温の研究家", note: "スティーブさんなら、低い熱でチョコの甘さを引き出せそうだ" },
+    { id: "volk", ring: "鉄の煙", note: "ヴォルクさんは手がぶれない。二度目の調整も強そうだ" },
+    { id: "hajime", ring: "A県を背負う職人", note: "……呼ばれた。息を吐こう。よし、俺の番だ" },
   ],
   4: [
-    { id: "naru", ring: "孤高の探求者", note: "なる……ここまで来たか。あいつの基礎は世界でも通じる" },
-    { id: "master_hookah", ring: "龍龍水煙所の宗師", note: "王さんは派手な煙の裏で、相手の呼吸を見ている" },
-    { id: "sheikh", ring: "世界王者", note: "王者は急がない。全部受け止めるつもりで来るぞ" },
-    { id: "hajime", ring: "日本を背負う職人", note: "──行ってこい。目の前の一人に届けてこい" },
+    { id: "naru", ring: "孤高の探求者", note: "なるとまた同じ舞台だ。あの甘さ、今日はどう来るかな" },
+    { id: "master_hookah", ring: "龍龍水煙所の宗師", note: "王さん、客席を見てる。もう吸う人の息を見てるのか" },
+    { id: "sheikh", ring: "世界王者", note: "あれだけ歓声が上がっても、王者は自分の間で歩くんだな" },
+    { id: "hajime", ring: "日本を背負う職人", note: "ここまで来た。俺の一台、吸ってもらおう" },
   ],
 });
 
 const NAME = { master_hookah: "王 煙楼" };
 
-// 第1章: 前夜の過ごし方（ch1_day7_last_night の4択）を、はじめの入場カードのスミの一言で受ける（#2091）。
-// 旧セーブや未選択は ENTRANCE_CARDS の一言のまま。
-// どの一言も、正本の入場メッセージ「目の前の一人に届けてこい」で締める（優勝の場面 ch1_tournament_reveal がこの言葉を回収する）。
+// 第1章の自分の番では、前夜の過ごし方を思い返す。未選択なら通常のカードを使う。
 export const CH1_EVE_NOTES = Object.freeze({
-  practice: "手はもう覚えてる。目の前の一人に届けてこい",
-  talk_sumi: "決められるのは、出す煙だけだ。目の前の一人に届けてこい",
-  sleep_early: "いい顔だ。よく眠れたな。目の前の一人に届けてこい",
-  drill: "昨夜さらった工程、焦るなよ。目の前の一人に届けてこい",
+  practice: "昨日は最後まで通せた。今日もあの手順でいこう",
+  talk_sumi: "俺が決められるのは、出す煙だ。よし、作ろう",
+  sleep_early: "よく寝た。手も軽い。よし、行ける",
+  drill: "昨日何度もやったところだ。一つずついこう",
 });
 
 // 透過原画が届いた層だけ文字と置き換える。通信中や欠番でも名乗りは読める。
@@ -92,7 +90,7 @@ export async function playEntrance(chapterOrCards, { auto = Boolean(window.__rem
         el("div.ent-meta", [
           el("div.ent-ring", { text: c.ring }),
           el("div.ent-name", { text: me ? "はじめ" : (NAME[c.id] || realName(c.face || c.id)) }),
-          el("div.ent-note", [el("small.ent-speaker", { text: "スミ" }), el("span", { text: `「${me && heroNote ? heroNote : c.note}」` })]),
+          el("div.ent-note", [el("small.ent-speaker", { text: "はじめ" }), el("span", { text: `（${me && heroNote ? heroNote : c.note}）` })]),
         ]),
       ]);
       if (art?.color) card.style.setProperty("--entry-ink", art.color);

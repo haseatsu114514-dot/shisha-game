@@ -894,7 +894,7 @@ const SAKURAI_RULE_LINES = Object.freeze([
   { speaker: "pakki", face: "excited", text: "温度計の桃色の帯は『攻めの帯』ッ！ そこで出せば審査がグッと伸びる！ ただし越えたら味が崩れるッ！" },
 ]);
 
-/** 入場（ライバル → 主人公）。スミさんの一言つき。共有部品 tournament-entrance.js（#2031） */
+/** 入場（ライバル → 主人公）。はじめの心の声つき。共有部品 tournament-entrance.js（#2031） */
 const entrance = () => playEntrance(1, { heroNote: CH1_EVE_NOTES[state.flags._last_night] || null });
 
 // ---------------------------------------------------------------- 優勝のあと

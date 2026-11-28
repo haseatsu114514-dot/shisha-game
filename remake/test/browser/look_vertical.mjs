@@ -110,21 +110,29 @@ async function assertFits(page, label) {
 /**
  * 土台の配置（VPN09・VPN16）: 下画面の高さと十字キー・丸ボタンの大きさと位置は、試作の会話画面と同じ（幅 39 に対して下画面 30.2・
  * 補助ボタンの段の下 8.2 から十字キー 20.4・丸ボタン 14.6。背の低い画面は試作と同じ段階で縮む）。
- * 十字キーと丸ボタンは場面が替わっても同じ位置（指を置いたまま遊べる）。最初に測った位置を覚え、以後の場面で同じ位置か確かめる。
+ * 十字キーと丸ボタンは同じ配置の場面で同じ位置（指を置いたまま遊べる）。最初に測った位置を覚え、以後の場面で同じ位置か確かめる。
  */
 async function assertPadHome(page, label, home = null) {
   const box = await page.evaluate(() => {
     const r = (selector) => { const b = document.querySelector(selector).getBoundingClientRect(); return [b.left, b.top, b.width, b.height].map((v) => Math.round(v)); };
     const shell = document.querySelector(".vt-shell").getBoundingClientRect(), ctrl = document.querySelector(".vt-ctrl").getBoundingClientRect();
     const u = shell.width / 39, tall = shell.height / u;
-    const size = tall > 80 ? [30.2, 8.2, 20.4, 14.6] : tall > 71 ? [27.2, 7.4, 18.2, 13.2] : [23.6, 6.5, 15.4, 11.2];
+    let size = tall > 80 ? [30.2, 8.2, 20.4, 14.6] : tall > 71 ? [27.2, 7.4, 18.2, 13.2] : [23.6, 6.5, 15.4, 11.2];
+    if (document.querySelector(".vt-shell").dataset.scene === "vn") {
+      const chips = document.querySelector(".vt-chips").getBoundingClientRect();
+      const safe = parseFloat(getComputedStyle(document.querySelector(".vt-shell")).getPropertyValue("--safe-b"));
+      const gap = Math.max(.6, safe * 2 / (3 * u));
+      const padTop = chips.height / u + gap;
+      const ring = size[2] * .87;
+      size = [padTop + ring + gap, padTop, ring, size[3]];
+    }
     return { u, size, ctrlH: ctrl.height, ctrlBottom: shell.bottom - ctrl.bottom, padTop: document.querySelector(".vt-dpad").getBoundingClientRect().top - ctrl.top,
       panel: getComputedStyle(document.querySelector(".vt-ctrl")).backgroundImage, dpad: r(".vt-dpad"), a: r(".vt-a"),
       aShown: getComputedStyle(document.querySelector(".vt-a")).display !== "none", dpadShown: getComputedStyle(document.querySelector(".vt-dpad")).display !== "none" };
   });
   const [ctrlH, padTop, ring, a] = box.size.map((n) => n * box.u);
-  assert(Math.abs(box.ctrlH - ctrlH) <= 2 && Math.abs(box.ctrlBottom) <= 1, `${label}: the lower screen is as tall as the prototype's ${JSON.stringify(box)}`);
-  assert(Math.abs(box.padTop - padTop) <= 2 && Math.abs(box.dpad[2] - ring) <= 2 && Math.abs(box.a[2] - a) <= 2, `${label}: the pad sits right under the chips like the prototype ${JSON.stringify(box)}`);
+  assert(Math.abs(box.ctrlH - ctrlH) <= 2 && Math.abs(box.ctrlBottom) <= 1, `${label}: the lower screen is as tall as the scene requires ${JSON.stringify(box)}`);
+  assert(Math.abs(box.padTop - padTop) <= 2 && Math.abs(box.dpad[2] - ring) <= 2 && Math.abs(box.a[2] - a) <= 2, `${label}: the pad fits below the chips ${JSON.stringify(box)}`);
   assert.equal(box.panel, "none", `${label}: no board under the pad (the scene shows through like the prototype)`);
   assert(box.aShown && box.dpadShown, `${label}: the pad and the round button stay on screen`);
   if (home) {
@@ -259,6 +267,58 @@ await suite("look_vertical", async (check) => {
     assert.equal(await page.locator(".result-table:not(.done)").count(), 0);
   }, { ...SHORT, pageEntry: entry });
 
+  await check("boot-fades-onto-portrait-title", async (page) => {
+    // 通常の検査は #boot が消えてから始まる。開き直してフェード中も1フレームずつ調べる。
+    await page.addInitScript(() => {
+      window.wideTitleFrames = 0;
+      const sample = () => {
+        const boot = document.getElementById("boot");
+        if (document.querySelector("#screen > .title") && (!boot || Number(getComputedStyle(boot).opacity) < 0.98)
+          && Number(getComputedStyle(document.getElementById("viewport")).opacity) > 0) window.wideTitleFrames++;
+        if (boot || !document.querySelector('[data-test="vt-title-new"]')) requestAnimationFrame(sample);
+      };
+      requestAnimationFrame(sample);
+    });
+    await page.reload();
+    await page.locator("#boot").waitFor({ state: "detached" });
+    await waitScene(page, "title");
+    assert.equal(await page.evaluate(() => window.wideTitleFrames), 0);
+
+    // ロード画面の「進む」にタップが届き、閉じるとすぐにタイトルに戻る。
+    await page.evaluate(async () => {
+      const { withLoading } = await import("./js/core/loading.js");
+      window.gateTest = withLoading(() => new Promise(resolve => { window.finishGate = resolve; }),
+        { delayMs: 0, comics: [] });
+    });
+    await page.locator(".loading-gate:not(.is-preparing)").waitFor();
+    assert(await page.evaluate(() => {
+      const button = document.querySelector(".loading-gate .loading-proceed").getBoundingClientRect();
+      return !!document.elementFromPoint(button.x + button.width / 2, button.y + button.height / 2)?.closest(".loading-gate");
+    }));
+    await page.waitForFunction(() => typeof window.finishGate === "function");
+    await page.evaluate(() => { window.finishGate(); return window.gateTest; });
+    await page.locator(t("vt-title-config")).tap();
+    await waitScene(page, "sheet");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("first-rotation-waits-for-portrait-styles", async (page) => {
+    let release;
+    const paused = new Promise(resolve => { release = resolve; });
+    await page.route("**/css/look-vertical.css*", async route => { await paused; await route.continue(); });
+    const request = page.waitForRequest("**/css/look-vertical.css*");
+    await page.setViewportSize(TALL.viewport);
+    await request;
+    try {
+      assert.equal(await page.locator("#viewport").isVisible(), false);
+      await page.setViewportSize(WIDE.viewport);
+      await page.locator(t("title-new")).waitFor();
+      await page.setViewportSize(TALL.viewport);
+    } finally { release(); }
+    await waitScene(page, "title");
+    await page.locator(t("vt-title-config")).tap();
+    await waitScene(page, "sheet");
+  }, { ...WIDE, pageEntry: entry });
+
   await check("title-and-conversation-in-two-line-pages", async (page) => {
     await waitScene(page, "title");
     assert.equal(await page.evaluate(() => document.documentElement.dataset.look), "vertical");
@@ -319,7 +379,7 @@ await suite("look_vertical", async (check) => {
       mine: [...document.querySelectorAll(".vt-pin")].map((pin) => pin.dataset.spot).sort(),
     }));
     assert.deepEqual(pins.mine, pins.live, "one pin per destination");
-    const home = await assertPadHome(page, "map");
+    await assertPadHome(page, "map");
     // 看板（VPN10）: 元の地図と同じ店のロゴ・施設の絵を、地図の中に小さく出す
     const signs = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll(".vt-pin")].map((pin) => {
       const art = pin.querySelector(".vt-pin-art > *"), live = document.querySelector(`#screen > .map:not(.done) .spot-pin[data-spot="${pin.dataset.spot}"] .ico > :is(.store-logo, .facility-icon)`);
@@ -362,7 +422,7 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "vn", 30000);
     await page.locator(".vt-actor").first().waitFor({ state: "attached", timeout: 20000 });
     assert.match(await page.locator(".vt-where b").textContent(), /PEPPERMINT/);
-    await assertPadHome(page, "conversation in the shop", home);
+    const talkHome = await assertPadHome(page, "conversation in the shop");
     // 返事まで送る → 十字キーの下で次の札へ、決定で本編の選択肢を押す
     for (let i = 0; i < 30 && !(await page.locator(".vt-choice").count()); i++) {
       await typed(page);
@@ -373,7 +433,7 @@ await suite("look_vertical", async (check) => {
     const choices = await page.locator(".vt-choice").allTextContents();
     assert(choices.length >= 2, `the reply cards mirror the engine's choices ${JSON.stringify(choices)}`);
     await assertFits(page, "choice");
-    await assertPadHome(page, "choice", home);
+    await assertPadHome(page, "choice", talkHome);
     await pad(page, "down");
     assert.equal(await page.locator('.vt-choice[aria-current="true"]').getAttribute("data-index"), "1");
     // 本編の2番目の選択肢が押されること（決定は本編のボタンへの click として中継する）
@@ -766,18 +826,21 @@ await suite("look_vertical", async (check) => {
   await check("unsupported-scenes-show-the-rotate-hint", async (page) => {
     await waitScene(page, "title");
     await page.evaluate(async () => {
-      const core = await import("./js/core/state.js");
-      const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 1, day: 2, slot: 0 });
-      (await import("./js/core/ui.js")).clearScreen();
-      const { newSession, openBench } = await import("./js/craft/session.js");
-      const { stepPlace } = await import("./js/craft/steps.js");
-      const cs = newSession("tutorial"); openBench(cs, {}); window.placeRun = stepPlace(cs);
+      const { runIchidai } = await import("./js/minigames/ichidai.js");
+      window.stopCards = new AbortController();
+      void runIchidai({ signal: window.stopCards.signal });
     });
     await page.waitForFunction(() => getComputedStyle(document.getElementById("rotate-hint")).display !== "none", null, { timeout: 10000 });
     assert.equal(await scene(page), "");
     const hint = await page.evaluate(() => document.getElementById("rotate-hint").innerText.replace(/\s+/g, " "));
     assert(hint.includes("この場面は横向きで遊びます"), hint);
     await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true");
+    await page.setViewportSize(WIDE.viewport);
+    await page.locator("#rotate-hint").waitFor({ state: "hidden" });
+    await page.locator(t("ichi-help")).tap();
+    await page.locator(t("ichi-help-close")).tap();
+    await page.evaluate(() => window.stopCards.abort());
+    await page.locator("#rotate-hint .portrait-required").waitFor();
   }, { ...TALL, pageEntry: entry });
 
   await check("craft-pack-and-steam-timer-in-the-shell", async (page) => {
@@ -1281,12 +1344,16 @@ await suite("look_vertical", async (check) => {
     await assertPadHome(page, "short map");
   }, { ...SHORT, pageEntry: entry });
 
-  await check("landscape-uses-the-current-screen", async (page) => {
-    // 横持ち: 外枠を出さず、本編の画面のまま
-    await page.locator(t("title-new")).waitFor();
-    await page.waitForTimeout(400);
-    const state = await page.evaluate(() => ({ shell: !!document.querySelector(".vt-shell"), vt: document.documentElement.dataset.vt || "", opacity: getComputedStyle(document.getElementById("viewport")).opacity }));
-    assert.deepEqual(state, { shell: false, vt: "", opacity: "1" });
+  await check("landscape-blocks-title-input", async (page) => {
+    await page.locator("#rotate-hint .portrait-required").waitFor();
+    await page.locator(t("title-config")).focus();
+    await page.keyboard.press("Enter");
+    const box = await page.locator(t("title-config")).boundingBox();
+    await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+    assert.equal(await page.locator("#modal.show").count(), 0);
+    await page.setViewportSize(TALL.viewport);
+    await page.locator(t("vt-title-config")).tap();
+    await waitScene(page, "sheet");
   }, { ...WIDE, pageEntry: entry });
 
   await check("switching-looks-leaves-no-trace", async (page) => {

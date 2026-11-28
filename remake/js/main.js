@@ -25,10 +25,9 @@ import { installSaveFailedNotice } from "./core/save-failed-notice.js";
 import { createDevInspector } from "./core/dev-inspector.js";
 import { createEventPreview } from "./core/dev-event-preview.js";
 import { createIsolatedEventPlayer } from "./core/dev-isolated-player.js";
-import { craftTest } from "./craft/session.js";
+import { craftTest } from "./craft/test-controls.js";
 import { showTitle } from "./scenes/title.js";
 import { pickTitleArt, prepareTitleArt } from "./scenes/title-art.js";
-import { resumeGame } from "./chapters/ch1.js";
 import { setGrowthPreview, growthEnabled, gainExp, ensureGrowth, openGrowthBoard } from "./core/growth.js";
 installNoZoom(); // ダブルタップによる拡大を止める（#2826。ピンチは禁止しない）
 installDoubleTapGuard(); // ダブルタップ拡大の保険（#2852）。no-zoom が入っていれば __suienNoZoom を見て自動で何もしない
@@ -60,13 +59,14 @@ export async function boot() {
   initIchidaiSwitch(); // カードゲーム「一台勝負」の入口（?ichidai=1 で入・ICG）
   const cfg = loadConfig();
   applyUiTheme(cfg.uiTheme);
-  // 見た目の様式（新版／旧版／縦画面・LK01）。既定は縦画面で、まだ選んでいない端末は一度だけ既定へ移す（LK24）。
-  // ?look=neo などで端末の設定ごと切り替えられる。
+  const oldLook = cfg.look, oldVersion = cfg.lookVersion;
   migrateLook(cfg);
-  const lookParam = new URLSearchParams(location.search).get("look");
-  if (lookParam !== null && normalizeLook(lookParam) === lookParam) { cfg.look = lookParam; saveConfig(); }
+  // 旧描画の自動検査は同じ本編 DOM を直接操作する。プレイヤーの入口は常に縦版。
+  const lookParam = navigator.webdriver && new URLSearchParams(location.search).get("look");
+  if (lookParam && normalizeLook(lookParam) === lookParam) cfg.look = lookParam;
+  if (cfg.look !== oldLook || cfg.lookVersion !== oldVersion) saveConfig();
   initLook({ look: cfg.look, chapter: () => (document.body.dataset.screen === "title" ? 1 : state?.chapter || 1) });
-  installLooks();
+  const lookReady = installLooks();
   // 左右の余白（煙と縁・縦書きの帯・親指ボタン。YHK）。設定と見た目の様式が決まってから作る。
   initSideArea({ stage: $("#stage"), advance: tapAdvance });
   // 設定「揺れ・閃光を減らす」を CSS からも見えるようにする（場面の演出の閃光を省く・#2688 F11）
@@ -104,7 +104,7 @@ export async function boot() {
   await withLoading(async ({ report }) => {
     // データと一緒に書体も待つ（読み込み前の代わりの字で一瞬崩れて見えないように）。遅い回線では4秒で先へ
     const fonts = Promise.race([
-      Promise.all(["500", "700", "900"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線あA7"))),
+      Promise.all(["500", "700"].map((w) => document.fonts.load(`${w} 20px "Suien Title"`, "水煙前線あA7"))),
       new Promise((r) => setTimeout(r, 4000)),
     ]).catch(() => {});
     // ロゴと枠絵は DB に依存しないので、データ・書体と同時に取り始める（#3500 A-19）。ここでは待たない。
@@ -118,7 +118,7 @@ export async function boot() {
     }, (manifest) => {
       // 台本と並行して読む分、従来の15秒より長く待てる。途中で代替の絵へ切り替えない。
       titleArtPromise = prepareTitleArt(pickTitleArt(manifest), 30000);
-    }), fonts]);
+    }), fonts, lookReady]);
     // 抽選した1枚だけをデコードしてから幕を開ける。全候補を起動時にダウンロードしない。
     // タイトル曲は再生許可を得た時に playBgm が読む。音声の準備でタイトル表示を待たせない。
     [titleArt] = await Promise.all([titleArtPromise ?? prepareTitleArt(), Promise.all([
@@ -129,7 +129,10 @@ export async function boot() {
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
   const resumeRequested = consumeResumeOnBoot();
   let trial;
-  if (resumeRequested && load()) resumeGame();
+  if (resumeRequested && load()) {
+    const { resumeGame } = await import("./chapters/ch1.js");
+    resumeGame();
+  }
   // TRPGの試遊（TRF21）: ?trial=trpg で、タイトルの代わりに本編と同じボドゲカフェを使い捨ての状態で開く。
   // セーブは読み書きしない。「タイトルへ戻る」でふだんのタイトルへ。
   else if (new URLSearchParams(location.search).get("trial") === "trpg") {

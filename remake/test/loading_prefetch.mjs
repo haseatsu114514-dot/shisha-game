@@ -92,21 +92,32 @@ console.log('background preparation: PASS (yield, serial, stale, hidden, save-da
   const source = await readFile(new URL('../js/minigames/camel-race.js', import.meta.url), 'utf8');
   const body = source.slice(source.indexOf('const UI_ART_CLASSES'), source.indexOf('/** 4頭それぞれの4コマに'));
   const files = { camel: ['camel'], jockey: 'jockey', suv: 'suv', wheel: 'wheel', track: 'track',
-    balloon: 'balloon', dust: ['dust'], words: { start: 'start' }, pole: 'pole', sand: 'sand',
+    balloon: 'balloon', dust: ['dust'], words: { START: 'start', FINISH: 'finish', VS: 'vs' }, pole: 'pole', sand: 'sand',
     posts: { start: 'post' }, rivalSuvs: ['rival'], marker: 'marker', road: 'road' };
   const requests = [];
-  class Image { set src(value) { requests.push(value); } decode() { return Promise.resolve(); } }
+  let finishDownload;
+  const lateFinish = new Promise(resolve => { finishDownload = resolve; });
+  class Image {
+    set src(value) { this.url = value; requests.push(value); }
+    decode() { return this.url === 'finish' ? lateFinish : Promise.resolve(); }
+  }
   const loader = runInNewContext(`${body.replace('export ', '')}; loadCamelArt`, {
     Image, ART_FILES: files, imgFileUrl: s => s, groundTiles: () => ({}), camelSkins: () => ({}),
     prepareRivalSuvs: () => [], TUTORIAL: [{ art: 'howto-camel' }], CAMEL_CUPS: [{ id: 'practice' }],
   });
-  const first = loader(), count = requests.length;
-  for (const file of ['dust', 'ui/camel_race/ui/remote-whip-pressed.webp', 'ui/camel_race/ui/howto-camel.webp', 'ui/camel_race/world/cup-practice.webp']) {
+  const first = loader();
+  for (const file of ['dust', 'ui/camel_race/ui/remote-whip-pressed.webp']) {
     assert(requests.includes(file), `entrance preloads ${file}`);
   }
   assert.equal(loader(), first, 'same promise while preparing');
   const value = await first;
-  assert(value.camel, 'core art prepared');
+  assert(value.camel && value.words.START, 'start art prepared while finish is pending');
+  assert(!value.words.FINISH);
+  assert(!requests.some(file => /howto-|cup-practice/.test(file)), 'race art does not request other menus');
+  finishDownload();
+  await new Promise(resolve => setImmediate(resolve));
+  assert(value.words.FINISH);
+  const count = requests.length;
   assert.equal(await loader(), value, 'same decoded art after completion');
   assert.equal(requests.length, count, 'no repeated image requests/decodes');
 }

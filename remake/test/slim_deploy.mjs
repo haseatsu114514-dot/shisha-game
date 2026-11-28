@@ -67,7 +67,10 @@ try {
   put("remake/js/m.js", 'const direct = new URL("../../../assets/a/y.png", import.meta.url);\nconst t = `../assets/a/w${n}.png`;\n');
   put("remake/test/t.mjs", "const all = `../assets/${rel}`;\n");
   put("remake/tools/u.py", "print('dev')\n");
+  const dialogue = { text: "ひと息  ついて\n次の行へ", score: 0 };
+  put("data/dialogue/test.json", JSON.stringify(dialogue, null, 2));
   python([script, mini]);
+  assert.equal(fs.readFileSync(path.join(mini, "data/dialogue/test.json"), "utf8"), JSON.stringify(dialogue));
   assert(!fs.existsSync(path.join(mini, "assets/a/x.png")), "WebP 版があり直接の参照が無い元PNGは外す");
   assert(fs.existsSync(path.join(mini, "assets/a/y.png")), "直接の参照がある元PNGは残す");
   assert(fs.existsSync(path.join(mini, "assets/a/w.png")), "${…} の書き方に合う元PNGは残す");

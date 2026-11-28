@@ -15,6 +15,8 @@
 @font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Bold.woff2?v=20261122") format("woff2"); font-weight: 600 900; font-display: block; }
 @font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Supp-Medium.woff2?v=20261122") format("woff2"); font-weight: 100 599; font-display: block; unicode-range: U+2252; }
 @font-face { font-family: "Suien Gothic"; src: url("../fonts/NotoSansJP-Supp-Bold.woff2?v=20261122") format("woff2"); font-weight: 600 900; font-display: block; unicode-range: U+2252; }
+@font-face { font-family: "Suien Title"; src: url("../fonts/Title-Medium.woff2?v=20261122") format("woff2"); font-weight: 100 599; font-display: block; }
+@font-face { font-family: "Suien Title"; src: url("../fonts/Title-Bold.woff2?v=20261122") format("woff2"); font-weight: 600 900; font-display: block; }
 /* HUDの日付・時間帯などのドット書体（DotGothic16・SIL OFL）。廃止した予告のCSSから移した。 */
 @font-face { font-family: "Suien Dot"; src: url("../../assets/fonts/DotGothic16-Regular.woff2?v=20261122") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
 
@@ -76,6 +78,11 @@ html, body {
 .map .mi-desc, .end-notes > p, .ch2-contest-note, .dm-sub, .lb-learned, .go-limit-note, .sd-note, .mix-taste, .flavor-forecast > b,
 .dr-caption, .axe-bar-division-note, .trpg-tutorial-panel > p, .trpg-object-label, .trpg-object-detail {
   text-wrap: balance;
+}
+body[data-screen="boot"],
+body[data-screen="title"] :is(#boot, .loading-gate, .title, #rotate-hint) {
+  --font: "Suien Title", "Suien Gothic", sans-serif;
+  font-family: var(--font);
 }
 button { font: inherit; color: inherit; }
 
@@ -868,6 +875,22 @@ small.dc-sub { font-size: 20px; color: #f1e7d6; }
    （開いた瞬間に「横向きで」と出ていた）。様式を持たない単独のページ（ミニゲームの試遊ページなど）は今までどおり縦持ちで出す。 */
 @media (orientation: portrait) and (hover: none) and (pointer: coarse) {
   :root:not([data-look="vertical"]):not([data-look-boot]) #rotate-hint { display: grid; }
+}
+
+#rotate-hint > .portrait-required { display: none; }
+@media (pointer: coarse) { #rotate-hint .portrait-required small { display: none; } }
+@media (orientation: landscape) {
+  :root[data-look="vertical"]:not([data-vt-wide-play]) body:not(:has(#boot.is-failed)) #rotate-hint { display: grid; }
+  :root[data-look="vertical"] #rotate-hint > * { display: none; }
+  :root[data-look="vertical"] #rotate-hint > .portrait-required { display: block; }
+  /* ネイティブ dialog は通常の z-index より手前。開いた状態のまま縦へ戻せるようにする。 */
+  :root[data-look="vertical"]:not([data-vt-wide-play]) dialog:modal,
+  :root[data-look="vertical"]:not([data-vt-wide-play]) dialog:modal::backdrop { opacity: 0; pointer-events: none; }
+}
+
+/* 初めて縦に持ち替えた時は、縦用 CSS が届くまで横長の画面とその操作を隠す。 */
+@media (orientation: portrait) {
+  :root[data-vt-pending] #viewport { visibility: hidden; }
 }
 
 /* 選択済みで次の画面を待っている画面は触れない */

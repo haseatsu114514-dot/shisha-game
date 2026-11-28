@@ -16,6 +16,6 @@ export function initCraftStage() {
   return on;
 }
 
-/** 新しい配置が入っているか（DS風2画面では使わない）。 */
+/** 新しい配置が入っているか。 */
 export const craftStageEnabled = () => typeof document !== "undefined"
-  && !!document.body?.classList.contains("craft-stage") && !document.body.classList.contains("game-ds");
+  && !!document.body?.classList.contains("craft-stage");
