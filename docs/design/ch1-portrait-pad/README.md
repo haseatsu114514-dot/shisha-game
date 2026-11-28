@@ -27,7 +27,7 @@
 | 優勝後の会話・LIME受信・章クリア | 会話・クリアシートは**要る**。受信前の単独グリッチは**要らない** | 会話は A、LIME はアプリ内操作。クリアは成長グラフや記録を上下で読み、「第2章へ進む」等を選ぶ。コンティニューと同じ `end` 名で一律に消さない。 |
 | 空のつなぎ・未知の覆い・未対応から戻る瞬間 | 一時表示・**要る側に保留** | `gap` でも A の中継が許可される場合がある。`hold` は短い間だけ操作を止める。次の本編要素が先に現れるため、空に見えたことだけで無入力と決めない。 |
 
-進行の入口は [第1章台本](../../../remake/js/chapters/ch1.js)、場面の見分けは [detectState](../../../remake/js/looks/neo/portrait-shell/detect.js)、縦画面への振り分けは [vertical.js](../../../remake/js/looks/vertical.js)。ボタンの実際の行き先は [会話](../../../remake/js/looks/vertical/talk.js)、[地図](../../../remake/js/looks/vertical/map.js)、[行動選び](../../../remake/js/looks/vertical/menu.js)、[シート](../../../remake/js/looks/vertical/sheet.js)、[盤](../../../remake/js/looks/vertical/board.js)、[制作工程](../../../remake/js/looks/vertical/craft.js) で確認できる。
+進行の入口は [第1章台本](../../../remake/js/chapters/ch1.js)、場面の見分けは [detectState](../../../remake/js/looks/vertical/detect.js)、縦画面への振り分けは [vertical.js](../../../remake/js/looks/vertical.js)。ボタンの実際の行き先は [会話](../../../remake/js/looks/vertical/talk.js)、[地図](../../../remake/js/looks/vertical/map.js)、[行動選び](../../../remake/js/looks/vertical/menu.js)、[シート](../../../remake/js/looks/vertical/sheet.js)、[盤](../../../remake/js/looks/vertical/board.js)、[制作工程](../../../remake/js/looks/vertical/craft.js) で確認できる。
 
 ## パッドを外した見た目と、場面ごとの根拠
 

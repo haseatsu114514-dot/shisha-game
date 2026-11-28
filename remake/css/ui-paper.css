@@ -78,7 +78,7 @@ html:root[data-ui-theme="paper"] body:not(:root) .vn-box:is(.narration, .thought
 }
 /* スマホは操作が窓の外にあるため、本文上の罫線だけを消す。紙の原画（2464×384）の
    罫線 y=102–109 に、同じ絵のすぐ下の紙肌を重ねる。外枠・煙・PC の描画は変えない。 */
-html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) .vn-box::after {
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) .vn-box::after {
   content: "";
   position: absolute;
   inset: -8px;

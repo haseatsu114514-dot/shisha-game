@@ -1,3 +1,4 @@
+@import url("look-vertical-sheet.css");
 /* 縦画面「煙の舞台」（C案・js/looks/vertical.js）。様式「縦画面」を選んで縦持ちにした時だけ読み込む（index.html の styles-look-vertical）。
    寸法は試作 remake/previews/portrait-stage/style.css と同じ比。試作の 1rem を、ここでは --u（スマホの幅 39 で 1 単位）と書く。
    本編の画面（#viewport）はレイアウトを生かしたまま見えなくし（会話の折り返しが .vn-text の実幅を測るため display は変えない）、
@@ -465,7 +466,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 @keyframes vt-cv-art-sharp { from { opacity: 0; transform: translateX(-30%); } }
 
 /* ───────── シート（MENU・LIME・小窓・LOG・店・章のクリア。looks/retro/sheet.js の写しを縦C案の色と字に） ───────── */
-.vt-shell .vt-sheet-host.retro-shell {
+.vt-shell .vt-sheet-host {
   --d: calc(0.15 * var(--u));
   --r-body: #120c1d;
   --r-ink: #1a1228;
@@ -501,25 +502,25 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 }
 .vt-sheet-host .vt-sheet-top { position: absolute; left: 0; top: 0; width: 100%; height: 0; }
 .vt-sheet-host .vt-sheet-bottom { position: absolute; inset: 0; }
-.vt-sheet-host .retro-sheet { position: absolute; inset: 0 !important; width: auto !important; height: auto !important; font-size: calc(1.5 * var(--u)); line-height: 1.55; background: none; box-shadow: none; }
-.vt-sheet-host .retro-sheet[data-tall="true"] { background: none; box-shadow: none; }
-.vt-sheet-host .retro-sheet .rs-head { border-radius: 0; }
-.vt-sheet-host .retro-sheet .rs-h1, .vt-sheet-host .retro-sheet .rs-h2 { font-family: var(--mincho); font-size: calc(2 * var(--u)); line-height: 1.4; letter-spacing: 0.06em; }
-.vt-sheet-host .retro-sheet .rs-h3, .vt-sheet-host .retro-sheet .rs-h4 { font-size: calc(1.6 * var(--u)); line-height: 1.45; }
-.vt-shell .vt-sheet-host .retro-sheet .rs-btn, .vt-shell .vt-sheet-host .retro-sheet .rs-check { min-height: calc(4.4 * var(--u)); border-radius: calc(1.2 * var(--u)); box-shadow: inset 0 calc(0.1 * var(--u)) 0 #ffffff1f; }
-.vt-shell .vt-sheet-host .retro-sheet .rs-btn:active:not([disabled]) { transform: scale(0.98); box-shadow: none; }
-.vt-shell .vt-sheet-host .retro-sheet .rs-btn:is([aria-pressed="true"], [aria-checked="true"], [aria-selected="true"], .s-on),
-.vt-shell .vt-sheet-host .retro-sheet .rs-check[aria-checked="true"] { color: var(--deep); background: var(--r-lilac); border-color: var(--r-lilac); }
-.vt-shell .vt-sheet-host .retro-sheet .rs-btn.s-primary { color: #3a2408; background: var(--r-gold); border-color: var(--r-gold); }
-.vt-sheet-host .retro-sheet .rs-gauge, .vt-sheet-host .retro-sheet .rs-meter { height: calc(0.8 * var(--u)); border-radius: var(--u); overflow: hidden; }
-.vt-sheet-host .retro-sheet .rs-fill { border-radius: inherit; }
-.vt-sheet-host .retro-sheet img { border-radius: calc(0.6 * var(--u)); }
+.vt-sheet-host .vt-sheet-pane { position: absolute; inset: 0 !important; width: auto !important; height: auto !important; font-size: calc(1.5 * var(--u)); line-height: 1.55; background: none; box-shadow: none; }
+.vt-sheet-host .vt-sheet-pane[data-tall="true"] { background: none; box-shadow: none; }
+.vt-sheet-host .vt-sheet-pane .rs-head { border-radius: 0; }
+.vt-sheet-host .vt-sheet-pane .rs-h1, .vt-sheet-host .vt-sheet-pane .rs-h2 { font-family: var(--mincho); font-size: calc(2 * var(--u)); line-height: 1.4; letter-spacing: 0.06em; }
+.vt-sheet-host .vt-sheet-pane .rs-h3, .vt-sheet-host .vt-sheet-pane .rs-h4 { font-size: calc(1.6 * var(--u)); line-height: 1.45; }
+.vt-shell .vt-sheet-host .vt-sheet-pane .rs-btn, .vt-shell .vt-sheet-host .vt-sheet-pane .rs-check { min-height: calc(4.4 * var(--u)); border-radius: calc(1.2 * var(--u)); box-shadow: inset 0 calc(0.1 * var(--u)) 0 #ffffff1f; }
+.vt-shell .vt-sheet-host .vt-sheet-pane .rs-btn:active:not([disabled]) { transform: scale(0.98); box-shadow: none; }
+.vt-shell .vt-sheet-host .vt-sheet-pane .rs-btn:is([aria-pressed="true"], [aria-checked="true"], [aria-selected="true"], .s-on),
+.vt-shell .vt-sheet-host .vt-sheet-pane .rs-check[aria-checked="true"] { color: var(--deep); background: var(--r-lilac); border-color: var(--r-lilac); }
+.vt-shell .vt-sheet-host .vt-sheet-pane .rs-btn.s-primary { color: #3a2408; background: var(--r-gold); border-color: var(--r-gold); }
+.vt-sheet-host .vt-sheet-pane .rs-gauge, .vt-sheet-host .vt-sheet-pane .rs-meter { height: calc(0.8 * var(--u)); border-radius: var(--u); overflow: hidden; }
+.vt-sheet-host .vt-sheet-pane .rs-fill { border-radius: inherit; }
+.vt-sheet-host .vt-sheet-pane img { border-radius: calc(0.6 * var(--u)); }
 .vt-shell[data-scene="sheet"] .vt-telop { visibility: hidden; }
 /* LIME（VPN15。試作 previews/portrait-stage/lime.css と同じ見た目・VPM10「ライムの画面はあえてLINEの色とかに寄せたい」）:
    画面いっぱいのアプリ。一覧は白地に黒い名前・灰色の一言・緑の印、トークは青みのある背景に白（相手）と緑（自分）の吹き出し、下に緑の札 */
-.vt-shell[data-sheet="lime"] .vt-sheet-host.retro-shell { --ln-green: #06c755; --ln-green-ink: #04913f; --ln-green-soft: #e7f8ed; --ln-chat: #8cabd8; --ln-me: #8de055; --ln-ink: #111; --ln-sub: #8a929e; --ln-faint: #b2b8c1; --ln-line: #eceef1;
+.vt-shell[data-sheet="lime"] .vt-sheet-host { --ln-green: #06c755; --ln-green-ink: #04913f; --ln-green-soft: #e7f8ed; --ln-chat: #8cabd8; --ln-me: #8de055; --ln-ink: #111; --ln-sub: #8a929e; --ln-faint: #b2b8c1; --ln-line: #eceef1;
   inset: 0; border: 0; border-radius: 0; background: var(--ln-chat); box-shadow: none; animation: none; color: var(--ln-ink); }
-.vt-shell[data-sheet="lime"] .vt-sheet-host .retro-sheet { color: var(--ln-ink); font-size: calc(1.6 * var(--u)); }
+.vt-shell[data-sheet="lime"] .vt-sheet-host .vt-sheet-pane { color: var(--ln-ink); font-size: calc(1.6 * var(--u)); }
 .vt-shell[data-sheet="lime"] .vt-sheet-host .rs-head { display: flex; align-items: center; gap: var(--u); min-height: calc(6.4 * var(--u)); padding: max(calc(1.1 * var(--u)), env(safe-area-inset-top, 0px)) calc(1.5 * var(--u)) var(--u); color: var(--ln-ink); background: #fff; border-bottom: calc(0.1 * var(--u)) solid var(--ln-line); }
 .vt-shell[data-sheet="lime"] .vt-sheet-host .s-lime-title { order: 1; font-size: calc(2.5 * var(--u)); font-weight: 800; letter-spacing: 0.02em; line-height: 1.2; color: var(--ln-ink); }
 .vt-shell[data-sheet="lime"] .vt-sheet-host .s-lime-logo { order: 2; margin-left: auto; height: calc(2.5 * var(--u)); padding: 0 calc(0.9 * var(--u)); display: grid; place-items: center; border-radius: calc(0.8 * var(--u)); font-size: calc(1.2 * var(--u)); font-weight: 900; letter-spacing: 0.08em; line-height: 1; color: #fff; background: var(--ln-green); }
@@ -533,7 +534,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-shell[data-sheet="lime"] .vt-sheet-host .s-lime-face.s-gap { visibility: hidden; }
 .vt-shell[data-sheet="lime"] .vt-sheet-host .s-lime-name { min-width: 0; font-size: calc(1.9 * var(--u)); font-weight: 700; color: var(--ln-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .vt-shell[data-sheet="lime"] .vt-sheet-host .rs-body { gap: calc(0.9 * var(--u)); padding: calc(1.4 * var(--u)) calc(1.2 * var(--u)) calc(1.6 * var(--u)); background: var(--ln-chat); }
-.vt-shell[data-sheet="lime"] .vt-sheet-host .retro-sheet:has(.s-lime-title) .rs-body { gap: 0; padding: calc(0.4 * var(--u)) 0 var(--u); background: #fff; }
+.vt-shell[data-sheet="lime"] .vt-sheet-host .vt-sheet-pane:has(.s-lime-title) .rs-body { gap: 0; padding: calc(0.4 * var(--u)) 0 var(--u); background: #fff; }
 .vt-shell[data-sheet="lime"] .vt-sheet-host .s-lime-empty { padding: calc(4 * var(--u)) calc(2 * var(--u)); font-size: calc(1.5 * var(--u)); text-align: center; color: var(--ln-sub); }
 .vt-shell[data-sheet="lime"] .vt-sheet-host .rs-btn.s-lime-chat-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: calc(1.3 * var(--u)); width: 100%; min-height: calc(7.8 * var(--u)); padding: calc(0.9 * var(--u)) calc(1.6 * var(--u)); border: 0; border-radius: 0; color: var(--ln-ink); background: #fff; box-shadow: none; }
 .vt-shell[data-sheet="lime"] .vt-sheet-host .rs-btn.s-lime-chat-row:active { background: var(--ln-green-soft); transform: none; }
@@ -737,7 +738,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vb-item .vb-goal-ico { width: calc(4.6 * var(--u)); height: calc(4.6 * var(--u)); } .vb-item small { font-size: calc(1.1 * var(--u)); font-weight: 700; letter-spacing: 0.1em; color: var(--gold); }
 .vb-item b { display: block; font-size: calc(1.8 * var(--u)); line-height: 1.3; } .vb-item p { margin: calc(0.1 * var(--u)) 0 0; font-size: calc(1.36 * var(--u)); line-height: 1.5; color: #ffffffcc; word-break: auto-phrase; }
 .vb-result-card .vb-btn { position: relative; width: 100%; margin-top: calc(0.4 * var(--u)); }
-.vt-shell .vt-board-modal.retro-shell { z-index: 12; }
+.vt-shell .vt-board-modal { z-index: 12; }
 .vt-board-modal[hidden] { display: none; }
 
 /* ───────── タイトルコール（章タイトル・VPN27・VPN28） ─────────

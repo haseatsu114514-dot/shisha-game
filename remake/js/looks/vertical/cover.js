@@ -9,11 +9,11 @@ import { imgFileUrl } from "../../core/img-file.js";
 import { el } from "../../core/util.js";
 import { CHAPTER_TITLE_ART } from "../../core/chapter-title-art.js";
 import { textOf, mirrorBackground, relayTap } from "./frame.js";
-import { readLines as readBlockLines } from "../neo/portrait-shell/cover.js";
+import { readLines as readBlockLines } from "./block-lines.js";
 
 const HARMLESS = ".flash, .stat-flight, .lvup, .gfx-fly, .gfx-ring, .gfx-spark";
 
-/** 覆いの中に見えている文字を、ブロックごとの行として読む（DS風と同じ読み方。ふりがな・隠れている所は除く）。戻り値: [{ text, size }] */
+/** 覆いの中に見えている文字を、ブロックごとの行として読む（ふりがな・隠れている所は除く）。戻り値: [{ text, size }] */
 function readLines(roots) {
   const lines = [];
   for (const root of roots) readBlockLines(root, 1, lines);
@@ -147,7 +147,7 @@ export function createCoverScene(frame, own) {
       el("div.vt-cv-band", [el("i.vt-cv-accent"), nameHtml(card.name)]),
       card.title ? el("div.vt-cv-tag", { text: card.title }) : null,
       el("div.vt-cv-say", [
-        card.line ? introQuote("p.vt-cv-quote", card.line) : null,
+        card.line ? introQuote(card.line) : null,
         card.flavor ? el("p.vt-cv-flavor", [el("small", { text: card.flavorLabel }), el("b", { text: card.flavor })]) : null,
       ]),
     ].filter(Boolean));

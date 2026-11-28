@@ -10251,8 +10251,8 @@ html:root[data-density="phone"] body:not(:root) .reel-note .rn-close { min-heigh
    店を出ると LIME・MENU は元どおり出る。PC・スマホ共通（オーナー指示 2026-11-11・SUI01）。
    DS風（body.game-ds）は LIME・MENU が下画面の帯にあるので、従来のまま */
 body[data-screen="shop"] #hud .hud-card, body[data-screen="shop-entry"] #hud .hud-card { visibility: hidden; }
-body:not(.game-ds)[data-screen="shop"] #hud .hud-right, body:not(.game-ds)[data-screen="shop-entry"] #hud .hud-right { visibility: hidden; }
-body:not(.game-ds) .shop.shop-paper, body:not(.game-ds) .shop-entry { top: 24px; width: 1232px; height: 672px; }
+body:not(:root)[data-screen="shop"] #hud .hud-right, body:not(:root)[data-screen="shop-entry"] #hud .hud-right { visibility: hidden; }
+body:not(:root) .shop.shop-paper, body:not(:root) .shop-entry { top: 24px; width: 1232px; height: 672px; }
 .shop-paper button { font: inherit; cursor: pointer; touch-action: manipulation; }
 .shop-paper button:disabled { cursor: default; }
 .shop-paper button:focus-visible { outline: 3px solid #9470ad; outline-offset: 2px; }
