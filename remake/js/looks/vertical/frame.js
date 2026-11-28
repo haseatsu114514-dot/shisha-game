@@ -210,6 +210,33 @@ export function relayTap(target) {
   target.dispatchEvent(new MouseEvent("click", init));
 }
 
+// 長押しの中継に使う指の番号（本物の指・マウスの番号とぶつからない数）
+const HOLD_POINTER = 0x7654;
+/**
+ * 本編の要素へ長押しを中継する（押した時に pointerdown を送り、返す関数を呼ぶと pointerup を送る。click は送らない）。
+ * 本編のボタンは押された指を自分へ捕まえる（setPointerCapture）ことがあるが、外枠の指は外枠のボタンが捕まえているので、
+ * 送る間だけ捕まえる口を空にする（本物の指が見えない本編のボタンへ移ると、指の動きで「ボタンの外へ出た」と判断されて止まる）。
+ */
+export function relayPress(target) {
+  if (!target) return () => {};
+  const send = (type) => {
+    const rect = target.getBoundingClientRect();
+    const init = { bubbles: true, cancelable: true, view: window, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2, button: 0, buttons: type === "pointerdown" ? 1 : 0 };
+    const event = typeof PointerEvent === "function"
+      ? new PointerEvent(type, { ...init, pointerId: HOLD_POINTER, pointerType: "touch", isPrimary: true }) : new MouseEvent(type, init);
+    const own = Object.prototype.hasOwnProperty.call(target, "setPointerCapture");
+    if (!own) target.setPointerCapture = () => {};
+    try { target.dispatchEvent(event); } finally { if (!own) delete target.setPointerCapture; }
+  };
+  send("pointerdown");
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    send("pointerup");
+  };
+}
+
 /** 本編の背景の層（#bg の .bg-img）のうち、いちばん上に見えているもの。 */
 export function liveBackground() {
   const layers = [...document.querySelectorAll("#bg > .bg-img")].filter((node) => (parseFloat(getComputedStyle(node).opacity) || 0) > 0.01);
