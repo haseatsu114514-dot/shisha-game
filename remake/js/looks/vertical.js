@@ -29,7 +29,7 @@ const GAP_MS = 3000;        // 場面と場面のあいだの何も出ていな�
 const STUCK_MS = 6000;      // 何も写せない覆いがタップを待ったままなら、回転案内へ切り替える
 const COVER_MAX_MS = 20000; // 覆いの中身が変わらないまま続く上限
 const HINT_MAIN = "この場面は横向きで遊びます";
-const HINT_SUB = "配合・吸い出しなどの工程・店番・ミニゲームの縦画面は準備中です";
+const HINT_SUB = "機材選び・炭の配置などの工程・店番・ミニゲームの縦画面は準備中です";
 
 let active = false, query = null, session = null;
 
@@ -56,7 +56,7 @@ function syncOrientation() {
   if (session) return;
   const mine = ++loadToken;
   // 見た目の CSS は縦画面を使う時だけ読み込む（index.html の styles-look-vertical。ほかの端末には読ませない）
-  withMinigameStyles("look-vertical", null, () => {
+  withMinigameStyles("look-vertical", null, async () => {
     if (mine !== loadToken || !active || !query?.matches || session) return;
     session = start();
   }).catch((error) => console.error("[look] 縦画面の見た目を読み込めませんでした", error));
