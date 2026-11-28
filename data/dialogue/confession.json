@@ -272,7 +272,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "…………"
+          "text": "……"
         },
         {
           "speaker": "tsumugi",
@@ -387,7 +387,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "…あの……はじめさん……"
+          "text": "……あの……はじめさん……"
         },
         {
           "speaker": "",
@@ -1299,7 +1299,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "…これは自分で言えたからよいのじゃ！"
+          "text": "……これは自分で言えたからよいのじゃ！"
         },
         {
           "speaker": "",
@@ -1468,7 +1468,7 @@
         },
         {
           "speaker": "hajime",
-          "text": "（遊ぶ時間も、何もしない時間も、もっと一緒にいたい、……ちゃんと言おう）"
+          "text": "（遊ぶ時間も、何もしない時間も、もっと一緒にいたい。……ちゃんと言おう）"
         },
         {
           "type": "choice",

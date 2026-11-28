@@ -315,7 +315,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "…えっと……見た人が、つい顔を上げるような煙、ですかね"
+            "text": "……えっと……見た人が、つい顔を上げるような煙、ですかね"
           },
           {
             "speaker": "uezono",
@@ -617,7 +617,7 @@
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "…それも関係あるんですか？"
+            "text": "……それも関係あるんですか？"
           },
           {
             "speaker": "dr_charcoal",
@@ -674,7 +674,7 @@
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "…それも関係あるんですか？"
+            "text": "……それも関係あるんですか？"
           },
           {
             "speaker": "dr_charcoal",
@@ -782,7 +782,7 @@
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "…すみません。仕事柄、つい……"
+            "text": "……すみません。仕事柄、つい……"
           },
           {
             "speaker": "dr_charcoal",
@@ -1870,7 +1870,7 @@
         {
           "speaker": "rio",
           "face": "smug",
-          "text": "休憩中だよ。これは趣味のメモ、……たぶん"
+          "text": "休憩中だよ。これは趣味のメモ。……たぶん"
         }
       ]
     },
@@ -2074,7 +2074,7 @@
         },
         {
           "speaker": "tsumugi",
-          "face": "evil",
+          "face": "smile",
           "text": "……tonariの分は、次に行った時に足します"
         },
         {
@@ -2616,7 +2616,7 @@
           {
             "speaker": "minto",
             "face": "ura_smile",
-            "text": "思ったより早く終わって、……気づいたら、ここに座ってた"
+            "text": "思ったより早く終わって……気づいたら、ここに座ってた"
           }
         ],
         "closed": [
@@ -2702,7 +2702,7 @@
           {
             "speaker": "minto",
             "face": "ura_smile",
-            "text": "替えの電球を買いに出たら、……知らない道に出ちゃった"
+            "text": "替えの電球を買いに出たら……知らない道に出ちゃった"
           }
         ],
         "closed": [
@@ -2997,7 +2997,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "…コロちゃん！ 三分じゃ！"
+          "text": "……コロちゃん！ 三分じゃ！"
         },
         {
           "speaker": "hajime",
@@ -3017,7 +3017,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "…怖くはない！ わしは、演出を確かめておるだけじゃ"
+          "text": "……怖くはない！ わしは、演出を確かめておるだけじゃ"
         }
       ],
       "branches": {
@@ -3063,7 +3063,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "…お主か。うむ、今日は何もせんと決めて、座っておるのじゃ"
+          "text": "……お主か。うむ、今日は何もせんと決めて、座っておるのじゃ"
         },
         {
           "type": "condition",
@@ -3413,7 +3413,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……当たってる"
+          "text": "……すごい、当たり"
         },
         {
           "speaker": "ageha",
@@ -4651,7 +4651,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "隣の客が煙を吐いて、連れに言った。「これ、なんか夏休みの匂いがする」"
+          "text": "隣の客が煙を吐いて、「これ、なんか夏休みの匂いがする」と連れに言った。"
         },
         {
           "speaker": "ayatori",
@@ -5201,7 +5201,7 @@
           {
             "speaker": "steve",
             "face": "smile",
-            "text": "向こうは朝だ。待つ間に一服と思って、……タイマーを店に忘れた"
+            "text": "向こうは朝だ。待つ間に一服と思って……タイマーを店に忘れた"
           }
         ],
         "closed": [
@@ -5294,7 +5294,7 @@
         {
           "speaker": "mashiro",
           "face": "yawn",
-          "text": "起きてるよぉ、……半分くらい"
+          "text": "起きてるよぉ。……半分くらい"
         },
         {
           "speaker": "mashiro",
@@ -5469,7 +5469,7 @@
           {
             "speaker": "emil",
             "face": "normal",
-            "text": "逢縁くんか、……いい店だ"
+            "text": "逢縁くんか。……いい店だ"
           },
           {
             "speaker": "hajime",
@@ -6103,7 +6103,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "三分もったほうだと思います"
+          "text": "一気に顔色、戻りましたね"
         }
       ]
     },
@@ -6202,7 +6202,7 @@
     {
       "dialogue_id": "roam_hiyori_d",
       "lines": [
-        { "speaker": "", "face": "", "text": "ひよりは、冷えたグラスをそっと置いた。" },
+        { "speaker": "", "face": "", "text": "ひよりさんは、冷えたグラスをそっと置いた。" },
         { "speaker": "hiyori", "face": "normal", "text": "氷の音が止まるとね、ちょっとだけ寂しいね……" },
         { "speaker": "hajime", "face": "normal", "text": "もう溶けました？" },
         { "speaker": "hiyori", "face": "normal", "text": "いや、歯に当たるのが怖くて飲んでない" },
@@ -6213,9 +6213,9 @@
     {
       "dialogue_id": "roam_hiyori_e",
       "lines": [
-        { "speaker": "", "face": "", "text": "ひよりは椅子の背に、仕事の鞄を立てかけた。" },
+        { "speaker": "", "face": "", "text": "ひよりさんは椅子の背に、仕事の鞄を立てかけた。" },
         { "speaker": "hiyori", "face": "normal", "text": "鞄を置いた瞬間が、すごく好き" },
-        { "speaker": "hajime", "face": "normal", "text": "席に着いたって感じがする？" },
+        { "speaker": "hajime", "face": "normal", "text": "席に着いたって感じがします？" },
         { "speaker": "hiyori", "face": "normal", "text": "うん。仕事の鍵もまとめて、手から離れるから" },
         { "speaker": "hajime", "face": "normal", "text": "持ったまま一息つくのと、違うんですね" },
         { "speaker": "hiyori", "face": "smile", "text": "違うよ。今日は手の中にホースだけ。軽いね", "inner": "帰りに持つの忘れそう" }
@@ -6224,7 +6224,7 @@
     {
       "dialogue_id": "roam_hiyori_f",
       "lines": [
-        { "speaker": "", "face": "", "text": "ひよりが、控えめに手を振った。" },
+        { "speaker": "", "face": "", "text": "ひよりさんが、控えめに手を振った。" },
         { "speaker": "hiyori", "face": "normal", "text": "今日、仕事で「声がよく通る」って褒められたんだ" },
         { "speaker": "hajime", "face": "normal", "text": "おお。いいことじゃないですか" },
         { "speaker": "hiyori", "face": "normal", "text": "うん。注文の声まで響いたら、ちょっと恥ずかしい" },
@@ -6235,18 +6235,18 @@
     {
       "dialogue_id": "roam_hiyori_g",
       "lines": [
-        { "speaker": "", "face": "", "text": "ひよりは上着の袖口を指で直した。" },
-        { "speaker": "hiyori", "face": "normal", "text": "この袖、机に置くと氷の水が染みてくるね" },
+        { "speaker": "", "face": "", "text": "ひよりさんは、机の端から肘をそっと浮かせた。" },
+        { "speaker": "hiyori", "face": "normal", "text": "ここに肘を置くと冷たいね。氷の水が広がってた" },
         { "speaker": "hajime", "face": "normal", "text": "ナプキン、もう一枚使います？" },
         { "speaker": "hiyori", "face": "normal", "text": "ありがと。ずっと机の端に肘置いてた" },
         { "speaker": "hajime", "face": "normal", "text": "そっちの方が楽な座り方なんですね" },
-        { "speaker": "hiyori", "face": "smile", "text": "うん。水だけ動いてくれると大変助かります", "inner": "袖、実はもう少し濡れてる" }
+        { "speaker": "hiyori", "face": "smile", "text": "うん。水だけ動いてくれると大変助かります", "inner": "肘のところ、まだちょっと冷たい" }
       ]
     },
     {
       "dialogue_id": "roam_hiyori_h",
       "lines": [
-        { "speaker": "", "face": "", "text": "ひよりは小机を見てから、椅子を少し引いた。" },
+        { "speaker": "", "face": "", "text": "ひよりさんは小机を見てから、椅子を少し引いた。" },
         { "speaker": "hiyori", "face": "normal", "text": "鞄、ここまで寄せると気づくね。椅子と脚がぶつかる" },
         { "speaker": "hajime", "face": "normal", "text": "無理に奥へ入れなくていいですよ" },
         { "speaker": "hiyori", "face": "normal", "text": "でも、通る人が引っかからない所がいいの" },
