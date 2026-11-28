@@ -7377,7 +7377,8 @@ html:root body.ch2-main #stage #screen .ch2-map-main .map-info > h2.mi-banner {
 .purikura-photo.purikura-photo-real { width: auto; height: 400px; aspect-ratio: 640 / 1080; border: 0; border-radius: 4px; background: none; box-shadow: 0 6px 18px #0004; }
 .purikura-photo.purikura-photo-real img { display: block; width: 100%; height: 100%; object-fit: contain; }
 /* 自分でらくがきした写真（VPO22）: 落書き無しの写真の上に、落書きの SVG（写真の画素 640×1080）を重ねる */
-.purikura-photo.purikura-photo-doodle .pkd-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+/* 下から: 選んだコマの背景（.pkd-backdrop）→ グリーンバックで抜いた写真（枠つき）→ 落書き（.pkd-layer）。どれも写真の画素 640×1080 の座標（VPO24） */
+.purikura-photo.purikura-photo-doodle > :is(.pkd-backdrop, .pkd-photo, .pkd-layer) { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
 .map .spot-pin[data-test^="pin-ch2_"] .evt-badge { top: 4px; right: 4px; }
 .map .spot-pin[data-test^="pin-ch2_"] { min-width: 100px; }
 

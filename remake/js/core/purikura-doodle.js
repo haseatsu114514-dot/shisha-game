@@ -60,6 +60,55 @@ export const DOODLE_STAMPS = Object.freeze([
 ]);
 const stampOf = (id) => DOODLE_STAMPS.find((s) => s.id === id) || null;
 
+/**
+ * コマの背景（VPO24・オーナー「背景選んだりプリクラらしさも入れたい」）。プリ機と同じく、人物はグリーンバックで抜いた絵
+ * （img/cgs/purikura-key/）を重ね、その後ろにここの柄を敷く。柄は SVG で描く（画像を増やさない）。
+ * grad: 地の色（上→下、または斜め）。tile: 繰り返す模様（幅・高さ・中身）。swatch は選ぶ札の小さな見本の地の色
+ */
+const T = (d, fill, extra = {}) => ({ d, fill, ...extra });
+export const DOODLE_BGS = Object.freeze([
+  { id: "pink", label: "ピンク", grad: ["#ffe0ef", "#ff9fcb"] },
+  { id: "yumekawa", label: "ゆめかわ", grad: ["#ffc6e5", "#dcc8ff", "#c6f1ff"], diagonal: true },
+  { id: "leopard", label: "ヒョウ柄", grad: ["#ff8cc6", "#ff6db3"], tile: { w: 120, h: 100, parts: [
+    T("M18 20 a14 10 0 1 0 28 0 a14 10 0 1 0 -28 0", "#ffc2e0", { stroke: "#9e0f58", width: 5 }),
+    T("M70 62 a12 15 0 1 0 24 0 a12 15 0 1 0 -24 0", "#ffc2e0", { stroke: "#9e0f58", width: 5 }),
+    T("M86 14 a8 6 0 1 0 16 0 a8 6 0 1 0 -16 0", "#9e0f58"), T("M26 74 a7 9 0 1 0 14 0 a7 9 0 1 0 -14 0", "#9e0f58"),
+  ] } },
+  { id: "heart", label: "ハート", grad: ["#fff3f9", "#ffd9ec"], tile: { w: 90, h: 90, parts: [
+    T(HEART, "#ff8fc7", { at: [10, 10, 0.3] }), T(HEART, "#ffb3d9", { at: [55, 52, 0.26] }),
+  ] } },
+  { id: "dot", label: "ドット", grad: ["#ffffff", "#fff4fa"], tile: { w: 56, h: 56, parts: [
+    T("M4 14 a10 10 0 1 0 20 0 a10 10 0 1 0 -20 0", "#ff9fd0"), T("M32 42 a10 10 0 1 0 20 0 a10 10 0 1 0 -20 0", "#ff9fd0"),
+  ] } },
+  { id: "gingham", label: "ギンガム", grad: ["#ffffff", "#ffffff"], tile: { w: 48, h: 48, parts: [
+    T("M0 0 h24 v48 h-24 Z", "#8fd0ff", { opacity: 0.45 }), T("M0 0 h48 v24 h-48 Z", "#8fd0ff", { opacity: 0.45 }),
+  ] } },
+  { id: "sparkle", label: "キラキラ", grad: ["#efe2ff", "#ffd6f0"], tile: { w: 100, h: 100, parts: [
+    T(SPARKLE, "#ffffff", { at: [8, 10, 0.34] }), T(SPARKLE, "#ffe07a", { at: [58, 56, 0.24] }), T(SPARKLE, "#ffffff", { at: [70, 8, 0.14] }),
+  ] } },
+  { id: "night", label: "夜空", grad: ["#1b1450", "#5b2a8c"], tile: { w: 80, h: 80, parts: [
+    T(STAR, "#fff6c2", { at: [8, 12, 0.14] }), T(SPARKLE, "#ffffff", { at: [50, 46, 0.18] }),
+    T("M30 64 a2.5 2.5 0 1 0 5 0 a2.5 2.5 0 1 0 -5 0", "#ffffff"), T("M66 18 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0", "#ffffff"),
+  ] } },
+  { id: "sky", label: "青空", grad: ["#7fcbff", "#e3f6ff"], tile: { w: 220, h: 150, parts: [
+    T("M20 60 a26 20 0 0 1 48 -6 a22 18 0 0 1 40 10 a18 14 0 0 1 -6 26 h-78 a18 15 0 0 1 -4 -30 Z", "#ffffff", { opacity: 0.92 }),
+    T("M130 124 a18 14 0 0 1 34 -4 a16 13 0 0 1 28 8 a13 10 0 0 1 -4 18 h-56 a13 11 0 0 1 -2 -22 Z", "#ffffff", { opacity: 0.85 }),
+  ] } },
+  { id: "gold", label: "ギャル金", grad: ["#fff0a8", "#ffbe4d"], diagonal: true, tile: { w: 60, h: 60, parts: [
+    T(SPARKLE, "#ffffff", { at: [6, 6, 0.2] }), T("M40 40 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0", "#fffbe6"), T("M44 10 a2 2 0 1 0 4 0 a2 2 0 1 0 -4 0", "#fff"),
+  ] } },
+  { id: "rainbow", label: "パステル虹", grad: ["#ffd6e8", "#ffd6e8"], tile: { w: 180, h: 180, rotate: 30, parts: [
+    T("M0 0 h30 v180 h-30 Z", "#ffc2d9"), T("M30 0 h30 v180 h-30 Z", "#ffe2b8"), T("M60 0 h30 v180 h-30 Z", "#fff7b8"),
+    T("M90 0 h30 v180 h-30 Z", "#c9f5c9"), T("M120 0 h30 v180 h-30 Z", "#c6e4ff"), T("M150 0 h30 v180 h-30 Z", "#e2ccff"),
+  ] } },
+  { id: "neon", label: "ネオン", grad: ["#140b26", "#2a1144"], tile: { w: 64, h: 64, parts: [
+    T("M0 0 h64 v3 h-64 Z", "#ff3d9a", { opacity: 0.85 }), T("M0 0 h3 v64 h-3 Z", "#3ef0ff", { opacity: 0.75 }),
+    T(SPARKLE, "#ff9fe0", { at: [30, 30, 0.2] }),
+  ] } },
+]);
+const bgOf = (id) => DOODLE_BGS.find((b) => b.id === id) || DOODLE_BGS[0];
+export const DOODLE_BG_DEFAULT = "pink";
+
 /** 保存の大きさの上限（1枚で多くても 30KB ほど）。画面（daily/purikura-studio.js）も同じ上限で描くのを止める */
 export const DOODLE_LIMITS = Object.freeze({ items: 60, strokes: 80, points: 400, totalPoints: 4000, text: 24 });
 const LIMITS = DOODLE_LIMITS;
@@ -96,7 +145,9 @@ export function normalizeDoodle(value) {
     total += pts.length / 2;
     strokes.push({ c: known(DOODLE_COLORS, st.c, "hot"), w: known(DOODLE_PENS, st.w, "m"), e: known(DOODLE_EDGES, st.e, "white"), p: pts });
   }
-  return { v: 1, items, strokes }; // 何も描かずに「できた！」でも、落書き無しの写真のまま受け取る
+  // コマの背景（上のコマ・下のコマ）。知らない柄はピンク
+  const bg = [0, 1].map((i) => known(DOODLE_BGS, Array.isArray(value.bg) ? value.bg[i] : null, DOODLE_BG_DEFAULT));
+  return { v: 1, bg, items, strokes }; // 何も描かずに「できた！」でも、選んだ背景の写真のまま受け取る
 }
 
 /** 点列を、なめらかな線の path に（2点の中点を通る2次曲線） */
@@ -151,3 +202,53 @@ export function doodleSvg(doodle, className = "pkd-layer") {
   for (const it of data.items) root.append(itemNode(it));
   return root;
 }
+
+let bgSerial = 0;
+/** 柄の1つを、矩形 [x, y, w, h] に敷く部品（defs と本体）。uid は同じ画面の別の SVG と id がぶつからないため */
+function bgRect(id, [x, y, w, h], uid) {
+  const b = bgOf(id), gid = `${uid}-g`, pid = `${uid}-p`;
+  const stops = b.grad.map((c, i) => svg("stop", { offset: `${(i / Math.max(1, b.grad.length - 1)) * 100}%`, "stop-color": c }));
+  const grad = svg("linearGradient", { id: gid, x1: 0, y1: 0, x2: b.diagonal ? 1 : 0, y2: 1 }, stops);
+  const defs = [grad];
+  const body = [svg("rect", { x, y, width: w, height: h, fill: `url(#${gid})` })];
+  if (b.tile) {
+    const t = b.tile;
+    const shapes = t.parts.map((part) => {
+      const [px, py, k] = part.at || [0, 0, 1];
+      return svg("path", { d: part.d, fill: part.fill, ...(part.stroke ? { stroke: part.stroke, "stroke-width": part.width || 3 } : {}),
+        ...(part.opacity ? { opacity: part.opacity } : {}), ...(part.at ? { transform: `translate(${px} ${py}) scale(${k})` } : {}) });
+    });
+    defs.push(svg("pattern", { id: pid, width: t.w, height: t.h, patternUnits: "userSpaceOnUse", x, y,
+      ...(t.rotate ? { patternTransform: `rotate(${t.rotate} ${x} ${y})` } : {}) }, shapes));
+    body.push(svg("rect", { x, y, width: w, height: h, fill: `url(#${pid})` }));
+  }
+  return { defs, body };
+}
+
+/**
+ * コマの背景の層（viewBox は写真の画素）。panels はコマの位置（core/purikura-key-data.js）、bg は上・下のコマの柄。
+ * 抜いた人物の絵（と、その枠）の下に敷く
+ */
+export function backdropSvg(bg, panels, className = "pkd-backdrop") {
+  const root = svg("svg", { viewBox: `0 0 ${DOODLE_W} ${DOODLE_H}`, class: className, "aria-hidden": "true", preserveAspectRatio: "none" });
+  const uid = `pkbg${++bgSerial}`;
+  const defs = svg("defs");
+  (panels || []).forEach((rect, i) => {
+    // 抜いた所の縁を少しはみ出して敷く（はみ出しは枠の絵が隠す）
+    const [x, y, w, h] = rect, out = [x - 4, y - 4, w + 8, h + 8];
+    const part = bgRect((bg || [])[i] || DOODLE_BG_DEFAULT, out, `${uid}-${i}`);
+    defs.append(...part.defs);
+    root.append(...part.body);
+  });
+  root.prepend(defs);
+  return root;
+}
+
+/** 選ぶ札の小さな見本（柄を四角に敷いた SVG） */
+export function bgSwatch(id) {
+  const root = svg("svg", { viewBox: "0 0 120 90", "aria-hidden": "true" });
+  const part = bgRect(id, [0, 0, 120, 90], `pksw${++bgSerial}`);
+  root.append(svg("defs", {}, part.defs), ...part.body);
+  return root;
+}
+

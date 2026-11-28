@@ -6,7 +6,7 @@ import { addMoney } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { DB, displayName } from "../core/data.js";
 import { purikuraPhoto } from "../core/purikura-photo.js";
-import { PURIKURA_PHOTOS, purikuraCleanUrl } from "../core/purikura-data.js";
+import { PURIKURA_PHOTOS, purikuraKey } from "../core/purikura-data.js";
 import { modal } from "../core/ui.js";
 import { spotPeople } from "../daily/spot-people.js";
 import { play } from "../vn/engine.js";
@@ -77,13 +77,13 @@ export function purikuraGuests(spot, extra = []) {
 
 /**
  * 2回目からの撮影の「自分でらくがき」（VPO22・2026-11-28 オーナー「自分でスマホのキーボードで文字入れたり好きにやれるようにもしたい」）。
- * 落書き無しの写真（core/purikura-data.js の PURIKURA_CLEAN）がある撮影だけ。描く画面は、選んだ時だけ読み込む（daily/purikura-studio.js）。
+ * グリーンバックで抜いた写真（core/purikura-data.js の purikuraKey）がある撮影だけ。背景を選び、描く（VPO24）。描く画面は、選んだ時だけ読み込む（daily/purikura-studio.js）。
  * 返す値: 描いた落書き（core/purikura-doodle.js）、おまかせに戻したら null、撮影の途中で場面が変わったら false。
  */
-async function drawDoodle(photoUrl, title, mode, initial, live) {
+async function drawDoodle(photo, title, mode, initial, live) {
   const { openPurikuraStudio } = await import("../daily/purikura-studio.js");
   if (!live()) return false;
-  const doodle = await openPurikuraStudio({ photoUrl, title, initial, autoLabel: mode === "solo" ? "おまかせに戻す" : "あげはにおまかせ" });
+  const doodle = await openPurikuraStudio({ photo, title, initial, autoLabel: mode === "solo" ? "おまかせに戻す" : "あげはにおまかせ" });
   return live() ? doodle : false;
 }
 
@@ -142,7 +142,7 @@ async function revisitPurikura(background, spot, { live, read, stamp, extra = []
     const cg = ryuji ? "cg_ryuji_purikura" : pick?.cg || null;
     const title = mode === "solo" ? (firstSolo ? "一人で初挑戦！" : "今日のソロぷり") : pick?.trio ? "3人ぷり☆" : "今日のプリクラ";
     // 受け取る前に、おまかせの落書き（今の写真）を見てから「自分でらくがき」もできる（VPO22・落書き無しの写真がある撮影だけ。初めてのギャルプリは今のまま）
-    const clean = purikuraCleanUrl(cg);
+    const clean = purikuraKey(cg);
     let doodle = null, received;
     for (;;) {
       received = await modal({ title, body: purikuraPhoto(cg, people, mode, id => displayName(id, state), { doodle }), options: [

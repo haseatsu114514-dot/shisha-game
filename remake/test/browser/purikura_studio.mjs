@@ -1,6 +1,9 @@
 // プリクラの「自分でらくがき」（要望台帳 VPO22）。2026-11-28 オーナー「自分でスマホのキーボードで文字入れたり好きにやれるようにもしたい。
 // フォントや色とかも選べて　こだわりたい人は　スタンプ入れたりとか」→ 確認の答え「落書き無しの写真を作り直す」「2回目以降の撮影だけ」。
+// 続けて「らくがきの時点で立ち絵ではなく文字が入ってない版のそのプリにする／背景選んだりプリクラらしさも入れたい」（VPO24・VPO25）。
 // 確かめること:
+//   背景: 描く画面は「背景をえらんでね♪」から始まり、柄を2コマとも／上のコマ／下のコマに敷ける。グリーンバックで抜いた写真の後ろに敷く。
+//         もじ・スタンプ・ペンに移ると「らくがきタイム♪」と残り時間の札が出る。「できた！」で「プリント中♪」のあと閉じる。
 //   縦持ち: 描く画面（daily/purikura-studio.js）が縦の舞台（#vt-motion）に縦の並べ方で出て、写真・道具・ボタンが画面に収まり、押す所が小さすぎない。
 //           文字（キーボードで入力・Enter で置く・書体・色・ふち）、スタンプ、指でずらす、大きさ、消す、ペン、1つ戻すが効き、「できた！」で落書きの中身が返る。
 //   横持ち: 本編のステージ（#fx）に横の並べ方で出て、ステージに収まる。「あげはにおまかせ」は null。
@@ -12,11 +15,12 @@ import { suite, baseURL } from "./support.mjs";
 const withLook = (look) => `${baseURL}${baseURL.includes("?") ? "&" : "?"}look=${look}`;
 const TALL = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true };
 const t = (id) => `[data-test="${id}"]`;
-const PHOTO = "img/cgs/purikura-clean/cg_purikura_ageha_gyarupi.webp";
+const CG = "cg_purikura_ageha_gyarupi";
 
-const openStudio = (page, opts = {}) => page.evaluate(({ photoUrl, opts }) => {
-  window.__pks = import("./js/daily/purikura-studio.js").then((m) => m.openPurikuraStudio({ photoUrl, title: "今日のプリクラ", ...opts }));
-}, { photoUrl: PHOTO, opts });
+const openStudio = (page, opts = {}) => page.evaluate(async ({ cg, opts }) => {
+  const { purikuraKey } = await import("./js/core/purikura-data.js");
+  window.__pks = import("./js/daily/purikura-studio.js").then((m) => m.openPurikuraStudio({ photo: purikuraKey(cg), title: "今日のプリクラ", ...opts }));
+}, { cg: CG, opts });
 const inside = (box, area, slack = 1) => box && box.x >= area.x - slack && box.y >= area.y - slack
   && box.x + box.width <= area.x + area.width + slack && box.y + box.height <= area.y + area.height + slack;
 
@@ -45,17 +49,39 @@ await suite("purikura-studio", async (check) => {
     await root.waitFor();
     assert.match(await root.getAttribute("class"), /\btall\b/, "縦持ちは縦の並べ方");
     const screen = await page.evaluate(() => ({ x: 0, y: 0, width: innerWidth, height: innerHeight }));
-    for (const id of ["pks-photo", "pks-tab-text", "pks-input", "pks-done", "pks-auto", "pks-undo"]) {
+    for (const id of ["pks-photo", "pks-tab-text", "pks-bg-pink", "pks-bg-neon", "pks-done", "pks-auto", "pks-undo"]) {
       assert(inside(await page.locator(t(id)).boundingBox(), screen), `${id} が画面に収まる`);
     }
     const photo = await page.locator(t("pks-photo")).boundingBox();
     assert(photo.width >= screen.width * 0.5, `写真が画面の幅の半分以上 ${JSON.stringify(photo)}`);
+    assert.equal(await root.evaluate((n) => n.scrollWidth <= n.clientWidth + 1), true, "横にはみ出さない（入力欄に触れても画面がずれない）");
+
+    // 背景: 「背景をえらんでね♪」から。2コマともヒョウ柄 → 下のコマだけキラキラ。抜いた写真の後ろに、コマごとの柄が敷かれる
+    assert.equal(await page.locator(t("pks-title")).textContent(), "背景をえらんでね♪");
+    assert.equal(await page.locator(t("pks-timer")).isVisible(), false, "背景を選んでいる間は時間を数えない");
+    assert.match(await page.locator(`${t("pks-photo")} img.pks-shot`).getAttribute("src"), /purikura-key\/cg_purikura_ageha_gyarupi\.webp$/);
+    for (const id of ["pks-bg-target-top", "pks-bg-leopard"]) {
+      const box = await page.locator(t(id)).boundingBox();
+      assert(box.height >= 32 && box.width >= 32, `${id} は指で押せる大きさ ${JSON.stringify(box)}`);
+    }
+    await page.locator(t("pks-bg-leopard")).click();
+    await page.locator(t("pks-bg-target-bottom")).click();
+    await page.locator(t("pks-bg-sparkle")).click();
+    assert.equal(await page.locator(`${t("pks-bg-sparkle")}[aria-checked="true"]`).count(), 1, "選んだ柄に印");
+    assert.equal(await page.locator(`${t("pks-photo")} .pkd-backdrop > rect`).count() >= 2, true, "コマの背景が敷かれる");
+    const order = await page.locator(t("pks-photo")).evaluate((n) => [...n.children].map((c) => c.getAttribute("class")));
+    assert.deepEqual(order, ["pkd-backdrop", "pks-shot", "pks-layer"], "下から 背景 → 抜いた写真 → 落書き");
+
+    // もじ: キーボードで入れて Enter で置く。書体・色・ふちは、置いた文字にもそのまま効く
+    await page.locator(t("pks-tab-text")).click();
+    assert.equal(await page.locator(t("pks-title")).textContent(), "らくがきタイム♪");
+    await page.locator(t("pks-timer")).waitFor();
+    assert.match(await page.locator(t("pks-timer")).textContent(), /のこり(120|119)秒/, "らくがきタイムの残り時間");
+    for (const id of ["pks-input", "pks-place-text", "pks-timer"]) assert(inside(await page.locator(t(id)).boundingBox(), screen), `${id} が画面に収まる`);
     for (const id of ["pks-tab-stamp", "pks-place-text", "pks-done", "pks-font-mincho", "pks-text-color-blue"]) {
       const box = await page.locator(t(id)).boundingBox();
       assert(box.height >= 32 && box.width >= 32, `${id} は指で押せる大きさ ${JSON.stringify(box)}`);
     }
-
-    // もじ: キーボードで入れて Enter で置く。書体・色・ふちは、置いた文字にもそのまま効く
     await page.locator(t("pks-input")).fill("うちら最強");
     await page.locator(t("pks-input")).press("Enter");
     await page.locator(`${t("pks-layer")} .pkd-text`).waitFor();
@@ -86,8 +112,10 @@ await suite("purikura-studio", async (check) => {
     await drawLine(page);
 
     await page.locator(t("pks-done")).click();
+    await page.locator(t("pks-print")).waitFor();
     const doodle = await page.evaluate(() => window.__pks);
     assert.equal(doodle.v, 1);
+    assert.deepEqual(doodle.bg, ["leopard", "sparkle"], "コマごとの背景が残る");
     const [text, heart] = doodle.items;
     assert.deepEqual([text.t, text.text, text.f, text.c, text.e, text.s], ["text", "うちら最強", "mincho", "blue", "black", 1.6], "文字の書体・色・ふち・大きさ");
     assert.equal(heart.id, "heart");
@@ -106,9 +134,10 @@ await suite("purikura-studio", async (check) => {
     await root.waitFor();
     assert.match(await root.getAttribute("class"), /\bwide\b/, "本編のステージは横の並べ方");
     const stage = await page.locator("#stage").boundingBox();
-    for (const id of ["pks-photo", "pks-input", "pks-done", "pks-auto", "pks-clear"]) {
+    for (const id of ["pks-photo", "pks-bg-pink", "pks-bg-neon", "pks-done", "pks-auto", "pks-clear"]) {
       assert(inside(await page.locator(t(id)).boundingBox(), stage), `${id} がステージに収まる`);
     }
+    await page.locator(t("pks-bg-night")).click();
     await page.locator(t("pks-tab-stamp")).click();
     await page.locator(t("pks-stamp-crown")).click();
     await page.locator(t("pks-auto")).click();
@@ -134,13 +163,16 @@ await suite("purikura-studio", async (check) => {
     await page.locator(t("purikura-solo")).click();
     await page.locator(t("purikura-doodle-self")).click();
     await page.locator(t("pks")).waitFor();
+    await page.locator(t("pks-bg-sky")).click();
+    await page.locator(t("pks-tab-text")).click();
     await page.locator(t("pks-input")).fill("ソロぷり");
     await page.locator(t("pks-place-text")).click();
     await page.locator(t("pks-done")).click();
     // 受け取りの写真は、落書き無しの写真＋自分の落書き
     const own = page.locator(`${t("purikura-photo")}[data-doodle="own"]`);
     await own.waitFor();
-    assert.equal(await own.locator("img").getAttribute("src"), "img/cgs/purikura-clean/cg_purikura_solo_first.webp");
+    assert.equal(await own.locator("img").getAttribute("src"), "img/cgs/purikura-key/cg_purikura_solo_first.webp");
+    assert.equal(await own.locator(".pkd-backdrop > rect").count() >= 2, true, "受け取りの写真にも選んだ背景");
     assert.equal(await own.locator(".pkd-text text").last().textContent(), "ソロぷり");
     // らくがきし直すと前の落書きから。おまかせに戻すと今の写真
     await page.locator(t("purikura-doodle-self")).click();
@@ -162,6 +194,7 @@ await suite("purikura-studio", async (check) => {
     const row = v.flags._ageha_purikura_history.at(-1);
     assert.deepEqual([row.mode, row.cg], ["solo", "cg_purikura_solo_first"]);
     assert.deepEqual(row.doodle.items.map((it) => it.id || it.text), ["crown"], "撮影の記録に受け取った時の落書きが残る");
+    assert.deepEqual(row.doodle.bg, ["pink", "pink"], "おまかせに戻してから描き直した時の背景（初めの柄）");
 
     // ギャラリー: 一覧の小さな絵と拡大表示が自分の落書き。おまかせの絵にも切り替えられる
     await page.evaluate(async () => {

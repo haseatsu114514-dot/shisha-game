@@ -149,7 +149,10 @@ for (const variant of ["a", "b"]) for (const random of [0, .4, .999]) {
   assert.equal(halves.length, 2);
   for (const half of halves) assert.equal(half.style.backgroundImage, `url("${cg.cg_ch2_ageha_purikura_strip}")`);
   assert.deepEqual(f.queried, [ids[0]], "never resolve rejected candidate IDs or the old CG");
-  assert.deepEqual(f.images.filter(url => url.includes("/cgs/")), [cg[ids[0]]]);
+  // 採用画像と、その落書き無しの版（落書きの場面で写す・VPO25）だけを読む
+  assert.deepEqual(f.images.filter(url => url.includes("/cgs/")), [cg[ids[0]], "img/cgs/purikura-clean/cg_ch2_ageha_purikura_strip.webp"]);
+  const paper = f.made.find((n) => n.selector === "div.mo-pk-photo.mo-pk-paper");
+  assert.equal(paper?.style.backgroundImage, 'url("img/cgs/purikura-clean/cg_ch2_ageha_purikura_strip.webp")', "落書きの場面は、印刷されるシールの落書き無しの版");
   assert.deepEqual(f.recorded.map(v => v.id), [ids[0]], "record exactly the printed CG");
   assert(f.recorded[0].elapsed >= f.plans[variant].print, "unlock after printing, not while preloading");
 }

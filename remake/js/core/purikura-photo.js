@@ -1,8 +1,8 @@
 // 撮影時とギャラリーで同じ、受取済みプリクラの見た目を使う。
 import { cgUrl, portraitInfo } from "./data.js";
 import { el } from "./util.js";
-import { purikuraCleanUrl } from "./purikura-data.js";
-import { doodleSvg, normalizeDoodle } from "./purikura-doodle.js";
+import { purikuraKey } from "./purikura-data.js";
+import { backdropSvg, doodleSvg, normalizeDoodle } from "./purikura-doodle.js";
 
 /**
  * 選定した写真（core/purikura-data.js）のある撮影は、その絵を出す（PFC18）。
@@ -18,12 +18,16 @@ export function purikuraPhoto(cg, people, mode, nameFor, { doodle = null } = {})
   ]);
 }
 
-/** 落書き無しの写真に、自分でらくがきした落書きを重ねた1枚（撮影の受け取り・ギャラリー）。落書き無しの写真か落書きが無ければ null */
+/**
+ * 自分でらくがきした1枚（撮影の受け取り・ギャラリー）。選んだコマの背景 → グリーンバックで抜いた写真（枠つき）→ 落書き の順に重ねる（VPO24）。
+ * 抜いた写真か落書きが無ければ null
+ */
 export function doodledPhoto(cg, doodle, label) {
-  const drawn = doodle && normalizeDoodle(doodle), clean = drawn && purikuraCleanUrl(cg);
-  if (!clean) return null;
+  const drawn = doodle && normalizeDoodle(doodle), key = drawn && purikuraKey(cg);
+  if (!key) return null;
   return el("div.purikura-photo.purikura-photo-real.purikura-photo-doodle", { dataset: { test: "purikura-photo", cg, doodle: "own" }, "aria-label": label }, [
-    el("img", { src: clean, alt: label }),
+    backdropSvg(drawn.bg, key.panels),
+    el("img.pkd-photo", { src: key.url, alt: label }),
     doodleSvg(drawn),
   ]);
 }
