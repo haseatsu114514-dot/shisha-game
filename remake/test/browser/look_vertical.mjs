@@ -712,7 +712,12 @@ await suite("look_vertical", async (check) => {
           return { live: cursor.classList.contains("pressing"), shell: document.querySelector('[data-test="vt-holes-poke"]').classList.contains("pressing") };
         });
       });
-      await page.waitForFunction((before) => document.querySelectorAll('#screen [data-test="foil"] .foil-holes > .foil-hole').length > before, view.live);
+      // 穴が増えたら、外枠が本編に追いつくまで待つ（外枠の写しは本編が変わった次のフレーム。「刺す」の離しはフレームの中で本編へ送るので、
+      // 本編の穴の数だけを見て次へ進むと、まだ出ていない「次のリングへ」「結果へ」を見落として、刺せない「刺す」を押してしまう）
+      await page.waitForFunction((before) => {
+        const made = document.querySelectorAll('#screen [data-test="foil"] .foil-holes > .foil-hole').length;
+        return made > before && document.querySelector('[data-test="vt-holes-pips"]').getAttribute("aria-label")?.startsWith(`開けた穴 ${made}/`);
+      }, view.live);
     }
     assert.deepEqual(pressed, { live: true, shell: true }, "holding the shell's button holds the game's punch");
     // 結果の札: 本編の結果の札を写し、「確認して次の工程へ」で本編の工程が終わる。開けた穴は絵に残る
