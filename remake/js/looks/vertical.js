@@ -3,8 +3,9 @@
 // 作り: 本編の画面（#stage・1280×720）は動かしたまま見えなくし、その内容を縦の外枠へ写して、押す・選ぶは本編へ中継する
 //（DS風の外枠 looks/neo/portrait-shell.js と同じ仕組み。場面の見分けは looks/neo/portrait-shell/detect.js を共用）。進行・判定・報酬・保存は本編のまま。
 // 写す場面: タイトル・会話と返事・登場カットイン（縦のポスター）・地図・tonari の行動選びなどのボタンの画面・確かめの小窓・
-//   MENU・LIME・設定・セーブ／ロード・LOG・店・章のクリア（シート）・場面転換や日付の札などの覆い。
-// まだ縦にしていない場面（シーシャ作り・大会・店番・ミニゲームなど。別の作業で縦の画面を作っている）は、回転案内を出して横で遊ぶ。
+//   MENU・LIME・設定・セーブ／ロード・LOG・店・章のクリア（シート）・場面転換や日付の札などの覆い・
+//   シーシャ作りのうち縦の画面がある工程（作る場面。いまは詰め方と蒸らし時間・VPN30。vertical/craft.js の登録表）。
+// まだ縦にしていない場面（シーシャ作りのほかの工程・大会・店番・ミニゲームなど。別の作業で縦の画面を作っている）は、回転案内を出して横で遊ぶ。
 // 縦持ちの間だけ動く。横持ちにすると外枠を引っ込め、本編の今の画面（旧版）で遊べる。setActive(false) で足した物をすべて片付ける。
 import { el } from "../core/util.js";
 import { detectState, isLoading, topDialogOpen } from "./neo/portrait-shell/detect.js";
@@ -17,6 +18,7 @@ import { createTitleScene } from "./vertical/title.js";
 import { createCoverScene } from "./vertical/cover.js";
 import { createSheetScene } from "./vertical/sheet.js";
 import { createBoardScene, boardOpen } from "./vertical/board.js";
+import { createCraftScene, craftOpen } from "./vertical/craft.js";
 import { createMotionLayer } from "./vertical/motion-layer.js";
 
 const PORTRAIT = "(orientation: portrait)";
@@ -27,7 +29,7 @@ const GAP_MS = 3000;        // 場面と場面のあいだの何も出ていな�
 const STUCK_MS = 6000;      // 何も写せない覆いがタップを待ったままなら、回転案内へ切り替える
 const COVER_MAX_MS = 20000; // 覆いの中身が変わらないまま続く上限
 const HINT_MAIN = "この場面は横向きで遊びます";
-const HINT_SUB = "シーシャ作り・店番・ミニゲームの縦画面は準備中です";
+const HINT_SUB = "シーシャ作りのほかの工程・店番・ミニゲームの縦画面は準備中です";
 
 let active = false, query = null, session = null;
 
@@ -77,7 +79,7 @@ function start() {
   const own = [frame.root, motionLayer.root];
   const scenes = {
     title: createTitleScene(frame), vn: createTalkScene(frame), map: createMapScene(frame), menu: createMenuScene(frame),
-    sheet: createSheetScene(frame), cover: createCoverScene(frame, own), board: createBoardScene(frame),
+    sheet: createSheetScene(frame), cover: createCoverScene(frame, own), board: createBoardScene(frame), craft: createCraftScene(frame),
   };
   frame.over.addEventListener("click", (event) => {
     if (sceneName === "cover" && !event.target.closest("button")) scenes.cover.overTap();
@@ -121,6 +123,8 @@ function start() {
   /** 定期の確認（1 秒に 9 回ほど）。DOM の変化を受けた臨時の確認では、外枠を引っ込める・つなぐ判断だけを行う。 */
   function evaluate(now, periodic) {
     let found = boardOpen() ? { kind: "scene", name: "board" } : detectState(own);
+    // シーシャ作り: 作業台の今の工程に縦の画面があれば、作る場面として写す（会話・写せる小窓が上に出ている間と、画面の一番上の小窓の間は除く）
+    if (found.kind !== "scene" && !topDialogOpen() && craftOpen()) found = { kind: "scene", name: "craft" };
     // 地図のピンが現れる演出・地図の上のスロットの間も、地図のまま写す
     if (found.kind === "none" && document.querySelector("#screen > .map:not(.done) .map-pins > .spot-pin") && !document.getElementById("modal")?.classList.contains("show")
       && !document.querySelector("#fx > :is(.gboard, .reel-intro, .kuji-overlay)")) found = { kind: "scene", name: "map" };
@@ -243,7 +247,7 @@ function start() {
   });
   observer.observe(document.documentElement, {
     subtree: true, childList: true, characterData: true, attributes: true,
-    attributeFilter: ["class", "hidden", "style", "src", "disabled", "aria-disabled", "aria-pressed", "data-screen", "data-revealing", "data-slot", "data-health", "data-tab", "aria-selected", "aria-expanded", "aria-checked", "title", "data-rain"],
+    attributeFilter: ["class", "hidden", "style", "src", "disabled", "aria-disabled", "aria-pressed", "data-screen", "data-revealing", "data-slot", "data-health", "data-tab", "aria-selected", "aria-expanded", "aria-checked", "title", "data-rain", "open", "data-step"],
   });
 
   const onResize = () => { motionLayer.relayout(); scene?.relayout?.(); detectSoon = true; dirty = true; wake(); };
