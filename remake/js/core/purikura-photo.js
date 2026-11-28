@@ -1,13 +1,30 @@
 // 撮影時とギャラリーで同じ、受取済みプリクラの見た目を使う。
 import { cgUrl, portraitInfo } from "./data.js";
 import { el } from "./util.js";
+import { purikuraCleanUrl } from "./purikura-data.js";
+import { doodleSvg, normalizeDoodle } from "./purikura-doodle.js";
 
-/** 選定した写真（core/purikura-data.js）のある撮影は、その絵を出す（PFC18）。 */
-export function purikuraPhoto(cg, people, mode, nameFor) {
-  const url = cg ? cgUrl(cg) : null;
-  if (!url) return stickerPhoto(people, mode, nameFor);
-  return el("div.purikura-photo.purikura-photo-real", { dataset: { test: "purikura-photo", mode, cg }, "aria-label": people.map(nameFor).join("と") + "のプリクラ" }, [
-    el("img", { src: url, alt: people.map(nameFor).join("と") + "のプリクラ" }),
+/**
+ * 選定した写真（core/purikura-data.js）のある撮影は、その絵を出す（PFC18）。
+ * doodle: 「自分でらくがき」の落書き（VPO22）。落書き無しの写真の上に、保存した文字・スタンプ・ペンを重ねて描き直す
+ */
+export function purikuraPhoto(cg, people, mode, nameFor, { doodle = null } = {}) {
+  const label = people.map(nameFor).join("と") + "のプリクラ";
+  const own = doodledPhoto(cg, doodle, label + "（自分でらくがき）");
+  if (own) { own.dataset.mode = mode; return own; }
+  if (!cg) return stickerPhoto(people, mode, nameFor);
+  return el("div.purikura-photo.purikura-photo-real", { dataset: { test: "purikura-photo", mode, cg }, "aria-label": label }, [
+    el("img", { src: cgUrl(cg), alt: label }),
+  ]);
+}
+
+/** 落書き無しの写真に、自分でらくがきした落書きを重ねた1枚（撮影の受け取り・ギャラリー）。落書き無しの写真か落書きが無ければ null */
+export function doodledPhoto(cg, doodle, label) {
+  const drawn = doodle && normalizeDoodle(doodle), clean = drawn && purikuraCleanUrl(cg);
+  if (!clean) return null;
+  return el("div.purikura-photo.purikura-photo-real.purikura-photo-doodle", { dataset: { test: "purikura-photo", cg, doodle: "own" }, "aria-label": label }, [
+    el("img", { src: clean, alt: label }),
+    doodleSvg(drawn),
   ]);
 }
 

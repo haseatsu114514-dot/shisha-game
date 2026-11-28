@@ -7376,6 +7376,8 @@ html:root body.ch2-main #stage #screen .ch2-map-main .map-info > h2.mi-banner {
 /* 選定した写真の絵（PFC18・640×1080 の縦長の2コマ）。台紙ごと絵なので、枠・背景を付けず全体を見せる。 */
 .purikura-photo.purikura-photo-real { width: auto; height: 400px; aspect-ratio: 640 / 1080; border: 0; border-radius: 4px; background: none; box-shadow: 0 6px 18px #0004; }
 .purikura-photo.purikura-photo-real img { display: block; width: 100%; height: 100%; object-fit: contain; }
+/* 自分でらくがきした写真（VPO22）: 落書き無しの写真の上に、落書きの SVG（写真の画素 640×1080）を重ねる */
+.purikura-photo.purikura-photo-doodle .pkd-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
 .map .spot-pin[data-test^="pin-ch2_"] .evt-badge { top: 4px; right: 4px; }
 .map .spot-pin[data-test^="pin-ch2_"] { min-width: 100px; }
 
@@ -9734,6 +9736,9 @@ html:root[data-density="phone"] body:not(:root) .reel-note .rn-close { min-heigh
 @media (max-width: 600px) {
   .gal-viewer-tools strong { flex-basis: 100%; }
 }
+/* 自分でらくがきしたプリクラ（VPO22）の一覧の小さな絵と、拡大表示 */
+.gal-cell .gal-doodle-thumb { height: 100%; width: auto; aspect-ratio: 640 / 1080; margin: 0 auto; border: 0; box-shadow: none; }
+.gal-viewer-content > .purikura-photo-doodle { height: min(100%, 900px); max-width: 100%; }
 
 /* ===== css/ui-art.css ===== */
 /* 生成画像の共通スキン。文字・入力・ゲージ・ハートは従来のDOMのまま。

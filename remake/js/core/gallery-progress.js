@@ -43,8 +43,12 @@ function photo(value) {
     ...(Number.isInteger(value.chapterDay) && value.chapterDay > 0 ? { chapterDay: value.chapterDay } : {}),
     // 撮った写真の絵（PFC18・core/purikura-data.js）。絵の無い撮影・旧セーブは無し
     ...(typeof value.cg === "string" && /^cg_[a-z0-9_]+$/.test(value.cg) ? { cg: value.cg } : {}),
+    // 自分でらくがきした落書き（VPO22・core/purikura-doodle.js）。中身は描く時に normalizeDoodle で整える。ここは形と大きさだけ見る
+    ...(doodle(value.doodle) ? { doodle: value.doodle } : {}),
   };
 }
+const doodle = value => !!value && typeof value === "object" && value.v === 1 && Array.isArray(value.items) && Array.isArray(value.strokes)
+  && JSON.stringify(value).length <= 60000;
 export const purikuraId = p => ["purikura", p.chapter, p.day, p.slot, p.mode, ...p.people].join("-");
 
 // 直近に読み込んだ保存文字列と、その parse 結果。save() の二重記録や

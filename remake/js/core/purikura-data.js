@@ -44,3 +44,12 @@ export const PURIKURA_PHOTOS = Object.freeze([
 
 /** ギャラリーの人物の札（core/gallery-catalog.js の CHAR_LABELS にある人だけ。ほかは「その他」） */
 export const PURIKURA_CHAR = Object.freeze({ ageha: "ageha", tsumugi: "tsumugi", rio: "rio" });
+
+/**
+ * 落書き無しの写真（VPO22・asset_sources/purikura-clean-20261128/。2026-11-28 オーナーの答え「落書き無しの写真を作り直す」）がある写真。
+ * 2回目からの撮影で「自分でらくがき」を選ぶと、この写真の上に文字・スタンプ・ペンで描く（daily/purikura-studio.js）。
+ * まず3枚で試し、オーナーの確認のあと残りを足す。ここに名前を足すと、その写真でも「自分でらくがき」を選べる。
+ */
+export const PURIKURA_CLEAN = Object.freeze(["cg_purikura_ageha_gyarupi", "cg_purikura_solo_first", "cg_purikura_ageha_mori"]);
+/** 落書き無しの写真の URL（無い写真は null） */
+export const purikuraCleanUrl = (cg) => (PURIKURA_CLEAN.includes(cg) ? `img/cgs/purikura-clean/${cg}.webp` : null);

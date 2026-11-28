@@ -5604,6 +5604,26 @@
       ]
     },
     {
+      "id": "purikura-studio",
+      "title": "プリクラの自分でらくがき（VPO22）: 縦持ちは縦の舞台・横持ちはステージに収まり、文字（キーボード・書体・色・ふち）・スタンプ（ずらす・大きさ・消す）・ペン・1つ戻すが効く。2回目からの撮影の受け取りで描き直し・おまかせに戻すができ、記録とギャラリーに自分の落書きが残る",
+      "kind": "browser",
+      "weight": 0.4,
+      "timeout": 4,
+      "paths": [
+        "remake/js/daily/purikura-studio.js",
+        "remake/js/core/purikura-doodle.js",
+        "remake/js/core/purikura-photo.js",
+        "remake/js/core/purikura-data.js",
+        "remake/js/chapters/ch2-purikura.js",
+        "remake/css/purikura-studio.css",
+        "remake/img/cgs/purikura-clean/**",
+        "remake/test/browser/purikura_studio.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/purikura_studio.mjs"
+      ]
+    },
+    {
       "id": "look-vertical-motion",
       "title": "縦持ちが基本（VPO01）: 縦画面を縦持ちで開くと起動からタイトルまで回転案内が出ない・旧版の縦持ちは回転案内・ホーム画面版の向きを固定しない。演出の縦の舞台（VPO02〜）: LIME・タロットは縦の構図で画面に収まり、縦の構図の無い演出は横長のまま真ん中、シーシャくじは縦で引けて札が画面に収まり、夜明けの日付の札は画面の下の方、横持ちは今までどおり #fx",
       "kind": "browser",

@@ -88,3 +88,6 @@
 @media (max-width: 600px) {
   .gal-viewer-tools strong { flex-basis: 100%; }
 }
+/* 自分でらくがきしたプリクラ（VPO22）の一覧の小さな絵と、拡大表示 */
+.gal-cell .gal-doodle-thumb { height: 100%; width: auto; aspect-ratio: 640 / 1080; margin: 0 auto; border: 0; box-shadow: none; }
+.gal-viewer-content > .purikura-photo-doodle { height: min(100%, 900px); max-width: 100%; }
