@@ -94,6 +94,9 @@ HAJIME = {
 }
 
 NO_HOOKAH = "No hookah, hose, bowl or charcoal anywhere in the picture."
+# 好感度の締めくくり（VPT16）は、長く使ってきた素焼きの器を渡す場面が多い。器だけを描き、台は描かない
+BOWL_ONLY = ("The only shisha item in the picture is that small unglazed clay bowl: a palm-sized cup on a short slim neck, clearly "
+             "visible and smaller than a hand. No hookah stand, glass base, hose, handle, heat management device, foil or charcoal.")
 
 # §4.2 の英文のあとに足す補足（試作で、ロータス型が王冠のようなギザギザの縁になり、ハガルが顔の0.7倍に膨らんだため）
 HOOKAH_NOTE = (
@@ -682,6 +685,114 @@ SCENES = {
               "layered dark hair, white shirt with sleeves rolled up, black slacks) has opened a glass jar of coffee beans and brings it close "
               "to her nose, eyes closed, completely focused, exactly like she tests fragrances. Several jars stand on the counter in front of "
               "her (labels blank). The viewer stands beside her, holding her shopping bag at the lower edge."),
+    # ── 好感度イベントの締めくくり（VPT16。オーナー「好感度イベントの最後にみんなスチル欲しい　内容に合わせて」）。
+    #    ヴォルク・王煙楼・ヌール・太陽は VPT07 の案（cg_ch3_volk_jam・cg_ch4_longlong_pipe・cg_noor_hagal・cg_ch5_taiyo_chair）がそのまま締めくくり ──
+    "cg_bond_sumi": dict(
+        new=True, chars=[("sumi", "smile", "Sumi")], place="indoor", palette=TONARI + ", only the warm lamps after closing", hajime="pov", bowl_only=True,
+        scene="Sumi's bond finale, tonari after closing, the door locked. Today Hajime made Sumi a hookah and Sumi was the customer. Now Sumi "
+              "(46; black flat cap, square black glasses, short beard, dark charcoal shirt with rolled sleeves, brown waist apron) sits on a "
+              "counter stool turned toward the viewer and holds out, on his open palm, an old unglazed clay bowl with rounded, worn edges and a "
+              "darker color than new ones: the bowl he has smoked cardamom in after closing for years. A small box of cardamom flavor sits "
+              "beside it on the counter. His face is gruff but soft, a small rare smile: 'Take it.' The viewer's hand reaches in from the "
+              "lower edge toward the bowl."),
+    "cg_bond_naru": dict(
+        new=True, chars=[("naru", "smile", "Naru")], place="indoor", palette="dark green, warm pendant-lamp amber and dark wood", hajime="pov",
+        bowl_only=True,
+        scene="Naru's bond finale at KEMURIKUSA, his small shisha shop. Across the counter, Naru (23; see his sprite) bumps his fist against "
+              "the viewer's fist (Hajime's fist in a black hoodie sleeve from the lower edge), grinning like an equal, not a teacher: 'We check "
+              "each other's smoke from now on.' On the counter between them sits a plain unglazed clay bowl whose rim has turned the color of "
+              "baked sweets, with no wrapping. Warm and bright."),
+    "cg_bond_adam": dict(
+        new=True, chars=[("adam", "smile", "Adam")], place="indoor", palette="warm dark wood, deep red and apple green accents, low warm lamps",
+        hajime="pov", bowl_only=True,
+        scene="Adam's bond finale at EDEN, his apple-themed shisha shop. Adam (28; see his sprite: hair red on the screen-left side and green "
+              "on the screen-right side) theatrically raises, with both hands like a holy grail, a cloth that is falling open to reveal an old "
+              "unglazed clay bowl with a chipped rim ('the sacred chalice of a thousand double-apple nights'). His face is grand and proud with "
+              "a dramatic glint, but sincere. Under one arm he holds a thick hand-made stapled booklet (its cover blank or unreadable). Funny "
+              "and warm."),
+    "cg_bond_tsumugi": dict(
+        new=True, chars=[("tsumugi", "smile", "Tsumugi")], place="indoor", palette=TONARI + ", near closing time", hajime="pov", bowl_only=True,
+        scene="Tsumugi's bond finale, tonari near closing, only Tsumugi left at the last table. Tsumugi (21; see her sprite: chestnut bob, "
+              "purple zip hoodie with embroidered flowers) sits with her dark tablet open on the table, showing her finished painting of a cat "
+              "with leaf-shaped ears and a smoke tail curled up on tonari's counter (painted loosely, no text). On her lap she has unwrapped a "
+              "small amber-toasted unglazed clay bowl and holds it out toward the viewer with both hands, a shy, warm smile and a faint blush: "
+              "'The smoke in the picture rose from this bowl.'"),
+    "cg_bond_minto": dict(
+        new=True, chars=[("minto", "ura_smile", "Shiori (Minto, in her private clothes)")], place="outdoor", hajime="pov", bowl_only=True,
+        scene="Minto's bond finale, walking together outside on a quiet tree-lined street in late afternoon light. Shiori (her private self: "
+              "long straight black hair with blunt bangs, green eyes, cream cable-knit cardigan over a black lace-trimmed top, small green "
+              "pendant, long dark skirt, black shoulder bag with a mint-green heart charm; no horns, no wings) walks beside the viewer and "
+              "casually holds out a cloth bundle whose corner is turned back to show a palm-sized unglazed clay bowl ('The one I used at home. "
+              "Only mint, ever.'). Her smile is soft and a little shy, eyes on the viewer."),
+    "cg_bond_rio": dict(
+        new=True, chars=[("rio", "smile", "Rio")], place="indoor", palette="cool grey and white showroom light, black and silver, one warm desk lamp",
+        hajime="pov", bowl_only=True,
+        scene="Rio's bond finale at the fragrance showroom's work desk. Rio (27; see her sprite) leans on the desk and slides toward the viewer "
+              "an unwrapped, well-used unglazed clay bowl stained a deep berry color, with no label or number sticker, one finger still resting "
+              "on it ('Not a test sample. A present from me, personally.'). Her usual cool, teasing expression has a little embarrassed warmth "
+              "in it. A clipboard and a few blank paper scent strips lie on the desk."),
+    "cg_bond_kumicho": dict(
+        new=True, chars=[("kumicho", "serious", "Kanzaki")], place="indoor", palette="dark walnut brown, black leather, muted gold leaf and cream marble",
+        hajime="pov", bowl_only=True,
+        scene="Kanzaki's bond finale at Kanzaki Tobacco Shop. Kanzaki (53; see his sprite) sits on the black leather sofa and, with both hands "
+              "and a solemn, formal bow of the head, holds out a clay bowl wrapped in a plain cloth, like offering a ceremonial sake cup between "
+              "sworn brothers. The viewer's two hands come from the lower edge to receive it with both hands. On the low table: two small "
+              "teacups, one with a dragon pattern. Serious, a little comically dignified, warm underneath."),
+    "cg_bond_kuraudo": dict(
+        new=True, chars=[("rei", "normal", "Kuraudo")], place="indoor", palette="deep burgundy red, black and a soft warm lamp, a little pale blue",
+        hajime="pov", bowl_only=True,
+        scene="Kuraudo's bond finale at his visual-kei shisha cafe, at the counter. Kuraudo (25; see his sprite) has just turned over a small "
+              "amber-toasted clay bowl that was lying upside down on the counter and slides it toward the viewer with two fingers, eyes "
+              "lowered, quietly sincere ('I want to give it to you.'). Beside him a small CD player, and a CD case with a pale dawn-blue cover "
+              "(blank, no text) stands propped against it."),
+    "cg_bond_samechan": dict(
+        new=True, chars=[("samechan", "smile", "Same-chan")], place="indoor", palette="deep ocean blue, aqua and one dim warm lamp, half the lights off",
+        hajime="pov", bowl_only=True,
+        scene="Same-chan's bond finale at SHISHARK after closing, half the lights turned off. Same-chan (20; see her sprite, her shark puppet "
+              "Koro-chan on her right hand) sits in her usual seat and has unwrapped a small cloth bundle on the table: a still pure-white "
+              "unglazed clay bowl, never used. She holds it out toward the viewer with her left hand, a shy, earnest smile, while Koro-chan "
+              "peeks over her shoulder ('Grow it with your own shisha.')."),
+    "cg_bond_ageha": dict(
+        new=True, chars=[("ageha", "smile", "Ageha")], place="indoor", palette="candy pink, raspberry red, cream and a little leopard brown",
+        hajime="pov", bowl_only=True,
+        scene="Ageha's bond finale at MELTY PUFF, her candy-pink shisha shop. Ageha (22; the same bright, friendly, youthful face as her sprite) "
+              "has just come back from the back room and holds up, with both hands and a big 'ta-da!' grin, a white unglazed clay bowl with "
+              "a single small bear sticker on its rim ('My white-gummy-bear bowl! My partner since opening day.'). A bag of white gummy bears "
+              "on the counter. Bright and cute."),
+    "cg_bond_mashiro": dict(
+        new=True, chars=[("mashiro", "smile", "Mashiro")], place="indoor", palette=MUKAI_NIGHT, hajime="pov", bowl_only=True,
+        scene="Mashiro's bond finale at mukai after closing. Mashiro (22; see her sprite) holds a well-used clay bowl upside down in one hand "
+              "and traces its bottom with a fingertip, where three small scratch marks are lined up in a row ('A mark for each day I found just "
+              "the right ten percent.'). She looks at the viewer with a sleepy, gentle smile: 'The fourth one, make it with your own hand.'"),
+    "cg_bond_ayatori": dict(
+        new=True, chars=[("saku", "smile", "Ayatori")], place="indoor", palette="warm red-brown, cream, indigo and soft lamp light", hajime="pov",
+        bowl_only=True,
+        scene="Ayatori's bond finale at Enmaku, his small pop-up shisha shop. Across the counter, Ayatori (23; see his sprite) holds out, with "
+              "both hands on a cloth, an amber-toasted clay bowl that smells of citrus and Earl Grey. His indigo notebook lies open on the "
+              "counter at its last page, two columns of hand-written lines (unreadable scribbles). A cup of tea steams in front of the viewer. "
+              "His smile is a little uneven and openly friendly: 'I want you to have it.'"),
+    "cg_bond_steve": dict(
+        new=True, chars=[("steve", "smile", "Steve")], place="indoor", palette="warm diner amber, red leather and checkered black-and-white",
+        hajime="pov", bowl_only=True,
+        scene="Steve's bond finale at Smoke & Glory, his shisha diner. Behind the counter, Steve (30; see his sprite) props a single recipe "
+              "card (covered in small unreadable handwriting) upright on the now-empty top shelf, glancing back at the viewer with a "
+              "slightly embarrassed grin ('Hey, don't stare. This is my new lookout.'). On the counter in front of the viewer: a small paper "
+              "bag, open, with a chipped clay bowl whose inside is stained faintly yellow, and a tiny analog kitchen timer."),
+    "cg_bond_sheikh": dict(
+        new=True, chars=[("sheikh", "smile", "the Sheikh (travelling incognito)")], place="indoor",
+        palette="warm old lamp light, sand-colored plaster and dark old wood", hajime="pov", bowl_only=True,
+        scene="The Sheikh's bond finale, at the small old cafe in a Dubai back alley. The Sheikh sits across a small table from the viewer in "
+              "his plain sand-colored travel cloak (hood down; see his sprite for the face; no gold, no agal), a little sand on his sleeve, "
+              "with a warm, open, kind smile: 'Hajime. You are my friend.' Between them on the table: a clay bowl whose rim is the color of "
+              "ripe grape skins, just taken off the hookah and still warm; the viewer's palm rests gently on it. The old cafe hookah is out of "
+              "frame."),
+    "cg_bond_hiyori": dict(
+        new=True, chars=[("hiyori", "normal", "Hiyori")], place="indoor", palette=TONARI + ", night", hajime="pov", bowl_only=True,
+        scene="Hiyori's bond finale at a table at tonari at night. Hiyori (25; see her sprite: pink-brown high ponytail, white blouse with a "
+              "lace front, black slacks) pushes a small open gift box across the table toward the viewer. Inside, on tissue paper, is a "
+              "small clay bowl with a tiny axe and a leaf carved on its side. She plays her 'fragile, distant lady' act with lowered eyes and a "
+              "faint sad smile, but the corners of her mouth are fighting a grin and her cheeks are a little pink ('A quiet, modest bowl, "
+              "fitting for fragile me.')."),
     # ── 回想（VPT09）。若い人物は立ち絵の本人を若返らせる。tag の a・b・c で DESIGN を替える ──
     "cg_ch4_young_sumi_water": dict(
         new=True, chars=[("sumi", "normal", "Sumi (to be drawn 15 years younger)"), ("sheikh", "normal", "the Sheikh (to be drawn 15 years younger)")],
@@ -816,6 +927,8 @@ def build(cg_id):
         lines.append(hookah_text())
         # 準備前（ボウル未装着）の台に、ロータス型の見た目の補足を足すと組み上がった台が描かれる（試作のシェイク登場）
         lines.append(UNSET_NOTE if "未装着" in eight else s.get("hookah_note", HOOKAH_NOTE))
+    elif s.get("bowl_only"):
+        lines.append(BOWL_ONLY)
     elif s.get("no_hookah"):
         lines.append(NO_HOOKAH)
     lines.append(TEXT_RULE)

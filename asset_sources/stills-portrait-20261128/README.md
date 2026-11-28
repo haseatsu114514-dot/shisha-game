@@ -125,6 +125,10 @@ STILLS_WORK=/tmp/stills python3 generate.py adopt <cg_id> 01    # 採用: origin
 
 本編の縦画面（`?look=vertical`）の会話で一枚絵が出たとき、縦に作り直した絵がある53枚は、横長の絵の代わりに縦の絵を幅いっぱいに出す（`remake/js/looks/vertical/stills.js`・`talk.js` の `syncCg`）。本編の横画面と旧版の見た目は今までどおり横長の絵。追加の案と回想の3枚は、台本に入れるまで本編には出ない。
 
+### 好感度イベントの締めくくり 19人（VPT16・2026-11-28）
+
+オーナー「好感度イベントの最後にみんなスチル欲しい　内容に合わせて」。締めくくり（`remake/js/daily/bonds.js` の `BOND_FINALES`）は19人。どの回も、その人が長く使った素焼きの器を渡す流れなので、器だけを描き（台・HMD・炭は描かない。`generate.py` の `BOWL_ONLY`）、人ごとに台本のいちばんその人らしい瞬間を選んで構図と小物を変えた。15枚を新しく作った（`cg_bond_<人>`）。ヴォルク・王煙楼・ヌール・太陽は、追加の案（`cg_ch3_volk_jam`・`cg_ch4_longlong_pipe`・`cg_noor_hagal`・`cg_ch5_taiyo_chair`）がそのまま締めくくりの場面なので、同じ区切りに並べた。スティーブとヴォルクには第5章の書き直し版（`ch5_steve_bond_finale`・`ch5_volk_bond_finale`）もあり、同じ絵を使える（同じ棚・同じジャムと紅茶の行がある）。出す行は試作の `stills.mjs`（`&set=bond`）に書いた。本編の台本にはまだ入れていない。
+
 ## まだやっていないこと
 
 - 本編の横画面への組み込みと、縦画面の時のギャラリー・縮小画像は未着手。追加の案・回想の台本への組み込み（`show_cg`）はオーナーの採用後。
