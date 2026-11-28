@@ -12,6 +12,8 @@ import { playBgm, stopBgm, SE, applyVolumes } from "../core/audio.js";
 import { startNewGame, resumeGame } from "../chapters/ch1.js";
 import { clearLog } from "../vn/engine.js";
 import { openGallery } from "./gallery.js";
+import { openExtra, extraPlayedNow } from "./extra.js";
+import { extraUnlocked } from "../core/extra-games.js";
 import { loadWithRecovery, saveHeadline } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
 import { createUiThemeSelect } from "../core/ui-theme.js";
@@ -221,8 +223,11 @@ let refreshTitleSaves = () => {};
 
 const liveItems = () => [...document.querySelectorAll("#screen > .title .title-menu > .title-item")];
 
+// 押せない行と、まだ開いていない行（EXTRA の「？？？」・.is-locked）にはカーソルを乗せない（↑↓・Tab でも飛ばす）
+const selectable = (node) => !!node && !node.disabled && !node.classList.contains("is-locked");
+
 function setCursor(nodes, node, { focus = false } = {}) {
-  if (!node || node.disabled) return;
+  if (!selectable(node)) return;
   for (const n of nodes) n.classList.toggle("is-current", n === node);
   cursorTest = node.dataset.test;
   if (focus) node.focus?.({ preventScroll: true });
@@ -240,13 +245,18 @@ function bindTitleKeys() {
     // 確認・設定などの小窓や会話を開いている間は、そちらの操作（タイトルの上に重なる画面へ行くはずのキーを奪わない）
     if (document.querySelector("#modal.show") || document.body.classList.contains("vn-open")) return;
     const nodes = liveItems();
-    const usable = nodes.filter((n) => !n.disabled);
+    const usable = nodes.filter(selectable);
     if (!usable.length) return;
     // 上に何か（起動の幕・煙の幕・DS風の外枠・回転の案内など）が掛かっていて行を押せない時は、キーでも動かさない。
     const probe = usable[0].getBoundingClientRect();
     if (!usable[0].contains(document.elementFromPoint(probe.left + probe.width / 2, probe.top + probe.height / 2))) return;
     if (e.key === "Tab") { nodes[0].closest(".title")?.setAttribute("data-nav", "key"); return; }
     const at = usable.findIndex((n) => n.classList.contains("is-current"));
+    // つづきからの行で → は「セーブを選ぶ」（行の右下の小さな押し所と同じ。EXT02）
+    if (e.key === "ArrowRight" && !e.repeat && usable[at]?.dataset.test === "title-continue") {
+      const sub = usable[at].querySelector('.ti-sub:not([aria-disabled="true"])');
+      if (sub) { e.preventDefault(); setTimeout(() => { if (titleLive() && sub.isConnected && !document.querySelector("#modal.show")) sub.click(); }, 0); return; }
+    }
     const step = { ArrowDown: 1, ArrowUp: -1 }[e.key];
     const edge = { Home: 0, End: usable.length - 1 }[e.key];
     if (step || edge != null) {
@@ -290,10 +300,16 @@ export function showTitle(preparedArt = null) {
   const menu = el("nav.title-menu");
   const rows = []; // メニューの行（作った順）
   // 押した行は一瞬光らせる（.is-picked。確認や煙の幕が出る前から、押せたことが分かる）。
-  const item = (en, ja, fn, test, disabled = false, note = "") => {
-    const node = el("button.title-item", {
-      disabled: disabled || null, dataset: { test },
-      onclick: () => { SE.select(); setCursor(rows, node); node.classList.add("is-picked"); fn(); },
+  // locked: まだ開いていない行（EXTRA の「？？？」）。カーソルは乗らない（押せない行と同じ）が、タップ・クリックすると開き方を短く知らせる
+  // （押しても何も起きないと、壊れて見える）。
+  const item = (en, ja, fn, test, disabled = false, note = "", { locked = false } = {}) => {
+    const node = el(`button.title-item${locked ? ".is-locked" : ""}`, {
+      disabled: disabled || null, dataset: { test }, ...(locked ? { "aria-disabled": "true", tabindex: "-1" } : {}),
+      onclick: () => {
+        setCursor(rows, node);
+        if (locked) { SE.cancel?.(); toast("本編を進めると開きます"); return; }
+        SE.select(); node.classList.add("is-picked"); fn();
+      },
       onpointerenter: (e) => { if (e.pointerType !== "touch") setCursor(rows, node); },
       onfocus: () => setCursor(rows, node),
     }, [
@@ -312,8 +328,8 @@ export function showTitle(preparedArt = null) {
     smokeWipe(() => { stopBgm(0); resumeGame(); }, { color: "dark" });
   };
 
-  menu.append(
-    item("NEW GAME", "はじめから", async () => {
+  // 行は表示の順に作る（rows の順＝カーソルの戻り先。先頭は NEW GAME）
+  const newItem = item("NEW GAME", "はじめから", async () => {
       // wipeSave() はオートセーブ（AUTOキー）だけを消し、newGame() も手動枠に触れない。
       // 何が消えるかを L121 の周回開始と同じ文面で明示する（#2444 item6）。
       const saved = peekSave();
@@ -333,34 +349,50 @@ export function showTitle(preparedArt = null) {
       newGame();
       clearLog(); // 前の周・別セーブの会話LOGを持ち込まない（#1912）
       smokeWipe(() => { stopBgm(0); startNewGame(); }, { color: "dark" }); // 煙で覆った瞬間に開始（ゲーム本体の完了は待たない）
-    }, "title-new"),
-    ...(cycleMetaSeen?.unlocked === true ? [item("NEXT CYCLE", cyclePkg ? `${cyclePkg.fromCycle + 1}周目をはじめる` : "次の周目をはじめる", async () => {
+    }, "title-new");
+  const cycleItems = (cycleMetaSeen?.unlocked === true ? [item("NEXT CYCLE", cyclePkg ? `${cyclePkg.fromCycle + 1}周目をはじめる` : "次の周目をはじめる", async () => {
       const result = await openNextCycleOptions(cycleMetaSeen);
       if (!current()) return;
       if (!result.started) { refresh(); return; }
       leaving = true;
       // 周回開始では wipeSave()/newGame() を呼ばず、startNextCycle が作った state のまま opening へ。
       smokeWipe(() => { stopBgm(0); startNewGame(); }, { color: "dark" });
-    }, "title-next-cycle")] : []),
-    item("CONTINUE", "つづきから", () => { if (latest) void loadGame(latest); }, "title-continue", !latest, saveHeadline(latest?.data)),
-    item("LOAD", "ロード", () => loadGame(), "title-load", !latest),
+    }, "title-next-cycle")] : []);
+  // つづきからとロードは中身が重なるので、ロードは「つづきから」の行の右下の小さな押し所「セーブを選ぶ」にした（EXT02。
+  // 空いた1行は EXTRA）。行の中の押し所なので、押した時は行（つづきから）へ伝えない。検査の目印 title-load は引き継ぐ。
+  const continueItem = item("CONTINUE", "つづきから", () => { if (latest) void loadGame(latest); }, "title-continue", !latest, saveHeadline(latest?.data));
+  const loadSub = el("span.ti-sub", { text: "セーブを選ぶ ▸", title: "セーブを選んでつづける（→キー）", "aria-hidden": "true", dataset: { test: "title-load" },
+    onclick: (e) => {
+      e?.stopPropagation?.(); e?.preventDefault?.();
+      if (!latest || continueItem.disabled) return;
+      SE.select(); setCursor(rows, continueItem); loadSub.classList.add("is-picked");
+      void loadGame();
+    } });
+  const syncLoadSub = () => { loadSub.hidden = !latest; loadSub.toggleAttribute("disabled", !latest); loadSub.setAttribute("aria-disabled", String(!latest)); };
+  syncLoadSub();
+  continueItem.append(loadSub);
+  const extraOpen = extraUnlocked(extraPlayedNow());
+  // EXTRA（あそびば・EXT01）: 斧投げを初めて遊ぶまでは「？？？」（副題は「ひみつ」）で開かない。開くと、遊んだミニゲームの一覧
+  const extraItem = item(extraOpen ? "EXTRA" : "？？？", extraOpen ? "あそびば" : "ひみつ", () => openExtra({ reopenTitle: () => showTitle() }).then(refresh),
+    "title-extra", false, "", { locked: !extraOpen });
+  menu.append(newItem, ...cycleItems, continueItem, extraItem,
     item(galleryLabel(), "ギャラリー", () => openGallery().then(refresh), "title-gallery"),
     item("CONFIG", "設定", () => openConfig().then(refresh), "title-config"),
   );
 
   // カーソルの初期位置。決定を押すだけで本編へ入れるよう、いちばん使う行に置く。
   const byTest = (test) => rows.find((n) => n.dataset.test === test && !n.disabled);
-  const continueRow = rows.find((n) => n.dataset.test === "title-continue");
-  const loadRow = rows.find((n) => n.dataset.test === "title-load");
+  const continueRow = continueItem;
   refreshTitleSaves = () => {
     latest = peekLatestSaveEntry();
-    continueRow.disabled = loadRow.disabled = !latest;
+    continueRow.disabled = !latest;
+    syncLoadSub();
     const text = saveHeadline(latest?.data);
     const note = continueRow.querySelector(".ti-note");
     if (!text) note?.remove();
     else if (note) note.textContent = text;
     else continueRow.append(el("span.ti-note", { text }));
-    if (!latest && [continueRow, loadRow].some((row) => row.classList.contains("is-current"))) setCursor(rows, rows[0]);
+    if (!latest && continueRow.classList.contains("is-current")) setCursor(rows, rows[0]);
   };
   const remembered = keepCursor ? byTest(cursorTest) : null;
   keepCursor = false;
@@ -455,7 +487,7 @@ export async function openConfig(opts = {}) {
   const loadingComics = document.body?.dataset?.screen === "preview" ? null :
     segRow("ロード画面の漫画", "cfg-loading-comics", [["always", "いつも"], ["wait", "待つ時だけ"]],
       comicLoadingRequired() ? "always" : "wait", setLoadingComicsMode);
-  // 見た目の様式（LK01）。既定は縦画面（LK24。旧版へはここで戻せる）。新版は選べない（コードは残してある）。DS風はすべての章でいつでも切り替えられる（LK21）。
+  // 見た目の様式（LK01）。既定は縦画面（LK24。旧版へはここで戻せる）。新版は選べない（コードは残してある）。
   const look = segRow("見た目", "cfg-look", LOOKS.filter(({ id }) => !DISABLED_LOOKS.includes(id)).map(({ id, label }) => [id, label]),
     normalizeLook(config.look), (v) => { setConfig("look", v); setLook(v); });
   // #3795: 通常制作は桜井版。第1章大会の既存の切替だけ残し、次の試合から効かせる。

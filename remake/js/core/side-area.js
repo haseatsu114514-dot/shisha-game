@@ -178,8 +178,7 @@ function layout({ stage, k }) {
 function applyMode() {
   if (!dom) return;
   const root = html();
-  // DS風（retro）は自前の操作の面を持ち、ぼかし・グラデーションを使わない様式なので、余白は今までどおりにする。
-  const enabled = config.sideArea !== "plain" && root.dataset.look !== "retro" && geom.tier !== "none";
+  const enabled = config.sideArea !== "plain" && geom.tier !== "none";
   root.dataset.side = enabled ? geom.tier : "off";
   const pad = enabled && !standalone && geom.tier === "wide" && coarsePointer() && padAllowed() ? "on" : "off";
   const changed = root.dataset.sidePad !== pad;

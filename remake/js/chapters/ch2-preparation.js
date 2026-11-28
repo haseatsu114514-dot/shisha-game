@@ -172,7 +172,7 @@ async function visitStoryAtHome(spot, night, { staminaGuard }) {
  * 柚ヶ谷の店・支店・外出先への来店（第2章と、第3・4章の出発前の準備期間 chapters/departure-prep.js）。
  * 第2章の地元の店で読む本編（VOL13）も、ここで先に受け持つ（第2章だけ）。
  */
-export async function visitPreparationSpot(spot, { staminaGuard }) {
+export async function visitPreparationSpot(spot, { staminaGuard, roamer = null, meetRoamerNow = null }) {
   const storyVisit = spot.kind === "rival" && (spot.region || "home") === "home" ? storyVisitDue(state, spot.charId) : null;
   if (storyVisit) return visitStoryAtHome(spot, storyVisit, { staminaGuard });
   // 第2章の大会準備で一台作る（VOL13・ch2-craft-prep.js）。「いつものtonari」なら通常の tonari メニューへ（null）。
@@ -274,7 +274,12 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
     if (!await playQuestionVisit("ageha", { bg: ROOMS.ageha, deferSave: true })) return { used: false, exerted: false };
     if (state !== owner) return { used: false, exerted: false };
   }
-  if (id === "ageha" && !await offerAgehaPurikura(ROOMS.ageha, spot)) return { used: false, exerted: false };
+  if (id === "ageha") {
+    // 居合わせた人（daily/roamers.js）とは、プリクラの前に話す。早じまい・店の休みの理由はその会話で明かし、その人とも撮れる
+    const met = !!roamer && !!meetRoamerNow && await meetRoamerNow();
+    if (state !== owner) return { used: false, exerted: false };
+    if (!await offerAgehaPurikura(ROOMS.ageha, spot, { guests: met ? [roamer.id] : [] })) return { used: false, exerted: false };
+  }
   addMoney(-spot.cost); addStamina(spot.stamina);
   if (followup) (state.flags._ch2_followup_done ||= {})[id] = true;
   if (stage?.done) (state.flags[stage.done] ||= {})[id] = true;

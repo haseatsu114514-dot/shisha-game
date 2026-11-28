@@ -696,6 +696,13 @@ export function readSlot(key) {
   const s = parseSave(readRaw(key));
   return s?.day ? s : null;
 }
+/** 枠の中身を、読み込みと同じ移行を通した写しで返す（今の状態・保存は変えない）。読めなければ null。
+ *  タイトルの EXTRA（scenes/extra-progress.js）が、ミニゲームの進み具合を読むのに使う（EXT04）。 */
+export function readSlotMigrated(key) {
+  const s = readSlot(key);
+  if (!s) return null;
+  try { return migrate(s) || null; } catch { return null; }
+}
 /** 外から受け取ったセーブが、読み込みと同じ移行を通せるか（保存はしない。形式は変えない） */
 export function isLoadableSave(s) {
   try { return !!migrate(s); } catch { return false; }
@@ -790,7 +797,7 @@ export const config = {
   portraitStyle: "new", // 採用済みの新版が既定。現行も設定で選べる
   portraitStyleVersion: 1, // 旧版の既定値・廃止画風を一度だけ新版へ移行
   uiTheme: "paper",    // 会話枠と共通UI。ゲームの進行とは別の端末設定（既定は紙とラベンダー・DUI08）。
-  look: "classic",     // 見た目の様式（新版／旧版／DS風・core/look.js）。ここは保存が無い時の素の値で、既定（旧版）は起動時に main.js の migrateLook が決める（LK23）。
+  look: "classic",     // 見た目の様式（新版／旧版／縦画面・core/look.js）。ここは保存が無い時の素の値で、既定（縦画面）は起動時に main.js の migrateLook が決める（LK24）。
   mute: false,       // すべての音を一時的に消す（旧キー muted は読み込み時に mute へ統一）
   bgmVolume: 0.5,
   seVolume: 0.7,

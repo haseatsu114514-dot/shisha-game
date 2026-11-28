@@ -1,13 +1,13 @@
 // 縦画面「煙の舞台」（C案）の様式（2026-11-27 オーナー「第1章を今日作った縦UIで作って」・要望台帳 VPN）。
 // 試作 remake/previews/portrait-stage/ で詰めた縦の画面（上に絵・真ん中にテロップ・下に補助ボタンの段と大きなパッド）で、本編の第1章を遊ぶ。
 // 作り: 本編の画面（#stage・1280×720）は動かしたまま見えなくし、その内容を縦の外枠へ写して、押す・選ぶは本編へ中継する
-//（DS風の外枠 looks/retro.js と同じ仕組み。場面の見分けは looks/retro/detect.js を共用）。進行・判定・報酬・保存は本編のまま。
+//（DS風の外枠 looks/neo/portrait-shell.js と同じ仕組み。場面の見分けは looks/neo/portrait-shell/detect.js を共用）。進行・判定・報酬・保存は本編のまま。
 // 写す場面: タイトル・会話と返事・登場カットイン（縦のポスター）・地図・tonari の行動選びなどのボタンの画面・確かめの小窓・
 //   MENU・LIME・設定・セーブ／ロード・LOG・店・章のクリア（シート）・場面転換や日付の札などの覆い。
 // まだ縦にしていない場面（シーシャ作り・大会・店番・ミニゲームなど。別の作業で縦の画面を作っている）は、回転案内を出して横で遊ぶ。
 // 縦持ちの間だけ動く。横持ちにすると外枠を引っ込め、本編の今の画面（旧版）で遊べる。setActive(false) で足した物をすべて片付ける。
 import { el } from "../core/util.js";
-import { detectState, isLoading, topDialogOpen } from "./retro/detect.js";
+import { detectState, isLoading, topDialogOpen } from "./neo/portrait-shell/detect.js";
 import { withMinigameStyles } from "../minigames/minigame-styles.js";
 import { createFrame } from "./vertical/frame.js";
 import { createTalkScene } from "./vertical/talk.js";

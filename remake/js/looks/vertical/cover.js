@@ -7,7 +7,7 @@
 import { el } from "../../core/util.js";
 import { CHAPTER_TITLE_ART } from "../../core/chapter-title-art.js";
 import { textOf, mirrorBackground, relayTap } from "./frame.js";
-import { readLines as readBlockLines } from "../retro/cover.js";
+import { readLines as readBlockLines } from "../neo/portrait-shell/cover.js";
 
 const HARMLESS = ".flash, .stat-flight, .lvup, .gfx-fly, .gfx-ring, .gfx-spark";
 
@@ -64,21 +64,22 @@ function readCutin(host) {
 /** ゲームタイトルのロゴ（本編のタイトル画面と同じ絵）。 */
 const TITLE_LOGO = new URL("../../../img/ui/ui_title_logo_rich.webp", import.meta.url).href;
 /**
- * 章タイトルの絵の置き方（VPN27・2026-11-27 オーナー「やはりタイトルコールは既存の横長のを使いたい　真ん中に出して上にゲームタイトル
- * 下のあいてるスペースに章情報みたいなレイアウト試して」）: 横長の絵（1280×720）を画面の幅いっぱい・縦の真ん中に、切らずに置く。
- * 第1章の絵は白地で、上に題字（ゲーム名・CHAPTER 1・章名・英題）が描き込まれているので、人物が並ぶ帯（絵の高さの割合）だけを切り出す
- * （題字は下の章の情報と同じなので、二重に出さない）。白地の絵は、同じ絵をぼかした背景を敷かない（灰色ににごるため）。
+ * 章タイトルの絵の置き方（VPN27・VPN28）: 上の空きにゲームタイトル、縦の真ん中に章タイトルの絵、下の空きに章の情報の3段。
+ * 絵は、縦画面用に作り直した文字の無い正方形の絵（core/chapter-title-art.js の square。2026-11-28 オーナー「今の横長画像をベースに縦画面用のを再生成してみて
+ * タイトルや章情報は上下でやるから画像メインのに」）を、画面の幅いっぱいに置く。正方形の絵が無い章は、横長の絵（1280×720）を切らずに置く。
+ * 白地の絵（第1章）は、同じ絵をぼかした背景を敷かない（灰色ににごるため）。
  */
-const TITLE_CROP = { 1: { top: 0.36, bottom: 0.94, light: true } };
+const TITLE_LIGHT = new Set([1]);
 
 /** 覆いの中の章タイトル（本編の .chapter-title-shield の .chapter-card、第1章は専用の演出 .ch1-title-motion）。無ければ null。 */
 function readChapterTitle(roots) {
-  // 第1章は専用の演出（chapters/ch1-title-motion.js）。縦画面では、同じ絵（横長の章タイトル）で他の章と同じ形に組む
+  // 第1章は専用の演出（chapters/ch1-title-motion.js）。縦画面では、他の章と同じ形に組む
   const first = roots.find((node) => node.matches(".ch1-title-motion"));
   if (first) {
     if (first.dataset.phase !== "playing") return null;
     const entry = CHAPTER_TITLE_ART.find((item) => item.chapter === 1);
-    return entry && { chapter: 1, no: entry.no, name: entry.name, english: String(entry.read || "").split("──").pop().trim(), art: entry.url, out: false };
+    return entry && { chapter: 1, no: entry.no, name: entry.name, english: String(entry.read || "").split("──").pop().trim(),
+      art: entry.square || entry.url, square: !!entry.square, out: false };
   }
   const shield = roots.find((node) => node.matches(".chapter-title-shield"));
   const card = shield?.querySelector(".chapter-card");
@@ -89,7 +90,8 @@ function readChapterTitle(roots) {
   return {
     chapter: entry.chapter, no: entry.no, name: entry.name,
     english: String(entry.read || "").split("──").pop().trim(),
-    art: card.classList.contains("illustrated") ? img?.currentSrc || img?.src || entry.url : "",
+    art: card.classList.contains("illustrated") ? entry.square || img?.currentSrc || img?.src || entry.url : "",
+    square: !!entry.square && card.classList.contains("illustrated"),
     out: card.classList.contains("out"),
   };
 }
@@ -149,16 +151,15 @@ export function createCoverScene(frame, own) {
     ].filter(Boolean));
   }
 
-  /** 章タイトルを組む（VPN27）: 上にゲームタイトルのロゴ、真ん中に横長の絵、下に章の情報（CHAPTER n・章名・線・英題）。 */
+  /** 章タイトルを組む（VPN27・VPN28）: 上にゲームタイトルのロゴ、真ん中に章タイトルの絵（正方形。無い章は横長）、下に章の情報（CHAPTER n・章名・線・英題）。 */
   function renderCall(title) {
-    const crop = TITLE_CROP[title.chapter];
+    const light = TITLE_LIGHT.has(title.chapter);
     call.dataset.chapter = String(title.chapter);
-    call.dataset.tone = crop?.light ? "light" : "dark";
-    // 切り出す章は、枠の縦横比と絵のずらしを渡す（絵の高さ 720 のうち top〜bottom を見せる）
-    call.style.cssText = crop ? `--ct-ar:${(1280 / (720 * (crop.bottom - crop.top))).toFixed(4)};--ct-shift:${(crop.top / (crop.bottom - crop.top)).toFixed(4)}` : "";
+    call.dataset.tone = light ? "light" : "dark";
+    call.dataset.shape = title.square ? "square" : "wide";
     call.setAttribute("aria-label", [title.no, title.name, title.english].filter(Boolean).join("　"));
     call.replaceChildren(...[ // 置かない物（null）は除く（replaceChildren は null を「null」という文字にしてしまう）
-      title.art && !crop?.light ? el("img.vt-ct-amb", { src: title.art, alt: "", draggable: "false" }) : null,
+      title.art && !light ? el("img.vt-ct-amb", { src: title.art, alt: "", draggable: "false" }) : null,
       el("div.vt-ct-head", { "aria-hidden": "true" }, [el("img.vt-ct-logo", { src: TITLE_LOGO, alt: "", draggable: "false" })]),
       title.art ? el("div.vt-ct-pic", [el("img.vt-ct-art", { src: title.art, alt: "", draggable: "false" })]) : el("div.vt-ct-pic.empty"),
       el("div.vt-ct-copy", { "aria-hidden": "true" }, [

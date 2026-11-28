@@ -3,9 +3,9 @@
 // 押したら本編のボタンへの click として中継する（判定・消費・進行は本編のまま）。
 import { el } from "../../core/util.js";
 import { mirrorBackground, textOf, shown, placeOf } from "./frame.js";
-import { readHud } from "../retro/hud.js";
+import { readHud } from "../neo/portrait-shell/hud.js";
 
-/** いま写す画面と、その中の部品の読み方（looks/retro/menu.js と同じ見分け）。 */
+/** いま写す画面と、その中の部品の読み方（looks/neo/portrait-shell/menu.js と同じ見分け）。 */
 function liveMenu() {
   const dialog = document.querySelector("#modal.show > .modal-box");
   if (dialog) return { kind: "dialog", root: dialog };

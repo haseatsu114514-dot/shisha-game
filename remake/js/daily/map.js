@@ -69,7 +69,7 @@ function pinCaption(s, locked) {
 const pinSpeech = (s, locked, caption) => !locked && caption === s.label && ["tonari", "rival", "shop", "samechan"].includes(s.kind) ? `${caption}へ行く` : caption;
 /** 地図の利用料は「¥3,000」の短い印（読み上げは「利用料 3,000円」のまま・#2853） */
 /** 定休日・臨時休業は文字の札ではなく、看板をグレーにして「休」の印を付ける（#2853） */
-const CLOSED_TAGS = new Set(["本日定休日", "本日臨時休業"]);
+const CLOSED_TAGS = new Set(["本日定休日", "本日臨時休業", "今夜は早じまい"]);
 /** 「今日はどうする？」の操作の説明を出すのは、第1章の最初の自由行動の日（1日目は案内つきの用事だけ）まで。日付を読むだけ（#2853） */
 const firstFreeDay = () => state.chapter === 1 && state.day <= 2;
 

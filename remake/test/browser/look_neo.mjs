@@ -1051,7 +1051,8 @@ async function title(page, { phone }) {
   const m = await measureTitle(page);
   assert.equal(m.look, "neo");
   // つづきから（#4194）はセーブが無くても行として出し、押せないだけ。
-  assert.deepEqual(m.items.map((item) => item.test), ["title-new", "title-continue", "title-load", "title-gallery", "title-config"]);
+  // ロードは「つづきから」の行の中の押し所「セーブを選ぶ」、空いた1行は EXTRA（EXT01・EXT02）
+  assert.deepEqual(m.items.map((item) => item.test), ["title-new", "title-continue", "title-extra", "title-gallery", "title-config"]);
   for (const [index, item] of m.items.entries()) {
     assert(inside(item, STAGE) && item.height >= 72 - .5 && item.real >= 38 && item.width >= 300, `${item.test}: 札の押せる大きさ ${JSON.stringify(item)}`);
     assert(item.face.includes("linear-gradient") && noPaperFrame(item.frame), `${item.test}: 控えめな夜紫の札 ${item.face}`);
@@ -1059,7 +1060,9 @@ async function title(page, { phone }) {
     assert.equal(item.mark, "none", "選んだ印は「◆」ではなく金の線");
     if (index) assert(item.top - m.items[index - 1].bottom >= 15.5, `${item.test}: 行の間隔は現行と同じ（16px）`);
   }
-  assert(m.items[1].disabled && m.items[2].disabled, "セーブが無ければ CONTINUE と LOAD は押せない");
+  assert(m.items[1].disabled, "セーブが無ければ CONTINUE は押せない");
+  // EXTRA は斧投げを遊ぶまで「？？？」。押せる（開き方を知らせる）が、開かない印が付く（EXT01）
+  assert.equal(await page.locator('[data-test="title-extra"].is-locked[aria-disabled="true"]').count(), 1, "EXTRA は「？？？」のまま");
   // 絵とロゴは変えない（現行で測り直して比べる）。行の高さ・間隔も現行以上。
   await setLook(page, "classic");
   await page.waitForTimeout(300);
@@ -1074,7 +1077,7 @@ async function title(page, { phone }) {
   await setLook(page, "neo");
   // 選んでいる行（キーボードの移動）に金の線が出る。
   await page.locator('[data-test="title-new"]').focus();
-  await page.keyboard.press("Tab"); // CONTINUE と LOAD は押せないので GALLERY へ
+  await page.keyboard.press("Tab"); // CONTINUE は押せない・EXTRA はまだ「？？？」なので GALLERY へ
   await page.waitForTimeout(350);
   const focused = await measureTitle(page);
   const on = focused.items.find((item) => item.focused);

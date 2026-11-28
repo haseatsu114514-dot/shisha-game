@@ -160,8 +160,8 @@ const body = { dataset: { screen: "title" } };
 function el(selector, attrs = {}, children = []) {
   if (Array.isArray(attrs)) { children = attrs; attrs = {}; }
   const node = { selector, children: [...children], ...attrs, dataset: attrs.dataset || {}, style: {},
-    classList: { add() {}, toggle() {} }, complete: true, naturalWidth: 1,
-    append(...nodes) { this.children.push(...nodes); }, addEventListener() {},
+    classList: { add() {}, toggle() {}, contains: (name) => String(selector).split(".").slice(1).includes(name) }, complete: true, naturalWidth: 1,
+    append(...nodes) { this.children.push(...nodes); }, addEventListener() {}, toggleAttribute() {}, setAttribute() {},
     querySelector(sel) {
       const match = n => sel.startsWith(".") ? n.selector?.split(".").includes(sel.slice(1)) : n.selector?.split(".")[0] === sel;
       const walk = n => match(n) ? n : n.children?.map(walk).find(Boolean);
@@ -184,7 +184,7 @@ const title = await load(await read("../js/scenes/title.js"), {
   openGallery: () => new Promise(resolve => galleryCloses.push(resolve)),
   pickTitleArt: () => ({ ready: true, file: `art-${++picks}`, character: `character-${picks}`, url: "test" }),
   createUiThemeSelect: () => el("select"),
-  LOOKS: [{ id: "classic", label: "現行" }, { id: "neo", label: "新版" }, { id: "retro", label: "DS風" }], DISABLED_LOOKS: ["neo"], normalizeLook: (value) => value || "classic", setLook() {},
+  LOOKS: [{ id: "classic", label: "現行" }, { id: "neo", label: "新版" }], DISABLED_LOOKS: ["neo"], normalizeLook: (value) => value || "classic", setLook() {},
   CRAFT_VERSIONS: craftVersion.CRAFT_VERSIONS, normalizeCraftVersion: craftVersion.normalizeCraftVersion,
   config: {},
 }, { document: { body }, performance: { now: () => 0 }, window: {} });
@@ -192,7 +192,8 @@ const art = { ready: true, file: "test", character: "test", url: "test" };
 const show = () => { buttons = new Map(); title.showTitle(art); };
 const click = async id => { buttons.get(id).onclick(); await flush(); };
 show(); assert.equal(body.dataset.screen, "title"); assert.equal(hudClasses.has("show"), false);
-assert.deepEqual([...buttons.keys()], ["title-new", "title-continue", "title-load", "title-gallery", "title-config"]);
+// ロードは「つづきから」の行の中の押し所「セーブを選ぶ」（EXT02）、空いた1行は EXTRA（EXT01）
+assert.deepEqual([...buttons.keys()], ["title-new", "title-continue", "title-load", "title-extra", "title-gallery", "title-config"]);
 assert.equal(buttons.get("title-continue").querySelector(".ti-note").text, "DAY 12");
 assert.equal(buttons.get("title-load").querySelector(".ti-note"), undefined);
 for (const [id, closes] of [["title-gallery", galleryCloses], ["title-config", configCloses]]) {
