@@ -135,7 +135,7 @@ export function createCoverScene(frame, own) {
 
   function renderPoster(card) {
     const len = [...card.plainName.replace(/\s/g, "")].reduce((n, ch) => n + (/[\x20-\x7e]/.test(ch) ? 0.55 : 1), 0);
-    const size = Math.min(8.4, 31 / Math.max(1, len));
+    const size = Math.min(9, 35 / Math.max(1, len));
     poster.dataset.m = card.motion;
     poster.style.cssText = `--ci:${card.color};--ci2:${card.secondary};--ci-shadow:${card.shadow};--name-size:${size.toFixed(2)}`;
     poster.setAttribute("aria-label", `${card.plainName}の紹介`);
@@ -143,7 +143,7 @@ export function createCoverScene(frame, own) {
       el("i.vt-cv-flash"),
       card.bg ? el("img.vt-cv-bg", { src: card.bg, alt: "", draggable: "false" }) : null,
       el("i.vt-cv-veil"),
-      card.art ? el("img.vt-cv-art", { src: card.art, alt: "", draggable: "false" }) : null,
+      card.art ? el("div.vt-cv-figure", [el("img.vt-cv-art", { src: card.art, alt: "", draggable: "false" })]) : null,
       el("div.vt-cv-band", [el("i.vt-cv-accent"), nameHtml(card.name)]),
       card.title ? el("div.vt-cv-tag", { text: card.title }) : null,
       el("div.vt-cv-say", [
