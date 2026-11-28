@@ -2,6 +2,7 @@
 import { difficultyForRun, liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
 import { difficultyEvidence } from "../core/cycle-start.js";
 import { ChapterSaveError } from "../core/chapter-save.js";
+import { tournamentBallot } from "./tournament-ballot.js";
 import { initialBaseVotes, baseVoteOf } from "./tournament-base-votes.js";
 
 export const CH4_CONTESTANTS = Object.freeze(["hajime", "naru", "master_hookah", "sheikh"]);
@@ -82,6 +83,7 @@ export function startChapterFourCraft(value, craft) {
   if (p.craft) return p;
   p.entry ||= resources(value);
   p.rulesVersion = CH4_RULES_VERSION;
+  p.comparisonBallot = true;
   p.baseVotes = initialBaseVotes(CH4_CONTESTANTS);
   p.craft = clone(craft);
   return p;
@@ -170,10 +172,13 @@ function commitChapterFourVote(p, craft, quality, rules, round) {
   p.quality = quality;
   const picks = {};
   const firstPoints = rules.spend[round] - 1;
-  for (const judge of CH4_JUDGES) {
+  for (const [judgeIndex, judge] of CH4_JUDGES.entries()) {
     const hajimeScore = rulesVersion(p) >= 3 ? chapterFourJudgeQuality(craft, round, judge) : p.quality.hajime;
     const score = id => id === "hajime" ? hajimeScore : p.quality[id];
-    const [first, second] = [...CH4_CONTESTANTS].sort((a, b) => score(b) - score(a) || byTie(a, b));
+    const [first, second] = tournamentBallot(
+      CH4_CONTESTANTS, judgeIndex, round, score, byTie,
+      p.comparisonBallot && rulesVersion(p) === CH4_RULES_VERSION,
+    );
     picks[judge] = { points: { [first]: firstPoints, [second]: 1 } };
     p.votes[judge][first] += firstPoints;
     p.votes[judge][second] += 1;

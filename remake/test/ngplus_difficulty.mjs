@@ -98,13 +98,14 @@ const disabled = runCarry({ cycle: 2, cycleStartStats: stats(100), carryOptions:
 const enabled = runCarry({ cycle: 2, cycleStartStats: stats(100), carryOptions: { groups: { stats: true } } });
 equal([initial, disabled, enabled], [0, 0, 1]);
 
-function ch1Match(style, craft, carry) {
+function ch1Match(style, craft, carry, legacy = false) {
   const attempt = {};
   beginCh1Votes(attempt, { style });
+  if (legacy) delete attempt.voteAttempt.comparisonBallot;
   for (let round = 0; round < 4; round++) assert(castCh1Votes(attempt, round, craft, { carryP: carry }));
   return attempt.voteAttempt;
 }
-const ch1Digest = createHash("sha256");
+const ch1Digest = createHash("sha256"), oldCh1Digest = createHash("sha256");
 const ch1Samples = [];
 for (const style of ["classic", "sakurai"]) {
   for (let score = 60; score <= 100; score++) {
@@ -117,13 +118,15 @@ for (const style of ["classic", "sakurai"]) {
     const match = ch1Match(style, craft, initial);
     equal(ch1Match(style, craft, disabled), match);
     ch1Digest.update(JSON.stringify(match));
+    oldCh1Digest.update(JSON.stringify(ch1Match(style, craft, initial, true)));
     ch1Samples.push({ style, craft, match });
   }
 }
 // Full vote records with no carry in effect (the F-03 lift stays inactive), including the
 // Sakurai judge evaluations and final standings. The digest also pins the C-20 changes
 // (hajime-first tie-break and the Sakurai rival caps), which apply at every carry level.
-equal(ch1Digest.digest("hex"), "32540013f6dd99e46cdda7ff0f3c05d5810485e8832e0aee4a05e93cf797c3de");
+equal(ch1Digest.digest("hex"), "4937add07a922146eebc40c5f0794ee9684fba0eed5c35b427198f07bc81a1bf");
+equal(oldCh1Digest.digest("hex"), "32540013f6dd99e46cdda7ff0f3c05d5810485e8832e0aee4a05e93cf797c3de");
 
 const harderStyles = new Set();
 const ch1Events = [];

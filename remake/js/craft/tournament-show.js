@@ -139,7 +139,7 @@ export function crestSvg({ metal = "gold", crown = true, laurel = true } = {}) {
 }
 
 /**
- * 表彰の生成紋章。優勝は琺瑯の中央に数字を重ね、他の順位は透かしの月桂冠を使う。
+ * 表彰の生成紋章。優勝は1stを刻んだ琺瑯の紋章、他の順位は透かしの月桂冠を使う。
  * 金以外の順位は CSS の filter で色を寄せる（.ts-crest-art img）。
  */
 export function crestImg({ metal = "gold" } = {}) {
@@ -555,9 +555,8 @@ export async function eyecatch(host, { title = "", sub = "", note = "", ms = 125
 export async function resultSplash(rank, { event = "SMOKE CROWN CUP", face = null, host = layers.fx } = {}) {
   if (!showMoves() || !host) return;
   const win = rank === 1, metal = metalOf(rank);
-  // 優勝は紋章（生成絵）に「1 ST」。届かなかった時は紋章を順位の後ろに薄く敷く。
+  // 優勝は文字を含む生成紋章。届かなかった時は紋章を順位の後ろに薄く敷く。
   const crest = crestImg({ metal });
-  if (win) crest.append(el("span.winner-rank", [el("b", { text: "1" }), el("small", { text: "ST" })]));
   const node = el(`div.ts-splash${win ? ".win" : ""}`, { dataset: { test: "result-splash", rank, metal, ...(win && !face ? { portrait: "grateful" } : {}) }, tabindex: "-1", role: "status",
     "aria-label": win ? "優勝" : `${rank}位` }, [
     win ? haloOf() : null,

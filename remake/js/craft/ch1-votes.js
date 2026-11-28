@@ -1,6 +1,7 @@
 // 第1章の新規試合。票は各工程の確定時に一度だけ記録し、結果表にも同じ記録を使う。
 // 方式は2つ（core/vote-style.js）: いままで（rulesVersion 2・各回はそこまでの全工程の平均）と、
 // 桜井式（rulesVersion 3・試作。各回はその回に仕上げた工程・提供時の制作ボーナス・攻めの帯の上積み）。
+import { tournamentBallot } from "../chapters/tournament-ballot.js";
 import { initialBaseVotes, baseVoteOf } from "../chapters/tournament-base-votes.js";
 import { liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
 import { ATTACK_BAND } from "./attack-band.js";
@@ -37,7 +38,7 @@ export function beginCh1Votes(attempt, { style = null } = {}) {
   if (attempt.voteAttempt) return attempt.voteAttempt;
   const sakurai = style === "sakurai";
   return attempt.voteAttempt = { rulesVersion: sakurai ? CH1_SAKURAI_VERSION : CH1_VOTE_VERSION,
-    picks: [], ...(sakurai ? { style: "sakurai", views: [], attacks: [] } : {}),
+    comparisonBallot: true, picks: [], ...(sakurai ? { style: "sakurai", views: [], attacks: [] } : {}),
     voted: 0, votes: emptyVotes(), baseVotes: initialBaseVotes(CH1_CONTESTANTS), finalVotes: null, result: null };
 }
 export const isSakuraiVotes = (p) => p?.style === "sakurai" && p?.rulesVersion === CH1_SAKURAI_VERSION;
@@ -70,7 +71,7 @@ function checkBudget(p, round) {
  * この1点を含めた総得票で1位ならクリア（2026-11-20 オーナー指示・#3916）。
  */
 export const CH1_LAST_POINT = "hajime";
-/** その回に審査員が入れる点（1位に点−1・2位に1）。千須だけ最後の回は1点を残し、最後の1点に回す。 */
+/** その回に審査員が入れる点。千須だけ最後の回は1点を残し、最後の1点に回す。 */
 export const ch1RoundPoints = (judge, round) => SPEND[round] - (judge === "sensu" && round === 3 ? 1 : 0);
 export function castCh1Votes(attempt, round, cs, { carryP = 0, serveBonus = 0 } = {}) {
   const p = beginCh1Votes(attempt);
@@ -81,12 +82,15 @@ export function castCh1Votes(attempt, round, cs, { carryP = 0, serveBonus = 0 } 
   checkBudget(p, round);
   p.finalVotes = round === 3 ? emptyVotes() : null;
   const picks = {};
-  for (const judge of CH1_JUDGES) {
+  for (const [judgeIndex, judge] of CH1_JUDGES.entries()) {
     const weights = CH1_WEIGHTS[judge];
     const scores = Object.fromEntries(CH1_CONTESTANTS.map(id => [id, id === "hajime"
       ? evaluated(mine, weights, limit) + bonus : liftCh1Rival(evaluated(CH1_RIVALS[id], weights, limit), carryP)]));
-    const [first, second] = CH1_CONTESTANTS.slice().sort((a, b) => scores[b] - scores[a] || voteTie(a, b));
-    const amount = SPEND[round] - (judge === "sensu" && round === 3 ? 1 : 0);
+    const [first, second] = tournamentBallot(
+      CH1_CONTESTANTS, judgeIndex, round, id => scores[id], voteTie,
+      p.comparisonBallot,
+    );
+    const amount = ch1RoundPoints(judge, round);
     picks[judge] = { first, second, points: { [first]: amount - 1, [second]: 1 } };
     p.votes[judge][first] += amount - 1;
     p.votes[judge][second]++;
@@ -130,7 +134,7 @@ export function ch1BeforeLastStandings(p, mineTotal) {
 // ---------------------------------------------------------------- 桜井式（試作・rulesVersion 3）
 // 2026-11-13 オーナー「桜井式も作ってみて　なお気に入らなかったら戻せるようにはしといて」（SKR04）。
 // 案は docs/reports/sakurai_review_20261113.md の柱1〜4（1回ごとの勝負・審査員の見る所・攻めの帯・ライバルの票田）。
-// 持ち点（各10点を 2・3・2・3 点）・1位に点−1と2位に1・基礎票・千須の最後の1点（はじめへ）は、いままでと同じ。
+// 持ち点（各10点を 2・3・2・3 点）・基礎票・千須の最後の1点（はじめへ）は、いままでと同じ。
 // 数値は試作値。根拠（remake/tools/balance/measure.mjs --votes sakurai）は docs/master_spec.md の 2026-11-13 の節。
 export const SAKURAI = Object.freeze({
   /** 攻めの帯で提供・調整を終えた回の上積み（その回の、はじめへの全審査員の評価に足す） */
@@ -213,10 +217,13 @@ function castSakurai(p, round, cs, carryP, serveBonus) {
   checkBudget(p, round);
   p.finalVotes = round === 3 ? emptyVotes() : null;
   const views = {}, picks = {};
-  for (const judge of CH1_JUDGES) {
+  for (const [judgeIndex, judge] of CH1_JUDGES.entries()) {
     const scores = Object.fromEntries(CH1_CONTESTANTS.map(id => [id, id === "hajime"
       ? mine[judge] : liftCh1Rival(sakuraiRival(id, judge, round), carryP)]));
-    const [first, second] = CH1_CONTESTANTS.slice().sort((a, b) => scores[b] - scores[a] || voteTie(a, b));
+    const [first, second] = tournamentBallot(
+      CH1_CONTESTANTS, judgeIndex, round, id => scores[id], voteTie,
+      p.comparisonBallot,
+    );
     const amount = ch1RoundPoints(judge, round);
     p.votes[judge][first] += amount - 1;
     p.votes[judge][second]++;

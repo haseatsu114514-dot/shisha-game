@@ -1,12 +1,29 @@
 import assert from "node:assert/strict";
 import { beginCh1Votes, castCh1Votes, ch1Standings, CH1_JUDGES, CH1_CONTESTANTS } from "../js/craft/ch1-votes.js";
 
+import { tournamentBallot } from "../js/chapters/tournament-ballot.js";
+
+// 三人が別々の台に注目する。次点との差がちょうど12なら比較票、12を超えると次点へ戻す。
+{
+  const seats = ["hajime", "adam", "naru", "minto"];
+  const scores = { hajime: 95, adam: 90, naru: 89, minto: 78 };
+  const vote = (judge, round) => tournamentBallot(seats, judge, round, id => scores[id],
+    (a, b) => seats.indexOf(a) - seats.indexOf(b), true);
+  assert.deepEqual([0, 1, 2].map(judge => vote(judge, 0)), [
+    ["hajime", "adam"], ["hajime", "naru"], ["hajime", "minto"],
+  ]);
+  assert.deepEqual(vote(0, 1), ["hajime", "naru"]);
+  scores.minto = 77.9;
+  assert.deepEqual(vote(2, 0), ["hajime", "adam"]);
+}
+
 const craft = parts => ({ holes: { score: parts[0] }, heat: { score: parts[1] },
   stats: { craftQuality: parts[2] }, careHistory: [{ score: parts[3] }, { score: parts[4] }],
   total: parts.reduce((a, b) => a + b, 0) / 5 });
-function match(parts, serveBonus = 0) {
+function match(parts, serveBonus = 0, legacy = false) {
   const attempt = {};
   beginCh1Votes(attempt);
+  if (legacy) delete attempt.voteAttempt.comparisonBallot;
   const cs = craft(parts);
   for (let round = 0; round < 4; round++) {
     assert.equal(castCh1Votes(attempt, round, cs, { serveBonus }), true);
@@ -26,7 +43,9 @@ for (const score of [60, 70, 80, 82, 84, 85, 86, 88, 90, 100]) {
   assert.deepEqual(p.result.rows.map(row => [row.id, row.rank]), oldRows.map(row => [row.id, row.rank]), "基礎票は順位を変えない");
   assert(p.result.rows.every(row => row.points === oldRows.find(previous => previous.id === row.id).points + 1));
 }
-const mint = match([90, 90, 90, 90, 90]);
+const fresh = match([90, 90, 90, 90, 90]);
+assert.deepEqual(fresh.result.rows.map(row => [row.id, row.points]), [["hajime",18],["adam",8],["naru",5],["minto",3]]);
+const mint = match([90, 90, 90, 90, 90], 0, true);
 assert.equal(CH1_JUDGES.reduce((sum, judge) => sum + mint.votes[judge].minto, 0), 0, "旧方式のみんと0票を再現");
 assert.equal(mint.result.rows.find(row => row.id === "minto").points, 1);
 assert.equal(CH1_CONTESTANTS.length, 4);
@@ -35,13 +54,13 @@ assert.equal(match([80, 80, 80, 80, 80]).result.rank, 3);
 assert.equal(match([90, 90, 90, 90, 90]).result.rank, 1);
 for (const score of [60, 80, 90, 100]) assert.equal(match([score, score, score, score, score]).lastPoint, "hajime");
 // 最後の1点ははじめへ。審査点で並んだ工程でもはじめに票が入る。
-const close = match([84, 87, 86, 86, 86]);
+const close = match([84, 87, 86, 86, 86], 0, true); // 旧試合を読み込んだ時の同点判定
 assert.equal(close.lastPoint, "hajime");
 assert.equal(close.beforeLast.sensu.hajime + 1, close.votes.sensu.hajime);
 assert.equal(close.beforeLast.sensu.naru, close.votes.sensu.naru);
 assert.deepEqual(close.result.rows.slice(0, 2).map(row => [row.id, row.points]), [["hajime", 14], ["adam", 13]]);
-const unprepared = match([80, 80, 80, 80, 80]);
-const prepared = match([80, 80, 80, 80, 80], 5);
+const unprepared = match([85, 85, 85, 85, 85]);
+const prepared = match([85, 85, 85, 85, 85], 5);
 assert.notDeepEqual(prepared.picks[1], unprepared.picks[1], "準備の加点で提供の票が動く");
 for (const round of [0, 2, 3]) assert.deepEqual(prepared.picks[round], unprepared.picks[round]);
 for (const base of [60, 70, 80, 84, 85, 86, 90]) {

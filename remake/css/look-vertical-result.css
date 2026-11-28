@@ -108,7 +108,7 @@
 }
 #stage .rt-row[data-rank="1"] .rt-rank {
   width: 40px; height: 40px; margin-inline: -5px; padding-top: 6px; display: grid; place-items: center;
-  font: 700 11px/1 'Suien Name',serif; color: #fff2c9;
+  font-size: 0; color: transparent;
   background: url('../img/ui/tournament-show/champion-seal.webp') center / contain no-repeat;
 }
 #stage .rt-row .rt-face { border-radius: 50%; box-shadow: 0 0 0 1px #8f836a88; height: 40px; width: 40px; }
@@ -181,12 +181,6 @@ dialog.review button {
 #stage .judge-legend { font: 600 12px/1.5 var(--font); gap: 13px; color: #dbd8cf; }
 #stage .rt-row .rt-bar { display: flex; height: 5px; }
 dialog.review .rt-deductions { display: block; }
-#stage .winner-rank {
-  position: absolute; inset: 50% 0 auto; transform: translateY(-24%); display: flex; align-items: center; flex-direction: column; justify-content: center;
-  align-self: center; gap: 2px;
-}
-#stage .ts-crest .winner-rank b { position: static; font: 700 36px/.9 Georgia,serif; line-height: 1; letter-spacing: -.06em; }
-#stage .ts-crest .winner-rank small { position: static; padding: 0; font: 700 9px/1 'Suien Name',serif; letter-spacing: 0; }
 #stage .vote-breakdown {
   background: none; border: 0; padding: 0; min-height: 44px; color: #e0c48b; font: 600 14px var(--font);
 }

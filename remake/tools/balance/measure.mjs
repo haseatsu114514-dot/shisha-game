@@ -220,7 +220,7 @@ export function runOne(id, operation, seed, config = plan, skillLookup = hasSkil
   } else if(chapter===2||chapter===3) {
     // ch2/ch3-tournament.js と同じ: 蒸らしの後・提供の後・調整1の後・調整2の後に、それまでの工程の平均（最後は総合）で投票する。
     const tv=chapter===2?ch2Votes:ch3Votes;
-    const p={votes:Object.fromEntries(tv.JUDGES.map(j=>[j,Object.fromEntries(tv.CONTESTANTS.map(c=>[c,0]))])),voted:0,baseVotes:Object.fromEntries(tv.CONTESTANTS.map(c=>[c,1]))};
+    const p={comparisonBallot:true,votes:Object.fromEntries(tv.JUDGES.map(j=>[j,Object.fromEntries(tv.CONTESTANTS.map(c=>[c,0]))])),voted:0,baseVotes:Object.fromEntries(tv.CONTESTANTS.map(c=>[c,1]))};
     if(chapter===3) Object.assign(p,{rulesVersion:ch3Votes.TOURNAMENT_RULES_VERSION,tastingPlan:ch3Votes.buildTastingPlan(Math.floor(rng()*0x100000000))});
     const cast=(round,quality)=>chapter===2?tv.castVotes(p,round,quality):tv.castVotes(p,round,quality,null,0);
     const partial=round=>{
@@ -262,7 +262,8 @@ export function runOne(id, operation, seed, config = plan, skillLookup = hasSkil
   assert.equal(typeof skillLookup(scenario,'K11'),'boolean');
   return {id,operation,seed,total:cs.total,rank:outcome.rank,
     points:outcome.rows.find(row=>row.id==='hajime').points,
-    leaderPoints:outcome.rows[0].points,
+    leaderPoints:outcome.rows[0].points, lastPoints:outcome.rows.at(-1).points,
+    ...(chapter===1?{mintoPoints:outcome.rows.find(row=>row.id==='minto').points}:{}),
     parts:cs.parts,heatPhases:timings.map(t=>t.phase),steamHits:hits,
     ...(chapter===5?{tied}:{}),
     ...(voteStyle==='sakurai'?{attacks:attempt.voteAttempt.attacks,lastPoint:attempt.voteAttempt.lastPoint}:{}),
@@ -296,6 +297,10 @@ if (process.argv.includes('--calibrate-poor')) {
       ranks:Object.fromEntries([1,2,3,4].map(rank=>[rank,rows.filter(x=>x.rank===rank).length])),
       meanTotal:rows.reduce((sum,row)=>sum+row.total,0)/rows.length,
       meanPoints:rows.reduce((sum,row)=>sum+row.points,0)/rows.length,
+      meanLeaderPoints:rows.reduce((sum,row)=>sum+row.leaderPoints,0)/rows.length,
+      meanLastPoints:rows.reduce((sum,row)=>sum+row.lastPoints,0)/rows.length,
+      lastAtOne:rows.filter(row=>row.lastPoints===1).length,
+      ...(chapter===1?{meanMintoPoints:rows.reduce((sum,row)=>sum+row.mintoPoints,0)/rows.length}:{}),
       winnerTotalMin:winners.length?Math.min(...winners.map(x=>x.total)):null,
       loserTotalMax:losers.length?Math.max(...losers.map(x=>x.total)):null,
       ...(chapter===5?{ties:rows.filter(row=>row.tied).length,scoreSha256:sha(rows.map(row=>row.total))}:{}),

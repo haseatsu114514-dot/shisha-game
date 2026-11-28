@@ -577,6 +577,7 @@ export function beginChapterFiveMatch(value) {
   const progress = chapterFiveProgress(value);
   if (progress.part !== "scheduled") return false;
   progress.part = "match";
+  progress.closeAudienceVote = true;
   value.flags._ch5_match_started = true;
   value.phase = "tournament";
   return true;
@@ -596,10 +597,15 @@ const SECOND_CUP_CATEGORIES = Object.freeze(["steady", "recovered", "offband", "
  * 二本目の出来（finalize の総合 0〜100）→ はじめへの挙手数。
  * 総合85以上で一本目の差を返し、合計で上回る（83以上85未満は同数）。提供できなかった一台は最少。
  */
-export function chapterFiveSecondCupVotes(total, failed = false) {
-  if (failed || !Number.isFinite(total)) return SECOND_CUP_VOTES.min;
+export function chapterFiveSecondCupVotes(total, failed = false, closeAudienceVote = true) {
+  if (failed || !Number.isFinite(total)) total = 0;
   const votes = Math.round((Math.max(0, Math.min(100, total)) - 58) / 2) + 8;
-  return Math.max(SECOND_CUP_VOTES.min, Math.min(SECOND_CUP_VOTES.max, votes));
+  const original = Math.max(SECOND_CUP_VOTES.min, Math.min(SECOND_CUP_VOTES.max, votes));
+  if (!closeAudienceVote) return original; // 入場済みの旧セーブは元の換算で二本目を作る。
+  // 一本目の2票差を返す21票を中心に、開いた差は3票につき1票ぶん縮める。
+  const tie = CH5_FIRST_CUP_VOTES.machine;
+  const margin = original - tie;
+  return tie + Math.sign(margin) * Math.ceil(Math.abs(margin) * 2 / 3);
 }
 
 function isValidSecondCup(cup) {
@@ -643,7 +649,7 @@ export function recordChapterFiveSecondCup(value, { total, category, failed = fa
   const score = failed ? 0 : Math.round(Math.max(0, Math.min(100, Number(total))) * 10) / 10;
   const kind = failed ? "failed" : category;
   if (!Number.isFinite(score) || !SECOND_CUP_CATEGORIES.includes(kind)) return false;
-  const hajime = chapterFiveSecondCupVotes(score, failed);
+  const hajime = chapterFiveSecondCupVotes(score, failed, progress.closeAudienceVote === true);
   progress.secondCup = { total: score, category: kind, votes: { hajime, machine: CH5_AUDIENCE - hajime } };
   // 結果カードの「今回よかったこと／次に変える一つ」。旧保存には無いので任意（#1909）。
   const lines = Array.isArray(review) ? review.filter(text => typeof text === "string" && text).slice(0, 2) : [];
