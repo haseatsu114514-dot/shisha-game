@@ -22,7 +22,7 @@
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "お店には、『しばらくお休みします』って貼ってきたよ"
+          "text": "店のドアに貼り紙してきたよ"
         },
         {
           "speaker": "minto",
@@ -35,19 +35,14 @@
           "text": "……キャスト、私ひとりなんだけどね"
         },
         {
-          "speaker": "minto",
-          "face": "ura_normal",
-          "text": "ひとりのお店だから、私が休むと、ほんとにお休みなの"
-        },
-        {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ひとりで回してる店を閉めるの、大変だったでしょ"
+          "text": "そんなに長く閉めるの、迷わなかった？"
         },
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "ちょっとね。……でも、自分で決めたお休みは、嫌じゃなかった"
+          "text": "……貼るとき、ちょっとだけね"
         },
         {
           "speaker": "minto",
