@@ -5642,6 +5642,26 @@
       ]
     },
     {
+      "id": "continue-vertical",
+      "title": "Portrait continue presentation: title resume smoke and tournament CONTINUE manga layout",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 8,
+      "paths": [
+        "remake/css/look-vertical-continue.css",
+        "remake/js/looks/vertical.js",
+        "remake/js/looks/**",
+        "remake/js/chapters/gameover.js",
+        "remake/js/chapters/continue-view.js",
+        "remake/js/scenes/title.js",
+        "remake/js/core/ui.js",
+        "remake/test/browser/continue_vertical.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/continue_vertical.mjs"
+      ]
+    },
+    {
       "id": "look-vertical-motion",
       "title": "縦持ちが基本（VPO01）: 縦画面を縦持ちで開くと起動からタイトルまで回転案内が出ない・旧版の縦持ちは回転案内・ホーム画面版の向きを固定しない。演出の縦の舞台（VPO02〜）: LIME・タロットは縦の構図で画面に収まり、縦の構図の無い演出は横長のまま真ん中、シーシャくじは縦で引けて札が画面に収まり、夜明けの日付の札は画面の下の方、横持ちは今までどおり #fx",
       "kind": "browser",

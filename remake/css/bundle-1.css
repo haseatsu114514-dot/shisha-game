@@ -11321,8 +11321,7 @@ html:root[data-density="phone"] body:not(:root) .result-table .rt-votes {
   display: block; white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere;
 }
 html:root[data-density="phone"] body:not(:root) .result-table .rt-pt { font-size: max(26px, var(--wide-text)); }
-/* 入場の紹介カード: 少し広げて、スミさんのひと言を文節で2行までにそろえる */
-html:root[data-density="phone"] body:not(:root) .ent-card { width: 960px; }
+/* 入場の紹介カード: スミさんのひと言を文節で折り返す */
 html:root[data-density="phone"] body:not(:root) .ent-note { line-height: 1.45; word-break: auto-phrase; text-wrap: balance; }
 /* GAME OVER: ワイドでは左右の余白を地の色で塗る（会場の絵が覗いていた）。「初回は時間制限なし」の注記を規格の文字に */
 body:not(:root) #stage[data-wide] .end-screen.gameover { box-shadow: 0 0 0 var(--stage-gutter) #120a1c; }
@@ -11689,22 +11688,52 @@ html:root body:not(:root) #stage #modal > .modal-box.ts-contest-modal .modal-act
 .ts-eyecatch-copy small { margin-top: 8px; font-size: 22px; font-weight: 700; letter-spacing: .08em; color: #ffe2a6; }
 
 /* ================================================================ 入場のカード・ROUND の帯（TSH12）
-   形・寸法・出るタイミングは今までどおり（入場＝#2031、帯＝TMG59 の生成りの帯）。金の縁・光・文字の金で、授賞式の調子にそろえる。 */
-.entrance { background: radial-gradient(ellipse 70% 60% at 50% 50%, #2a1840e6, #0d0716f2 72%); }
-.entrance > .ent-card { z-index: 1; }
-.ent-cut { box-shadow: 0 0 0 1px #150d22, 0 0 0 3px #c9a7e655, 0 14px 30px #000b; }
-.ent-card.me .ent-cut { border: 2px solid #f6d68e; box-shadow: 0 0 0 1px #6b4a12, 0 0 0 4px #e3bd6e66, 0 0 40px #f6d68e66, 0 14px 30px #000b; }
-.ent-tag { padding: 3px 12px; border: 1px solid #c9a7e688; font-weight: 800; letter-spacing: .12em; }
-.ent-card.me .ent-tag { background: linear-gradient(180deg, #fff1c4, #e3bd6e 55%, #b98c3a); border-color: #fff6dc; color: #2a1638; }
-.ent-meta { position: relative; padding-bottom: 14px; }
-.ent-meta::after { content: ""; position: absolute; left: 0; bottom: 0; width: 420px; height: 9px; pointer-events: none;
-  background: linear-gradient(90deg, #e3bd6e, #e3bd6e 40%, transparent) top / 100% 1px no-repeat, linear-gradient(90deg, #c9a7e688, transparent 70%) bottom / 100% 1px no-repeat; }
-.ent-card:not(.me) .ent-meta::after { background: linear-gradient(90deg, #c9a7e6aa, transparent 70%) top / 100% 1px no-repeat; }
-.ent-card.me .ent-ring { color: #f6d68e; }
-.ent-card.me .ent-name { background: var(--ts-gold-text); -webkit-background-clip: text; background-clip: text; color: transparent;
-  text-shadow: none; filter: drop-shadow(0 3px 0 #2a1638) drop-shadow(0 0 18px #f6d68e66); }
+   選手ごとの初登場絵で一枚のポスターを作る。左に人物、右に名前とスミの言葉。 */
+.entrance { background: #120e1b; overflow: hidden; isolation: isolate; }
+.entrance > .ts-lights { z-index: 2; pointer-events: none; opacity: .32; }
+.entrance .ent-card {
+  --entry-ink: #d7be82;
+  position: absolute; inset: 0; width: auto; display: grid;
+  grid-template-columns: 47% 1fr; grid-template-rows: 1fr auto 1fr;
+  align-items: start; gap: 22px 0; padding: 40px 7% 40px 3%;
+  box-sizing: border-box; overflow: hidden; isolation: isolate;
+  opacity: 0; transform: none; transition: opacity .18s ease;
+}
+.entrance .ent-card.in { opacity: 1; transform: none; }
+.ent-backdrop, .ent-portrait { position: absolute; pointer-events: none; }
+.ent-backdrop { z-index: -3; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .74; }
+.ent-card::before {
+  content: ""; position: absolute; inset: 0; z-index: -2;
+  background: linear-gradient(110deg, transparent 18%, #100d1880 48%, #100d18f5 83%);
+}
+.ent-portrait { z-index: -1; left: -2%; bottom: 0; width: 56%; height: 94%; object-fit: contain; object-position: center bottom; }
+.ent-card[data-art="classic"] .ent-portrait { height: 145%; bottom: -38%; }
+.entrance .ent-tag {
+  position: static; grid-column: 2; grid-row: 1; align-self: end; justify-self: start;
+  padding: 6px 24px; font: 800 24px/1.4 var(--font); letter-spacing: .08em;
+  color: #15101b; background: var(--entry-ink); border-left: 6px solid #fff3d1;
+  transform: skewX(-7deg); box-shadow: 7px 5px 0 #11101ca8;
+}
+.entrance .ent-meta {
+  grid-column: 2; grid-row: 2; max-width: 100%; min-width: 0;
+  text-align: left; transform: none;
+}
+.entrance .ent-ring { color: #fff3d3; font-size: 26px; letter-spacing: .16em; text-shadow: 0 2px 6px #0a0811; }
+.entrance .ent-name {
+  margin: 2px 0 14px; padding-bottom: 10px; border-bottom: 5px solid var(--entry-ink);
+  font-size: 84px; line-height: 1.2; color: white; text-shadow: 3px 4px 0 #15111c, 0 0 15px #15111c;
+}
+.entrance .ent-note { margin: 0; padding: 12px 20px; background: #100c19e8; color: #fff2dc; font-size: 24px; line-height: 1.55; }
+.entrance .ent-speaker { display: block; margin-bottom: 3px; color: #f3cf87; font-size: .85em; font-weight: 700; }
+.ent-card.in .ent-portrait { animation: ent-arrive .5s var(--ease-snap) both; }
+.ent-card.in .ent-meta { animation: ent-name-in .4s var(--ease-snap) both; }
+@keyframes ent-arrive { from { transform: translateX(-10%); opacity: .15; } to { transform: none; opacity: 1; } }
+@keyframes ent-name-in { from { translate: 7% 0; opacity: 0; } to { translate: 0 0; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .entrance .ent-card, .ent-card.in :is(.ent-portrait, .ent-meta) { animation: none; transition: none; }
+}
+.reduce-shake .ent-card.in :is(.ent-portrait, .ent-meta) { animation: none; }
 
-/* ROUND の帯: 生成りの帯（TMG59）はそのまま。上下に金の二重罫、外に金の光、上の札を夜紫と金に */
 .round-cut-band { box-shadow: 0 0 0 1px #6b4a12, 0 16px 36px #05020a99, 0 0 50px #f6d68e44;
   background: linear-gradient(180deg, #e3bd6e 0 4px, #f4ecda 4px 9px, #e3bd6e 9px 10px, #f4ecda 10px calc(100% - 10px), #e3bd6e calc(100% - 10px) calc(100% - 9px), #f4ecda calc(100% - 9px) calc(100% - 4px), #e3bd6e calc(100% - 4px)); }
 .round-cut-band small { background: linear-gradient(180deg, #2a1638, #150d22); color: #f6d68e; border: 1px solid #e3bd6e; border-bottom: 0; }

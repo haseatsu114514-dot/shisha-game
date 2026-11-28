@@ -325,7 +325,7 @@ export function showTitle(preparedArt = null) {
     if (!await loadWithRecovery({ initialSlot })) { refresh(); return; }
     if (!current()) return;
     leaving = true;
-    smokeWipe(() => { stopBgm(0); resumeGame(); }, { color: "dark" });
+    smokeWipe(() => { stopBgm(0); resumeGame(); }, { color: "dark", resume: true });
   };
 
   // 行は表示の順に作る（rows の順＝カーソルの戻り先。先頭は NEW GAME）
