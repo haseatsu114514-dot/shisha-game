@@ -26,13 +26,29 @@ export async function chooseBooth(photo, owned, nameFor, signal) {
   const design = { v: 1, style: portraitStyle(), theme: "original", rig: "", marks: [] };
   const preview = el("div.pb-preview");
   const refresh = () => preview.replaceChildren(sheet(photo, design, nameFor));
-  const choices = el("div.pb-swatches", Object.entries(themes).map(([theme, label]) =>
-    el("button", { dataset: { theme }, "aria-pressed": String(theme === design.theme),
-      onclick: e => { design.theme = theme; for (const btn of choices.children) btn.setAttribute("aria-pressed", String(btn === e.currentTarget)); refresh(); } }, [el("span", { text: label })])));
+  const choices = el("div.pb-swatches");
+  const lastTheme = { booth: "original", nagoya: "nagoya-osu-kannon" };
+  const groups = el("div.pb-groups", { role: "group", "aria-label": "背景の種類" },
+    [["booth","フレーバー・定番"], ["nagoya","名古屋の街"]].map(([group, label]) =>
+      el("button", { text: label, dataset: { group }, onclick: () => showGroup(group) })));
+
+  function showGroup(group) {
+    for (const btn of groups.children) btn.setAttribute("aria-pressed", String(btn.dataset.group === group));
+    const entries = Object.entries(themes).filter(([theme]) => theme.startsWith("nagoya-") === (group === "nagoya"));
+    choices.replaceChildren(...entries.map(([theme, label]) =>
+      el("button", { dataset: { theme }, onclick: () => selectTheme(group, theme) }, [el("span", { text: label })])));
+    choices.scrollTop = 0;
+    selectTheme(group, lastTheme[group]);
+  }
+  function selectTheme(group, theme) {
+    design.theme = lastTheme[group] = theme;
+    for (const btn of choices.children) btn.setAttribute("aria-pressed", String(btn.dataset.theme === theme));
+    refresh();
+  }
   const available = [...new Set(owned)].filter(id => homeRigFile(id));
   const rig = select("小道具", [["", "台なし"], ["home_rig_set", "撮影用の卓上台"], ...available.map(id => [id, "持ち込み・"+(DB.equipById[id]?.name || "シーシャ台")])], id => { design.rig = id; refresh(); });
-  refresh();
-  const result = await booth("背景を選んでね", el("div", [preview, choices, rig]), [["撮って落書きする", "edit"], ["このまま撮る", "auto"], ["やめる", null]], signal);
+  showGroup("booth");
+  const result = await booth("背景を選んでね", el("div", [preview, groups, choices, rig]), [["撮って落書きする", "edit"], ["このまま撮る", "auto"], ["やめる", null]], signal);
   return result && { design, edit: result === "edit" };
 }
 
