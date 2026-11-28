@@ -844,6 +844,11 @@ await suite("look_vertical", async (check) => {
     await finishSpots(page);
     await page.locator(t("vt-craft-tut")).waitFor({ state: "hidden" });
     await page.locator(`${t("vt-holes-poke")}:not([disabled])`).waitFor();
+    // 本編の時計は説明を閉じた toggle の届きで再開する（その前の押しは本編が受けない）。再開してから刺す
+    await page.waitForFunction(() => {
+      const bench = document.querySelector("#screen .bench");
+      return bench?.dataset.helpPaused !== "true" && !bench?.querySelector(".bench-panel")?.inert;
+    });
     let pressed = null;
     for (let i = 0; i < 60; i++) {
       const view = await page.evaluate(() => {
@@ -913,6 +918,11 @@ await suite("look_vertical", async (check) => {
     await page.waitForFunction(() => !document.querySelector("#screen .bench .bench-guide").open);
     await page.locator(t("vt-craft-tut")).waitFor({ state: "hidden" });
     await page.locator(t("vt-heat-coal-0")).waitFor();
+    // 説明の間は外枠がまだ焼いていない炭を置いている。本編が炭を出し、外枠がそれを写すまで待つ
+    await page.waitForFunction(() => {
+      const live = document.querySelectorAll("#screen .heat .stove .coal").length;
+      return live > 0 && document.querySelectorAll(".vtc-coal").length === live;
+    });
     const first = await page.evaluate(() => ({
       shell: document.querySelectorAll(".vtc-coal").length, live: document.querySelectorAll("#screen .heat .stove .coal").length,
       stove: document.querySelector(".vtc-stove > img").getAttribute("src"), hero: document.querySelector(".vtc-coal-hero > img").getAttribute("src"),
