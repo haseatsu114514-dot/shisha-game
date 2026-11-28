@@ -591,6 +591,10 @@ export const FLAG_EXACT_RULES = [
   ["_rio_sample_received", "person"],
   ["_roam_day", "progression"],
   ["_roam_early_closed", "progression"], // 早じまいして居合わせた人と会った夜の店（daily/roamers.js）
+  ["_roam_seen_dubai_naru", "person"],
+  ["_roam_seen_master_hookah", "person"],
+  ["_roam_seen_da_silva", "person"],
+  ["_roam_seen_sheikh", "person"],
   ["_roam_seen_dr_charcoal", "person"], // 第5章の ch5_opening が読む（よその店で博士に居合わせた回数）
   ["_ryuji_melty_greeting", "person"],
   ["_ryuji_melty_visit", "person"],

@@ -57,6 +57,12 @@ const greetedAgeha = (id, flag) => (spot, value) => elsewhere(id)(spot) && (spot
 const samechanKnown = value => !!value.met?.samechan && !!(value.flags?._samechan_name_known || value.flags?._samechan_nickname_known
   || value.flags?._lime_contact_samechan || value.contacts?.includes("samechan") || value.limeRead?.includes("lime_naru_samechan_nickname"));
 
+// 大会中のカフェは、路地裏の約束を済ませた後か、中心地の夜（昼は店番も選べる）。
+const dubaiCafe = (spot, value) => spot.id === "ch4_dubai_cafe" && value.slot === 1
+  || spot.id === "ch4_dubai_alley" && !!value.flags?._ch4?.read?.ch4_stranger_second;
+const dubaiReturn = (spot, value) => value.flags?._ch2_region === "dubai" && spot.id === "ch5_dubai_alley";
+const atHome = value => (value.flags?._ch2_region || "home") === "home";
+
 /**
  * 居合わせる人。chapters＝出る章、at＝居合わせる店、ready＝出はじめる条件、
  * bond＝読み終えた時に好感度が上がる（その章の通いの小会話と同じ量。core/stats.js の visitAffinity("talk")）。
@@ -87,14 +93,27 @@ export const ROAMERS = Object.freeze([
   { id: "steve", chapters: [3], shop: "ch3_tokyo_steve", at: spot => tokyoShop(spot) && spot.place !== "steve", ready: metStory("steve"), bond: true },
   { id: "mashiro", chapters: [3], at: spot => tokyoShop(spot) && spot.place !== "mukai", ready: metStory("mashiro"), bond: true },
   { id: "emil", chapters: [3], at: tokyoShop, ready: () => true },
+  // 世界大会の前後で会う四人。なるは和解後の口調で話し、地元編とは別に数える。
+  { id: "naru", series: "dubai_naru", chapters: [4], at: dubaiCafe, ready: metStory("naru"), bond: true },
+  { id: "da_silva", chapters: [4], shop: "ch4_dubai_festa", at: dubaiCafe,
+    ready: value => !!value.flags?._ch4?.read?.ch4_festa, bond: true },
+  { id: "master_hookah", chapters: [4], shop: "ch4_dubai_longlong", at: dubaiCafe, ready: metStory("master_hookah"), bond: true },
+  { id: "naru", series: "dubai_naru", chapters: [5], shop: "naru",
+    at: (spot, value) => spot.id === "adam" || spot.id === "c_station" || spot.id === "minto" && !!value.met?.minto,
+    ready: value => atHome(value) && metStory("naru")(value), bond: true },
+  // 帰国後の再訪。出張ブースはもうなく、太陽は休暇、王煙楼は茶の仕入れで立ち寄る。
+  { id: "da_silva", chapters: [5], at: dubaiReturn, ready: metStory("da_silva"), bond: true },
+  { id: "master_hookah", chapters: [5], at: dubaiReturn, ready: metStory("master_hookah"), bond: true },
+  { id: "sheikh", chapters: [5], at: dubaiReturn, ready: metStory("sheikh"), bond: true },
   // 第5章の地元。ひよりは自分の店を持たないので、仕事帰りによその店に居合わせる（BLC08。第1・2章の相席 daily/hiyori.js の続き）。
   // tonari での再会（_hiyori_tonari_return_done）を読んだ後だけ。恋人でも友人でも読める会話にしてある。
-  { id: "hiyori", chapters: [5], at: shishaShop, ready: value => metStory("hiyori")(value) && !!value.flags?._hiyori_tonari_return_done, bond: true },
+  { id: "hiyori", chapters: [5], at: shishaShop, ready: value => atHome(value) && metStory("hiyori")(value) && !!value.flags?._hiyori_tonari_return_done, bond: true },
   // mukai の看板猫。裏口で一度構った後は、公園やよその店の帰り道で見かけることがある（2026-11-02 オーナー「てつこは作って」）
   { id: "tetsuko", chapters: [3], at: spot => spot.region === "tokyo" && (spot.place === "park" || tokyoShop(spot) && spot.place !== "mukai"),
     ready: value => (value.flags?._ch3_outings?.tetsuko || 0) >= 1 },
 ].map(Object.freeze));
-const BY_ID = Object.fromEntries(ROAMERS.map(entry => [entry.id, entry]));
+const chapterEntry = (id, value) => ROAMERS.find(entry => entry.id === id && entry.chapters.includes(value?.chapter));
+const seriesOf = (id, value) => chapterEntry(id, value)?.series || id;
 
 // 章ごとの、地図の外の店（第2章の柚ヶ谷など）。章のモジュールが登録する（循環importを避ける）
 const extraSources = [];
@@ -211,16 +230,18 @@ const earlyClosedTonight = (spot, value = state) => {
 };
 setEarlyClosure(spot => earlyClosedTonight(spot));
 
-export const roamerCount = (id, value = state) => Number(value?.flags?.[roamSeenFlag(id)] || 0);
+export const roamerCount = (id, value = state) => Number(value?.flags?.[roamSeenFlag(seriesOf(id, value))] || 0);
 const REPEATS = ["a", "b", "c"];
 const repeatKeys = id => id === "hiyori" ? [...REPEATS, "d", "e", "f", "g", "h"] : REPEATS;
 /** 次に読む会話。初回を読んだ後は、人物ごとの小会話を順に読む。 */
 export function roamerScene(id, value = state) {
   const n = roamerCount(id, value);
   const keys = repeatKeys(id);
-  return n === 0 ? `roam_${id}_first` : `roam_${id}_${keys[(n - 1) % keys.length]}`;
+  const key = n === 0 ? "first" : keys[(n - 1) % keys.length];
+  return `roam_${seriesOf(id, value)}_${key}`;
 }
-export const ROAMER_SCENES = Object.freeze(ROAMERS.flatMap(({ id }) => [`roam_${id}_first`, ...repeatKeys(id).map(key => `roam_${id}_${key}`)]));
+export const ROAMER_SCENES = Object.freeze([...new Set(ROAMERS.flatMap(({ id, series = id }) =>
+  ["first", ...repeatKeys(id)].map(key => `roam_${series}_${key}`)))]);
 
 let loading = null, active = false;
 async function loadScenes() {
@@ -236,8 +257,8 @@ async function loadScenes() {
  */
 export async function meetRoamer(spot, scheduled, { bg, deferSave = false } = {}) {
   if (!spot || !scheduled || scheduled.spotId !== spot.id || active || isPlaying()) return false;
-  const entry = BY_ID[scheduled.id];
   const owner = state;
+  const entry = chapterEntry(scheduled.id, owner);
   if (!entry || !owner?.flags || metToday(owner, entry.id)) return false;
   // 途中でLOAD・タイトルへ戻ったら、会話を止めて何も残さない
   const controller = new AbortController();
@@ -263,7 +284,7 @@ export async function meetRoamer(spot, scheduled, { bg, deferSave = false } = {}
     };
     if (!await (chain ? playChainStage(chain, read) : read(scene))) return false;
     if (!chain) {
-      owner.flags[roamSeenFlag(entry.id)] = roamerCount(entry.id, owner) + 1;
+      owner.flags[roamSeenFlag(entry.series || entry.id)] = roamerCount(entry.id, owner) + 1;
       recordChapterFiveTalk(owner, scene);
     }
     owner.flags[ROAM_DAY_FLAG] = { ...(owner.flags[ROAM_DAY_FLAG] || {}), [entry.id]: dayStamp(owner) };

@@ -9,6 +9,7 @@
 // デートは地元の店なので、東京・ドバイにいる間は誘いが届かない（daily/romance.js の hometownDateOpen）。
 // 出張シーシャの依頼（DLV）: 数日おきにスミさんのLIMEで届き、引き受けると地元の地図に「出張シーシャ」が出る（chapters/ch5-catering.js）。
 // 各地の店めぐり帳（MGR）: 帳面の店で来店を終えると判子が押され、地域・全部がそろうとくじ券。LIMEの「店めぐり帳」で見る（chapters/ch5-shop-stamps.js）。
+import { addRoamerSpots } from "../daily/roamers.js";
 import { state, save, timeOfDay } from "../core/state.js";
 import { bgUrl, displayName } from "../core/data.js";
 import { modal, toast } from "../core/ui.js";
@@ -99,12 +100,15 @@ export function dueTonariScene(value = state) {
   return next && (TONARI_SLOTS[next.id] || [0, 1]).includes(value.slot) ? next : null;
 }
 
+const dubaiRoamerSpots = () => state.chapter === 5 && inDubai() ? DUBAI_SPOTS : [];
+
 /**
  * 日常ループの章定義。
  * @param io.readAndCommit (id) => Promise<boolean> 読了して進行を確定・保存する（ch5.js）
  * @param io.readScene (id) => Promise<boolean> 読むだけ（試作の場面。確定は呼び出し側）
  */
 export function chapterFiveDailyDefinition(io) {
+  addRoamerSpots(dubaiRoamerSpots);
   return {
     get untilDay() {
       const match = state?.flags?._ch5?.matchDay;
