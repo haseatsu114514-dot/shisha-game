@@ -559,8 +559,8 @@ await suite("look_vertical", async (check) => {
       const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 1, day: 2, slot: 0 });
       (await import("./js/core/ui.js")).clearScreen();
       const { newSession, openBench } = await import("./js/craft/session.js");
-      const { stepMix } = await import("./js/craft/steps.js");
-      const cs = newSession("tutorial"); openBench(cs, {}); window.mixRun = stepMix(cs);
+      const { stepPlace } = await import("./js/craft/steps.js");
+      const cs = newSession("tutorial"); openBench(cs, {}); window.placeRun = stepPlace(cs);
     });
     await page.waitForFunction(() => getComputedStyle(document.getElementById("rotate-hint")).display !== "none", null, { timeout: 10000 });
     assert.equal(await scene(page), "");
@@ -725,6 +725,63 @@ await suite("look_vertical", async (check) => {
     window.vtStepDone = false;
     (await import(module))[fn](cs).then(() => { window.vtStepDone = true; }, (error) => { window.vtCraftError = String(error.stack || error); });
   }, { module, fn, mode, setup });
+  async function rotateBench(page) {
+    await page.setViewportSize({ width: 844, height: 390 });
+    await page.waitForFunction(() => !document.documentElement.dataset.vt);
+    await page.setViewportSize(TALL.viewport);
+    await waitScene(page, "craft");
+  }
+  await check("craft-mix-and-pull-actions", async page => {
+    await waitScene(page, "title");
+    await runCraftStep(page, { module: "./js/craft/steps.js", fn: "stepMix" });
+    await finishSpots(page);
+    const plus = id => page.locator(t("vt-mix-plus-" + id));
+    const confirm = page.locator(".vtc-mix-footer button");
+    assert(await confirm.isDisabled());
+    await plus("double_apple").press("Enter");
+    assert.equal(await page.evaluate(() => window.vtCraft.mix.double_apple), 1);
+    for (let i = 1; i < 9; i++) await plus("double_apple").tap();
+    for (let i = 0; i < 3; i++) await plus("mint").tap();
+    await page.waitForFunction(() => !document.querySelector(".vtc-mix-footer button").disabled);
+    await rotateBench(page);
+    await confirm.tap();
+    await page.waitForFunction(() => window.vtStepDone);
+    assert.equal(await page.evaluate(() => window.vtCraft.mix.double_apple), 9);
+    await runCraftStep(page, { module: "./js/craft/pull.js", fn: "runPull", setup: { mix: { mint: 3, double_apple: 9 } } });
+    await finishSpots(page);
+    const stop = page.locator(t("vt-pull-stop"));
+    const serve = page.locator(t("vt-pull-serve"));
+    await page.locator(t("vt-pull-stop") + ":enabled").waitFor();
+    assert(await serve.isDisabled());
+    await rotateBench(page);
+    for (let i = 0; i < 2; i++) {
+      await page.waitForFunction(() => {
+        const pos = Number(document.querySelector("#screen .pg-needle")?.dataset.pos);
+        return pos > 45 && pos < 55 && !document.querySelector('[data-test="vt-pull-stop"]').disabled;
+      });
+      await stop.tap();
+    }
+    await serve.tap();
+    await page.locator(t("vt-craft-result-next")).tap();
+    await page.waitForFunction(() => window.vtStepDone);
+  }, { ...TALL, pageEntry: entry });
+
+  await check("drill-hole-help", async page => {
+    await waitScene(page, "title");
+    await runCraftStep(page, { module: "./js/craft/holes.js", fn: "runHoles", mode: "drill" });
+    await page.locator(t("vt-holes-start")).tap();
+    await page.locator(t("hole-punch")).waitFor({ state: "attached" });
+    await page.locator(t("vt-holes-poke") + ":not([disabled])").waitFor();
+    await page.waitForFunction(() => !document.querySelector("#fx > .countdown"));
+    await page.locator(t("vt-craft-help")).tap();
+    const guide = page.locator(t("vt-craft-tut"));
+    await guide.waitFor();
+    const count = Number(await guide.getAttribute("data-count"));
+    assert(count >= 4 && count <= 5, String(count));
+    await rotateBench(page);
+    await finishSpots(page);
+  }, { ...TALL, pageEntry: entry });
+
   /** 外枠のボタンを長押しする（pointerdown → 待つ → pointerup）。during は押している間に確かめる関数。 */
   async function holdShell(page, id, ms, during = null) {
     const box = await page.locator(t(id)).boundingBox();

@@ -25,6 +25,11 @@ const HOME_SCENE_PROPS = [
   { owned: "stand_custom_tosu", file: "shisha_home_stand_custom_tosu.png", ...CUSTOM_SPOT, h: 175, ratio: 507 / 1185, crop: [195, 68, 507, 1185] },
   { owned: "stand_custom_engraved", file: "shisha_home_stand_custom_engraved.png", ...CUSTOM_SPOT, h: 175, ratio: 508 / 1190, crop: [196, 67, 508, 1190] },
 ];
+/** 自宅・撮影小道具で共通の台の絵（assets/ui/scene_props 内）。 */
+export function homeRigFile(id) {
+  return HOME_SCENE_PROPS.find(prop => prop.owned === id)?.file || null;
+}
+
 const isHome = (url) => /^bg_home(?:_(?:overcast_)?(?:day|night))?\.png$/.test(sceneFile(url));
 
 // C.STATION の店内（bg_c_station_day / bg_c_station_night）には台を重ねない（#3818）。

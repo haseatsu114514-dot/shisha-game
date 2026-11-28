@@ -62,14 +62,16 @@ export const holesView = {
   intro: (bench) => bench.querySelector(".bench-title")?.textContent.trim() === "アルミ穴あけ", // チュートリアルの初回の説明
   persist: true, // 配置選び→穴あけ→結果で本編が部品を作り直しても、同じ画面のまま描き替える（結果の間も開けた穴を残す）
   // 説明のスポットライトの段（craft/tutorial.js）。本編の説明の文を段に分け、アルミ・刺す・開けた穴の数を順に指す
-  tutorial: ({ text, lines, extras }) => text === HOLES_HELP ? [
+  tutorial: ({ text, lines, extras, mode }) => text === HOLES_HELP ? [
     { target: "foil", say: "アルミは葉を覆うふた、穴は空気と熱の入口だ" }, // 本編の文のまま
     { target: "poke", say: "目印に針を合わせて、同じ加減で刺せ" }, // 本編の文のまま
     { target: "poke", say: "押しすぎると穴が大きくなる" }, // 本編の文のまま
     { target: "count", say: "周りの点が開けた穴だ。金ならちょうどいい" }, // 足した文（「刺す」の周りの点と左下の数。金の点＝ちょうどいい穴）
   ] : [
     // 一覧の行は、二文以上なら一文ずつの段にする（2行に収める）
-    ...[...lines.map((say) => ({ say })), ...extras].flatMap((line) => sayLines(line.say).map((say) => ({ ...line, say, target: aimOf(line) }))),
+    ...(mode === "drill" && extras.some(line => line.label === "狙う")
+      ? extras.filter(line => ["狙う", "押し加減"].includes(line.label))
+      : [...lines.map((say) => ({ say })), ...extras]).flatMap((line) => sayLines(line.say).map((say) => ({ ...line, say, target: aimOf(line) }))),
   ],
   create({ hold, relay, icon }) {
     const marks = el("div.vtc-foil-plane", { html: '<svg class="vtc-foil-marks" viewBox="-100 -100 200 200" aria-hidden="true"></svg>' });
