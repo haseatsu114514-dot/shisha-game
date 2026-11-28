@@ -1,5 +1,6 @@
 // 撮影時とギャラリーで同じ、受取済みプリクラの見た目を使う。
-import { cgUrl, portraitInfo } from "./data.js";
+import { homeRigFile } from "./scene-art.js";
+import { DB, cgUrl, img, portraitInfo } from "./data.js";
 import { el } from "./util.js";
 
 /** 選定した写真（core/purikura-data.js）のある撮影は、その絵を出す（PFC18）。 */
@@ -25,12 +26,6 @@ export function stickerPhoto(people, mode, nameFor) {
 }
 
 const themes = { original: "おまかせ", petal: "桜ミルク", pakki: "パッキーランド", mint: "ミントラウンジ", orbit: "宇宙たこ焼き" };
-const rigs = {
-  home_rig_set: ["卓上シーシャ台", "tabletop"], home_rig_pro: ["本格シーシャ台", "pro"],
-  stand_walnut: ["ウォルナット台", "stand_walnut"], stand_stainless: ["ステンレス台", "stand_stainless"],
-  stand_custom: ["特注台", "stand_custom"], stand_custom_melty: ["MELTY 台", "stand_custom_melty"],
-  stand_custom_tosu: ["橙須限定色の台", "stand_custom_tosu"], stand_custom_engraved: ["彫刻台", "stand_custom_engraved"],
-};
 const stamps = {
   heart: ["ハート", "💗"], star: ["きらきら", "✨"], apple: ["ダブルアップル", "🍎🍏"],
   mint: ["ミント", "🌿"], coal: ["キューブ炭", "cube_charcoal"], bowl: ["ハガル", "lotos_hagal"],
@@ -84,9 +79,9 @@ function sheet(photo, design, nameFor) {
     const strip = photo.cg && cgUrl(photo.cg);
     if (strip) root.append(el("img.pb-strip", { src: strip, alt: "撮ったシール" }));
   }
-  if (Object.hasOwn(rigs, design.rig)) {
-    const [name, file] = rigs[design.rig];
-    root.append(el("img.pb-rig", { alt: name, src: "img/ui/scene_props/shisha_home_"+file+".webp" }));
+  const file = homeRigFile(design.rig);
+  if (file) {
+    root.append(el("img.pb-rig", { alt: DB.equipById[design.rig]?.name || "シーシャ台", src: img("ui/scene_props/"+file) }));
   }
   const layer = svg("svg", { viewBox: "0 0 320 440", class: "pb-ink", "aria-label": "落書き" });
   for (const mark of design.marks.slice(0, LIMIT)) { const n = paint(mark); if (n) layer.append(n); }
@@ -105,4 +100,4 @@ export function printedPurikura(photo, nameFor) {
 }
 
 
-export { themes, rigs, stamps, colors, LIMIT, paint, sheet };
+export { themes, stamps, colors, LIMIT, paint, sheet };

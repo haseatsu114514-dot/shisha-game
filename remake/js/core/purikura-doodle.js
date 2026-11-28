@@ -1,6 +1,8 @@
+import { DB } from "./data.js";
+import { homeRigFile } from "./scene-art.js";
 import { portraitStyle } from "./portrait-style.js";
 import { el } from "./util.js";
-import { themes, rigs, stamps, colors, LIMIT, paint, sheet, printedPurikura } from "./purikura-photo.js";
+import { themes, stamps, colors, LIMIT, paint, sheet, printedPurikura } from "./purikura-photo.js";
 
 // 縦の外枠は本編のモーダルを文字のメニューに写す。写真と指の座標が一致する実物の dialog を開く。
 function booth(title, body, actions, signal) {
@@ -27,8 +29,8 @@ export async function chooseBooth(photo, owned, nameFor, signal) {
   const choices = el("div.pb-swatches", Object.entries(themes).map(([theme, label]) =>
     el("button", { dataset: { theme }, "aria-pressed": String(theme === design.theme),
       onclick: e => { design.theme = theme; for (const btn of choices.children) btn.setAttribute("aria-pressed", String(btn === e.currentTarget)); refresh(); } }, [el("span", { text: label })])));
-  const available = Object.keys(rigs).filter(id => owned.includes(id));
-  const rig = select("小道具", [["", "台なし"], ["home_rig_set", "撮影用の卓上台"], ...available.map(id => [id, "持ち込み・"+rigs[id][0]])], id => { design.rig = id; refresh(); });
+  const available = [...new Set(owned)].filter(id => homeRigFile(id));
+  const rig = select("小道具", [["", "台なし"], ["home_rig_set", "撮影用の卓上台"], ...available.map(id => [id, "持ち込み・"+(DB.equipById[id]?.name || "シーシャ台")])], id => { design.rig = id; refresh(); });
   refresh();
   const result = await booth("背景を選んでね", el("div", [preview, choices, rig]), [["撮って落書きする", "edit"], ["このまま撮る", "auto"], ["やめる", null]], signal);
   return result && { design, edit: result === "edit" };
