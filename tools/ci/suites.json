@@ -1128,6 +1128,7 @@
       "run": [
         "python3 tools/lint_dialogue.py",
         "python3 tools/check_hesitation_fragments.py",
+        "python3 tools/test_check_hesitation_fragments.py",
         "python3 tools/check_story_canon.py",
         "python3 tools/check_dialogue_links.py",
         "python3 tools/test_story_canon.py",
