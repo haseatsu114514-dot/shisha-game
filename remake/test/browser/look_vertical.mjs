@@ -252,11 +252,18 @@ await suite("look_vertical", async (check) => {
     const after = await selected();
     assert.equal(after.mine, order[(order.indexOf(before.mine) + 1) % order.length]);
     assert.equal(after.live, after.mine, "the landscape map selects the same pin");
-    // 上＝全体を見る→もう一度で寄る
     await pad(page, "up");
-    await page.waitForFunction(() => document.querySelector(".vt-map").classList.contains("overview"));
+    await page.waitForFunction(() => document.querySelector(".vt-map.overview"));
     await pad(page, "up");
-    await page.waitForFunction(() => !document.querySelector(".vt-map").classList.contains("overview"));
+    await page.waitForFunction(() => !document.querySelector(".vt-map.overview"));
+    // 家が選択された時も、全体表示の tonari の中央を押せば tonari に寄る。
+    await pad(page, "down");
+    await page.locator(t("vt-row-rest")).tap();
+    await pad(page, "up");
+    await page.waitForFunction(() => document.querySelector(".vt-map.overview"));
+    await page.locator(t("vt-pin-tonari")).tap();
+    await page.waitForFunction(() => !document.querySelector(".vt-map.overview"));
+    assert.deepEqual(await selected(), { mine: "tonari", live: "tonari" });
     // 下＝一覧 → PEPPERMINT を選んで決定
     await pad(page, "down");
     await page.locator(t("vt-row-minto")).tap();
@@ -506,15 +513,43 @@ await suite("look_vertical", async (check) => {
         read: root.querySelector(".vt-ct-read").textContent, art: root.querySelector(".vt-ct-art").getAttribute("src"), shape: root.dataset.shape, tone: root.dataset.tone,
         amb: !!root.querySelector(".vt-ct-amb"), text: [...root.childNodes].filter((n) => n.nodeType === Node.TEXT_NODE).map((n) => n.textContent).join(""),
         square: Math.abs(pic.width - pic.height) <= 1 && Math.abs(art.height - pic.height) <= 1, wide: Math.abs(art.width - shell.width) <= 1,
-        centered: Math.abs((pic.top + pic.bottom) / 2 - (shell.top + shell.bottom) / 2) <= 2 };
+        logo: root.querySelector(".vt-ct-logo").naturalWidth, headerHeight: pic.top - shell.top };
     });
     assert.equal(call.cover, "title");
     assert.deepEqual([call.en, call.name, call.read], ["CHAPTER 1", "煙がつなぐ街", "Smoke & Ties"]);
     assert.match(call.art, /ch1-title-square\.webp/, "the square art made for the vertical screen (VPN28)");
     assert.equal(call.text, "", "no stray text (such as \"null\") in the call");
     assert.deepEqual([call.shape, call.tone, call.amb], ["square", "light", false], "no blurred copy of the white art behind");
-    assert(call.square && call.wide && call.centered, `the square art fills the width in the vertical middle ${JSON.stringify(call)}`);
+    assert(call.square && call.wide && call.logo > 0 && call.headerHeight < 200, `the logo and compact header leave room for the full-width square ${JSON.stringify(call)}`);
     await page.evaluate(() => window.titleRun);
+  }, { ...TALL, pageEntry: entry });
+
+  await check("narus-adjustments-before-the-tournament", async (page) => {
+    await waitScene(page, "title");
+    await page.evaluate(async () => {
+      const { newGame } = await import("./js/core/state.js");
+      const state = newGame();
+      Object.assign(state, { phase: "daily", chapter: 1, day: 14 });
+      (await import("./js/core/ui.js")).clearScreen();
+      const cs = (await import("./js/craft/practice.js")).newCarePracticeSession("rehearsal");
+      cs.practiceKind = "midcheck";
+      (await import("./js/craft/session.js")).openBench(cs, {});
+      const { runCare } = await import("./js/craft/pull.js");
+      window.careRun = (async () => {
+        for (const round of [1, 2]) await runCare(cs, { round });
+        return cs.careHistory.map((care) => care.coalsDetail);
+      })();
+    });
+    for (const round of [1, 2]) {
+      await page.locator(t("vt-care-place-std")).tap();
+      await page.locator(t("vt-care-coal-1")).tap();
+      await page.locator(t("vt-pull-stop")).tap();
+      await page.locator(t("vt-pull-serve")).tap();
+      await page.locator(t("vt-craft-result-next")).tap();
+      assert.equal(await page.evaluate(() => document.documentElement.dataset.rotateGuard), undefined);
+    }
+    const history = await page.evaluate(() => window.careRun);
+    assert.deepEqual(history.map(({ count, place }) => [count, place]), [[1, "std"], [1, "std"]]);
   }, { ...TALL, pageEntry: entry });
 
   await check("unsupported-scenes-show-the-rotate-hint", async (page) => {
@@ -1139,7 +1174,10 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "title", 30000);
     await page.locator("#boot").waitFor({ state: "detached" });
     await arm(page);
-    await page.locator(t("vt-title-load")).tap();
+    const load = page.locator(t("vt-title-load"));
+    const hit = await load.boundingBox();
+    assert(hit.width >= 120 && hit.height >= 44);
+    await load.tap({ position: { x: hit.width / 2, y: hit.height - 4 } });
     await page.locator(t("slot-0")).waitFor({ state: "attached" });
     await page.evaluate(() => document.querySelector('[data-test="slot-0"]').click());
     await waitScene(page, "map", 40000);

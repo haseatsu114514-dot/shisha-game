@@ -7,12 +7,13 @@
 // 目安の線の高さは本編の値（craft/water.js の WATER.low・high）。ボトルの形・水面の揺れ・水流は試作の絵の動き（見た目だけ）。
 // 説明の間（チュートリアルの初回の説明は本編が部品を出す前、「？」は本編が作業台を止めている）は、説明が指すボタンを押せる形で見せる
 // （押しても本編へは届かない）。説明のスポットライト（craft/tutorial.js・VPN32）は、ボトル→目安の線→注ぐ・こぼす→決定の順に明るく抜く。
+import { imgFileUrl } from "../../../core/img-file.js";
 import { el } from "../../../core/util.js";
 import { WATER } from "../../../craft/water.js";
 import { TUTORIAL_STEP_HELP } from "../../../craft/bench-ui.js";
 import { speech } from "./tutorial.js";
 
-const ART = new URL("../../../../img/ui/vertical-craft/", import.meta.url).href;
+const ART = imgFileUrl("ui/vertical-craft/");
 // ボトルの絵（ui-bottle-open.webp 540×800）の中の形。inner＝ガラスの内側（底 y=755 から受け口のすぐ下 y=209 まで）。
 // rest＝ふだんの傾き、drain＝こぼす間の傾き（度）。rim＝受け口の穴の手前の縁（水流はここから下は受け口の陰）
 const BOTTLE = { w: 540, h: 800, cx: 270, base: 755, top: 209, pivot: [270, 790], mouth: [270, 32], rim: 50, rest: 8, drain: 17,

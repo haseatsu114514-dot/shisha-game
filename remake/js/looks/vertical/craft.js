@@ -11,6 +11,7 @@
 //   どの工程にも共通の、始まりの 3・2・1・GO!（core/ui.js の countdown）と工程の結果の札（craft/common.js の resultCard）もここで写す。
 // 工程ごとの画面は looks/vertical/craft/<工程>.js に分け、下の登録表（VIEWS）から呼ぶ。登録の無い工程（まだ縦にしていない工程）では
 //   この場面にせず、今までどおり回転案内を出す（vertical.js の evaluate）。途中の工程だけ縦、で構わない。
+import { imgFileUrl } from "../../core/img-file.js";
 import { el } from "../../core/util.js";
 import { relayTap, relayPress, mirrorBackground, cssUrl, liveBackground, textOf } from "./frame.js";
 import { createThermo } from "./craft/thermo.js";
@@ -21,6 +22,7 @@ import { pullView } from "./craft/pull.js";
 import { packView } from "./craft/pack.js";
 import { holesView } from "./craft/holes.js";
 import { heatView } from "./craft/heat.js";
+import { careView } from "./craft/care.js";
 import { timerView } from "./craft/timer.js";
 
 /**
@@ -42,9 +44,9 @@ import { timerView } from "./craft/timer.js";
  *   tutorial     … 説明のスポットライトの段（無くてよい。書き方は craft/tutorial.js の冒頭）。
  *                  例: tutorial: (guide) => [{ target: "pic", say: "…" }, { target: "cards", say: "…" }, { target: "ok", say: "…" }]
  */
-const VIEWS = [waterView, mixView, packView, holesView, heatView, timerView, pullView];
+const VIEWS = [waterView, mixView, packView, holesView, heatView, timerView, pullView, careView];
 
-const IMG = new URL("../../../img/", import.meta.url).href;
+const IMG = imgFileUrl("");
 const SUMI_FACE = `${IMG}ui/face_icons/new/face_sumi.webp`;
 const GRADES = ["D", "C", "B", "A", "S", "SS", "SSS"]; // 本編の制作ランク（craft/rank-hud.js の CRAFT_GRADES）。絵は img/ui/craft-rank/
 // 演出の層に出ていると、作る場面を写さない物（自分で操作する画面・ボタンのある覆い。結果の札など）。

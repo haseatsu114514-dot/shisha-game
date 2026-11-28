@@ -6,12 +6,13 @@
 // 時間の刻み・上限・最短・目安の計算は本編のまま（ここでは数えない）。
 // 工程の初回の説明（本編はタイマーを出す前に開く）の間は、説明が指すボタンを押せる形で見せる（本編のボタンが無いので押しても何も起きない）。
 // 説明のスポットライト（craft/tutorial.js・VPN32）は、タイマーの絵と液晶→分・秒→早見→温度計（無ければ液晶）→スタートの順に明るく抜く。
+import { imgFileUrl } from "../../../core/img-file.js";
 import { el } from "../../../core/util.js";
 import { TUTORIAL_STEP_HELP } from "../../../craft/bench-ui.js";
 import { textOf } from "../frame.js";
 import { speech } from "./tutorial.js";
 
-const ART = new URL("../../../../img/ui/vertical-craft/", import.meta.url).href;
+const ART = imgFileUrl("ui/vertical-craft/");
 // 縦長のキッチンタイマーの絵（試作の KTIMER）。液晶＝左・上・幅・高さ（絵に対する %）、ボタン＝中心の横・縦・幅・高さ（%）・字の大きさ（cqw）
 const KTIMER = { ar: [885, 1207], lcd: [12.54, 12.84, 74.58, 29.16],
   keys: { min: [29.49, 58.74, 33.0, 13.58, 8.4], sec: [69.04, 58.91, 32.54, 13.25, 8.4], reset: [29.27, 77.97, 32.55, 13.59, 5], start: [68.81, 77.8, 32.09, 13.25, 4.6] } };
