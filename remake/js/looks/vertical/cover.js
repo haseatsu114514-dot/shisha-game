@@ -4,7 +4,7 @@
 // 名前・二つ名・一言・好きなフレーバー・色・絵は、本編が出したカットイン（vn/intro-art.js の .cutin.art-intro）からそのまま読む。
 // 章タイトル（タイトルコール）は VPN27 の形: 上にゲームタイトル（本編のタイトルのロゴ）、真ん中に章タイトルの横長の絵をそのまま、下の空きに章の情報。
 // どの章かは本編の章タイトル（core/ui.js chapterTitle の .chapter-card）から読み、章名・英題は core/chapter-title-art.js の登録から（「〇〇編」は出さない・VPN23）。
-import { introQuote } from "../../vn/intro-quote.js";
+import { introQuote } from "./intro-quote.js";
 import { imgFileUrl } from "../../core/img-file.js";
 import { el } from "../../core/util.js";
 import { CHAPTER_TITLE_ART } from "../../core/chapter-title-art.js";

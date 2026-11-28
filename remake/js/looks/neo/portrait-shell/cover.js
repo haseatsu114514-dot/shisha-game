@@ -1,7 +1,6 @@
 // 覆い（見るだけの場面）: 場面転換・日付の札・章タイトル・巻頭の詩・登場カットイン・読み込みの一言など。
 // 現行の画面へは戻さず、外枠のまま上画面を暗くして、覆いの中に見えている文字と絵だけを読み取って写す。
 // タップは現行ステージ中央の一番上の要素へ中継する（詩の送りなど、覆いがタップを待っている時に詰まらないように）。
-import { introQuote } from "../../../vn/intro-quote.js";
 import { el } from "../../../core/util.js";
 
 const SKIP_TAGS = new Set(["rt", "rp", "script", "style", "svg", "canvas", "img", "button"]);
@@ -131,7 +130,7 @@ function readCutin(cutin) {
     name: name?.getAttribute("aria-label") || text(name),
     ruby: [...(name?.querySelectorAll("[data-ruby]") || [])].map((node) => node.dataset.ruby).join(" "),
     title: text(cutin.querySelector(".ci-title")),
-    line: cutin.querySelector(".ci-line")?.dataset.line,
+    line: text(cutin.querySelector(".ci-line")),
     flavorLabel: text(flavor?.querySelector(".ci-flavor-label")),
     flavor: text(flavor?.querySelector(".ci-flavor-name")),
   };
@@ -202,7 +201,7 @@ export function createCoverScene(shell, painter, own) {
           card.ruby ? el("div.retro-profile-ruby", { text: card.ruby }) : null,
           el("div.retro-profile-name", { text: card.name }),
           card.title ? el("div.retro-profile-title", { text: card.title }) : null,
-          card.line ? introQuote("div.retro-profile-line", card.line) : null,
+          card.line ? el("div.retro-profile-line", { text: card.line }) : null,
           card.flavor ? el("div.retro-profile-flavor", [el("span", { text: card.flavorLabel || "好きなフレーバー" }), el("b", { text: card.flavor })]) : null,
         ].filter(Boolean));
       }

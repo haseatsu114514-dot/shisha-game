@@ -53,9 +53,7 @@
 .cutin.art-intro[data-char="hiyori"]:not([data-art="graphic"]) .ci-flavor-label { color:#9b6a80; }
 .cutin.art-intro .ci-line { all:unset; display:block; white-space:normal; font-size:42px; font-weight:700; letter-spacing:-.02em; line-height:1.36; line-break:strict; overflow-wrap:anywhere; color:#f8f6ee; }
 .cutin.art-intro .ci-line::before { display:none; }
-.cutin.art-intro .ci-line.is-split { display:flex; flex-direction:column; align-items:flex-start; }
-.ci-line.is-split wbr { display:none; }
-.ci-phrase { display:inline-block; max-width:100%; line-break:strict; text-wrap:balance; }
+.art-intro .ci-line span { display:block; }
 /* ひよりは淡い線香花火。名前の帯と火玉を覆わず、白いブラウスも背景から分ける。 */
 .cutin.art-intro[data-char="hiyori"]:not([data-art="graphic"]) { background:#fbf5f1; }
 .art-intro[data-char="hiyori"]:not([data-art="graphic"]) .ci-art-veil { background:linear-gradient(90deg,#e9dde3b3 0%,#f5eaeb66 32%,transparent 52%); }

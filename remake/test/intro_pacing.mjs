@@ -72,7 +72,6 @@ const sources = {
     motionOf: () => "soft",
     MOTIONS: { soft: { hold: 4000 } },
   },
-  "./intro-quote.js": { introQuote: () => new Node() },
   "./intro-flavors.js": { introFlavor() {} },
   "./intro-graphic.js": { graphicIntro: () => ({ portrait: "graphic.webp" }) },
   "./intro-transition.js": {
