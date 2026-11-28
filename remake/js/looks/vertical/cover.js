@@ -117,7 +117,7 @@ export function createCoverScene(frame, own) {
   const tip = el("div.vt-tip", { hidden: true, text: "タッチで次へ", "aria-hidden": "true" });
   const poster = el("div.vt-cv", { hidden: true, dataset: { test: "vt-cutin" } });
   const call = el("div.vt-ct", { hidden: true, dataset: { test: "vt-title-call" } });
-  let sig = "", posterSig = "", callSig = "", changedAt = 0, lastTap = 0, holding = false, gap = false;
+  let sig = "", posterHost = null, callSig = "", changedAt = 0, lastTap = 0, holding = false, gap = false;
 
   /** 本編のステージ中央の一番上の要素へ、タップを中継する（詩の送りなど、覆いがタップを待っている時に詰まらないように）。 */
   function relay() {
@@ -191,13 +191,14 @@ export function createCoverScene(frame, own) {
       callSig = "";
     }
     if (cutin) {
-      const card = readCutin(cutin);
-      const next = JSON.stringify([card.id, card.art, card.bg, card.title, card.line, card.flavor]);
-      if (next !== posterSig) { posterSig = next; renderPoster(card); }
+      if (cutin !== posterHost) {
+        renderPoster(readCutin(cutin));
+        posterHost = cutin;
+      }
       poster.hidden = false;
     } else {
       poster.hidden = true;
-      posterSig = "";
+      posterHost = null;
     }
     const url = mirrorBackground(bg);
     frame.setAmbient(url);
@@ -230,7 +231,7 @@ export function createCoverScene(frame, own) {
       frame.picture.append(bg);
       frame.over.append(art, lines, wait, tip, poster, call);
       frame.over.hidden = false;
-      sig = posterSig = callSig = ""; changedAt = performance.now(); bg.dataset.sig = "";
+      posterHost = null; sig = callSig = ""; changedAt = performance.now(); bg.dataset.sig = "";
     },
     leave() { poster.hidden = true; call.hidden = true; delete frame.root.dataset.cover; },
     sync,

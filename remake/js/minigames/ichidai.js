@@ -449,7 +449,7 @@ function startIchidai({ host = document.getElementById("stage"), signal = null, 
     const { portrait, frame } = found, size = BUST[mode], live = mode !== "small";
     const scale = size.unit ? size.unit / frame.unit : size.scale, [ex, ey] = size.eye;
     // 席では、まぶたと口の重ね絵を立ち絵の上に置く（まばたき・しゃべるときの口。位置は ichidai-face.js）。息づかいは顔ごと動かす
-    const parts = live ? faceParts(id, portrait.face) : null;
+    const parts = live && portrait.style === "classic" ? faceParts(id, portrait.face) : null;
     const at = ([x, y, w, h]) => ({ left: `${(ex + (x - frame.eye[0]) * scale - (w * scale) / 2).toFixed(1)}px`, top: `${(ey + (y - frame.eye[1]) * scale - (h * scale) / 2).toFixed(1)}px`, width: `${(w * scale).toFixed(1)}px`, height: `${(h * scale).toFixed(1)}px` });
     const overlays = parts ? [...parts.eyes.map((e) => el("i.ichi-eyelid", { style: at(e) })), parts.mouth ? el("i.ichi-lips", { style: at(parts.mouth) }) : null] : [];
     return el(`span.ichi-foe-bust${live ? ".is-seat" : ""}`, { dataset: { test: mode === "seat" ? "ichi-foe-bust" : mode === "rival" ? `ichi-rival-bust-${i}` : null, face: portrait.face, parts: parts ? "1" : null }, "aria-hidden": "true",

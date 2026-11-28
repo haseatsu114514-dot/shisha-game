@@ -2,8 +2,14 @@
 const ART_STEMS = Object.freeze({ kuraudo: "rei", uezono: "maezono", ayatori: "saku", sensu: "sui", dr_charcoal: "dr_kemuri" });
 export const characterArtStem = id => Object.hasOwn(ART_STEMS, id) ? ART_STEMS[id] : id;
 
-// はじめの新版は同じ顔を元にした表情一式。会話・表彰・札で正規の立ち絵に統一する。
-export const characterPortraitStyle = (folder, style) => folder === "hajime" ? "classic" : style;
+// 縦持ちの縦レイアウトでは先読みと表示の両方で全員を新版にそろえる。
+export const verticalPortraits = () => globalThis.document?.documentElement?.dataset?.look === "vertical"
+  && globalThis.matchMedia?.("(orientation: portrait)").matches;
+
+export function characterPortraitStyle(folder, style) {
+  if (verticalPortraits()) return "new";
+  return folder === "hajime" ? "classic" : style;
+}
 
 // 本編と独立ページのミニゲームで同じ manifest の画風・表情差分を選ぶ。
 export function resolvePortrait(manifest, speaker, face = "normal", style = "new", requestedCostume) {

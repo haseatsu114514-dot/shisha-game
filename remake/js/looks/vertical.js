@@ -13,6 +13,7 @@ import { el } from "../core/util.js";
 import { detectState, isLoading, topDialogOpen } from "./neo/portrait-shell/detect.js";
 import { withMinigameStyles } from "../minigames/minigame-styles.js";
 import { createFrame } from "./vertical/frame.js";
+import { refreshPortraits } from "../vn/engine.js";
 import { createTalkScene } from "./vertical/talk.js";
 import { createMapScene } from "./vertical/map.js";
 import { createMenuScene } from "./vertical/menu.js";
@@ -57,9 +58,17 @@ export function setActive(on) {
 let loadToken = 0;
 async function syncOrientation() {
   const want = active && !!query?.matches;
-  if (!want) { loadToken++; session?.stop(); session = null; return; }
+  const root = document.documentElement;
+  if (!want) {
+    loadToken++;
+    session?.stop();
+    session = null;
+    root.removeAttribute("data-vt-pending");
+    return;
+  }
   if (session) return;
   const mine = ++loadToken;
+  root.setAttribute("data-vt-pending", "");
   // 見た目の CSS は縦画面を使う時だけ読み込む（index.html の styles-look-vertical。ほかの端末には読ませない）
   try {
     await withMinigameStyles("look-vertical", null, () => {
@@ -68,6 +77,8 @@ async function syncOrientation() {
     });
   } catch (error) {
     console.error("[look] 縦画面の見た目を読み込めませんでした", error);
+  } finally {
+    if (mine === loadToken) root.removeAttribute("data-vt-pending");
   }
 }
 
@@ -75,6 +86,7 @@ function start() {
   const root = document.documentElement;
   root.dataset.vt = "on"; // 本編の会話の箱を縦のテロップと同じ比にする（css/look-vertical.css）
   root.dataset.vtHint = "hold"; // 最初の確認までは回転案内を出さない（出すかは evaluate() が決める）
+  refreshPortraits();
   let scene = null, sceneName = "";
   const frame = createFrame({
     dir: (dir) => { scene?.dir?.(dir); wake(400); },
@@ -141,12 +153,31 @@ function start() {
 
   /** 定期の確認（1 秒に 9 回ほど）。DOM の変化を受けた臨時の確認では、外枠を引っ込める・つなぐ判断だけを行う。 */
   function evaluate(now, periodic) {
+    // ゲートは body 直下で操作する。閉じた瞬間も、次の場面を判定するまでは縦の覆いを残す。
+    if (isLoading()) {
+      root.dataset.vtHint = "hold";
+      root.dataset.vtLoading = "on";
+      setScene("cover");
+      holdSince = noneSince = 0;
+      coverBlocked = false;
+      return;
+    }
+    if (root.dataset.vtLoading) delete root.dataset.vtLoading;
+    if (document.querySelector("#fx > .vn-loading")) {
+      root.dataset.vtHint = "hold";
+      hold = true;
+      gap = false;
+      pressable = false;
+      setScene("cover");
+      holdSince = noneSince = 0;
+      return;
+    }
     const wipe = document.querySelector("#wipe.resume");
     if (wipe) resumeSmoke.append(...wipe.querySelectorAll(".wipe-smoke, .wipe-haze"));
     // 第1章の幕は本編の札をそのまま全面に出す。重なった小窓や操作画面があれば通常の判定に任せる。
     const frontMotion = motionLayer.root.lastElementChild;
     const frontFx = document.getElementById("fx")?.lastElementChild;
-    const interlude = state?.chapter === 1 && !isLoading() && !topDialogOpen() && !document.querySelector("#modal.show") &&
+    const interlude = state?.chapter === 1 && !topDialogOpen() && !document.querySelector("#modal.show") &&
       (frontMotion ? frontMotion.matches(".day-card, .tr-dawn") :
         frontFx?.matches('.beat, .round-cut, .entrance, .day-card, .tr-dawn, .chapter-poem[data-poem="poem_ch1"]'));
     let found = interlude ? { kind: "scene", name: "interlude" } : boardOpen() ? { kind: "scene", name: "board" } : detectState(wipe ? [...own, wipe] : own);
@@ -216,7 +247,7 @@ function start() {
       candidate = null; streak = 0;
     } else { candidate = null; streak = 0; }
     // 外枠を出している間と、読み込みの画面（縦持ち用の配置を持つ）の間は回転案内を隠す
-    const holdHint = !!scene || isLoading() || dialogOpen;
+    const holdHint = !!scene || dialogOpen;
     if ((root.dataset.vtHint === "hold") !== holdHint) {
       if (holdHint) root.dataset.vtHint = "hold"; else delete root.dataset.vtHint;
       window.dispatchEvent(new Event("resize"));
@@ -242,7 +273,7 @@ function start() {
       if (periodic) lastDetect = now;
       evaluate(now, periodic);
     }
-    if (!scene?.sync) return;
+    if (!scene?.sync || root.dataset.vtLoading) return;
     if (dirty || now - lastSync >= SYNC_MS) {
       dirty = false;
       lastSync = now;
@@ -274,18 +305,14 @@ function start() {
       const target = record.target.nodeType === 1 ? record.target : record.target.parentElement;
       if (target === motionLayer.root && record.type === "childList") { dirty = true; other = true; continue; }
       if (!target || own.some((mine) => mine.contains(target)) || hint?.contains(target)) continue;
-      dirty = true;
-      if (target.closest?.(".vn-text, .vn-inner")) typed = true;
+      if (scene?.syncText && target.closest?.("#vn .vn-text, #vn .vn-inner")) typed = true;
       else other = true;
     }
-    if (other) detectSoon = true;
-    if (typed && scene?.sync && !stopped && !other) {
-      dirty = false;
-      lastSync = performance.now();
-      scene.sync?.({ pressable, gap, hold });
-      return;
+    if (typed && !other) scene.syncText();
+    if (other) {
+      dirty = detectSoon = true;
+      wake();
     }
-    if (dirty) wake();
   });
   observer.observe(document.documentElement, {
     subtree: true, childList: true, characterData: true, attributes: true,
@@ -301,7 +328,8 @@ function start() {
   window.addEventListener("resize", onResize);
   window.visualViewport?.addEventListener("resize", onResize);
   document.addEventListener("visibilitychange", onVisibility);
-  wake();
+  runStep(performance.now(), true);
+  schedule();
 
   return {
     stop() {
@@ -322,6 +350,8 @@ function start() {
       hintText?.remove();
       delete window.__verticalLook;
       delete root.dataset.vt;
+      delete root.dataset.vtLoading;
+      refreshPortraits();
       delete root.dataset.vtShell;
       delete root.dataset.vtHint;
       window.dispatchEvent(new Event("resize")); // 回転案内と会話の箱を現行どおりに戻す

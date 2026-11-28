@@ -119,6 +119,11 @@
 :is(.loading-gate, .boot-gate) .loading-bar-fill { width: 12%; animation: none; transform: none; transition: width .3s ease; }
 :is(.loading-gate, .boot-gate) .loading-bar.is-determinate .loading-bar-fill { width: calc(max(.12, var(--loading-progress, 0)) * 100%); }
 :is(.loading-gate, .boot-gate).is-ready .loading-bar-fill { width: 100%; }
+/* 縦の様式を取得する間は横の舞台を隠す。読み込み画面自体は body 直下で操作できる。 */
+@media (orientation: portrait) {
+  :root[data-look="vertical"][data-vt-pending] #viewport { opacity: 0; }
+  :root[data-look="vertical"] body:has(> :is(#boot, .loading-gate).is-viewport) #viewport { opacity: 0; }
+}
 #boot:not(.done) { transition: none; }
 #boot.is-failed { opacity: 1; pointer-events: auto; }
 #boot.is-failed :is(.loading-card, .loading-status, .loading-proceed) { display: none; }

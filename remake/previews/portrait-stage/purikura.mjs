@@ -5,7 +5,7 @@
 //   → 印刷（縦長のシールが下から出る）→ ハサミで半分こ → 片方がこちらへ。
 // 縦の並べ方（十字キーと丸ボタンは置かない）: 上＝プリ機の画面を縦に組み直した物（写真の窓を上、その下の一段に 撮った写真 → 盛り → 落書きの道具 を時間で入れ替えて出す）、
 //   真ん中＝台詞の帯、下（親指の届く所）＝「撮影スタート♪」の大きな札（縦の専用の札。撮影はそのあと、本編と同じくあげはが進める）。
-// 写真の中は本編と同じ旧版の立ち絵（896×1200）の胸から上。シールは本編の半分こ用の縦長シール（cg_ch2_ageha_purikura_strip）。
+// 写真の中は本編の縦画面と同じ新版の立ち絵（896×1200）の胸から上。シールは本編の半分こ用の縦長シール（cg_ch2_ageha_purikura_strip）。
 // 落書きの線・スタンプの形は本編の写し（本編の purikura.js は試験がファイルの中身を直接読むので、分けずに写した）。本編の進行・思い出の品・保存には触れない。音は鳴らさない。
 import { el } from "../../js/core/util.js";
 import { svg, move } from "../../js/core/transition-kit.js";
@@ -14,12 +14,12 @@ import { loadDialogue, findDialogue, isSpeech, Telop } from "./photo-talk.mjs";
 
 const REMAKE_IMG = new URL("../../img/", import.meta.url).href;
 const STRIP = `${REMAKE_IMG}cgs/cg_ch2_ageha_purikura_strip.webp`; // 半分こ用の縦長シール1列分（640×1080）
-const classic = (id, face) => `${REMAKE_IMG}sprites/characters/${id}/chr_${id}_${face}.webp`;
+const portrait = (id, face) => `${REMAKE_IMG}sprites/character_variants/new/${id}/chr_${id}_${face}.webp`;
 
 // ── 本編 purikura.js の値の写し ──
 const PW = 640, PH = 480; // 写真の大きさ（落書きの座標もこの画素）
-// 旧版の立ち絵（896×1200）で測った写真の位置（%）。はじめの頭は(205,175)、あげはの頭は(440,190)あたり
-const SPRITE = { hajime: { left: "-45.6%", top: "-10%" }, ageha: { left: "-0.9%", top: "-21.5%" } };
+// 新版の立ち絵（896×1200）の顔位置に合わせた写真の位置（%）。はじめの頭は(205,175)、あげはの頭は(440,190)あたり
+const SPRITE = { hajime: { left: "-37.9%", top: "6.9%" }, ageha: { left: "-0.9%", top: "-21.5%" } };
 const POSES = [
   { hajime: "normal", ageha: "normal" },
   { hajime: "smile", ageha: "smile" },
@@ -46,7 +46,7 @@ const at = (node, frames, ms, delay, { fill = "both", easing = E.out } = {}) => 
 const swap = (node, from, to, t) => at(node, [{ opacity: from }, { opacity: to }], 1, t, { easing: "linear" });
 
 function spriteImg(id, face, lean) {
-  return el(`img.mo-pk-sprite.${id}${lean && id === "ageha" ? ".lean" : ""}`, { src: classic(id, face), alt: "", style: SPRITE[id] });
+  return el(`img.mo-pk-sprite.${id}${lean && id === "ageha" ? ".lean" : ""}`, { src: portrait(id, face), alt: "", style: SPRITE[id] });
 }
 /** 立ち絵で作った1枚（終わった状態）。mori は盛ったあとの明るさ */
 function shot(pose, { mori = false, glow = mori ? el("div.mo-pk-glow") : null } = {}) {

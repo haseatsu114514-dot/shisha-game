@@ -42,7 +42,7 @@ export function createTalkScene(frame) {
   const next = el("i.vt-next", { hidden: true, "aria-hidden": "true" });
   const glass = el("div.vt-glass", [text, inner, next]);
   const choices = el("div.vt-choices", { hidden: true, dataset: { test: "vt-choices" } });
-  let pick = 0, choiceSig = "", textSig = "", nameSig = "", castSig = "", acc = DEFAULT_ACC;
+  let pick = 0, choiceSig = "", nameSig = "", castSig = "", acc = DEFAULT_ACC;
 
   choices.addEventListener("click", (event) => {
     const button = event.target.closest(".vt-choice");
@@ -158,6 +158,21 @@ export function createTalkScene(frame) {
     cutin.hidden = false;
   }
 
+  function syncText(box = document.querySelector("#vn .vn-box")) {
+    if (!box) return;
+    const source = box.querySelector(".vn-text"), voice = box.querySelector(".vn-inner");
+    const visible = !!voice && !voice.hidden && !!voice.textContent;
+    inner.hidden = !visible;
+    for (const [from, to] of [[source, text], [visible ? voice : null, inner]]) {
+      if (from?.childNodes.length === 1 && from.firstChild.nodeType === Node.TEXT_NODE
+        && to.childNodes.length === 1 && to.firstChild.nodeType === Node.TEXT_NODE) {
+        if (to.firstChild.data !== from.firstChild.data) to.firstChild.data = from.firstChild.data;
+      } else if (to.innerHTML !== (from?.innerHTML || "")) {
+        to.replaceChildren(...Array.from(from?.childNodes || [], node => node.cloneNode(true)));
+      }
+    }
+  }
+
   function sync() {
     const box = document.querySelector("#vn .vn-box");
     if (!box) return;
@@ -183,16 +198,7 @@ export function createTalkScene(frame) {
       name.hidden = !nameText && kind !== "thought";
     }
 
-    // 本文と本心（本編が今出しているページ。2行ずつに分けたのは本編の組版）
-    const srcText = box.querySelector(".vn-text"), srcInner = box.querySelector(".vn-inner");
-    const innerOn = !!srcInner && !srcInner.hidden && !!srcInner.textContent;
-    const sig = `${srcText?.innerHTML || ""}\u0000${innerOn ? srcInner.innerHTML : ""}`;
-    if (sig !== textSig) {
-      textSig = sig;
-      text.replaceChildren(...[...(srcText?.childNodes || [])].map((node) => node.cloneNode(true)));
-      inner.replaceChildren(...(innerOn ? [...srcInner.childNodes].map((node) => node.cloneNode(true)) : []));
-      inner.hidden = !innerOn;
-    }
+    syncText(box);
     glass.dataset.kind = kind;
     next.hidden = !box.querySelector(".vn-next")?.classList.contains("show");
 
@@ -259,7 +265,7 @@ export function createTalkScene(frame) {
       frame.picture.append(bg, actors, cg, cutin);
       cutin.replaceChildren(); cutin.hidden = true; cutinSig = "";
       frame.telop.append(name, glass, choices);
-      textSig = nameSig = castSig = choiceSig = "\u0000";
+      nameSig = castSig = choiceSig = "\u0000";
       actors.replaceChildren();
       bg.dataset.sig = "";
     },
@@ -275,7 +281,7 @@ export function createTalkScene(frame) {
       cutin.replaceChildren(); cutin.hidden = true; cutinSig = "";
       frame.root.dataset.choosing = "false";
     },
-    sync,
+    sync, syncText,
     relayout() { layoutActors(true); cutinSig = ""; syncCutin(); },
     dir(dir) { if (dir === "up") move(-1); else if (dir === "down") move(1); },
     a() {

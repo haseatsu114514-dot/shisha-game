@@ -78,8 +78,10 @@ const at = (node, frames, ms, delay, { fill = "both", easing = E.out } = {}) => 
 const swap = (node, from, to, t) => at(node, [{ opacity: from }, { opacity: to }], 1, t, { easing: "linear" });
 
 function spriteImg(id, face, lean) {
-  const src = portraitInfo(id, face, "classic")?.src;
-  return el(`img.mo-pk-sprite.${id}${lean && id === "ageha" ? ".lean" : ""}`, { src, alt: "", style: SPRITE[id] });
+  const portrait = portraitInfo(id, face, "classic");
+  // 新版はじめの目は元絵より左に53px、上に87px。写真の同じ位置に合わせる。
+  const style = id === "hajime" && portrait?.style === "new" ? { left: "-37.9%", top: "6.9%" } : SPRITE[id];
+  return el(`img.mo-pk-sprite.${id}${lean && id === "ageha" ? ".lean" : ""}`, { src: portrait?.src, alt: "", style });
 }
 
 /** 立ち絵で作った1枚（終わった状態）。mori は盛ったあとの明るさ */

@@ -7,7 +7,7 @@ import { MONO } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
 import { frameOf } from "../core/motion-frame.js";
 import { PRIVATE_PASSENGERS, trainPassengers } from "./train-passengers.js";
-import { characterArtStem } from "../core/portrait-resolver.js";
+import { characterArtStem, verticalPortraits } from "../core/portrait-resolver.js";
 
 /** 色: bg 車内の暗がり・win 窓・glow 窓の光・back/mid/front 奥から手前の人・hair 髪・ink 輪郭・rim 縁の光 */
 const MONO_TRAIN = { bg: MONO.deep, win: "#3a2a6e", glow: MONO.light, back: "#3e2d78", mid: MONO.main, front: MONO.mid, hair: "#1e1544", ink: "#0b0718", rim: MONO.white, rail: "#5a4597" };
@@ -90,8 +90,8 @@ async function bakeFor(P, passengers, available, images) {
     back.set(url, await tintUrl(img, P.bg, P.back, P.mid, 0.67));
   }));
   let guest = null;
-  if (passengers.cameo && images.has(passengerUrl(passengers.cameo))) {
-    guest = await silhouetteUrl(images.get(passengerUrl(passengers.cameo)), P.back);
+  if (passengers.cameo && images.has(passengers.url)) {
+    guest = await silhouetteUrl(images.get(passengers.url), P.back);
   }
   return { front, back, guest };
 }
@@ -109,8 +109,6 @@ function crowdRow(baked, scale, order, x0, available, overlap = 30) {
   });
   return panels.filter(Boolean);
 }
-
-const passengerUrl = (id) => { const art = characterArtStem(id); return new URL(`../../img/sprites/characters/${art}/chr_${art}_${PRIVATE_PASSENGERS[id].face}.webp`, import.meta.url).href; };
 
 /** 期間中だけ、普通の乗客の後ろに魔女帽子と角の仮装客が混ざる。紫の人影に統一する。 */
 function costumePassengers(P) {
@@ -170,7 +168,7 @@ function carriage(P, id, passengers, available, look = {}, baked = { front: new 
     // 群衆と同じ頭の高さ・同じ揺れ。顔を描かず、髪型や持ち物の輪郭でさりげなく見せる。
     const poseX = 1660 - (left + width / 2) * scale;
     const guest = svg("g", { class: "train-guest" }, [svg("image", {
-      href: baked.guest ?? passengerUrl(passengers.cameo), x: poseX, y: 145 - top * scale,
+      href: baked.guest ?? passengers.url, x: poseX, y: 145 - top * scale,
       width: 896 * scale, height: 1200 * scale,
     })]);
     body.push(guest);
@@ -197,14 +195,10 @@ const jolt = (t) => JOLTS.reduce((y, j) => (t > j && t < j + 0.3 ? y + 2 * Math.
 
 /** tone を渡す旧呼出も紫に統一。halloween/cameo は演出確認にも使える。 */
 export async function a(mid, opts = {}) {
-  const owner = state;
   const P = MONO_TRAIN;
-  const passengers = trainPassengers(state, opts);
-  const urls = [...CROWD, ...(passengers.cameo ? [passengerUrl(passengers.cameo)] : [])];
-  const { decoded, images } = await decodeAll(urls);
-  if (state !== owner) return; // 素材待ち中にLOADした旧セーブの演出を始めない。
-  const available = new Set(decoded); // 遅れて読めた絵が乗車中に急に現れないよう、ここで確定する。
-  if (passengers.cameo && !available.has(passengerUrl(passengers.cameo))) passengers.cameo = null;
+  const prep = await prepare(opts);
+  if (!prep) return;
+  const { passengers, available, images } = prep;
   const baked = await bakeFor(P, passengers, available, images);
   await stagePlay("train", async (node) => {
     node.style.opacity = "0";
@@ -354,11 +348,17 @@ async function decodeAll(urls) {
 async function prepare(opts) {
   const owner = state;
   const passengers = trainPassengers(state, opts);
-  const urls = [...CROWD, ...(passengers.cameo ? [passengerUrl(passengers.cameo)] : [])];
+  if (passengers.cameo) {
+    const art = characterArtStem(passengers.cameo);
+    const folder = verticalPortraits() ? "character_variants/new" : "characters";
+    const face = PRIVATE_PASSENGERS[passengers.cameo].face;
+    passengers.url = new URL(`../../img/sprites/${folder}/${art}/chr_${art}_${face}.webp`, import.meta.url).href;
+  }
+  const urls = passengers.url ? [...CROWD, passengers.url] : CROWD;
   const { decoded, images } = await decodeAll(urls);
   if (state !== owner) return null;
   const available = new Set(decoded); // 遅れて読めた絵が乗車中に急に現れないよう、ここで確定する。
-  if (passengers.cameo && !available.has(passengerUrl(passengers.cameo))) passengers.cameo = null;
+  if (passengers.cameo && !available.has(passengers.url)) passengers.cameo = null;
   return { passengers, available, images };
 }
 
