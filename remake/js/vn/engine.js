@@ -14,6 +14,7 @@ import { uiThemeFrame } from "../core/ui-theme.js";
 import { fortuneChoiceIndex } from "../core/fortune-effects.js";
 import { el, sleep, fitOneLine, nextFrame } from "../core/util.js";
 import { DB, displayName, portraitInfo, sceneBg, cgUrl, preload } from "../core/data.js";
+import { portraitStillUrl } from "../looks/vertical/stills.js";
 import { loadVnFonts } from "../core/vn-fonts.js";
 import { state, markMet, STAT_EN, timeOfDay, config, currentAutoSaveSource } from "../core/state.js";
 import { on } from "../core/bus.js";
@@ -135,7 +136,14 @@ function markSeenLine(key) {
   if (!seenLinesTimer) seenLinesTimer = setTimeout(flushSeenLines, SEEN_LINES_FLUSH_MS);
 }
 function queuedLines(id, lines, branch = "main") {
-  return (lines || []).map((line, index) => ({ ...line, _seenKey: id ? JSON.stringify([id, branch, index]) : null }));
+  // 縦版の表示命令を足しても、保存済みの既読印は同じ台詞を指す。
+  let index = 0;
+  return (lines || []).map(line => {
+    if (line.portrait_only) return line;
+    const key = id ? JSON.stringify([id, branch, index]) : null;
+    index++;
+    return { ...line, _seenKey: key };
+  });
 }
 function insertBranch(r, key) {
   r.queue.unshift(...queuedLines(r.currentId, r.branches[key], key));
@@ -402,6 +410,7 @@ export function play(idOrDlg, opts = {}) {
       spoken: new Set(),
     };
     autoFxGap = 0;
+    delete dom.cg.dataset.portraitCg;
     cutin?.clear();
     dom.log.classList.remove("show");
     dom.portraits.replaceChildren();
@@ -521,7 +530,10 @@ function collectArt(lines, urls) {
       const p = scenePortraitInfo(character, l.portrait_face || l.face);
       if (p) urls.add(p.src);
     }
-    if (l.type === "show_cg") urls.add(cgUrl(l.cg_id));
+    if (l.type === "show_cg") {
+      if (!l.portrait_only) urls.add(cgUrl(l.cg_id));
+      else if (document.documentElement.dataset.vt === "on") urls.add(portraitStillUrl(l.cg_id));
+    }
   }
   return urls;
 }
@@ -586,6 +598,7 @@ function finish(cancelled = false) {
   layers.vn.classList.remove("active");
   dom.log.classList.remove("show");
   document.body.classList.remove("in-vn", "vn-open", "vn-lift-props");
+  delete dom.cg.dataset.portraitCg;
   dom.cg.classList.remove("show");
   releaseCg();
   dom.portraits.replaceChildren();
@@ -664,7 +677,8 @@ function next() {
     }
     if (type === "show_cg") {
       r.ready = false;
-      showCg(line.cg_id, line.effect).then(() => { if (running === r) { r.ready = true; next(); } });
+      const shown = line.portrait_only ? showPortraitCg(line.cg_id) : showCg(line.cg_id, line.effect);
+      shown.then(() => { if (running === r) { r.ready = true; next(); } });
       return;
     }
     // 一度きりのモーショングラフィックス（core/scene-motions.js）。終わるまで次の行へ進まない
@@ -712,6 +726,8 @@ function next() {
       continue;
     }
     if (type === "hide_cg") {
+      delete dom.cg.dataset.portraitCg;
+      if (line.portrait_only) continue;
       r.ready = false;
       dom.cg.classList.remove("show", "cg-focus-window", "cg-focus-sketch-cat", "cg-focus-sketch-blank");
       visualSettled(dom.cg).then(() => { releaseCg(); if (running === r) { r.ready = true; next(); } });
@@ -850,7 +866,16 @@ function scent(c1, c2) {
   setTimeout(() => puff.remove(), 4200);
 }
 
+// 縦の外枠だけが使う絵。横では読み込まず、回転した時のために表示区間の ID だけを持つ。
+async function showPortraitCg(id) {
+  const r = running;
+  const url = document.documentElement.dataset.vt === "on" ? portraitStillUrl(id) : null;
+  if (url && !await waitSceneAssets(imageReady(url, 15000), r)) return;
+  if (running === r) dom.cg.dataset.portraitCg = id;
+}
+
 async function showCg(id, effect = "") {
+  delete dom.cg.dataset.portraitCg;
   const r = running;
   const url = cgUrl(id);
   if (!url) return; // 素材待ちのCGは黙って飛ばす
@@ -1056,7 +1081,8 @@ function showCutin(r, cue, src) {
   const shown = [...dom.portraits.querySelectorAll("img")];
   const ok = conversationCutinAllowed(cue, {
     shown: r.cutinShown, skip: skipMode, turbo: vnTest.turbo,
-    cg: dom.cg.classList.contains("show"), log: dom.log.classList.contains("show"), choices: !!r.waitingChoice,
+    cg: dom.cg.classList.contains("show") || (!!dom.cg.dataset.portraitCg && document.documentElement.dataset.vt === "on"),
+    log: dom.log.classList.contains("show"), choices: !!r.waitingChoice,
     intro: r.pendingIntros.some(({ id, variant }) => r.spoken.has(id) && !state.flags[introSeenKey(id, variant || "")]),
     protagonistVisible: shown.some((img) => img.dataset.speaker === "hajime"),
     portraits: shown.length, portraitSpeakers: shown.map((img) => img.dataset.speaker),

@@ -864,6 +864,11 @@
           "text": "まだ熱い。急いで冷ますと、土が割れる。冷めるまで、ここにいよう"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_bond_sheikh",
+          "portrait_only": true
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "待つあいだ、シェイクは冷めた炭を、一つずつ壺へ戻した。"
@@ -893,6 +898,10 @@
           "speaker": "",
           "face": "",
           "text": "素焼きに、そっと手のひらを当てた。まだ、少し温かい。"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "speaker": "hajime",

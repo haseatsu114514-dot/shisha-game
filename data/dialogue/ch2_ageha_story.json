@@ -1036,6 +1036,11 @@
           "text": "……当たりです。一字も違いません"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_bond_ageha",
+          "portrait_only": true
+        },
+        {
           "speaker": "ageha",
           "face": "smile",
           "text": "っしゃ！ うち、言葉で当てたの、初めてかも"
@@ -1050,6 +1055,10 @@
           "speaker": "ageha",
           "face": "smile",
           "text": "答え合わせ係の、正式な支給品ね。お礼とも言う"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "speaker": "hajime",
