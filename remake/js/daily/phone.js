@@ -1383,9 +1383,11 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
     if (tutorial) {
       ui.chat.append(el("div.lime-tip", [
         el("b", { text: "LIMEの使い方" }),
-        el("span", { text: "読みたいトークをタップ。赤い丸は未読のしるし。" }),
+        el("span", { text: "街の人からの連絡や誘いが届く。赤い丸は未読のしるし。トークを開いて、返事が出たら選んで送ろう。" }),
         el("span", { text: "誘いには、その日のうちなら返事ができる（店への誘いは営業日なら夜まで・昼限定のお出かけは昼まで）。" }),
       ]));
+    } else {
+      ui.chat.append(el("p.lime-tip", { text: "赤い丸は未読のトーク。相手を選ぶとメッセージが読めて、誘いに返事ができる。" }));
     }
     for (const shortcut of shortcuts) ui.chat.append(el("button.lime-chat-row.lime-shortcut", {
       dataset: { test: `lime-shortcut-${shortcut.id}` },
@@ -1588,7 +1590,7 @@ export function limeCoach(onOpen) {
     el("button.lc-bubble", { type: "button", "aria-label": "案内からLIMEを開く", dataset: { test: "coach-lime-bubble" },
       onclick: open, style: { right: `${Math.max(16, stage.offsetWidth - x - w - 4)}px`, top: `${y + h + 22}px` } }, [
       el("b", { text: "LIMEにメッセージが届いた！" }),
-      el("span", { text: "この案内か右上のLIMEをタップして開いてみよう。" }),
+      el("span", { text: "LIMEは街の人と連絡するアプリ。タップして届いたトークを読もう。" }),
       el("span", { text: "まずは一度開いてみよう。次からは好きなときに読める。返事や誘いの受諾は、今決めなくて大丈夫。" }),
     ]),
   ]);

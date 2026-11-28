@@ -6,6 +6,22 @@ const dialogue = { dialogue_id: "accessibility-1914", lines: [
 ] };
 
 await suite("vn-accessibility-1914", async check => {
+  await check("unread-skip-stops-at-reply", async page => {
+    await page.evaluate(async dlg => {
+      const core = await import("./js/core/state.js");
+      core.newGame();
+      (await import("./js/core/ui.js")).clearScreen();
+      const vn = await import("./js/vn/engine.js");
+      window.unreadFinished = false;
+      void vn.play({ ...dlg, lines: [...dlg.lines, { type: "choice", choices: [{ text: "返事をする" }] }] })
+        .then(() => { window.unreadFinished = true; });
+    }, dialogue);
+    await page.locator('[data-test="vn-skip"]').click();
+    await page.locator(".vn-choices.show > .vn-choice").waitFor();
+    assert.equal(await page.evaluate(() => window.unreadFinished), false);
+    await page.locator(".vn-choice").click();
+    await page.waitForFunction(() => window.unreadFinished);
+  });
   await check("seen-skip-and-settings", async page => {
     await page.evaluate(async dlg => {
       const core = await import("./js/core/state.js");

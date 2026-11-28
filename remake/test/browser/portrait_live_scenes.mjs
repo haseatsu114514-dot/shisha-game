@@ -26,6 +26,31 @@ async function rotate(page, name) {
 }
 
 await suite("portrait_live_scenes", async check => {
+  await check("steam-tutorial-help-fits-and-closes", async page => {
+    await start(page);
+    await page.evaluate(async () => {
+      localStorage.removeItem("suien_step_intro");
+      const { openBench, newSession } = await import("./js/craft/session.js");
+      const { runSteamDodge } = await import("./js/craft/steam.js");
+      const cs = newSession("tutorial");
+      openBench(cs, {});
+      void runSteamDodge(cs);
+    });
+    await native(page, "steam");
+    const tip = page.locator(".bench-guide[open] .bench-guide-tip");
+    await tip.waitFor();
+    const box = await tip.boundingBox();
+    assert(box.width >= tall.width * .72 && box.x >= 0 && box.x + box.width <= tall.width);
+    const close = button(page, "bench-guide-close");
+    const hit = await close.boundingBox();
+    assert(hit.x >= box.x && hit.x + hit.width <= box.x + box.width + 1);
+    await close.tap();
+    await tip.waitFor({ state: "hidden" });
+    const worker = await page.locator(".bench-left").boundingBox();
+    const timer = await page.locator(".dodge-timer").boundingBox();
+    assert(timer.y >= worker.y + worker.height, "the timer stays with the game below the portrait");
+  }, options);
+
   await check("vent-and-charcoal-commit-the-tapped-choices", async page => {
     await start(page);
     await page.evaluate(async () => {

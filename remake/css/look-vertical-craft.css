@@ -48,6 +48,7 @@
 .vt-shell[data-scene="craft"] { --vtc-rank-width: calc(11.2 * var(--u)); }
 .vt-shell[data-scene="craft"]:has(.vtc-rank:not([hidden])) .vt-notices { right: calc(var(--vtc-rank-width) + 1.9 * var(--u)); }
 .vtc-rank { position: absolute; z-index: 5; right: calc(0.9 * var(--u)); top: max(calc(0.6 * var(--u)), calc(env(safe-area-inset-top, 0px) - 0.6 * var(--u))); pointer-events: none; }
+.vtc-rank small { display:block; margin-top:.2em; text-align:center; font-size:calc(1.1 * var(--u)); color:#ffe9bf; text-shadow:0 1px 4px #000; }
 .vtc-rank-box { position: relative; display: block; width: var(--vtc-rank-width); height: calc(8.35 * var(--u)); filter: drop-shadow(0 calc(0.3 * var(--u)) calc(0.6 * var(--u)) #000b); }
 .vtc-rank-box img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .vtc-rank-meter { position: relative; display: block; width: calc(8.6 * var(--u)); height: calc(0.85 * var(--u)); margin: calc(0.1 * var(--u)) auto 0; border: calc(0.1 * var(--u)) solid #ffffff2e; border-radius: var(--u); overflow: hidden;
@@ -293,14 +294,18 @@
 .vtc-coal-up.on .vtc-heat-glow { opacity: 1; animation: vtc-heat-breathe 2.6s ease-in-out infinite; }
 @keyframes vtc-heat-breathe { 50% { opacity: 0.72; } }
 /* 取った炭は炭壺の中へ（取った時の焼け具合の段階で光り方が替わる） */
-.vtc-slots { position: absolute; inset: 0; }
+.vtc-slots { position: absolute; inset: 0; clip-path: ellipse(15% 7.5% at 78.5% 78.3%); }
 .vtc-slot { position: absolute; transform: translate(-50%, -50%); animation: vtc-slot-in 0.45s var(--ease-out); }
 @keyframes vtc-slot-in { from { transform: translate(-50%, 240%) scale(1.5); opacity: 0.2; } }
-.vtc-tcoal { --tw: calc(var(--hw) * 0.135); position: relative; display: block; width: var(--tw); height: calc(var(--tw) * 0.805); }
+.vtc-tcoal { --tw: calc(var(--hw) * 0.084); position: relative; display: block; width: var(--tw); height: calc(var(--tw) * 0.805); }
 .vtc-tcoal img { position: absolute; left: calc(var(--tw) * -0.3638); top: calc(var(--tw) * -0.3737); width: calc(var(--tw) * 1.7241); max-width: none; }
 .vtc-tcoal .lit { opacity: 1; filter: drop-shadow(0 0 calc(0.8 * var(--u)) #ff5a2acc); }
+/* 発光する面の濃淡を保ったまま、灰色の表面にも熾火の赤をのせる。 */
+.vtc-coal[data-phase="just"] .vtc-c-lit, .vtc-tcoal.just .lit {
+  opacity: 1; filter: url(#vt-ember-red) drop-shadow(0 0 calc(.75 * var(--u)) #ff4a12);
+}
 .vtc-tcoal.pre .lit { opacity: 0.8; } .vtc-tcoal:is(.raw, .early) .lit { opacity: 0.35; filter: none; }
-.vtc-tcoal.hot .lit { filter: saturate(0.7) drop-shadow(0 0 calc(0.6 * var(--u)) #ff5a2a99); } .vtc-tcoal.over .lit { opacity: 0.4; filter: grayscale(0.8); }
+.vtc-tcoal.hot .lit { filter: url(#vt-ember-red) saturate(.72) drop-shadow(0 0 calc(0.6 * var(--u)) #ff5a2a99); } .vtc-tcoal.over .lit { opacity: 0.4; filter: grayscale(0.8); }
 /* 判定の札（左上に炭ごとに積む） */
 .vtc-coal-judges { position: absolute; z-index: 2; left: calc(1.4 * var(--u)); top: calc(7.4 * var(--u)); display: grid; justify-items: start; gap: calc(0.5 * var(--u)); pointer-events: none; }
 @container vtshell (min-aspect-ratio: 39 / 71) { .vtc-coal-judges { top: calc(6.6 * var(--u)); } .vtc-jtag { font-size: calc(1.5 * var(--u)); } }
@@ -316,13 +321,14 @@
 .vtc-coal::before { content: ""; position: absolute; inset: calc(-1.3 * var(--u)); border-radius: 30%; }
 .vtc-coal img { position: absolute; left: calc(var(--cw) * -0.3638); top: calc(var(--cw) * -0.3737); width: calc(var(--cw) * 1.7241); max-width: none; pointer-events: none; }
 .vtc-c-lit { opacity: var(--red, 0); filter: saturate(calc(1 - var(--ash, 0) * 0.7)) drop-shadow(0 0 calc(var(--red, 0) * 1.4 * var(--u)) #ff5a2acc); }
-.vtc-c-ash { position: absolute; inset: 6% 4%; border-radius: 22%; background: radial-gradient(ellipse at 50% 40%, #e9e4e0, #b9b2ad 70%, #8f8884); mix-blend-mode: screen; opacity: calc(var(--ash, 0) * 0.85); pointer-events: none; }
+.vtc-coal:not([data-phase="hot"]):not([data-phase="over"]) .vtc-c-ash { opacity: 0; }
+.vtc-c-ash { position: absolute; inset: 6% 4%; border-radius: 22%; background: radial-gradient(ellipse at 50% 40%, #e9e4e0, #b9b2ad 70%, #8f8884); mix-blend-mode: screen; opacity: calc(var(--ash, 0) * 0.45); pointer-events: none; }
 .vtc-c-seat { position: absolute; left: -10%; right: -10%; bottom: -16%; height: 52%; border-radius: 50%; background: radial-gradient(closest-side, #000000b3, #00000059 55%, transparent); pointer-events: none; }
 .vtc-c-seat::after { content: ""; position: absolute; inset: -18% -8%; border-radius: 50%; background: radial-gradient(closest-side, #ff5a2a8c, transparent 72%); mix-blend-mode: screen; opacity: calc(0.35 + var(--red, 0) * 0.65); }
 /* 枠の光: 取り頃の少し前に一度だけ瞬き（本編の構え）、取り頃の間は明滅する（本編の取り頃の光） */
 .vtc-coal::after { content: ""; position: absolute; inset: calc(-0.6 * var(--u)); border-radius: 30%; box-shadow: 0 0 0 calc(0.25 * var(--u)) #fff3b0, 0 0 calc(1.4 * var(--u)) #ffcf6b; opacity: 0; pointer-events: none; }
 .vtc-coal.blink::after { animation: vtc-coal-blink 0.32s ease-out; }
-.vtc-coal.pikan::after { animation: vtc-coal-ready 0.35s ease-in-out infinite alternate; }
+.vtc-coal.pikan::after { opacity: 1; animation: vtc-coal-ready 0.35s ease-in-out infinite alternate; }
 .vtc-coal.soon::after { opacity: 0.3; }
 @keyframes vtc-coal-blink { 40% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes vtc-coal-ready { from { opacity: 0.4; } to { opacity: 1; } }
@@ -457,11 +463,25 @@
 .vtc-mix-tools { flex-wrap:wrap; }
 .vtc-mix-footer { justify-content:space-between; }
 .vtc-mix-footer button, .vtc-pull-actions button { flex:1; }
-.vtc-pull-art { position:absolute; inset:8% 6% 0 0; }
-.vtc-pull-art img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; object-position:bottom; }
-.vtc-pull-art .hold, .vtc-pull-art.drawing .rest { visibility:hidden; }
-.vtc-pull-art.drawing .hold { visibility:visible; }
-.vtc-pull-controls { grid-template-rows:minmax(0,1fr) auto auto; text-align:center; }
+.vtc-pull-art { position:absolute; top:calc(4.8 * var(--u)); left:50%; width:calc(34 * var(--u)); aspect-ratio:798/1200; transform:translateX(-50%); }
+.vtc-pull-art img { position:absolute; inset:0; width:100%; height:100%; }
+.vtc-pull-art .rest, .vtc-pull-art.exhaling .hold { visibility:hidden; }
+.vtc-pull-art.exhaling .rest { visibility:visible; }
+.vtc-pull-smoke { position:absolute; left:55%; top:28.7%; width:calc(58.5 * var(--u)); aspect-ratio:16/9; transform:translate(-34%, -62%); pointer-events:none; }
+.vtc-pull-controls { --pill:calc(4.7 * var(--u)); --puff:min(calc(13 * var(--u)), calc(var(--cp) * .43)); display:block; background:transparent; text-align:center; }
+.vtc-pull-status { position:absolute; top:0; left:0; right:0; font-size:calc(1.3 * var(--u)); }
+.vtc-pull-dial { position:absolute; top:calc(2.2 * var(--u)); bottom:calc(var(--low) + var(--pill) + var(--puff) * .57); left:10%; right:10%; }
+.vtc-pull-life, .vtc-pull-actions [data-test="vt-pull-serve"] { position:absolute; bottom:var(--low); min-height:var(--pill); display:flex; align-items:center; gap:.45em; padding:0 .85em; border:1px solid #a98b72; border-radius:99px; background:#231929; }
+.vtc-pull-life { left:var(--edge); color:#e7dcaa; }
+.vtc-pull-life:empty { display:none; }
+.vtc-pull-actions [data-test="vt-pull-serve"] { right:var(--edge); }
+.vtc-pull-actions [data-test="vt-pull-stop"] { position:absolute; left:50%; bottom:calc(var(--low) + var(--pill) + .6 * var(--u)); transform:translateX(-50%); width:var(--puff); height:var(--puff); border-radius:50%; background:radial-gradient(circle, #9465a244, transparent 68%), url("../img/ui/vertical/pad-button.webp") center/cover; display:grid; place-content:center; justify-items:center; font-weight:700; }
+.vtc-pull-actions .pull-btn-icon { width:calc(var(--puff) * .48); }
+.vtc-pull-actions .pull-serve-icon { width:calc(2.6 * var(--u)); }
+.vtc-pull-actions svg { display:block; width:100%; height:auto; }
+.vtc-pull-actions :is([data-test="vt-pull-blind"], [data-test="vt-pull-deep"]) { position:absolute; bottom:calc(var(--low) + var(--pill) + var(--u)); max-width:28%; }
+.vtc-pull-actions [data-test="vt-pull-deep"] { left:var(--edge); }
+.vtc-pull-actions [data-test="vt-pull-blind"] { right:var(--edge); }
 .vtc-pull-dial svg { width:100%; height:100%; }
 
 .vtc-care-pic { position: absolute; inset: 16% 17% 8% 5%; display: grid; align-content: center; gap: 1em; }

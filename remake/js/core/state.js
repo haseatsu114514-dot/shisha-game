@@ -805,7 +805,8 @@ export const config = {
   seVolume: 0.7,
   textSpeed: 2,      // 1=ゆっくり 2=ふつう 3=はやい 4=瞬時
   autoSpeed: 2,      // 1=ゆっくり 2=ふつう 3=はやい
-  skipSeenOnly: true, // 既読のみが既定。設定で「全部」に切替
+  skipSeenOnly: false, // SKIPは未読も送る。設定から既読のみにもできる。
+  skipRangeVersion: 1,
   reduceShake: false,
   voiceBlip: true,   // 文字送りの声（キャラ別の音程）
   // 一度見た演出（連絡先交換・シフト終了）を2回目以降だけ短くする。初回は必ずフルで見せる。
@@ -830,6 +831,9 @@ export function loadConfig() {
   try {
     const saved = JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}");
     Object.assign(config, saved);
+    // 旧版は既定の「既読のみ」も全設定と一緒に保存していた。新しい既定へ一度だけ移す。
+    config.skipSeenOnly = saved?.skipRangeVersion === 1 && saved.skipSeenOnly === true;
+    config.skipRangeVersion = 1;
     savedPortraitVersion = saved?.portraitStyleVersion;
   } catch { /* noop */ }
   if ("muted" in config) { config.mute = !!(config.mute || config.muted); delete config.muted; }

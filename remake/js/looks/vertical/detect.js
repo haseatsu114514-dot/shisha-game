@@ -219,6 +219,8 @@ export function detectState(own = [], vertical = document.documentElement.datase
       scene = "sheet"; variant = "end"; // 章のクリア・続きを読めなかった時の画面（文とボタン。成長のグラフは絵で写す）
     }
   }
+  // 作業台が最初の工程の素材を待つ間も縦の幕でつなぐ。
+  if (!scene && screen?.querySelector(':scope > .bench[aria-busy="true"]:not(.done) .bench-panel:empty')) return GAP;
   if (!scene) return NONE;
 
   // 安全網: ステージの数点で一番上の要素を取り、その場面で想定する層でなければ未対応とする。

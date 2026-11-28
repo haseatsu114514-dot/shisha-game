@@ -369,6 +369,8 @@ function start() {
       const target = record.target.nodeType === 1 ? record.target : record.target.parentElement;
       if (target === motionLayer.root && record.type === "childList") { dirty = true; other = true; continue; }
       if (!target || own.some((mine) => mine.contains(target)) || hint?.contains(target)) continue;
+      // 針は SVG use で直接参照する。吸引中の温度や進捗の描画でシーン全体を再検出しない。
+      if (sceneName === "craft" && record.attributeName === "style" && target.closest(".pull-play, .pull .thermo")) continue;
       if (scene?.syncText && target.closest?.("#vn .vn-text, #vn .vn-inner")) typed = true;
       else other = true;
     }

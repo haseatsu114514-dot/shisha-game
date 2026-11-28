@@ -548,6 +548,9 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
         if (!failed && !finished) { abandoned = true; running = false; serve(); }
         return;
       }
+      play.dispatchEvent(new CustomEvent("pull-exhale", { detail: {
+        temp: T, zone: bands.ideal, best: bands.optimal, danger: DANGER_TEMP, color: mixColor(cs.mix), last: pulls === MAX_PULLS,
+      } }));
       if (isJust) justs++;
       // 授業 M-S7「龍の煙」: 吸い出しのジャスト3連続で龍の煙を見せる。
       if (mode.store === "pull" && !tutorial && growthLesson(state, "M-S7") && growthSkill(state, "K21") && (cs.dragonStreak || 0) < LESSON_TUNING.dragonStreak) {

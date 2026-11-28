@@ -141,9 +141,15 @@ export function createCraftScene(frame) {
   const veil = el("i.vtc-veil", { "aria-hidden": "true" });
   const steps = el("ol.vtc-steps", { "aria-label": "工程", dataset: { test: "vt-craft-steps" } });
   const rankArt = el("img", { alt: "", draggable: "false" });
+  rankArt.addEventListener("load", () => {
+    if (document.body.classList.contains("reduce-shake") || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    rankArt.animate([{ opacity: 0, transform: "translateY(4px)" }, { opacity: 1, transform: "none" }],
+      { duration: 320, easing: "ease-out" });
+  });
   const rankBar = el("i");
+  const rankCaption = el("small");
   const rank = el("div.vtc-rank", { hidden: true, role: "img", dataset: { test: "vt-craft-rank" } }, [
-    el("span.vtc-rank-box", [rankArt]), el("i.vtc-rank-meter", [rankBar]),
+    el("span.vtc-rank-box", [rankArt]), el("i.vtc-rank-meter", [rankBar]), rankCaption,
   ]);
   const thermo = createThermo(craftIcon);
   const sayText = el("span.vtc-say-text");
@@ -228,14 +234,16 @@ export function createCraftScene(frame) {
     const grade = GRADES.includes(live?.dataset.grade) ? live.dataset.grade : "";
     const meter = live?.querySelector(".craft-rank-meter");
     const progress = meter && !meter.hidden ? Math.max(0, Math.min(1, Number(meter.getAttribute("aria-valuenow")) / 100 || 0)) : 0;
-    const sig = `${grade}|${progress.toFixed(3)}`;
+    const caption = live?.dataset.provisional === "true" ? "暫定ランク" : "制作ランク";
+    const sig = `${grade}|${caption}|${progress.toFixed(3)}`;
     if (sig === rankSig) return;
     rankSig = sig;
     rank.hidden = !grade;
     if (!grade) return;
     const src = `${IMG}ui/craft-rank/rank-${grade}.webp`;
     if (rankArt.getAttribute("src") !== src) rankArt.src = src;
-    rank.setAttribute("aria-label", `制作ランク ${grade}`);
+    rankCaption.textContent = caption;
+    rank.setAttribute("aria-label", `${caption} ${grade}`);
     rank.style.setProperty("--p", progress.toFixed(3));
   }
 

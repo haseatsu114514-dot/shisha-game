@@ -36,11 +36,11 @@ class Node {
   setAttribute(name, value) { this[name] = value; }
   addEventListener(type, handler) { (this.listeners[type] ??= []).push(handler); }
   remove() { this.isConnected = false; }
-  emit(type) {
-    const event = { preventDefault() {}, detail: 0 };
+  emit(type, event = { preventDefault() {}, detail: 0 }) {
     for (const handler of this.listeners[type] || []) handler(event);
     this["on" + type]?.(event);
   }
+  dispatchEvent(event) { this.emit(event.type, event); return !event.defaultPrevented; }
   click() { if (!this.disabled) this.emit("click"); }
   walk(predicate) {
     for (const child of this.children) if (child instanceof Node) {
@@ -69,6 +69,7 @@ async function harness({ learned = false, noWobble = false, lessons = [] } = {})
   let now = 1000, frameId = 0, panel;
   const frames = new Map(), metrics = { results: 0, temperature: null, pullHeat: [] };
   const context = vm.createContext({
+    CustomEvent,
     document: { hidden: false, addEventListener() {}, removeEventListener() {} }, performance: { now: () => now },
     requestAnimationFrame(fn) { const id = ++frameId; frames.set(id, fn); return id; },
     cancelAnimationFrame(id) { frames.delete(id); },

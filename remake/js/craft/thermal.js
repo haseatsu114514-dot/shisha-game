@@ -409,7 +409,8 @@ export function buildThermalAtmosphere(host, worker, cs) {
   function loop(now) {
     raf = 0;
     if (!active || paused || document.hidden || reduced.matches || !host.isConnected || host.classList.contains("done")) return;
-    if (now - last >= BACKDROP_FRAME_MS) {
+    // 縦の工程の絵が旧作業台を覆う間は、見えない炎・煙・陽炎の再描画を省く。
+    if (document.documentElement.dataset.vtShell !== "on" && now - last >= BACKDROP_FRAME_MS) {
       time += Math.min(.1, (now - last) / 1000); last = now;
       draw();
     }

@@ -108,8 +108,7 @@ async function assertFits(page, label) {
 }
 
 /**
- * 土台の配置（VPN09・VPN16）: 下画面の高さと十字キー・丸ボタンの大きさと位置は、試作の会話画面と同じ（幅 39 に対して下画面 30.2・
- * 補助ボタンの段の下 8.2 から十字キー 20.4・丸ボタン 14.6。背の低い画面は試作と同じ段階で縮む）。
+ * 会話・地図で共通の、下げたパッド配置。背の低い画面は同じ段階で縮む。
  * 十字キーと丸ボタンは同じ配置の場面で同じ位置（指を置いたまま遊べる）。最初に測った位置を覚え、以後の場面で同じ位置か確かめる。
  */
 async function assertPadHome(page, label, home = null) {
@@ -117,15 +116,12 @@ async function assertPadHome(page, label, home = null) {
     const r = (selector) => { const b = document.querySelector(selector).getBoundingClientRect(); return [b.left, b.top, b.width, b.height].map((v) => Math.round(v)); };
     const shell = document.querySelector(".vt-shell").getBoundingClientRect(), ctrl = document.querySelector(".vt-ctrl").getBoundingClientRect();
     const u = shell.width / 39, tall = shell.height / u;
-    let size = tall > 80 ? [30.2, 8.2, 20.4, 14.6] : tall > 71 ? [27.2, 7.4, 18.2, 13.2] : [23.6, 6.5, 15.4, 11.2];
-    if (document.querySelector(".vt-shell").dataset.scene === "vn") {
-      const chips = document.querySelector(".vt-chips").getBoundingClientRect();
-      const safe = parseFloat(getComputedStyle(document.querySelector(".vt-shell")).getPropertyValue("--safe-b"));
-      const gap = Math.max(.6, safe * 2 / (3 * u));
-      const padTop = chips.height / u + gap;
-      const ring = size[2] * .87;
-      size = [padTop + ring + gap, padTop, ring, size[3]];
-    }
+    const [ringBase, a] = tall > 80 ? [20.4, 14.6] : tall > 71 ? [18.2, 13.2] : [15.4, 11.2];
+    const chips = document.querySelector(".vt-chips").getBoundingClientRect();
+    const safe = parseFloat(getComputedStyle(document.querySelector(".vt-shell")).getPropertyValue("--safe-b"));
+    const gap = Math.max(.4, safe / (2 * u));
+    const padTop = chips.height / u + gap, ring = ringBase * .73;
+    const size = [padTop + ring + gap, padTop, ring, a];
     return { u, size, ctrlH: ctrl.height, ctrlBottom: shell.bottom - ctrl.bottom, padTop: document.querySelector(".vt-dpad").getBoundingClientRect().top - ctrl.top,
       panel: getComputedStyle(document.querySelector(".vt-ctrl")).backgroundImage, dpad: r(".vt-dpad"), a: r(".vt-a"),
       aShown: getComputedStyle(document.querySelector(".vt-a")).display !== "none", dpadShown: getComputedStyle(document.querySelector(".vt-dpad")).display !== "none" };
@@ -420,7 +416,7 @@ await suite("look_vertical", async (check) => {
       mine: [...document.querySelectorAll(".vt-pin")].map((pin) => pin.dataset.spot).sort(),
     }));
     assert.deepEqual(pins.mine, pins.live, "one pin per destination");
-    await assertPadHome(page, "map");
+    const mapHome = await assertPadHome(page, "map");
     // 看板（VPN10）: 元の地図と同じ店のロゴ・施設の絵を、地図の中に小さく出す
     const signs = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll(".vt-pin")].map((pin) => {
       const art = pin.querySelector(".vt-pin-art > *"), live = document.querySelector(`#screen > .map:not(.done) .spot-pin[data-spot="${pin.dataset.spot}"] .ico > :is(.store-logo, .facility-icon)`);
@@ -441,14 +437,29 @@ await suite("look_vertical", async (check) => {
     const after = await selected();
     assert.equal(after.mine, order[(order.indexOf(before.mine) + 1) % order.length]);
     assert.equal(after.live, after.mine, "the landscape map selects the same pin");
+    // 地図のいちばん下の看板から、上にある最寄りの看板へ。最上段ではその場に留まる。
+    const byY = await page.locator(".vt-pin").evaluateAll(nodes => nodes.map(node => ({
+      id:node.dataset.spot, x:parseFloat(node.style.left) * 16 / 9, y:parseFloat(node.style.top),
+    })).sort((a, b) => b.y - a.y));
+    const selectRow = async id => { await pad(page, "down"); await page.locator(t("vt-row-" + id)).tap(); };
+    await selectRow(byY[0].id);
+    const nearest = byY.filter(pin => pin.y < byY[0].y).sort((a,b) =>
+      Math.hypot(a.x-byY[0].x, a.y-byY[0].y) - Math.hypot(b.x-byY[0].x, b.y-byY[0].y))[0];
+    const samePin = await page.locator(t("vt-pin-" + nearest.id)).elementHandle();
     await pad(page, "up");
+    assert.deepEqual(await selected(), { mine: nearest.id, live: nearest.id });
+    assert(await samePin.evaluate(node => node.isConnected), "moving the camera keeps the signs mounted");
+    await selectRow(byY.at(-1).id);
+    await pad(page, "up");
+    assert.equal((await selected()).mine, byY.at(-1).id);
+    await page.locator(t("vt-chip-wide")).tap();
     await page.waitForFunction(() => document.querySelector(".vt-map.overview"));
-    await pad(page, "up");
+    await page.locator(t("vt-chip-wide")).tap();
     await page.waitForFunction(() => !document.querySelector(".vt-map.overview"));
     // 家が選択された時も、全体表示の tonari の中央を押せば tonari に寄る。
     await pad(page, "down");
     await page.locator(t("vt-row-rest")).tap();
-    await pad(page, "up");
+    await page.locator(t("vt-chip-wide")).tap();
     await page.waitForFunction(() => document.querySelector(".vt-map.overview"));
     await page.locator(t("vt-pin-tonari")).tap();
     await page.waitForFunction(() => !document.querySelector(".vt-map.overview"));
@@ -463,7 +474,7 @@ await suite("look_vertical", async (check) => {
     await waitScene(page, "vn", 30000);
     await page.locator(".vt-actor").first().waitFor({ state: "attached", timeout: 20000 });
     assert.match(await page.locator(".vt-where b").textContent(), /PEPPERMINT/);
-    const talkHome = await assertPadHome(page, "conversation in the shop");
+    const talkHome = await assertPadHome(page, "conversation in the shop", mapHome);
     // 返事まで送る → 十字キーの下で次の札へ、決定で本編の選択肢を押す
     for (let i = 0; i < 30 && !(await page.locator(".vt-choice").count()); i++) {
       await typed(page);
@@ -1084,6 +1095,7 @@ await suite("look_vertical", async (check) => {
         return pos > 45 && pos < 55 && !document.querySelector('[data-test="vt-pull-stop"]').disabled;
       });
       await stop.tap();
+      await page.locator(".vtc-pull-art.exhaling canvas.pull-smoke").waitFor();
     }
     await serve.tap();
     await page.locator(t("vt-craft-result-next")).tap();
