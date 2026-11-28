@@ -808,28 +808,26 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 }
 :root[data-vt-interlude] #stage .round-cut-band { top: calc(50% - 80px); height: 160px; }
 :root[data-vt-interlude] #stage .round-cut-band b { font-size: 90px; }
-:root[data-vt-interlude] #stage .entrance {
-  background: radial-gradient(ellipse at 50% 35%, #23152d66, #100a19d9 78%);
+:root[data-vt-interlude] .entrance .ent-card {
+  display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; gap: 0;
+  padding: max(40px, env(safe-area-inset-top)) 6% max(7%, env(safe-area-inset-bottom));
 }
-:root[data-vt-interlude] .ent-card {
-  width: 84%; flex-direction: column; align-items: stretch; gap: 46px;
+:root[data-vt-interlude] .ent-card::before {
+  background: linear-gradient(0deg, #100c19f5, #100c1966 45%, transparent 70%);
 }
-:root[data-vt-interlude] .ent-cut { align-self: center; width: 240px; height: 240px; }
-:root[data-vt-interlude] .ent-face { width: 196px; height: 196px; }
-:root[data-vt-interlude] .ent-tag {
-  left: 50%; transform: translateX(-50%); font-size: 22px;
+:root[data-vt-interlude] .ent-portrait {
+  left: 0; top: 4%; bottom: auto; width: 100%; height: 65%; object-position: center bottom;
+  mask-image: linear-gradient(#000 82%, transparent 100%);
 }
-:root[data-vt-interlude] .ent-meta { text-align: center; }
-:root[data-vt-interlude] .ent-meta::after { width: 100%; }
-:root[data-vt-interlude] .ent-ring { font-size: 24px; }
-:root[data-vt-interlude] .ent-name { font-size: 68px; line-height: 1.4; }
-:root[data-vt-interlude] .ent-note {
-  margin: 20px auto 0; padding: 16px 24px; background: #140c1ee6;
-  text-align: left; font-size: 25px; line-height: 1.55;
+:root[data-vt-interlude] .ent-card[data-art="classic"] .ent-portrait {
+  top: 9%; height: 60%; object-fit: cover; object-position: center 16%;
 }
-:root[data-vt-interlude] .ent-speaker {
-  display: block; margin-bottom: 4px; font-size: 21px; font-weight: 700; color: #f5d592;
+:root[data-vt-interlude] .entrance .ent-tag {
+  align-self: flex-start; margin-bottom: auto; font-size: 24px;
 }
+:root[data-vt-interlude] .entrance .ent-meta { margin-top: 10px; }
+:root[data-vt-interlude] .entrance .ent-name { font-size: 76px; }
+:root[data-vt-interlude] .entrance .ent-note { font-size: 29px; }
 /* 横から縦へ戻した時は、横の #fx に残っている日付の札にも位置を当てる。 */
 :root[data-vt-interlude] #fx > .day-card { left: 8%; right: 6%; bottom: 42%; }
 :root[data-vt-interlude] #fx > .day-card .dc-sub { white-space: normal; flex-wrap: wrap; }
