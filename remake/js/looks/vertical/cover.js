@@ -2,8 +2,8 @@
 // 本編の覆い（#fx の中身・暗転の幕）に見えている文字と大きな絵を読み、縦の外枠の中に出す。パッドは消して、触れたら本編へ中継する。
 // 登場カットインは、縦画面で決めた案A「縦のポスター」（VPL22・VPL28）に組み直す: 上に人物、真ん中に斜めの帯と名前、下に一言。
 // 名前・二つ名・一言・好きなフレーバー・色・絵は、本編が出したカットイン（vn/intro-art.js の .cutin.art-intro）からそのまま読む。
-// 章タイトル（タイトルコール）は案A（VPN19）: 章タイトルの横長の絵から人物を縦に切り出して上に置き、章名は本編の明朝で下に組み直す。
-// どの章かは本編の章タイトル（core/ui.js chapterTitle の .chapter-card）から読み、章名・英題・編名は core/chapter-title-art.js の登録から。
+// 章タイトル（タイトルコール）は VPN27 の形: 上にゲームタイトル（本編のタイトルのロゴ）、真ん中に章タイトルの横長の絵をそのまま、下の空きに章の情報。
+// どの章かは本編の章タイトル（core/ui.js chapterTitle の .chapter-card）から読み、章名・英題は core/chapter-title-art.js の登録から（「〇〇編」は出さない・VPN23）。
 import { el } from "../../core/util.js";
 import { CHAPTER_TITLE_ART } from "../../core/chapter-title-art.js";
 import { textOf, mirrorBackground, relayTap } from "./frame.js";
@@ -61,20 +61,25 @@ function readCutin(host) {
   };
 }
 
+/** ゲームタイトルのロゴ（本編のタイトル画面と同じ絵）。 */
+const TITLE_LOGO = new URL("../../../img/ui/ui_title_logo_rich.webp", import.meta.url).href;
 /**
- * 章タイトルの絵の切り出し（VPN19）: 横長の絵（1280×720）の横のどこからどこまでを、画面の幅いっぱいに見せるか（from〜to は絵の幅に対する割合）と、
- * 絵の上端の位置（top は画面の高さに対する %）。人物が切れずに収まるように章ごとに決める（第2章は 2026-11-27 オーナーの合格）。
+ * 章タイトルの絵の置き方（VPN27・2026-11-27 オーナー「やはりタイトルコールは既存の横長のを使いたい　真ん中に出して上にゲームタイトル
+ * 下のあいてるスペースに章情報みたいなレイアウト試して」）: 横長の絵（1280×720）を画面の幅いっぱい・縦の真ん中に、切らずに置く。
+ * 第1章の絵は白地で、上に題字（ゲーム名・CHAPTER 1・章名・英題）が描き込まれているので、人物が並ぶ帯（絵の高さの割合）だけを切り出す
+ * （題字は下の章の情報と同じなので、二重に出さない）。白地の絵は、同じ絵をぼかした背景を敷かない（灰色ににごるため）。
  */
-const TITLE_CROP = {
-  2: { from: 0.44, to: 0.846, top: 0 }, // 人物1人（オーナー合格）
-  3: { from: 0.47, to: 1, top: 6 }, // 右の3人が切れずに収まる
-  4: { from: 0.4, to: 1, top: 9 }, // 手前の人物と後ろの人物・ドバイの塔
-  5: { from: 0.5, to: 0.933, top: 0 }, // 機械の頭
-};
-const DEFAULT_CROP = { from: 0.45, to: 1, top: 0 };
+const TITLE_CROP = { 1: { top: 0.36, bottom: 0.94, light: true } };
 
-/** 覆いの中の章タイトル（本編の .chapter-title-shield の .chapter-card）。無ければ null。 */
+/** 覆いの中の章タイトル（本編の .chapter-title-shield の .chapter-card、第1章は専用の演出 .ch1-title-motion）。無ければ null。 */
 function readChapterTitle(roots) {
+  // 第1章は専用の演出（chapters/ch1-title-motion.js）。縦画面では、同じ絵（横長の章タイトル）で他の章と同じ形に組む
+  const first = roots.find((node) => node.matches(".ch1-title-motion"));
+  if (first) {
+    if (first.dataset.phase !== "playing") return null;
+    const entry = CHAPTER_TITLE_ART.find((item) => item.chapter === 1);
+    return entry && { chapter: 1, no: entry.no, name: entry.name, english: String(entry.read || "").split("──").pop().trim(), art: entry.url, out: false };
+  }
   const shield = roots.find((node) => node.matches(".chapter-title-shield"));
   const card = shield?.querySelector(".chapter-card");
   if (!card) return null;
@@ -82,7 +87,7 @@ function readChapterTitle(roots) {
   if (!entry) return null;
   const img = card.querySelector("img.cc-art");
   return {
-    chapter: entry.chapter, no: entry.no, name: entry.name, sub: entry.sub || "",
+    chapter: entry.chapter, no: entry.no, name: entry.name,
     english: String(entry.read || "").split("──").pop().trim(),
     art: card.classList.contains("illustrated") ? img?.currentSrc || img?.src || entry.url : "",
     out: card.classList.contains("out"),
@@ -130,7 +135,7 @@ export function createCoverScene(frame, own) {
     poster.dataset.m = card.motion;
     poster.style.cssText = `--ci:${card.color};--ci2:${card.secondary};--ci-shadow:${card.shadow};--name-size:${size.toFixed(2)}`;
     poster.setAttribute("aria-label", `${card.plainName}の紹介`);
-    poster.replaceChildren(
+    poster.replaceChildren(...[ // 無い物（null）は除く
       el("i.vt-cv-flash"),
       card.bg ? el("img.vt-cv-bg", { src: card.bg, alt: "", draggable: "false" }) : null,
       el("i.vt-cv-veil"),
@@ -141,31 +146,31 @@ export function createCoverScene(frame, own) {
         card.line ? el("p.vt-cv-quote", { text: card.line }) : null,
         card.flavor ? el("p.vt-cv-flavor", [el("small", { text: card.flavorLabel }), el("b", { text: card.flavor })]) : null,
       ]),
-    );
+    ].filter(Boolean));
   }
 
-  /** 章タイトル（案A）を組む。絵は横長の一枚から人物を切り出し、章名は文字で組む（絵に描き込まれた題字は画面の外になる）。 */
+  /** 章タイトルを組む（VPN27）: 上にゲームタイトルのロゴ、真ん中に横長の絵、下に章の情報（CHAPTER n・章名・線・英題）。 */
   function renderCall(title) {
-    const crop = TITLE_CROP[title.chapter] || DEFAULT_CROP;
-    const width = 100 / (crop.to - crop.from); // 画面の幅に対する絵の幅（%）
+    const crop = TITLE_CROP[title.chapter];
     call.dataset.chapter = String(title.chapter);
-    // 絵の上端を画面の上より下げる章は、上端も溶かして、後ろのぼかした絵になじませる
-    call.style.cssText = `--ct-w:${width.toFixed(2)}%;--ct-x:${(-crop.from * width).toFixed(2)}%;--ct-top:${crop.top}%;--ct-fade:${crop.top ? 16 : 0}%`;
-    call.setAttribute("aria-label", [title.no, title.name, title.english, title.sub].filter(Boolean).join("　"));
-    call.replaceChildren(
-      title.art ? el("img.vt-ct-amb", { src: title.art, alt: "", draggable: "false" }) : null,
-      title.art ? el("img.vt-ct-art", { src: title.art, alt: "", draggable: "false" }) : null,
-      el("i.vt-ct-veil"),
+    call.dataset.tone = crop?.light ? "light" : "dark";
+    // 切り出す章は、枠の縦横比と絵のずらしを渡す（絵の高さ 720 のうち top〜bottom を見せる）
+    call.style.cssText = crop ? `--ct-ar:${(1280 / (720 * (crop.bottom - crop.top))).toFixed(4)};--ct-shift:${(crop.top / (crop.bottom - crop.top)).toFixed(4)}` : "";
+    call.setAttribute("aria-label", [title.no, title.name, title.english].filter(Boolean).join("　"));
+    call.replaceChildren(...[ // 置かない物（null）は除く（replaceChildren は null を「null」という文字にしてしまう）
+      title.art && !crop?.light ? el("img.vt-ct-amb", { src: title.art, alt: "", draggable: "false" }) : null,
+      el("div.vt-ct-head", { "aria-hidden": "true" }, [el("img.vt-ct-logo", { src: TITLE_LOGO, alt: "", draggable: "false" })]),
+      title.art ? el("div.vt-ct-pic", [el("img.vt-ct-art", { src: title.art, alt: "", draggable: "false" })]) : el("div.vt-ct-pic.empty"),
       el("div.vt-ct-copy", { "aria-hidden": "true" }, [
-        el("div.vt-ct-brand", { text: "水煙前線 -EN:CODE-" }),
         el("div.vt-ct-en", { text: `CHAPTER ${title.chapter}` }),
         el(`div.vt-ct-name${[...title.name].length > 5 ? ".long" : ""}`, { text: title.name }),
         el("i.vt-ct-rule"),
         title.english ? el("div.vt-ct-read", { text: title.english }) : null,
-        title.sub ? el("div.vt-ct-sub", { text: title.sub }) : null,
+        // 「〇〇編」は章によって有ったり無かったりするので、縦画面のタイトルコールでは出さない（VPN23）
       ]),
-    );
+    ].filter(Boolean));
   }
+
 
   function sync(state = {}) {
     holding = !!state.hold;
