@@ -703,7 +703,9 @@ await suite("look_vertical", async (check) => {
     const plus = id => page.locator(t("vt-mix-plus-" + id));
     const confirm = page.locator(".vtc-mix-footer button");
     assert(await confirm.isDisabled());
-    for (let i = 0; i < 9; i++) await plus("double_apple").tap();
+    await plus("double_apple").press("Enter");
+    assert.equal(await page.evaluate(() => window.vtCraft.mix.double_apple), 1);
+    for (let i = 1; i < 9; i++) await plus("double_apple").tap();
     for (let i = 0; i < 3; i++) await plus("mint").tap();
     await page.waitForFunction(() => !document.querySelector(".vtc-mix-footer button").disabled);
     await rotateBench(page);

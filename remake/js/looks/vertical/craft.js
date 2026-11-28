@@ -89,7 +89,7 @@ function viewFor(bench) {
  * 外枠のボタンを長押しのボタンにする（試作の「注ぐ」「こぼす」「刺す」）。押している間 .pressing を付け、本編の要素へ
  * pointerdown を送り、離した（指が外れた・キーを離した）時に pointerup を送る。live() は押した時の本編の要素（押せなければ null）。
  */
-function holdButton(button, live) {
+function holdButton(button, live, keyClick) {
   let release = null, pointer = null;
   const start = (who) => {
     if (release) return;
@@ -119,7 +119,11 @@ function holdButton(button, live) {
     if ((event.key === " " || event.key === "Enter") && !event.repeat) { event.preventDefault(); start("key"); }
   });
   button.addEventListener("keyup", (event) => {
-    if ((event.key === " " || event.key === "Enter") && pointer === "key") { event.preventDefault(); end(); }
+    if ((event.key === " " || event.key === "Enter") && pointer === "key") {
+      event.preventDefault();
+      end();
+      keyClick?.(); // 配合の±は本編の click が短押しを1回に数える
+    }
   });
   button.addEventListener("blur", end);
   button.addEventListener("contextmenu", (event) => event.preventDefault());

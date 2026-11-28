@@ -16,25 +16,29 @@ export const mixView = {
     const reg = el("span");
     const ctrl = el("div.vtc-mix-controls", [shelf, el("div.vtc-mix-footer", [reg, ok])]);
     let panel, rows = [], extras = [];
+    const holds = [];
+    const available = source => source?.isConnected && !source.disabled && !source.closest("[inert]");
     function tap(button) {
-      if (button?.isConnected && !button.disabled && !panel.inert) relay(button);
+      if (available(button)) relay(button);
     }
     ok.onclick = () => tap(panel?.querySelector('[data-test="mix-ok"]'));
     function proxy(source, repeat = false) {
+      function click(detail) {
+        // 本編の holdRepeat が長押し後の click を除外できるよう detail を渡す。
+        if (available(source)) source.dispatchEvent(new MouseEvent("click", { bubbles: true, detail }));
+      }
       const button = el("button.vtc-bench-button", { type: "button", text: source.textContent,
         "aria-label": source.getAttribute("aria-label"), dataset: { test: "vt-" + source.dataset.test },
         onclick: event => {
           if (!repeat) tap(source);
-          else if (source.isConnected && !panel.inert) {
-            // 長押し後の click を本編の holdRepeat が識別できるよう detail を渡す。
-            source.dispatchEvent(new MouseEvent("click", { bubbles: true, detail: event.detail }));
-          }
+          else click(event.detail);
         } });
-      if (repeat) hold(button, () => source.isConnected && !panel.inert ? source : null);
+      if (repeat) holds.push(hold(button, () => available(source) ? source : null, () => click(1)));
       return button;
     }
     return {
       pic, ctrl,
+      leave() { holds.forEach(binding => binding.end()); },
       coach: bench => bench.querySelector(".bench-hint")?.textContent || "",
       thermo: () => ({ node: panel?.querySelector(".mix-temperature-preview .thermo"), mode: "bands" }),
       sync(next) {

@@ -29,7 +29,7 @@ export const pullView = {
           gauge.querySelector("use").setAttribute("href", "#" + dial.id);
           buttons = [...play.querySelectorAll(".pull-btns button")].map(source => {
             const timed = source.dataset.test === "pull-stop" || source.dataset.test === "pull-deep";
-            const available = () => source.isConnected && !source.disabled && !panel.inert;
+            const available = () => source.isConnected && !source.disabled && !source.closest("[inert]");
             const button = el("button.vtc-bench-button", { type: "button", dataset: { test: "vt-" + source.dataset.test },
               onclick: event => {
                 if ((!timed || event.detail === 0) && available()) relay(source);
