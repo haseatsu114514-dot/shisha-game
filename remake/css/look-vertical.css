@@ -1,3 +1,4 @@
+@import url("look-vertical-sheet.css");
 /* 縦画面「煙の舞台」（C案・js/looks/vertical.js）。様式「縦画面」を選んで縦持ちにした時だけ読み込む（index.html の styles-look-vertical）。
    寸法は試作 remake/previews/portrait-stage/style.css と同じ比。試作の 1rem を、ここでは --u（スマホの幅 39 で 1 単位）と書く。
    本編の画面（#viewport）はレイアウトを生かしたまま見えなくし（会話の折り返しが .vn-text の実幅を測るため display は変えない）、
@@ -443,23 +444,26 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-shell[data-scene="cover"] .vt-telop { visibility: hidden; }
 
 /* 登場カットイン（案A 縦のポスター: 上に人物、真ん中に斜めの帯と名前、下に一言） */
-.vt-cv { --art-w: calc(52 * var(--u)); --art-top: calc(1.5 * var(--u)); --art-x: calc(19.5 * var(--u)); --band-top: 57%; --focus: 0.5; --nsz: calc(var(--name-size, 6) * var(--u));
+.vt-cv { --art-w: calc(52 * var(--u)); --art-top: calc(1.5 * var(--u)); --art-x: calc(19.5 * var(--u)); --band-top: min(56%, calc(100% - 36.5 * var(--u) - var(--safe-b))); --band-h: calc(var(--nsz) * 1.32 + 2.2 * var(--u)); --focus: 0.5; --nsz: calc(var(--name-size, 6) * var(--u));
   position: absolute; inset: 0; z-index: 45; overflow: hidden; isolation: isolate; background: var(--ci-shadow); }
 .vt-cv[hidden] { display: none; }
 .vt-cv-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 78% 50%; animation: vt-cv-bg 0.7s var(--ease-out) both; }
 .vt-cv-veil { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 0%, transparent 46%, color-mix(in srgb, var(--ci-shadow) 70%, transparent) 62%, var(--ci-shadow) 86%); }
+/* 人物の下端は不透明な名前帯の後ろで切る。画像の縦横比や入場の動きに依存しない。 */
+.vt-cv-figure { position: absolute; inset: 0 0 auto; height: calc(var(--band-top) + var(--band-h) / 2); overflow: hidden; }
 .vt-cv-art { position: absolute; z-index: 1; width: var(--art-w); max-width: none; left: calc(var(--art-x) - var(--focus) * var(--art-w)); top: var(--art-top);
-  -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 84%); mask-image: linear-gradient(180deg, #000 60%, transparent 84%); filter: drop-shadow(0 var(--u) calc(2 * var(--u)) #0009); }
-.vt-cv-band { position: absolute; z-index: 2; left: -8%; right: -8%; top: var(--band-top); height: calc(var(--nsz) * 1.5 + 2.4 * var(--u)); display: flex; align-items: center; padding-left: calc(8% + 2.4 * var(--u)); background: #f6f3e9; box-shadow: 0 calc(1.2 * var(--u)) calc(2.4 * var(--u)) #0009; transform: rotate(-5deg); animation: vt-cv-wipe 0.4s var(--ease-out) 0.22s both; }
+  filter: drop-shadow(0 var(--u) calc(2 * var(--u)) #0009); }
+.vt-cv-band { position: absolute; z-index: 2; left: -8%; right: -8%; top: var(--band-top); height: var(--band-h); display: flex; align-items: center; padding-left: calc(8% + 2.4 * var(--u)); background: #f6f3e9; box-shadow: 0 calc(1.2 * var(--u)) calc(2.4 * var(--u)) #0009; transform: rotate(-5deg); animation: vt-cv-wipe 0.4s var(--ease-out) 0.22s both; }
 .vt-cv-accent { position: absolute; left: 0; right: 0; bottom: calc(-1.3 * var(--u)); height: calc(0.8 * var(--u)); background: var(--ci); }
 .vt-cv-name { font-family: var(--gothic); font-size: var(--nsz); font-weight: 900; line-height: 1.05; letter-spacing: -0.05em; white-space: nowrap; color: #090e15; transform: skewX(-10deg) scaleX(0.92); transform-origin: left center; animation: vt-cv-stamp 0.45s var(--ease-out) 0.46s both; }
 .vt-cv-name ruby { ruby-position: over; } .vt-cv-name rt { font-size: 0.24em; font-weight: 700; letter-spacing: 0.04em; color: #2a2e36; }
 .vt-cv-gap { display: inline-block; width: 0.3em; }
-.vt-cv-tag { position: absolute; z-index: 3; left: calc(1.8 * var(--u)); top: calc(var(--band-top) - 4.4 * var(--u)); padding: calc(0.4 * var(--u)) calc(1.3 * var(--u)) calc(0.5 * var(--u)); border-left: calc(0.35 * var(--u)) solid var(--ci); font-size: calc(1.75 * var(--u)); font-weight: 700; letter-spacing: -0.02em; white-space: nowrap; color: #f8f6ee; background: #101820ed; transform: rotate(-5deg); animation: vt-cv-tag 0.4s var(--ease-out) 0.66s both; }
-.vt-cv-say { position: absolute; z-index: 3; left: calc(2.4 * var(--u)); right: calc(2 * var(--u)); top: calc(var(--band-top) + var(--nsz) * 1.5 + 6 * var(--u)); animation: vt-cv-up 0.5s var(--ease-out) 0.86s both; }
-.vt-cv-quote { margin: 0; font-size: calc(2.5 * var(--u)); font-weight: 700; line-height: 1.42; letter-spacing: -0.02em; color: #f8f6ee; text-shadow: 0 calc(0.2 * var(--u)) var(--u) #000a; }
+.vt-cv-tag { position: absolute; z-index: 3; left: calc(1.8 * var(--u)); top: calc(var(--band-top) - 4.8 * var(--u)); padding: calc(0.4 * var(--u)) calc(1.3 * var(--u)) calc(0.5 * var(--u)); border-left: calc(0.35 * var(--u)) solid var(--ci); font-size: calc(2.1 * var(--u)); font-weight: 700; letter-spacing: -0.02em; white-space: nowrap; color: #f8f6ee; background: #101820ed; transform: rotate(-5deg); animation: vt-cv-tag 0.4s var(--ease-out) 0.66s both; }
+.vt-cv-say { position: absolute; z-index: 3; left: calc(2.4 * var(--u)); right: calc(2 * var(--u)); top: calc(var(--band-top) + var(--band-h) + 2.4 * var(--u)); bottom: calc(2 * var(--u) + var(--safe-b)); display: flex; flex-direction: column; justify-content: space-evenly; container-type: inline-size; animation: vt-cv-up 0.5s var(--ease-out) 0.86s both; }
+.vt-cv-quote { margin: 0; font-size: min(calc(3.6 * var(--u)), calc(100cqi / var(--quote-columns, 1))); font-weight: 700; line-height: 1.3; letter-spacing: -0.02em; color: #f8f6ee; text-shadow: 0 calc(0.2 * var(--u)) var(--u) #000a; }
+.vt-cv-phrase { display: inline-block; max-width: 100%; line-break: strict; text-wrap: balance; }
 .vt-cv-flavor { display: flex; align-items: baseline; gap: var(--u); margin: var(--u) 0 0; }
-.vt-cv-flavor small { font-size: calc(1.3 * var(--u)); font-weight: 700; color: var(--ci); } .vt-cv-flavor b { font-size: calc(2 * var(--u)); color: #f8f6ee; }
+.vt-cv-flavor small { font-size: calc(1.65 * var(--u)); font-weight: 700; color: var(--ci); } .vt-cv-flavor b { font-size: calc(2.55 * var(--u)); color: #f8f6ee; }
 .vt-cv-flash { position: absolute; z-index: 9; top: -10%; bottom: -10%; left: 0; width: 55%; background: linear-gradient(90deg, transparent, var(--ci2) 40%, #fff 50%, var(--ci2) 60%, transparent); transform: translateX(-140%) skewX(-18deg); animation: vt-cv-flash 0.55s ease-out both; pointer-events: none; }
 .vt-cv[data-m="bounce"] .vt-cv-art { animation: vt-cv-art-bounce 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
 .vt-cv[data-m="soft"] .vt-cv-art { animation: vt-cv-art-soft 1s var(--ease-out) 0.05s both; } .vt-cv[data-m="soft"] .vt-cv-flash { animation-duration: 0.9s; opacity: 0.5; }
@@ -476,7 +480,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 @keyframes vt-cv-art-sharp { from { opacity: 0; transform: translateX(-30%); } }
 
 /* ───────── シート（MENU・LIME・小窓・LOG・店・章のクリア。looks/retro/sheet.js の写しを縦C案の色と字に） ───────── */
-.vt-shell .vt-sheet-host.retro-shell {
+.vt-shell .vt-sheet-host {
   --d: calc(0.15 * var(--u));
   --r-body: #120c1d;
   --r-ink: #1a1228;
@@ -512,25 +516,25 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 }
 .vt-sheet-host .vt-sheet-top { position: absolute; left: 0; top: 0; width: 100%; height: 0; }
 .vt-sheet-host .vt-sheet-bottom { position: absolute; inset: 0; }
-.vt-sheet-host .retro-sheet { position: absolute; inset: 0 !important; width: auto !important; height: auto !important; font-size: calc(1.5 * var(--u)); line-height: 1.55; background: none; box-shadow: none; }
-.vt-sheet-host .retro-sheet[data-tall="true"] { background: none; box-shadow: none; }
-.vt-sheet-host .retro-sheet .rs-head { border-radius: 0; }
-.vt-sheet-host .retro-sheet .rs-h1, .vt-sheet-host .retro-sheet .rs-h2 { font-family: var(--mincho); font-size: calc(2 * var(--u)); line-height: 1.4; letter-spacing: 0.06em; }
-.vt-sheet-host .retro-sheet .rs-h3, .vt-sheet-host .retro-sheet .rs-h4 { font-size: calc(1.6 * var(--u)); line-height: 1.45; }
-.vt-shell .vt-sheet-host .retro-sheet .rs-btn, .vt-shell .vt-sheet-host .retro-sheet .rs-check { min-height: calc(4.4 * var(--u)); border-radius: calc(1.2 * var(--u)); box-shadow: inset 0 calc(0.1 * var(--u)) 0 #ffffff1f; }
-.vt-shell .vt-sheet-host .retro-sheet .rs-btn:active:not([disabled]) { transform: scale(0.98); box-shadow: none; }
-.vt-shell .vt-sheet-host .retro-sheet .rs-btn:is([aria-pressed="true"], [aria-checked="true"], [aria-selected="true"], .s-on),
-.vt-shell .vt-sheet-host .retro-sheet .rs-check[aria-checked="true"] { color: var(--deep); background: var(--r-lilac); border-color: var(--r-lilac); }
-.vt-shell .vt-sheet-host .retro-sheet .rs-btn.s-primary { color: #3a2408; background: var(--r-gold); border-color: var(--r-gold); }
-.vt-sheet-host .retro-sheet .rs-gauge, .vt-sheet-host .retro-sheet .rs-meter { height: calc(0.8 * var(--u)); border-radius: var(--u); overflow: hidden; }
-.vt-sheet-host .retro-sheet .rs-fill { border-radius: inherit; }
-.vt-sheet-host .retro-sheet img { border-radius: calc(0.6 * var(--u)); }
+.vt-sheet-host .vt-sheet-pane { position: absolute; inset: 0 !important; width: auto !important; height: auto !important; font-size: calc(1.5 * var(--u)); line-height: 1.55; background: none; box-shadow: none; }
+.vt-sheet-host .vt-sheet-pane[data-tall="true"] { background: none; box-shadow: none; }
+.vt-sheet-host .vt-sheet-pane .rs-head { border-radius: 0; }
+.vt-sheet-host .vt-sheet-pane .rs-h1, .vt-sheet-host .vt-sheet-pane .rs-h2 { font-family: var(--mincho); font-size: calc(2 * var(--u)); line-height: 1.4; letter-spacing: 0.06em; }
+.vt-sheet-host .vt-sheet-pane .rs-h3, .vt-sheet-host .vt-sheet-pane .rs-h4 { font-size: calc(1.6 * var(--u)); line-height: 1.45; }
+.vt-shell .vt-sheet-host .vt-sheet-pane .rs-btn, .vt-shell .vt-sheet-host .vt-sheet-pane .rs-check { min-height: calc(4.4 * var(--u)); border-radius: calc(1.2 * var(--u)); box-shadow: inset 0 calc(0.1 * var(--u)) 0 #ffffff1f; }
+.vt-shell .vt-sheet-host .vt-sheet-pane .rs-btn:active:not([disabled]) { transform: scale(0.98); box-shadow: none; }
+.vt-shell .vt-sheet-host .vt-sheet-pane .rs-btn:is([aria-pressed="true"], [aria-checked="true"], [aria-selected="true"], .s-on),
+.vt-shell .vt-sheet-host .vt-sheet-pane .rs-check[aria-checked="true"] { color: var(--deep); background: var(--r-lilac); border-color: var(--r-lilac); }
+.vt-shell .vt-sheet-host .vt-sheet-pane .rs-btn.s-primary { color: #3a2408; background: var(--r-gold); border-color: var(--r-gold); }
+.vt-sheet-host .vt-sheet-pane .rs-gauge, .vt-sheet-host .vt-sheet-pane .rs-meter { height: calc(0.8 * var(--u)); border-radius: var(--u); overflow: hidden; }
+.vt-sheet-host .vt-sheet-pane .rs-fill { border-radius: inherit; }
+.vt-sheet-host .vt-sheet-pane img { border-radius: calc(0.6 * var(--u)); }
 .vt-shell[data-scene="sheet"] .vt-telop { visibility: hidden; }
 /* LIME（VPN15。試作 previews/portrait-stage/lime.css と同じ見た目・VPM10「ライムの画面はあえてLINEの色とかに寄せたい」）:
    画面いっぱいのアプリ。一覧は白地に黒い名前・灰色の一言・緑の印、トークは青みのある背景に白（相手）と緑（自分）の吹き出し、下に緑の札 */
-.vt-shell[data-sheet="lime"] .vt-sheet-host.retro-shell { --ln-green: #06c755; --ln-green-ink: #04913f; --ln-green-soft: #e7f8ed; --ln-chat: #8cabd8; --ln-me: #8de055; --ln-ink: #111; --ln-sub: #8a929e; --ln-faint: #b2b8c1; --ln-line: #eceef1;
+.vt-shell[data-sheet="lime"] .vt-sheet-host { --ln-green: #06c755; --ln-green-ink: #04913f; --ln-green-soft: #e7f8ed; --ln-chat: #8cabd8; --ln-me: #8de055; --ln-ink: #111; --ln-sub: #8a929e; --ln-faint: #b2b8c1; --ln-line: #eceef1;
   inset: 0; border: 0; border-radius: 0; background: var(--ln-chat); box-shadow: none; animation: none; color: var(--ln-ink); }
-.vt-shell[data-sheet="lime"] .vt-sheet-host .retro-sheet { color: var(--ln-ink); font-size: calc(1.6 * var(--u)); }
+.vt-shell[data-sheet="lime"] .vt-sheet-host .vt-sheet-pane { color: var(--ln-ink); font-size: calc(1.6 * var(--u)); }
 .vt-shell[data-sheet="lime"] .vt-sheet-host .rs-head { display: flex; align-items: center; gap: var(--u); min-height: calc(6.4 * var(--u)); padding: max(calc(1.1 * var(--u)), env(safe-area-inset-top, 0px)) calc(1.5 * var(--u)) var(--u); color: var(--ln-ink); background: #fff; border-bottom: calc(0.1 * var(--u)) solid var(--ln-line); }
 .vt-shell[data-sheet="lime"] .vt-sheet-host .s-lime-title { order: 1; font-size: calc(2.5 * var(--u)); font-weight: 800; letter-spacing: 0.02em; line-height: 1.2; color: var(--ln-ink); }
 .vt-shell[data-sheet="lime"] .vt-sheet-host .s-lime-logo { order: 2; margin-left: auto; height: calc(2.5 * var(--u)); padding: 0 calc(0.9 * var(--u)); display: grid; place-items: center; border-radius: calc(0.8 * var(--u)); font-size: calc(1.2 * var(--u)); font-weight: 900; letter-spacing: 0.08em; line-height: 1; color: #fff; background: var(--ln-green); }
@@ -544,7 +548,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vt-shell[data-sheet="lime"] .vt-sheet-host .s-lime-face.s-gap { visibility: hidden; }
 .vt-shell[data-sheet="lime"] .vt-sheet-host .s-lime-name { min-width: 0; font-size: calc(1.9 * var(--u)); font-weight: 700; color: var(--ln-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .vt-shell[data-sheet="lime"] .vt-sheet-host .rs-body { gap: calc(0.9 * var(--u)); padding: calc(1.4 * var(--u)) calc(1.2 * var(--u)) calc(1.6 * var(--u)); background: var(--ln-chat); }
-.vt-shell[data-sheet="lime"] .vt-sheet-host .retro-sheet:has(.s-lime-title) .rs-body { gap: 0; padding: calc(0.4 * var(--u)) 0 var(--u); background: #fff; }
+.vt-shell[data-sheet="lime"] .vt-sheet-host .vt-sheet-pane:has(.s-lime-title) .rs-body { gap: 0; padding: calc(0.4 * var(--u)) 0 var(--u); background: #fff; }
 .vt-shell[data-sheet="lime"] .vt-sheet-host .s-lime-empty { padding: calc(4 * var(--u)) calc(2 * var(--u)); font-size: calc(1.5 * var(--u)); text-align: center; color: var(--ln-sub); }
 .vt-shell[data-sheet="lime"] .vt-sheet-host .rs-btn.s-lime-chat-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: calc(1.3 * var(--u)); width: 100%; min-height: calc(7.8 * var(--u)); padding: calc(0.9 * var(--u)) calc(1.6 * var(--u)); border: 0; border-radius: 0; color: var(--ln-ink); background: #fff; box-shadow: none; }
 .vt-shell[data-sheet="lime"] .vt-sheet-host .rs-btn.s-lime-chat-row:active { background: var(--ln-green-soft); transform: none; }
@@ -748,7 +752,7 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 .vb-item .vb-goal-ico { width: calc(4.6 * var(--u)); height: calc(4.6 * var(--u)); } .vb-item small { font-size: calc(1.1 * var(--u)); font-weight: 700; letter-spacing: 0.1em; color: var(--gold); }
 .vb-item b { display: block; font-size: calc(1.8 * var(--u)); line-height: 1.3; } .vb-item p { margin: calc(0.1 * var(--u)) 0 0; font-size: calc(1.36 * var(--u)); line-height: 1.5; color: #ffffffcc; word-break: auto-phrase; }
 .vb-result-card .vb-btn { position: relative; width: 100%; margin-top: calc(0.4 * var(--u)); }
-.vt-shell .vt-board-modal.retro-shell { z-index: 12; }
+.vt-shell .vt-board-modal { z-index: 12; }
 .vt-board-modal[hidden] { display: none; }
 
 /* ───────── タイトルコール（章タイトル・VPN27・VPN28） ─────────
