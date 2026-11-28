@@ -5,7 +5,7 @@
 //     （押している途中のボタンを作り直さない。スクロールの位置も保つ）
 //   - 写しのボタンを押すと元の要素の click()、範囲・チェック・選択は元の入力へ値を入れて input / change を送る
 //     （保存・反映は元の処理がそのまま行う。進行・判定・セーブには触れない）
-//   - 元の CSS は #stage の中でしか効かないので、写しは look-retro.css の .retro-sheet の規則だけで組む。
+//   - 元の CSS は #stage の中でしか効かないので、写しは look-neo-portrait.css の .retro-sheet の規則だけで組む。
 //     元のクラスは「s-元の名前」として写しに付ける（画面ごとの見た目の調整に使う）
 // 置き方:
 //   MENU … 上画面にタブに合った絵（ステータスははじめ、人間関係は選んだ相手の立ち絵。ほかは背景を暗く）、
@@ -15,8 +15,8 @@
 //          本体のボタンは売り場のタブ（フレーバー・機材・くじ・売却）。商品の絵は元の切り抜きの窓のまま写す。
 //   章のクリア … 縦長のシート。LIME の初回の案内 … 下画面に吹き出し（上画面はその場の絵を暗く）。
 // 写さない物: くじを引く演出（ガラガラ）・心得の盤（動かして見る盤）・シーシャ作り・大会・ミニゲームは回転案内のまま。
-import { el } from "../../core/util.js";
-import { portraitInfo, realName } from "../../core/data.js";
+import { el } from "../../../core/util.js";
+import { portraitInfo, realName } from "../../../core/data.js";
 import { readBackgrounds, stageMetrics, STAGE_W } from "./stage-read.js";
 
 const SKIP_TAGS = new Set(["script", "style", "svg", "canvas", "video", "audio", "iframe", "template", "noscript", "rt", "rp", "dialog"]);

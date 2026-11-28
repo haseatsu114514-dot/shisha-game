@@ -35,7 +35,7 @@ await suite("look-default", async (check) => {
     const state = await look(page);
     assert.deepEqual([state.look, state.choice], ["classic", "classic"], "自動操作のブラウザの既定は旧版");
     await page.locator(t("title-config")).click();
-    assert.deepEqual(await page.locator(`${t("cfg-look")} button`).allTextContents(), ["旧版", "DS風", "縦画面"], "新版は設定に出ない（LK23）。縦画面（VPN01）は選べる");
+    assert.deepEqual(await page.locator(`${t("cfg-look")} button`).allTextContents(), ["旧版", "縦画面"], "新版は設定に出ない（LK23）。縦画面（VPN01）は選べる");
     assert.equal(await checkedLook(page), "classic");
   });
 
@@ -46,18 +46,11 @@ await suite("look-default", async (check) => {
     // 横持ち（この検査の画面）では縦の外枠は出ず、今の画面のタイトルから設定を開ける
     await page.locator(t("title-config")).click();
     assert.equal(await checkedLook(page), "vertical", "設定でも縦画面が選ばれている");
-    assert.deepEqual(await page.locator(`${t("cfg-look")} button`).allTextContents(), ["旧版", "DS風", "縦画面"], "新版は設定に出ない（LK23）。縦画面（VPN01）は選べる");
-    // DS風へ切り替えられる。選んだDS風は、次に開いてもDS風のまま。
-    await page.locator(`${t("cfg-look")} button[value="retro"]`).click();
+    assert.deepEqual(await page.locator(`${t("cfg-look")} button`).allTextContents(), ["旧版", "縦画面"], "新版は設定に出ない（LK23）。縦画面（VPN01）は選べる");
+    // 旧版へ戻しても保たれる（LK24 の移行は一度だけ）。
+    await page.locator(`${t("cfg-look")} button[value="classic"]`).click();
     state = await look(page);
-    assert.deepEqual([state.look, state.choice, state.saved.look, state.saved.lookVersion], ["retro", "retro", "retro", 3]);
-    await page.reload(); await titleReady(page);
-    state = await look(page);
-    assert.deepEqual([state.look, state.choice], ["retro", "retro"], "選び直したDS風は保たれる");
-    // 旧版（前の仕様）へ戻しても保たれる（LK24 の移行は一度だけ）。
-    // DS風では、外枠のタイトルと設定シートに表示されているボタンを使う。
-    await page.locator(t("retro-title-config")).click();
-    await page.locator(`${t("sheet-cfg-look")} button[value="classic"]`).click();
+    assert.deepEqual([state.look, state.choice, state.saved.look, state.saved.lookVersion], ["classic", "classic", "classic", 3]);
     await page.reload(); await titleReady(page);
     assert.deepEqual([(await look(page)).look, (await look(page)).choice], ["classic", "classic"]);
   });
@@ -70,7 +63,7 @@ await suite("look-default", async (check) => {
     await reopenWith(page, { look: "classic", lookVersion: 3 });
     assert.equal((await look(page)).look, "classic", "縦画面にした後で旧版へ戻した端末は、旧版のまま");
     await reopenWith(page, { look: "retro" });
-    assert.equal((await look(page)).choice, "retro", "DS風を選んでいた端末は変えない");
+    assert.equal((await look(page)).choice, "vertical", "廃止した DS風のセーブは既定へ戻す");
     await reopenWith(page, { look: "neo", bgmVolume: 0.2 });
     const state = await look(page);
     assert.equal(state.choice, "vertical", "新版を選んでいた端末は既定（縦画面）へ移す（LK24）");

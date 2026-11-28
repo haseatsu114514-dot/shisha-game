@@ -1,5 +1,5 @@
-// 見た目の様式の検査（look_neo_portrait.mjs・look_retro.mjs）で共有する、第2〜5章の保存の用意。
-// 新版の縦持ちも DS風も同じ外枠（js/looks/retro.js）で全章を写すので、同じ場面から確かめる（LK13・LK21）。
+// 見た目の様式の検査（look_neo_portrait.mjs）で共有する、第2〜5章の保存の用意。
+// 新版の縦持ちの外枠（js/looks/neo/portrait-shell.js）で全章を写す（LK13）。
 const t = (id) => `[data-test="${id}"]`;
 
 /** 会話を速送りにし、選択肢は先頭を選ぶ。 */

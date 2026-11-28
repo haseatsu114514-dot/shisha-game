@@ -707,7 +707,7 @@ await suite("look_neo_portrait", async (check) => {
   }, { ...DESK_TALL, pageEntry: entry });
 
   await check("chapters-two-to-five-conversations-use-the-shell", async (page) => {
-    // 各章の保存の章で会話を出す（その章の場所の絵）。新版はどの章でも縦持ちの外枠（DS風の同じ流れは look_retro.mjs）
+    // 各章の保存の章で会話を出す（その章の場所の絵）。新版はどの章でも縦持ちの外枠
     for (const [chapter, file, id, bg] of [
       [2, "ch2_city", "ch2_city_ageha", "res://assets/backgrounds/bg_c_station_lobby.png"],
       [3, "ch3_main", "ch3_opening", "res://assets/backgrounds/bg_mukai_shop.png"],
@@ -881,14 +881,12 @@ await suite("look_neo_portrait", async (check) => {
     await playScene(page, "ch2_city_ageha", { chapter: 2, bg: "res://assets/backgrounds/bg_c_station_lobby.png", file: "ch2_city" });
     await page.locator(shellFor("vn")).waitFor();
     assert.deepEqual(await residue(page), { shells: 1, notes: 1, hints: 1, attrs: ["retro", "retroShell", "retroHint", "retroPaint"], paint: "hd" });
-    // 第2章でも DS風はそのまま効く（LK21）: 同じ会話のまま外枠がドット絵の描き方に替わり、新版の案内の差し替えは残らない
-    await setLook("retro");
-    await page.locator(".retro-shell:not([hidden])[data-paint=\"dot\"][data-scene=\"vn\"]").waitFor();
-    assert.deepEqual(await residue(page), { shells: 1, notes: 1, hints: 0, attrs: ["retro", "retroShell", "retroPaint"], paint: "dot" });
+    // 第2章でも旧版へ切り替えると外枠を片付け、同じ会話を保つ。
+    await setLook("classic");
+    await page.waitForFunction(() => document.documentElement.dataset.look === "classic" && !document.querySelector(".retro-shell"));
+    assert.deepEqual(await residue(page), { shells: 0, notes: 0, hints: 0, attrs: [], paint: "" });
     let state = await rootState(page);
-    assert.equal(state.look, "retro", "the DS look stays on in chapter 2");
-    assert.equal(state.guard, "", "no rotate hint in the DS look");
-    assert.equal(state.replaced, false);
+    assert.equal(state.look, "classic");
     // 新版へ戻すと、同じ会話のまま外枠へ戻る
     await setLook("neo");
     await page.locator(shellFor("vn")).waitFor();
@@ -932,14 +930,10 @@ await suite("look_neo_portrait", async (check) => {
     await page.locator(shellFor("title")).waitFor();
     const setLook = (id) => page.evaluate(async (id) => (await import("./js/core/look.js")).setLook(id), id);
     assert.deepEqual(await residue(page), { shells: 1, notes: 1, hints: 1, attrs: ["retro", "retroShell", "retroHint", "retroPaint"], paint: "hd" });
-    // 新版 → DS風: ドット絵の外枠に入れ替わり、新版の案内の文は残らない
-    await setLook("retro");
-    await page.locator(".retro-shell:not([hidden])[data-paint=\"dot\"]").waitFor();
-    const retro = await residue(page);
-    assert.deepEqual([retro.shells, retro.notes, retro.hints, retro.paint], [1, 1, 0, "dot"]);
-    assert(!retro.attrs.includes("retroHint"));
-    assert.equal(await page.evaluate(() => document.documentElement.dataset.retroPaint), "dot");
-    // DS風 → 新版: 高解像度の外枠が1つだけ
+    // 新版 → 旧版 → 新版: 外枠を片付けてから、高解像度の外枠を1つだけ戻す。
+    await setLook("classic");
+    await page.waitForFunction(() => document.documentElement.dataset.look === "classic" && !document.querySelector(".retro-shell"));
+    assert.deepEqual(await residue(page), { shells: 0, notes: 0, hints: 0, attrs: [], paint: "" });
     await setLook("neo");
     await page.locator(".retro-shell:not([hidden])[data-paint=\"hd\"]").waitFor();
     const neo = await residue(page);

@@ -1,6 +1,6 @@
 // タイトル。上画面に現行のタイトルの絵（背景・キャラクターの絵・ロゴ）を写し、下画面に NEW GAME などを並べる。
 // 押したら現行のボタン（[data-test="title-new"] など）への click として中継する。
-import { el } from "../../core/util.js";
+import { el } from "../../../core/util.js";
 
 const text = (node) => node?.textContent?.trim() || "";
 const cssUrl = (value) => {
