@@ -37,8 +37,11 @@ const SHOTS = {
   desert: ["desert_ride_howto/how_boost", "desert_ride_howto/how_jump", "desert_ride_howto/how_spin"],
 };
 const shot = (path) => `img/ui/${path}.webp`;
-/** ゲームの題字のロゴ（あるものだけ。無い遊びは英字の見出しを題字の代わりに出す）。 */
-const LOGO = { camel: "img/ui/camel_race/ui/logo.webp", desert: "img/ui/desert_ride/logo.webp" };
+/** ゲームの題字のロゴ（全部の遊びにある。斧投げ・ボドゲカフェ・DJ は EXT06 で作った。原画は asset_sources/ui/minigame-visuals-20261127/logos/）。 */
+const LOGO = { axe: "img/ui/axe_throw/logo.webp", trpg: "img/ui/trpg/logo.webp", dj: "img/ui/dj/logo.webp",
+  camel: "img/ui/camel_race/ui/logo.webp", desert: "img/ui/desert_ride/logo.webp" };
+/** 画面の部品（EXT07。煙の大理石と金の縁。原画は asset_sources/ui/extra-ui-20261128/）。CSS（css/extra.css）でも同じ絵を使う。 */
+const PART = (name) => `img/ui/extra/parts/${name}.webp`;
 const SHOT_MS = 2800;
 const DIVISION_NAME = { easy: "レク", normal: "アマ", hard: "プロ" };
 const copy = (value) => JSON.parse(JSON.stringify(value));
@@ -157,9 +160,11 @@ function extraScreen(played, progress) {
   const slides = EXTRA_GAMES.map((game, index) => {
     const open = played.has(game.id);
     const shots = SHOTS[game.id].map((path, n) => el(`img.xs-shot${n ? "" : ".on"}`, { src: shot(path), alt: open ? `${game.label}の画面 ${n + 1}` : "", draggable: "false", loading: index < 2 ? "eager" : "lazy" }));
+    // 写真は枠の絵の内側（開口）に収め、その上に枠の絵を重ねる
     const frame = el("div.xs-frame", { dataset: { test: `extra-frame-${game.id}` } }, [
-      ...shots, el("span.xs-frame-glint", { "aria-hidden": "true" }),
-      ...(open ? [] : [el("span.xs-lock", { "aria-hidden": "true" }), el("span.xs-frame-q", { text: "？？？" })]),
+      el("div.xs-frame-view", [...shots, el("span.xs-frame-glint", { "aria-hidden": "true" }),
+        ...(open ? [] : [el("span.xs-lock", { "aria-hidden": "true" }), el("span.xs-frame-q", { text: "？？？" })])]),
+      el("img.xs-frame-art", { src: PART("frame"), alt: "", "aria-hidden": "true", draggable: "false" }),
     ]);
     const thumbs = open ? el("div.xs-thumbs", { role: "group", "aria-label": "画面を選ぶ" }, SHOTS[game.id].map((path, n) =>
       el(`button.xs-thumb${n ? "" : ".on"}`, { type: "button", "aria-label": `画面 ${n + 1}`, dataset: { test: `extra-thumb-${game.id}-${n + 1}` },
@@ -178,7 +183,7 @@ function extraScreen(played, progress) {
         el("h2.xs-name", { text: open ? game.label : "？？？", dataset: { test: `extra-name-${game.id}` } }),
         el("p.xs-line", { text: open ? INFO[game.id].line : "本編で遊ぶと、ここでいつでも遊べるようになります。" }),
         chipRow,
-        el("div.xs-info-foot", [el("p.xs-note", { text: open ? "進み具合はセーブから。遊んだ結果はセーブに残りません。" : "" }), play]),
+        el("div.xs-info-foot", [el("p.xs-note", { text: open ? "遊んだ結果はセーブに残りません。" : "" }), play]),
       ]),
     ]);
     shotAt[game.id] = 0;
@@ -229,7 +234,7 @@ function extraScreen(played, progress) {
   const root = el("div.extra-screen", { role: "dialog", "aria-modal": "true", "aria-label": "EXTRA あそびば", dataset: { test: "extra-screen" } }, [
     el("div.xs-amb", { "aria-hidden": "true" }, [amb]), el("div.xs-veil", { "aria-hidden": "true" }),
     el("header.xs-head", [
-      el("div.xs-brand", [el("b", { text: "EXTRA" }), el("span", { text: "あそびば" })]),
+      el("div.xs-brand", [el("img.xs-wordmark", { src: PART("wordmark"), alt: "EXTRA", draggable: "false" }), el("span", { text: "あそびば" })]),
       el("p.xs-count", { dataset: { test: "extra-count" } }, [el("span", { text: "遊んだミニゲーム" }), el("b", { text: String(count) }), el("span", { text: `/ ${EXTRA_GAMES.length}` })]),
       close,
     ]),
