@@ -11,7 +11,7 @@
 import { syncRotateGuard } from "../core/rotate-guard.js";
 import { state } from "../core/state.js";
 import { el } from "../core/util.js";
-import { detectState, isLoading, topDialogOpen } from "./vertical/detect.js";
+import { detectState, isLoading, scenePreparation, topDialogOpen } from "./vertical/detect.js";
 import { withMinigameStyles } from "../minigames/minigame-styles.js";
 import { createFrame } from "./vertical/frame.js";
 import { refreshPortraits } from "../vn/engine.js";
@@ -64,7 +64,7 @@ async function syncOrientation() {
   if (!want) {
     styleRequest?.abort();
     delete root.dataset.vtPending;
-    const needsLandscape = !!session && root.dataset.vtHint !== "hold";
+    const needsLandscape = root.dataset.vtHint === "wide";
     session?.stop(); session = null;
     if (active) stopLandscape = watchLandscape(needsLandscape);
     return;
@@ -88,6 +88,8 @@ async function syncOrientation() {
 
 // 両方の向きで同じ本編 DOM を調べる。横持ちでは場面の部品を移動しない。
 function portraitScene(own, frontMotion) {
+  const preparation = scenePreparation();
+  if (preparation) return preparation;
   // 一台勝負は地図などを背後に残してステージへ直接重なる横専用のゲーム。
   if (document.querySelector("#stage .ichi-game")) return { kind: "none" };
   // 大会入場は全章で同じ縦ポスターを使う。日付や幕の札は第1章だけを全面に出す。
@@ -123,8 +125,10 @@ function watchLandscape(needsLandscape) {
     if (document.hidden) return;
     const wipe = document.querySelector("#wipe.resume");
     const found = isLoading() ? { kind: "scene" } : portraitScene(wipe ? [wipe] : []);
-    // 場面の空白は直前の向きを維持する。写せない場面の上の覆いは横で操作できる。
-    if (found.kind === "cover" || found.kind === "gap") {
+    // 素材待ちは直前の向きを維持する。写せない場面の上の覆いは横で操作できる。
+    if (found.kind === "loading") {
+      waitingKind = "";
+    } else if (found.kind === "cover" || found.kind === "gap") {
       if (waitingKind !== found.kind) { waitingKind = found.kind; waitingSince = performance.now(); }
       const limit = found.kind === "gap" ? GAP_MS : found.pressable ? STUCK_MS : COVER_MAX_MS;
       fallback ||= found.base === false || performance.now() - waitingSince > limit;
@@ -140,7 +144,7 @@ function watchLandscape(needsLandscape) {
     if (!frame) frame = requestAnimationFrame(() => { frame = 0; update(); });
   });
   observer.observe(document.body, { subtree: true, childList: true, attributes: true,
-    attributeFilter: ["class", "data-screen", "data-step", "data-layout", "hidden", "open"] });
+    attributeFilter: ["class", "aria-busy", "data-screen", "data-step", "data-layout", "hidden", "open"] });
   const timer = setInterval(update, SYNC_MS);
   update();
   return () => {
@@ -155,7 +159,6 @@ function watchLandscape(needsLandscape) {
 function start() {
   const root = document.documentElement;
   root.dataset.vt = "on"; // 本編の会話の箱を縦のテロップと同じ比にする（css/look-vertical.css）
-  root.dataset.vtHint = "hold"; // 最初の確認までは回転案内を出さない（出すかは evaluate() が決める）
   refreshPortraits();
   let scene = null, sceneName = "";
   const frame = createFrame({
@@ -195,6 +198,14 @@ function start() {
   let dirty = true, detectSoon = true, lastDetect = 0, lastSync = 0;
   let candidate = null, streak = 0, fresh = true;
   let holdSince = 0, pressable = false, gap = false, noneSince = 0, hold = false, coverBlocked = false;
+  let preparation = null;
+
+  function setRotateHint(show) {
+    if ((root.dataset.vtHint === "wide") === show) return;
+    if (show) root.dataset.vtHint = "wide";
+    else delete root.dataset.vtHint;
+    syncRotateGuard();
+  }
 
   function setScene(next) {
     if ((next || "") === sceneName) return;
@@ -228,10 +239,7 @@ function start() {
     if (wipe) resumeSmoke.append(...wipe.querySelectorAll(".wipe-smoke, .wipe-haze"));
     // 漫画を読んでいる間は背後の場面を保ち、閉じたら最初の確認で次の場面を出す。
     if (isLoading()) {
-      if (root.dataset.vtHint !== "hold") {
-        root.dataset.vtHint = "hold";
-        window.dispatchEvent(new Event("resize"));
-      }
+      setRotateHint(false);
       root.dataset.vtLoading = "on";
       if (!scene && !document.getElementById("stage")?.dataset.portraitScene) setScene("cover");
       holdSince = noneSince = 0;
@@ -240,18 +248,21 @@ function start() {
       return;
     }
     if (root.dataset.vtLoading) delete root.dataset.vtLoading;
-    if (document.querySelector("#fx > .vn-loading")) {
-      root.dataset.vtHint = "hold";
+    const found = portraitScene(wipe ? [...own, wipe] : own, motionLayer.root.lastElementChild);
+    preparation = found.kind === "loading" ? found : null;
+    if (preparation) {
+      setRotateHint(false);
+      setLivePortraitScene("");
       hold = true;
       gap = false;
       pressable = false;
       setScene("cover");
       holdSince = noneSince = 0;
+      coverBlocked = false;
       return;
     }
-    const found = portraitScene(wipe ? [...own, wipe] : own, motionLayer.root.lastElementChild);
     if (found.kind === "live") {
-      root.dataset.vtHint = "hold";
+      setRotateHint(false);
       setScene(null);
       setLivePortraitScene(found.name);
       candidate = null; streak = 0; noneSince = 0; fresh = true;
@@ -310,12 +321,9 @@ function start() {
       setScene("cover");
       candidate = null; streak = 0;
     } else { candidate = null; streak = 0; }
-    // 対応場面を確認して外枠を戻すまでの間も、回転案内を挟まない。
-    const holdHint = !!scene || found.kind === "scene" || dialogOpen;
-    if ((root.dataset.vtHint === "hold") !== holdHint) {
-      if (holdHint) root.dataset.vtHint = "hold"; else delete root.dataset.vtHint;
-      window.dispatchEvent(new Event("resize"));
-    }
+    // 外枠をまだ出せない場面と、横でしか操作できない場面を区別する。
+    const wideOnly = found.kind === "none" || found.kind === "cover" && (found.base === false || coverBlocked && found.pressable);
+    setRotateHint(!scene && !dialogOpen && wideOnly);
   }
 
   /** 本編のトースト・報酬の札を、上の知らせとして写す。 */
@@ -341,7 +349,7 @@ function start() {
     if (dirty || now - lastSync >= SYNC_MS) {
       dirty = false;
       lastSync = now;
-      scene.sync?.({ pressable, gap, hold });
+      scene.sync?.({ pressable, gap, hold, preparation });
       syncNotices();
     }
   }
@@ -380,7 +388,7 @@ function start() {
   });
   observer.observe(document.documentElement, {
     subtree: true, childList: true, characterData: true, attributes: true,
-    attributeFilter: ["class", "hidden", "style", "src", "disabled", "aria-disabled", "aria-pressed", "data-screen", "data-revealing", "data-slot", "data-health", "data-tab", "aria-selected", "aria-expanded", "aria-checked", "title", "data-rain", "open", "data-step"],
+    attributeFilter: ["class", "hidden", "style", "src", "disabled", "aria-busy", "aria-disabled", "aria-pressed", "data-screen", "data-revealing", "data-slot", "data-health", "data-tab", "aria-selected", "aria-expanded", "aria-checked", "title", "data-rain", "open", "data-step"],
   });
 
   const onResize = () => { motionLayer.relayout(); scene?.relayout?.(); detectSoon = true; dirty = true; wake(); };

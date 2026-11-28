@@ -12,10 +12,9 @@
 :root[data-vt="on"] body > :is(.loading-gate, .loading-exit-haze).is-viewport { z-index: 1002; }
 :root[data-vt-loading] #viewport { opacity: 0; }
 :root[data-vt-loading] :is(.vt-shell, .vt-motion) { visibility: hidden; }
-/* 回転案内は、まだ縦にしていない場面（シーシャ作り・大会・店番・ミニゲーム）でだけ出す（js/looks/vertical.js が外枠を出せない間）。
-   外枠を出している間・読み込みの画面・縦の小窓（data-vt-hint="hold"）は出さない。縦持ちが基本なので、ほかの場面では回転案内を使わない（base.css・VPO01） */
+/* 縦画面の回転案内は、js/looks/vertical.js が横専用と判定した場面で出す。 */
 @media (orientation: portrait) and (hover: none) and (pointer: coarse) {
-  :root[data-look="vertical"][data-vt="on"]:not([data-vt-hint="hold"]) #rotate-hint { display: grid; }
+  :root[data-look="vertical"][data-vt="on"][data-vt-hint="wide"] #rotate-hint { display: grid; }
 }
 :root[data-look="vertical"][data-vt="on"] #rotate-hint > :not(.vt-hint) { display: none; }
 /* 本編の会話の箱を、縦のテロップと同じ比（全角約16字×2行）にする。本編の会話エンジンがこの幅で2行ずつページを分ける（VPL29）。

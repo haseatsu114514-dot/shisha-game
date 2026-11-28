@@ -178,7 +178,7 @@ export function createCoverScene(frame, own) {
   function sync(state = {}) {
     holding = !!state.hold;
     gap = !!state.gap;
-    const roots = [...(document.getElementById("fx")?.children || [])].filter((node) => !node.matches(HARMLESS));
+    const roots = state.preparation ? [] : [...(document.getElementById("fx")?.children || [])].filter((node) => !node.matches(HARMLESS));
     const cutin = roots.find((node) => node.matches(".cutin.art-intro"));
     const title = cutin ? null : readChapterTitle(roots);
     const titleLoading = document.body.dataset.screen === "title" && roots.some((node) => node.matches(".vn-loading"));
@@ -206,7 +206,8 @@ export function createCoverScene(frame, own) {
     // タイトルから本編を待つ間は、背景の右寄りにあるシーシャを縦の絵に収める。
     const url = mirrorBackground(bg, titleLoading ? { focusX: 80 } : undefined);
     frame.setAmbient(url);
-    const read = cutin || title || gap ? [] : readLines(roots.filter((node) => !node.matches(".cutin")));
+    const label = state.preparation?.label;
+    const read = label ? [{ text: label, size: 0 }] : cutin || title || gap ? [] : readLines(roots.filter((node) => !node.matches(".cutin")));
     const pics = cutin || title || gap ? [] : readArt(roots);
     const next = JSON.stringify([read, pics.map((p) => p.url)]);
     if (next !== sig) {

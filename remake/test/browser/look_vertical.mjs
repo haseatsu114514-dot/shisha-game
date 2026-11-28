@@ -417,7 +417,7 @@ await suite("look_vertical", async (check) => {
       return { lines: Math.round(node.getBoundingClientRect().height / lineHeight), overflow: node.scrollWidth > node.clientWidth + 2 };
     });
     assert(telop.lines <= 2 && !telop.overflow, `the telop shows two lines at most ${JSON.stringify(telop)}`);
-    assert.match(await page.locator(".vt-where b").textContent(), /KEMURIKUSA/, "the place name shows the shop");
+    assert.equal(await page.locator(".vt-where b").textContent(), "KEMURIYA", "the place name shows the shop");
     await pressA(page);
     await page.waitForFunction((first) => document.querySelector('[data-test="vt-text"]').textContent !== first, first);
     // 補助ボタンの LOG → シート、丸ボタンで閉じる
@@ -1459,6 +1459,49 @@ await suite("look_vertical", async (check) => {
     const res = await page.evaluate(() => window.vtCraftError || { total: window.vtCraft.holes.total, score: typeof window.vtCraft.holes.score, template: window.vtCraft.holes.templateId });
     assert.deepEqual(res, { total: 24, score: "number", template: "outer12-middle12" });
   }, { ...TALL, pageEntry: entry });
+
+  await check("craft-heat-loading-keeps-the-rotate-hint-hidden", async (page) => {
+    await waitScene(page, "title");
+    const asset = /\/heat_stove\.webp(?:\?|$)/;
+    let release;
+    const paused = new Promise(resolve => { release = resolve; });
+    await page.route(asset, async route => { await paused; await route.continue(); });
+    try {
+      await Promise.all([
+        page.waitForRequest(asset, { timeout: 60000 }),
+        page.evaluate(async () => {
+          const { newGame } = await import("./js/core/state.js");
+          const { newSession, openBench, craftTest } = await import("./js/craft/session.js");
+          const { runHoles } = await import("./js/craft/holes.js");
+          const { runHeat } = await import("./js/craft/heat.js");
+          Object.assign(newGame(), { phase: "daily", chapter: 1, day: 1, slot: 0 });
+          const cs = newSession("tutorial");
+          craftTest.auto = "good";
+          await openBench(cs, {}).ready;
+          await runHoles(cs);
+          window.rotateDuringHeatLoad = [];
+          document.addEventListener("rotateguardchange", () => {
+            if (!document.documentElement.dataset.rotateGuard) return;
+            const bench = document.querySelector("#screen .bench");
+            window.rotateDuringHeatLoad.push({
+              busy: bench?.getAttribute("aria-busy"), step: bench?.querySelector(".bench-panel")?.dataset.step,
+              cover: document.querySelector("#fx")?.lastElementChild?.className, scene: window.__verticalLook?.scene(),
+            });
+          });
+          craftTest.auto = null;
+          void runHeat(cs);
+        }),
+      ]);
+      const waitText = page.locator(t("vt-cover-text")).filter({ hasText: "作業台を準備しています…" });
+      await waitText.waitFor();
+      await page.waitForTimeout(1000); // 未対応場面を待つ猶予（600ms）を越えても回転案内を出さない
+      assert.equal(await page.locator("#rotate-hint").isVisible(), false);
+      assert(await waitText.isVisible(), "the loading notice stays until the stove asset is ready");
+    } finally { release(); }
+    await waitScene(page, "craft");
+    await page.locator("#screen .bench-panel[data-step=heat]").waitFor({ state: "attached" });
+    assert.deepEqual(await page.evaluate(() => window.rotateDuringHeatLoad), []);
+  }, { ...TALL, pageEntry: entry, pageReadySelector: t("vt-title-new"), serviceWorkers: "block" });
 
   await check("craft-heat-in-the-shell", async (page) => {
     // 炭焼き（VPN31）: 縦の作る場面の寄りのコンロと炭、上に炭壺を持つはじめ。炭の焼け具合（本編の炭の --red）と取り頃の光（.pikan）を写し、
