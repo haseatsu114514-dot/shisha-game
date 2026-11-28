@@ -6,6 +6,8 @@
 import { el } from "../../core/util.js";
 import { DB, portraitInfo } from "../../core/data.js";
 import { icon, mirrorBackground, textOf, cssUrl, placeOf } from "./frame.js";
+import { portraitStillUrl } from "./stills.js";
+import { FRAMES } from "../../vn/conversation-cutin.js";
 
 const DEFAULT_ACC = "#c3b0ff";
 /** 人物の色（登場カットインの色を少し明るくした物）。会話の名前の線・送りの印・返事の光に使う。 */
@@ -31,6 +33,9 @@ export function createTalkScene(frame) {
   const bg = el("div.vt-bg");
   const actors = el("div.vt-actors");
   const cg = el("div.vt-cg", { hidden: true });
+  // 会話カットイン（本編の vn/conversation-cutin.js が #vn の中に出す帯）を、縦の絵の場所へ写す層（VPT13）
+  const cutin = el("div.vt-cutin", { "aria-hidden": "true", dataset: { test: "vt-cutin" } });
+  let cutinSig = "";
   const name = el("div.vt-name", { dataset: { test: "vt-name" } });
   const text = el("p.vt-text", { dataset: { test: "vt-text" } });
   const inner = el("p.vt-inner", { hidden: true });
@@ -104,20 +109,52 @@ export function createTalkScene(frame) {
     return speaking;
   }
 
-  /** 会話の一枚絵。縦の絵の場所に収め、余白はぼかした同じ絵で埋める。 */
+  /** 会話の一枚絵。縦に作り直した絵（stills.js）があればそれを幅いっぱいに（VPT12）、無ければ横長の絵を縦の絵の場所に収め、余白はぼかした同じ絵で埋める。 */
   function syncCg() {
     const node = document.querySelector("#vn .vn-cg");
     const cs = node ? getComputedStyle(node) : null;
-    const url = cs ? cssUrl(cs.backgroundImage) : "";
+    const landscape = cs ? cssUrl(cs.backgroundImage) : "";
     const opacity = cs ? (parseFloat(cs.opacity) || 0) * (parseFloat(getComputedStyle(node.parentElement).opacity) || 0) : 0;
-    const on = !!url && opacity > 0.05;
+    const on = !!landscape && opacity > 0.05;
+    const portrait = on ? portraitStillUrl(node.dataset.cg) : null;
+    const url = portrait || landscape;
     cg.hidden = !on;
     actors.hidden = on;
     if (on && cg.dataset.url !== url) {
       cg.dataset.url = url;
+      cg.classList.toggle("tall", !!portrait); // "portrait" は本編の立ち絵のクラス名なので使わない
       cg.replaceChildren(el("i.vt-cg-fill", { style: { backgroundImage: `url("${url}")` } }), el("i.vt-cg-art", { style: { backgroundImage: `url("${url}")` } }));
     }
     if (on) cg.style.opacity = String(Math.min(1, opacity));
+  }
+
+  /**
+   * 会話カットイン（VPT13。オーナー「縦画面でも会話中にカットインとかたまに入る演出復活させたい」）。
+   * 本編の帯（舞台 1280×720 の座標）をそのまま写し、縦の絵の場所の大きさに縮めて置く。出し方・消え方の動きは本編の CSS（css/vn/conversation-cutin.css）のまま。
+   * 寄りの帯は左端から、絵の場所の幅の 68% で、下端（テロップのすぐ上）に。大会の目元の帯は幅いっぱいで、絵の場所の真ん中より少し上に。
+   */
+  function syncCutin() {
+    const layer = document.querySelector("#vn .vn-cutin-layer");
+    const parts = layer ? [...layer.children] : [];
+    const band = parts.find((n) => n.classList.contains("vn-cutin"));
+    const sig = parts.map((n) => `${n.className}|${n.dataset.cue || ""}|${n.dataset.art || ""}|${n.dataset.leave || ""}`).join("\n");
+    if (sig === cutinSig) return;
+    cutinSig = sig;
+    if (!band) { cutin.replaceChildren(); cutin.hidden = true; delete cutin.dataset.frame; return; }
+    const f = FRAMES[band.dataset.frame] || FRAMES.band;
+    const W = frame.picture.clientWidth, H = frame.picture.clientHeight;
+    const wide = band.dataset.frame === "eyes";
+    // 目元の帯は、幅に合わせると縦画面では細すぎる（高さ 162 → 50px ほど）ので、高さを絵の場所の 3 割にして、顔を真ん中に左右を切る
+    // 寄りの帯は絵の場所の幅の 68%（2026-11-28 オーナー「少し大きすぎかも　もう一回り小さく」で 80% から縮めた）
+    const s = wide ? (H * 0.3) / f.h : (W * 0.68) / f.w;
+    const top = wide ? H * 0.38 - (f.h * s) / 2 : H * 0.78 - f.h * s;
+    const left = wide ? W / 2 - f.face[0] * s : 0;
+    const holder = el("div.vt-cutin-band", { style: { width: `${f.w}px`, height: `${f.h}px`, transform: `translate(${left}px, ${top}px) scale(${s})` } });
+    holder.append(band.cloneNode(true));
+    const dim = parts.find((n) => n.classList.contains("vn-cutin-dim"));
+    cutin.replaceChildren(...(dim ? [el(`i.vt-cutin-dim${dim.classList.contains("leave") ? ".leave" : ""}`)] : []), holder);
+    cutin.dataset.frame = band.dataset.frame;
+    cutin.hidden = false;
   }
 
   function sync() {
@@ -127,6 +164,7 @@ export function createTalkScene(frame) {
     const url = mirrorBackground(bg);
     frame.setAmbient(url);
     syncCg();
+    syncCutin();
     const speaking = layoutActors();
 
     // 名前と色
@@ -210,7 +248,8 @@ export function createTalkScene(frame) {
     name: "vn",
     enter() {
       frame.picture.dataset.kind = "stage";
-      frame.picture.append(bg, actors, cg);
+      frame.picture.append(bg, actors, cg, cutin);
+      cutin.replaceChildren(); cutin.hidden = true; cutinSig = "";
       frame.telop.append(name, glass, choices);
       textSig = nameSig = castSig = choiceSig = "\u0000";
       actors.replaceChildren();
@@ -219,10 +258,11 @@ export function createTalkScene(frame) {
     leave() {
       actors.replaceChildren();
       cg.hidden = true; delete cg.dataset.url;
+      cutin.replaceChildren(); cutin.hidden = true; cutinSig = "";
       frame.root.dataset.choosing = "false";
     },
     sync,
-    relayout() { layoutActors(true); },
+    relayout() { layoutActors(true); cutinSig = ""; syncCutin(); },
     dir(dir) { if (dir === "up") move(-1); else if (dir === "down") move(1); },
     a() {
       const list = liveChoices();

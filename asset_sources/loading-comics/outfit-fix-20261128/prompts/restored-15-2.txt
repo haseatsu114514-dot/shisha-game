@@ -1,0 +1,8 @@
+Edit IMAGE 1, one panel of a two-panel gag comic shown on a game's loading screen. Change only what is listed below and keep everything else exactly the same: the composition and camera, every speech bubble with its exact Japanese text (same characters, same position, same font look), the background, the props, the lighting and colors, and every other person. Keep the same chibi comic style (2 to 3 heads tall, clean thick outlines, cel shading, warm colors). The other images are the official character sprites: use them only for the correct outfit and accessories, drawn in the comic's chibi style. Repaint the panel cleanly at full resolution (no blur, no jpeg noise). Fill the whole canvas with the panel edge to edge, no added border, frame, text or watermark.
+
+CHANGES:
+- Mukai (the bearded cafe owner in a fedora): change him to his current official look shown in the reference sprite: a BROWN fedora with a black band, black hair with a grey streak at the temple, a trimmed short black beard, NO sunglasses (his eyes are visible under the brim, calm and half-lidded), a brown tailored suit jacket over a dark charcoal waistcoat and a white open-collar shirt with NO tie. Remove the black hat, black suit, black shirt, grey tie and dark glasses. Keep his pose, hands and expression.
+
+REFS:
+remake/img/loading/restored-15-2.webp
+remake/img/sprites/character_variants/new/mukai_master/chr_mukai_master_normal.webp
