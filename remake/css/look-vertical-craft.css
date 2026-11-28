@@ -499,7 +499,7 @@
 .vtc-pull-life { left:var(--edge); color:#e7dcaa; }
 .vtc-pull-life:empty { display:none; }
 .vtc-pull-actions [data-test="vt-pull-serve"] { right:var(--edge); }
-.vtc-pull-actions [data-test="vt-pull-stop"] { position:absolute; left:50%; bottom:calc(var(--low) + var(--pill) - .7 * var(--u)); transform:translateX(-50%); width:var(--puff); height:var(--puff); border-radius:50%; background:radial-gradient(circle, #9465a244, transparent 68%), url("../img/ui/vertical/pad-button.webp") center/cover; display:grid; place-content:center; justify-items:center; font-weight:700; }
+.vtc-pull-actions [data-test="vt-pull-stop"] { position:absolute; left:50%; bottom:calc(var(--low) + var(--pill) - 1.3 * var(--u)); transform:translateX(-50%); width:var(--puff); height:var(--puff); border-radius:50%; background:radial-gradient(circle, #9465a244, transparent 68%), url("../img/ui/vertical/pad-button.webp") center/cover; display:grid; place-content:center; justify-items:center; font-weight:700; }
 .vtc-pull-actions svg { display:block; width:100%; height:auto; }
 .vtc-pull-actions :is([data-test="vt-pull-blind"], [data-test="vt-pull-deep"]) { position:absolute; bottom:calc(var(--low) + var(--pill) + var(--u)); max-width:28%; }
 .vtc-pull-actions [data-test="vt-pull-deep"] { left:var(--edge); }
