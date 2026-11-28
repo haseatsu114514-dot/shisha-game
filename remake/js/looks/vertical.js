@@ -7,6 +7,7 @@
 //   シーシャ作りのうち縦の画面がある工程（作る場面。いまは水入れ・詰め方・穴あけ・炭焼き・蒸らし時間・VPN30・VPN31。vertical/craft.js の登録表）。
 // まだ縦にしていない場面（シーシャ作りのほかの工程・大会・店番・ミニゲームなど。別の作業で縦の画面を作っている）は、回転案内を出して横で遊ぶ。
 // 縦持ちの間だけ動く。横持ちにすると外枠を引っ込め、本編の今の画面（旧版）で遊べる。setActive(false) で足した物をすべて片付ける。
+import { state } from "../core/state.js";
 import { el } from "../core/util.js";
 import { detectState, isLoading, topDialogOpen } from "./neo/portrait-shell/detect.js";
 import { withMinigameStyles } from "../minigames/minigame-styles.js";
@@ -29,7 +30,7 @@ const GAP_MS = 3000;        // 場面と場面のあいだの何も出ていな�
 const STUCK_MS = 6000;      // 何も写せない覆いがタップを待ったままなら、回転案内へ切り替える
 const COVER_MAX_MS = 20000; // 覆いの中身が変わらないまま続く上限
 const HINT_MAIN = "この場面は横向きで遊びます";
-const HINT_SUB = "配合・吸い出しなどの工程・店番・ミニゲームの縦画面は準備中です";
+const HINT_SUB = "機材選び・炭の配置などの工程・店番・ミニゲームの縦画面は準備中です";
 
 let active = false, query = null, session = null;
 
@@ -50,16 +51,20 @@ export function setActive(on) {
 }
 
 let loadToken = 0;
-function syncOrientation() {
+async function syncOrientation() {
   const want = active && !!query?.matches;
   if (!want) { loadToken++; session?.stop(); session = null; return; }
   if (session) return;
   const mine = ++loadToken;
   // 見た目の CSS は縦画面を使う時だけ読み込む（index.html の styles-look-vertical。ほかの端末には読ませない）
-  withMinigameStyles("look-vertical", null, () => {
-    if (mine !== loadToken || !active || !query?.matches || session) return;
-    session = start();
-  }).catch((error) => console.error("[look] 縦画面の見た目を読み込めませんでした", error));
+  try {
+    await withMinigameStyles("look-vertical", null, () => {
+      if (mine !== loadToken || !active || !query?.matches || session) return;
+      session = start();
+    });
+  } catch (error) {
+    console.error("[look] 縦画面の見た目を読み込めませんでした", error);
+  }
 }
 
 function start() {
@@ -78,6 +83,7 @@ function start() {
   const motionLayer = createMotionLayer();
   const own = [frame.root, motionLayer.root];
   const scenes = {
+    interlude: { native: true },
     title: createTitleScene(frame), vn: createTalkScene(frame), map: createMapScene(frame), menu: createMenuScene(frame),
     sheet: createSheetScene(frame), cover: createCoverScene(frame, own), board: createBoardScene(frame), craft: createCraftScene(frame),
   };
@@ -107,9 +113,10 @@ function start() {
     scene = next ? scenes[next] : null;
     frame.root.dataset.scene = sceneName;
     frame.root.dataset.layout = scene?.layout || ""; // "full": 下画面を出さない場面（試作どおりのタイトルなど）
-    frame.root.hidden = !scene;
+    frame.root.hidden = !scene || !!scene.native;
+    root.toggleAttribute("data-vt-interlude", next === "interlude");
     if (next !== "cover") holdSince = 0; // 覆いを待つ時間は、覆いに入るたびに数え直す（前の転換から数えると、すぐ待ちすぎと判断してしまう）
-    if (scene) {
+    if (scene && !scene.native) {
       root.dataset.vtShell = "on";
       scene.enter();
       dirty = true;
@@ -122,7 +129,13 @@ function start() {
 
   /** 定期の確認（1 秒に 9 回ほど）。DOM の変化を受けた臨時の確認では、外枠を引っ込める・つなぐ判断だけを行う。 */
   function evaluate(now, periodic) {
-    let found = boardOpen() ? { kind: "scene", name: "board" } : detectState(own);
+    // 第1章の幕は本編の札をそのまま全面に出す。重なった小窓や操作画面があれば通常の判定に任せる。
+    const frontMotion = motionLayer.root.lastElementChild;
+    const frontFx = document.getElementById("fx")?.lastElementChild;
+    const interlude = state?.chapter === 1 && !isLoading() && !topDialogOpen() && !document.querySelector("#modal.show") &&
+      (frontMotion ? frontMotion.matches(".day-card, .tr-dawn") :
+        frontFx?.matches('.beat, .round-cut, .entrance, .day-card, .tr-dawn, .chapter-poem[data-poem="poem_ch1"]'));
+    let found = interlude ? { kind: "scene", name: "interlude" } : boardOpen() ? { kind: "scene", name: "board" } : detectState(own);
     // シーシャ作り: 作業台の今の工程に縦の画面があれば、作る場面として写す（会話・写せる小窓が上に出ている間と、画面の一番上の小窓の間は除く）
     if (found.kind !== "scene" && !topDialogOpen() && craftOpen()) found = { kind: "scene", name: "craft" };
     // 地図のピンが現れる演出・地図の上のスロットの間も、地図のまま写す
@@ -159,7 +172,7 @@ function start() {
       // 未対応からの復帰は、定期の確認で2回続けて同じ場面と判定してから（切り替えのちらつきを避ける）
       if (found.name !== candidate) { candidate = found.name; streak = 0; }
       if (periodic) streak++;
-      if (fresh || streak >= 2) { setScene(found.name); candidate = null; streak = 0; fresh = false; }
+      if (interlude || fresh || streak >= 2) { setScene(found.name); candidate = null; streak = 0; fresh = false; }
     } else if (!coverBlocked && (found.kind === "gap" || (found.kind === "cover" && found.base))) {
       if (found.kind !== candidate) { candidate = found.kind; streak = 0; }
       if (periodic) streak++;
@@ -201,7 +214,7 @@ function start() {
       if (periodic) lastDetect = now;
       evaluate(now, periodic);
     }
-    if (!scene) return;
+    if (!scene?.sync) return;
     if (dirty || now - lastSync >= SYNC_MS) {
       dirty = false;
       lastSync = now;
@@ -231,13 +244,14 @@ function start() {
     let typed = false, other = false;
     for (const record of records) {
       const target = record.target.nodeType === 1 ? record.target : record.target.parentElement;
+      if (target === motionLayer.root && record.type === "childList") { dirty = true; other = true; continue; }
       if (!target || own.some((mine) => mine.contains(target)) || hint?.contains(target)) continue;
       dirty = true;
       if (target.closest?.(".vn-text, .vn-inner")) typed = true;
       else other = true;
     }
     if (other) detectSoon = true;
-    if (typed && scene && !stopped && !other) {
+    if (typed && scene?.sync && !stopped && !other) {
       dirty = false;
       lastSync = performance.now();
       scene.sync({ pressable, gap, hold });

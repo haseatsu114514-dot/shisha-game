@@ -4287,13 +4287,8 @@
           "type": "condition",
           "condition_type": "story_seen",
           "dialogue": "ch5_tsumugi_full_house",
-          "next_true": "sendoff"
-        },
-        {
-          "type": "condition",
-          "condition_type": "story_seen",
-          "dialogue": "ch5_tsumugi_menu_board",
-          "next_true": "sendoff"
+          "next_true": "sendoff",
+          "next_false": "legacy_sendoff"
         },
         {
           "speaker": "",
@@ -4484,6 +4479,14 @@
       ],
       "comment": "出典: CH5-PRIORITY3-TEXT.md §6。接続済み（ch5-progress.js CH5_MATCH_SCENES.arrival）。日程決定後の「会場へ行く」で、確認「この先、勝負の終わりまで自由行動に戻れません。会場へ向かいますか」を出す（Q15の現行実装は ch5.js renderScheduled）。「向かう」で _ch5_match_started を立て、本場面→ch5_copy_first_cup へ進む。「まだ行かない」は日程を維持してカードに留まり、取り消しは別操作。会場SMOKE LAB（Q13）と常連・博士が募った客（Q14）は本文に記載済み。Q18の博士は同一人物。9000の照合と博士の「誤差」は、記録と今日の違い・票の割れへの前振り（DXM01）。つむぎ・千須の客席描写も本文にある。冒頭はtonari。SMOKE LAB到着で背景を切り替え、9000の姿を初めて見るところでスチルを出す。検品札と職人の話は doctor_after_match、上着の匂いは return_to_tonari で扱う。",
       "branches": {
+        "legacy_sendoff": [
+          {
+            "type": "condition",
+            "condition_type": "story_seen",
+            "dialogue": "ch5_tsumugi_menu_board",
+            "next_true": "sendoff"
+          }
+        ],
         "sendoff": [
           {
             "speaker": "",

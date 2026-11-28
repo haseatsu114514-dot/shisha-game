@@ -9,6 +9,7 @@
 // デートは地元の店なので、東京・ドバイにいる間は誘いが届かない（daily/romance.js の hometownDateOpen）。
 // 出張シーシャの依頼（DLV）: 数日おきにスミさんのLIMEで届き、引き受けると地元の地図に「出張シーシャ」が出る（chapters/ch5-catering.js）。
 // 各地の店めぐり帳（MGR）: 帳面の店で来店を終えると判子が押され、地域・全部がそろうとくじ券。LIMEの「店めぐり帳」で見る（chapters/ch5-shop-stamps.js）。
+import { addRoamerSpots } from "../daily/roamers.js";
 import { state, save, timeOfDay } from "../core/state.js";
 import { bgUrl, displayName } from "../core/data.js";
 import { modal, toast } from "../core/ui.js";
@@ -28,7 +29,7 @@ import { cityRegularSpots, visitCityRegular } from "./ch2-preparation.js";
 import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNight, tokyoWakeBackground, chapterFiveMukaiShift,
   chapterFiveTokyoPin, tokyoSpotsNow, preloadTokyoScenes } from "./ch5-tokyo.js";
 import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNight, dubaiWakeBackground, chapterFiveDubaiPin,
-  chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById, preloadNoorScenes, dubaiBondHasNew } from "./ch5-dubai.js";
+  chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById, preloadNoorScenes, dubaiBondHasNew, chapterFiveDubaiRoamerSpots } from "./ch5-dubai.js";
 import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop, chapterFiveShowroom,
   chapterFiveTonariTalks, performChapterFiveTonariTalk } from "./ch5-shops.js";
 import { chapterFiveCateringSpot, performCateringSpot, deliverCateringMorning, settleCateringWork, cateringBusyContacts, finishCateringSeason } from "./ch5-catering.js";
@@ -105,6 +106,7 @@ export function dueTonariScene(value = state) {
  * @param io.readScene (id) => Promise<boolean> 読むだけ（試作の場面。確定は呼び出し側）
  */
 export function chapterFiveDailyDefinition(io) {
+  addRoamerSpots(chapterFiveDubaiRoamerSpots);
   return {
     get untilDay() {
       const match = state?.flags?._ch5?.matchDay;

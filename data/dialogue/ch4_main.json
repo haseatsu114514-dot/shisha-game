@@ -248,6 +248,11 @@
           "text": "……葉巻より、そっちがやりたくなった"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_ch4_master_keys",
+          "portrait_only": true
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "マスターは、今は"
@@ -261,6 +266,10 @@
           "speaker": "",
           "face": "",
           "text": "スミさんはそれ以上言わずに、葉の袋を開けた。"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "speaker": "",
@@ -1991,6 +2000,11 @@
           "text": "砂漠では、旅人を三日もてなしてから、名と用件を聞く。祖父から、そう教わった"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_ch4_cigar_bar_friend",
+          "portrait_only": true
+        },
+        {
           "speaker": "sheikh",
           "face": "normal",
           "text": "若い頃、君の国の古い友の店へ、台を持ち込んでは、その話をした。葉巻の店だ"
@@ -2009,6 +2023,10 @@
           "speaker": "",
           "face": "",
           "text": "シェイクの手が、杯の上で止まった。"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "speaker": "sheikh",
@@ -3173,6 +3191,11 @@
           "text": "勝ちたかったよ。それとは別に、帰れる店を増やしたかった"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_ch4_sensu_first_shisha",
+          "portrait_only": true
+        },
+        {
           "speaker": "sensu",
           "face": "normal",
           "text": "前に話した、終電の晩の店だ。……客のはずのあいつが、カウンターで炭を見ていた"
@@ -3191,6 +3214,10 @@
           "speaker": "sensu",
           "face": "normal",
           "text": "あの席に、助けられた"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "speaker": "sensu",

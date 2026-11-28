@@ -8,7 +8,7 @@ import { state, SAVE_SLOTS, readSlot } from "../core/state.js";
 import { SE } from "../core/audio.js";
 import { readGalleryProgress, recordGalleryProgress, shouldAnnounceCompletion, markCompletionAnnounced } from "../core/gallery-progress.js";
 import { CHAR_LABELS, GALLERY_TABS, galleryEntries, galleryStats, galleryHint } from "../core/gallery-catalog.js";
-import { stickerPhoto, doodledPhoto } from "../core/purikura-photo.js";
+import { printedPurikura, doodledPhoto } from "../core/purikura-photo.js";
 
 const KEY = "suien_remake_gallery";
 const photoName = id => id === "samechan" ? "サメちゃん" : id === "minto" ? "みんと" : realName(id);
@@ -161,7 +161,7 @@ export function openGallery() {
         controls.splice(1, 0, previous, el("span", { text: (page + 1) + " / " + pages.length, dataset: { test: "gallery-page-count" } }), next, zoom);
         content.append(scroll);
       } else if (active.photo) {
-        content.append(stickerPhoto(active.photo.people, active.photo.mode, photoName));
+        content.append(printedPurikura(active.photo, photoName));
       } else if (active.doodle && !showAuto && doodledPhoto(active.cg, active.doodle, active.title)) {
         // 自分でらくがきした写真（VPO22）。おまかせの落書きの絵にも切り替えられる
         content.append(doodledPhoto(active.cg, active.doodle, active.title + "（自分でらくがき）"));
@@ -198,7 +198,7 @@ export function openGallery() {
         else if (entry.cg) button.append(thumbnail(cgThumbUrl(entry.cg) || cgUrl(entry.cg)));
         else if (entry.kind === "comic") button.append(thumbnail(entry.pages[0]));
         else if (entry.photo) {
-          const thumb = stickerPhoto(entry.photo.people, entry.photo.mode, photoName); thumb.classList.add("gal-photo-thumb"); button.append(thumb);
+          const thumb = printedPurikura(entry.photo, photoName); thumb.classList.add("gal-photo-thumb"); button.append(thumb);
         }
         else button.append(el("span.gal-media-symbol", { text: "PHOTO" }));
         button.append(el("span.gal-caption", { text: entry.title }));

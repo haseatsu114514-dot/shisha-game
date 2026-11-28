@@ -7,16 +7,18 @@
 // 「あげはにおまかせ」（一人の時は「おまかせに戻す」）で閉じると null（今の写真＝落書き入りのまま）。initial は描き直す時の前の落書き。
 // 縦画面を縦持ちで使っている間は縦の舞台（720×H）、それ以外は本編のステージ（1280×720）に、それぞれの並べ方で出す（css/purikura-studio.css）。
 import { el } from "../core/util.js";
+import { DB } from "../core/data.js";
+import { homeRigFile } from "../core/scene-art.js";
 import { SE, playBgm, currentBgm, preloadBgm } from "../core/audio.js";
 import { layers } from "../core/ui.js";
 import { svg } from "../core/transition-kit.js";
 import { mountMotion } from "../core/motion-frame.js";
 import {
   DOODLE_W, DOODLE_H, DOODLE_FONTS, DOODLE_COLORS, DOODLE_EDGES, DOODLE_PENS, DOODLE_STAMPS,
-  DOODLE_LIMITS, DOODLE_BGS, normalizeDoodle, itemNode, strokeNode, strokePath, backdropSvg, bgSwatch,
+  DOODLE_LIMITS, DOODLE_BGS, normalizeDoodle, itemNode, strokeNode, strokePath, backdropSvg, bgSwatch, photoRig,
 } from "../core/purikura-doodle.js";
 
-const TABS = [{ id: "bg", label: "背景" }, { id: "text", label: "もじ" }, { id: "stamp", label: "スタンプ" }, { id: "pen", label: "ペン" }];
+const TABS = [{ id: "bg", label: "背景" }, { id: "text", label: "もじ" }, { id: "stamp", label: "スタンプ" }, { id: "pen", label: "ペン" }, { id: "rig", label: "小道具" }];
 // プリクラの曲（motions/purikura.js の PURIKURA_BGM と同じ3曲。演出の部品は読み込まない）
 const MUSIC = ["bgm_purikura", "bgm_purikura_b", "bgm_purikura_d"];
 const DOODLE_SECONDS = 120; // らくがきタイムの残り時間（0 になっても終わらせず「延長サービス」にする）
@@ -31,7 +33,8 @@ function spot(n) {
   return { x: x + lap * 24, y: y + lap * 30 };
 }
 
-export function openPurikuraStudio({ photo, title = "今日のプリクラ", autoLabel = "あげはにおまかせ", initial = null } = {}) {
+export function openPurikuraStudio({ photo, title = "今日のプリクラ", autoLabel = "あげはにおまかせ", initial = null, owned = [], signal } = {}) {
+  if (signal?.aborted) return Promise.resolve(false);
   return new Promise((resolve) => {
     let doc = normalizeDoodle(initial) || normalizeDoodle({ v: 1 }); // らくがきし直す時は、前の落書きから
     const undo = [];
@@ -41,9 +44,10 @@ export function openPurikuraStudio({ photo, title = "今日のプリクラ", aut
     let stampColor = "hot";
 
     // ───── 写真と落書きの層 ─────
+    const rigG = svg("g", { "aria-hidden": "true" });
     const strokesG = svg("g"), itemsG = svg("g"), selG = svg("g", { class: "pks-sel-box" });
     const live = svg("g");
-    const layer = svg("svg", { viewBox: `0 0 ${DOODLE_W} ${DOODLE_H}`, class: "pks-layer", "data-test": "pks-layer" }, [strokesG, itemsG, live, selG]);
+    const layer = svg("svg", { viewBox: `0 0 ${DOODLE_W} ${DOODLE_H}`, class: "pks-layer", "data-test": "pks-layer" }, [rigG, strokesG, itemsG, live, selG]);
     // 下から: 選んだコマの背景 → グリーンバックで抜いた写真（枠つき）→ 落書き
     let backdrop = backdropSvg(doc.bg, photo.panels);
     const shot = el("img.pks-shot", { src: photo.url, alt: "落書き前のプリクラ", draggable: "false" });
@@ -82,8 +86,18 @@ export function openPurikuraStudio({ photo, title = "今日のプリクラ", aut
     const targetRow = choices(TARGETS, () => target, (id) => { target = id; }, "pks-targets", "pks-bg-target");
     const bgButtons = DOODLE_BGS.map((b) => el("button.pks-bg", { type: "button", "aria-label": b.label, role: "radio", dataset: { id: b.id, test: `pks-bg-${b.id}` },
       onclick: () => setBg(b.id) }, [bgSwatch(b.id), el("span", { text: b.label })]));
+    const rigs = [...new Set(["home_rig_set", ...(owned || [])])].filter(homeRigFile);
+    const rigSelect = el("select.pks-rig", { dataset: { test: "pks-rig" }, onchange: (event) => {
+      record();
+      doc.rig = event.target.value;
+      render();
+      sound("select");
+    } }, [el("option", { value: "", text: "台なし" }), ...rigs.map(id => el("option", {
+      value: id, text: id === "home_rig_set" ? "撮影用の卓上台" : DB.equipById?.[id]?.name || "シーシャ台",
+    }))]);
     const panels = {
       bg: el("div.pks-panel", { dataset: { tab: "bg" } }, [targetRow, el("div.pks-bgs", { role: "radiogroup", "aria-label": "背景" }, bgButtons)]),
+      rig: el("div.pks-panel", { dataset: { tab: "rig" } }, [el("label.pks-row", [el("span", { text: "撮影用の台" }), rigSelect])]),
       text: el("div.pks-panel", { dataset: { tab: "text" } }, [el("div.pks-row.pks-typing", [input, placeText]), el("div.pks-row.pks-faces", [pick.font, pick.textEdge]), pick.textColor]),
       stamp: el("div.pks-panel", { dataset: { tab: "stamp" } }, [el("div.pks-stamps", stampButtons), pick.stampColor]),
       pen: el("div.pks-panel", { dataset: { tab: "pen" } }, [el("p.pks-hint", { text: "写真の上をなぞって描く" }), pick.penColor, el("div.pks-row", [pick.pen, pick.penEdge])]),
@@ -109,7 +123,7 @@ export function openPurikuraStudio({ photo, title = "今日のプリクラ", aut
     ]);
 
     const undoButton = el("button.pks-tool", { type: "button", text: "1つ戻す", dataset: { test: "pks-undo" }, onclick: () => { const last = undo.pop(); if (!last) return; doc = JSON.parse(last); select(-1); render(); sound("click"); } });
-    const clearButton = el("button.pks-tool", { type: "button", text: "ぜんぶ消す", dataset: { test: "pks-clear" }, onclick: () => { if (!doc.items.length && !doc.strokes.length) return; record(); doc = { v: 1, bg: doc.bg, items: [], strokes: [] }; select(-1); render(); sound("click"); } }); // 背景は残す
+    const clearButton = el("button.pks-tool", { type: "button", text: "ぜんぶ消す", dataset: { test: "pks-clear" }, onclick: () => { if (!doc.items.length && !doc.strokes.length) return; record(); doc = { ...doc, items: [], strokes: [] }; select(-1); render(); sound("click"); } }); // 背景は残す
     const heading = el("h2.pks-title", { text: "背景をえらんでね♪", dataset: { test: "pks-title" } });
     const timer = el("span.pks-timer", { hidden: true, dataset: { test: "pks-timer" }, "aria-live": "off" });
     const head = el("header.pks-head", [heading, el("div.pks-head-tools", [undoButton, clearButton])]);
@@ -135,6 +149,9 @@ export function openPurikuraStudio({ photo, title = "今日のプリクラ", aut
       const fresh = backdropSvg(doc.bg, photo.panels);
       backdrop.replaceWith(fresh);
       backdrop = fresh;
+      rigSelect.value = doc.rig || "";
+      const rig = photoRig(doc.rig);
+      rigG.replaceChildren(...(rig ? [rig] : []));
       if (penHint.classList.contains("full") && inkLeft() > 200 && doc.strokes.length < DOODLE_LIMITS.strokes) { penHint.textContent = "写真の上をなぞって描く"; penHint.classList.remove("full"); }
       strokesG.replaceChildren(...doc.strokes.map(strokeNode));
       itemsG.replaceChildren(...doc.items.map((it, i) => { const n = itemNode(it); n.dataset.index = String(i); return n; }));
@@ -300,6 +317,8 @@ export function openPurikuraStudio({ photo, title = "今日のプリクラ", aut
     if (portrait) { const k = root.getBoundingClientRect().width / W; if (k > 0) root.style.setProperty("--k", String(Math.round(k * 1000) / 1000)); }
 
     let closing = false;
+    const abort = () => { void finish(false); };
+    signal?.addEventListener("abort", abort, { once: true });
     async function finish(result) {
       if (closing) return;
       closing = true;
@@ -313,8 +332,9 @@ export function openPurikuraStudio({ photo, title = "今日のプリクラ", aut
         sound("perfect");
       } else sound("click");
       try { if (currentBgm() === music) playBgm(previousMusic); } catch { /* 音が出せなくても閉じる */ }
+      signal?.removeEventListener("abort", abort);
       mounted.remove();
-      resolve(result);
+      resolve(signal?.aborted ? false : result);
     }
     sync();
     render();

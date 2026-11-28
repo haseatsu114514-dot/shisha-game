@@ -8,6 +8,7 @@
 // 絵の穴を押す）、チュートリアルの試し刺しの「穴あけを始める」（hole-warmup-start）、桜井版の「次のリングへ」「結果へ」（hole-next・hole-done）。
 // チュートリアルの初回の説明（本編は配置の札の前に開く）の間は、穴あけの形（「刺す」と、既定の配置の数の点）を見せる。説明の間は「刺す」・
 // 「決定」を押せる形で見せる（押しても本編へは届かない）。説明のスポットライト（craft/tutorial.js・VPN32）は、アルミ→刺す→開けた穴の数の順に明るく抜く。
+import { imgFileUrl } from "../../../core/img-file.js";
 import { el } from "../../../core/util.js";
 import { textOf } from "../frame.js";
 import { PRESS } from "../../../craft/holes_logic.js";
@@ -15,7 +16,7 @@ import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, ringsForTemplate } from "../../.
 import { TUTORIAL_STEP_HELP } from "../../../craft/bench-ui.js";
 import { sayLines, speech } from "./tutorial.js";
 
-const FOIL = new URL("../../../../img/ui/making/foil_interactive_top.webp", import.meta.url).href;
+const FOIL = imgFileUrl("ui/making/foil_interactive_top.webp");
 // 箔の上の穴の半径（箔の幅を200とした値。試作の HOLE_R）。本編の穴の深さ（.foil-hole の shallow・small・wide・large）ごと
 const HOLE_R = { shallow: 1.3, small: 3, wide: 4, large: 5 };
 const DEPTHS = Object.keys(HOLE_R);
@@ -61,14 +62,16 @@ export const holesView = {
   intro: (bench) => bench.querySelector(".bench-title")?.textContent.trim() === "アルミ穴あけ", // チュートリアルの初回の説明
   persist: true, // 配置選び→穴あけ→結果で本編が部品を作り直しても、同じ画面のまま描き替える（結果の間も開けた穴を残す）
   // 説明のスポットライトの段（craft/tutorial.js）。本編の説明の文を段に分け、アルミ・刺す・開けた穴の数を順に指す
-  tutorial: ({ text, lines, extras }) => text === HOLES_HELP ? [
+  tutorial: ({ text, lines, extras, mode }) => text === HOLES_HELP ? [
     { target: "foil", say: "アルミは葉を覆うふた、穴は空気と熱の入口だ" }, // 本編の文のまま
     { target: "poke", say: "目印に針を合わせて、同じ加減で刺せ" }, // 本編の文のまま
     { target: "poke", say: "押しすぎると穴が大きくなる" }, // 本編の文のまま
     { target: "count", say: "周りの点が開けた穴だ。金ならちょうどいい" }, // 足した文（「刺す」の周りの点と左下の数。金の点＝ちょうどいい穴）
   ] : [
     // 一覧の行は、二文以上なら一文ずつの段にする（2行に収める）
-    ...[...lines.map((say) => ({ say })), ...extras].flatMap((line) => sayLines(line.say).map((say) => ({ ...line, say, target: aimOf(line) }))),
+    ...(mode === "drill" && extras.some(line => line.label === "狙う")
+      ? extras.filter(line => ["狙う", "押し加減"].includes(line.label))
+      : [...lines.map((say) => ({ say })), ...extras]).flatMap((line) => sayLines(line.say).map((say) => ({ ...line, say, target: aimOf(line) }))),
   ],
   create({ hold, relay, icon }) {
     const marks = el("div.vtc-foil-plane", { html: '<svg class="vtc-foil-marks" viewBox="-100 -100 200 200" aria-hidden="true"></svg>' });

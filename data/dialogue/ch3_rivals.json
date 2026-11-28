@@ -1276,6 +1276,11 @@
           "text": "……あ、今の、読めなかった"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_bond_ayatori",
+          "portrait_only": true
+        },
+        {
           "speaker": "ayatori",
           "face": "smile",
           "text": "やっぱり君、客じゃなくて友達の欄だね。組織じゃなくて"
@@ -1293,6 +1298,10 @@
         {
           "speaker": "",
           "text": "綾取はノートの新しい行に、俺の名前を書いた。その横に「客」とは書かなかった。"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "type": "apply",
@@ -1629,6 +1638,11 @@
           "text": "紙袋は、ハガル一つ分の重さだった。"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_bond_steve",
+          "portrait_only": true
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "空いた棚に、スティーブはレシピカードを一枚立てた。顔の一行が並んだ裏を、表にして。"
@@ -1637,6 +1651,10 @@
           "speaker": "steve",
           "text": "ヘイ、じろじろ見るな。……こいつが、新しい見張り役だ",
           "face": "smile"
+        },
+        {
+          "type": "hide_cg",
+          "portrait_only": true
         },
         {
           "type": "apply",

@@ -38,7 +38,7 @@ export async function offerAgehaPurikura(background, spot = { id: "ch2_ageha", k
       state.flags._kuraudo_melty_greeting = state.day;
       save();
     }
-    if (state.flags._ageha_first_purikura) return await revisitPurikura(background, spot, { live, read, stamp, extra: guests });
+    if (state.flags._ageha_first_purikura) return await revisitPurikura(background, spot, { live, read, stamp, signal, extra: guests });
     if (!await read("remake_ch2_ageha_purikura")) return false;
     if (!buyKeepsake("ageha_first_purikura")) return false;
     state.flags._ageha_first_purikura = true;
@@ -80,14 +80,14 @@ export function purikuraGuests(spot, extra = []) {
  * グリーンバックで抜いた写真（core/purikura-data.js の purikuraKey）がある撮影だけ。背景を選び、描く（VPO24）。描く画面は、選んだ時だけ読み込む（daily/purikura-studio.js）。
  * 返す値: 描いた落書き（core/purikura-doodle.js）、おまかせに戻したら null、撮影の途中で場面が変わったら false。
  */
-async function drawDoodle(photo, title, mode, initial, live) {
+async function drawDoodle(photo, title, mode, initial, live, signal) {
   const { openPurikuraStudio } = await import("../daily/purikura-studio.js");
   if (!live()) return false;
-  const doodle = await openPurikuraStudio({ photo, title, initial, autoLabel: mode === "solo" ? "おまかせに戻す" : "あげはにおまかせ" });
+  const doodle = await openPurikuraStudio({ photo, title, initial, signal, owned: state.owned, autoLabel: mode === "solo" ? "おまかせに戻す" : "あげはにおまかせ" });
   return live() ? doodle : false;
 }
 
-async function revisitPurikura(background, spot, { live, read, stamp, extra = [] }) {
+async function revisitPurikura(background, spot, { live, read, stamp, signal, extra = [] }) {
   if (state.flags._ageha_purikura_offer === stamp) return true;
   // 呼出し元は写真の後に店代を確定する。帰りの運賃と、その店代は写真に使わない。
   const available = () => Math.max(0, spendableMoney(state) - Math.max(0, Number(spot.cost) || 0));
@@ -145,12 +145,12 @@ async function revisitPurikura(background, spot, { live, read, stamp, extra = []
     const clean = purikuraKey(cg);
     let doodle = null, received;
     for (;;) {
-      received = await modal({ title, body: purikuraPhoto(cg, people, mode, id => displayName(id, state), { doodle }), options: [
+      received = await modal({ title, signal, body: purikuraPhoto(cg, people, mode, id => displayName(id === "minto" ? "oneesan" : id, state), { doodle }), options: [
         { label: "受け取る（400円）", value: true, test: "purikura-receive", primary: true },
         ...(clean ? [{ label: doodle ? "らくがきし直す" : "自分でらくがき", value: "doodle", test: "purikura-doodle-self" }] : []),
       ] });
       if (!live() || received !== "doodle" || !clean) break;
-      const drawn = await drawDoodle(clean, title, mode, doodle, live);
+      const drawn = await drawDoodle(clean, title, mode, doodle, live, signal);
       if (drawn === false) return false;
       doodle = drawn;
     }

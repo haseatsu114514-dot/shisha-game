@@ -2,6 +2,9 @@
 // フォントや色とかも選べて　こだわりたい人は　スタンプ入れたりとか」）。画面を持たない部品だけを置く（撮影・受け取り・ギャラリーが共通で読む）。
 // 落書きは絵ではなく中身（文字・スタンプ・ペンの線）として保存し、落書き無しの写真（img/cgs/purikura-clean/）の上に SVG で描き直す。
 // 座標は写真の画素（640×1080・2コマのシール）。保存の大きさを抑えるため、数と長さに上限を置く（normalizeDoodle）。
+import { img } from "./data.js";
+import { homeRigFile } from "./scene-art.js";
+
 // SVG の部品（演出の道具箱 transition-kit.js と同じ形。写真の部品から読むので、ここに小さく持つ）
 const NS = "http://www.w3.org/2000/svg";
 function svg(tag, attrs = {}, kids = []) {
@@ -45,6 +48,9 @@ const HEART = "M50 88 C20 66 6 50 6 32 C6 18 17 8 30 8 C39 8 46 13 50 20 C54 13 
 const STAR = "M50 6 L61 38 L95 38 L67 58 L78 92 L50 71 L22 92 L33 58 L5 38 L39 38 Z";
 const SPARKLE = "M50 4 C54 34 66 46 96 50 C66 54 54 66 50 96 C46 66 34 54 4 50 C34 46 46 34 50 4 Z";
 export const DOODLE_STAMPS = Object.freeze([
+  { id: "coal", label: "キューブ炭", art: "cube_charcoal" },
+  { id: "bowl", label: "ハガル", art: "lotos_hagal" },
+  { id: "hms", label: "HMS", art: "amaburst_hms" },
   { id: "heart", label: "ハート", parts: [{ d: HEART, fill: "c" }] },
   { id: "heart2", label: "ふちハート", parts: [{ d: HEART, fill: "#ffffff" }, { d: HEART, fill: "none", stroke: "c", width: 9 }] },
   { id: "star", label: "星", parts: [{ d: STAR, fill: "c" }] },
@@ -66,6 +72,20 @@ const stampOf = (id) => DOODLE_STAMPS.find((s) => s.id === id) || null;
  * grad: 地の色（上→下、または斜め）。tile: 繰り返す模様（幅・高さ・中身）。swatch は選ぶ札の小さな見本の地の色
  */
 const T = (d, fill, extra = {}) => ({ d, fill, ...extra });
+const PHOTO_BACKGROUNDS = [
+  ["flavor-double-apple", "ダブルアップルランド", "double-apple"],
+  ["flavor-mint-glacier", "ミント氷河鉄道", "mint-glacier"],
+  ["flavor-grape-aquarium", "巨峰クラゲ水族館", "grape-aquarium"],
+  ["flavor-chai-desert", "チャイの砂時計砂漠", "chai-desert"],
+  ["flavor-lemon-launch", "レモンソーダ発射場", "lemon-launch"],
+  ["flavor-peach-onsen", "桃のお月見温泉", "peach-onsen"],
+  ["nagoya-osu-kannon", "大須観音", "osu-kannon"],
+  ["nagoya-osu-cat", "大須の招き猫広場", "osu-cat"],
+  ["nagoya-meieki-towers", "名駅ツインタワーズ", "meieki-towers"],
+  ["nagoya-meieki-clock", "名駅の金時計", "meieki-clock"],
+  ["nagoya-sakae-oasis", "栄・オアシス21", "sakae-oasis"],
+  ["nagoya-sakae-wheel", "栄の観覧車", "sakae-wheel"],
+];
 export const DOODLE_BGS = Object.freeze([
   { id: "pink", label: "ピンク", grad: ["#ffe0ef", "#ff9fcb"] },
   { id: "yumekawa", label: "ゆめかわ", grad: ["#ffc6e5", "#dcc8ff", "#c6f1ff"], diagonal: true },
@@ -105,6 +125,7 @@ export const DOODLE_BGS = Object.freeze([
     T("M0 0 h64 v3 h-64 Z", "#ff3d9a", { opacity: 0.85 }), T("M0 0 h3 v64 h-3 Z", "#3ef0ff", { opacity: 0.75 }),
     T(SPARKLE, "#ff9fe0", { at: [30, 30, 0.2] }),
   ] } },
+  ...PHOTO_BACKGROUNDS.map(([id, label, art]) => ({ id, label, art })),
 ]);
 const bgOf = (id) => DOODLE_BGS.find((b) => b.id === id) || DOODLE_BGS[0];
 export const DOODLE_BG_DEFAULT = "pink";
@@ -147,7 +168,7 @@ export function normalizeDoodle(value) {
   }
   // コマの背景（上のコマ・下のコマ）。知らない柄はピンク
   const bg = [0, 1].map((i) => known(DOODLE_BGS, Array.isArray(value.bg) ? value.bg[i] : null, DOODLE_BG_DEFAULT));
-  return { v: 1, bg, items, strokes }; // 何も描かずに「できた！」でも、選んだ背景の写真のまま受け取る
+  return { v: 1, bg, items, strokes, ...(homeRigFile(value.rig) ? { rig: value.rig } : {}) }; // 何も描かずに「できた！」でも、選んだ背景の写真のまま受け取る
 }
 
 /** 点列を、なめらかな線の path に（2点の中点を通る2次曲線） */
@@ -181,6 +202,10 @@ export function itemNode(it) {
     g.append(fill);
   } else {
     const stamp = stampOf(it.id), c = colorHex(it.c);
+    if (stamp.art) {
+      g.append(svg("image", { x: -50, y: -50, width: 100, height: 100, href: `img/shop/equipment-v2/${stamp.art}.webp` }));
+      return g;
+    }
     const art = svg("g", { transform: "translate(-50 -50)" });
     // 白ふち（全部の形を太い白の線で一度なぞる）→ 本体
     for (const part of stamp.parts) art.append(svg("path", { d: part.d, fill: "#ffffff", stroke: "#ffffff", "stroke-width": 10, "stroke-linejoin": "round" }));
@@ -193,11 +218,19 @@ export function itemNode(it) {
   return g;
 }
 
+/** 撮影画面と保存した写真で共通の位置に小道具を置く。 */
+export function photoRig(id) {
+  const file = homeRigFile(id);
+  return file ? svg("image", { x: 28, y: 796, width: 162, height: 223, href: img(`ui/scene_props/${file}`), class: "pkd-rig" }) : null;
+}
+
 /** 落書きの層（viewBox は写真の画素）。写真の上に重ねる */
 export function doodleSvg(doodle, className = "pkd-layer") {
   const root = svg("svg", { viewBox: `0 0 ${DOODLE_W} ${DOODLE_H}`, class: className, "aria-hidden": "true" });
   const data = normalizeDoodle(doodle);
   if (!data) return root;
+  const rig = photoRig(data.rig);
+  if (rig) root.append(rig);
   for (const st of data.strokes) root.append(strokeNode(st));
   for (const it of data.items) root.append(itemNode(it));
   return root;
@@ -207,6 +240,9 @@ let bgSerial = 0;
 /** 柄の1つを、矩形 [x, y, w, h] に敷く部品（defs と本体）。uid は同じ画面の別の SVG と id がぶつからないため */
 function bgRect(id, [x, y, w, h], uid) {
   const b = bgOf(id), gid = `${uid}-g`, pid = `${uid}-p`;
+  if (b.art) {
+    return { defs: [], body: [svg("image", { x, y, width: w, height: h, href: `img/purikura/backgrounds/${b.art}.webp`, preserveAspectRatio: "xMidYMid slice" })] };
+  }
   const stops = b.grad.map((c, i) => svg("stop", { offset: `${(i / Math.max(1, b.grad.length - 1)) * 100}%`, "stop-color": c }));
   const grad = svg("linearGradient", { id: gid, x1: 0, y1: 0, x2: b.diagonal ? 1 : 0, y2: 1 }, stops);
   const defs = [grad];
@@ -251,4 +287,3 @@ export function bgSwatch(id) {
   root.append(svg("defs", {}, part.defs), ...part.body);
   return root;
 }
-

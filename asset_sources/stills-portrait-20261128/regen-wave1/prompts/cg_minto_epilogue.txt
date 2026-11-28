@@ -1,0 +1,9 @@
+## cg_minto_epilogue
+
+参照画像（添付順） `remake/img/sprites/character_variants/new/minto/chr_minto_ura_normal.webp`、`remake/img/sprites/character_variants/new/hajime/chr_hajime_normal.webp`、`remake/img/cgs/portrait/cg_minto_epilogue.webp`
+
+```text
+Use case: illustration-story. Create one new portrait 1024×1536 (2:3) CG for the visual novel, cg_minto_epilogue. Image 1 is the current Shiori (off-duty Minto) sprite and Image 2 is the current Hajime sprite; reference only character designs and outfits. Image 3 is the existing CG for the story beat only, with a new camera angle and framing required.
+In Shiori's tidy compact Japanese apartment late at night after closing the café, she and Hajime are making a late dinner. As she finishes passing him a small ceramic tasting plate, she leans her forehead gently into the edge of his black hoodie shoulder, showing a soft, sleepy, affectionate smile and directing her half-open green eyes laterally toward him. Keep her long straight near-black hair, blunt bangs, cream cable-knit cardigan, black top and small green pendant. No wings or horns. Hajime is represented by a narrow side-edge slice of black hoodie shoulder and his hand holding the little tasting plate; his head and face are outside the image.
+Use a lateral camera at Shiori's cheek height, giving a genuine near-90-degree profile close-up: show just one eye, the nose and lips in distinct profile, her face and shoulder filling the frame. Frame her looking horizontally across the image to the other person, with no eye contact with the camera. The shoulder contact and plate at the lower side are secondary to her face. She is beside the stove, with a gently steaming pot recognizable in soft focus behind her and warm kitchen lamp light, no foreground table or counter. Restrained warm cream, soft green and dark muted tones. Flat matte anime cel shading, clean linework, simple shadow shapes and controlled highlights. No text.
+```

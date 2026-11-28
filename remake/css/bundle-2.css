@@ -9966,7 +9966,7 @@ body.reduce-shake :is(.loading-gate, .boot-gate).is-ready .loading-bar::after { 
 
 /* 道具（もじ・スタンプ・ペン） */
 .pks-tools { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; gap: 10px; align-content: start; padding: 14px; border: 6px solid #fff; border-radius: 30px; background: #fff5faf0; box-shadow: 0 10px 26px #5a0f3a55; }
-.pks-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.pks-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
 .pks-tab { min-height: 72px; border: 4px solid var(--pk-pink); border-radius: 22px; background: #fff; color: var(--pk-hot); font-size: 28px; font-weight: 900; letter-spacing: 0.04em; white-space: nowrap; }
 .pks-tab[aria-selected="true"] { background: var(--pk-hot); border-color: #fff; color: #fff; box-shadow: 0 0 0 3px var(--pk-hot); }
 .pks-panel { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; gap: 10px; }
@@ -10039,7 +10039,8 @@ body.reduce-shake :is(.loading-gate, .boot-gate).is-ready .loading-bar::after { 
 .pks-bgs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
 .pks-bg { display: grid; gap: 4px; justify-items: center; padding: 6px 4px 8px; border: 3px solid var(--pk-pink); border-radius: 16px; background: #fff; color: #5b2a44; font-size: 18px; font-weight: 800; line-height: 1.1; }
 .pks-bg svg { width: 100%; aspect-ratio: 4 / 3; border-radius: 10px; display: block; box-shadow: inset 0 0 0 1px #0001; }
-.pks-bg span { white-space: nowrap; }
+.pks-bg span { min-width: 0; overflow-wrap: anywhere; text-align: center; }
+.pks-rig { min-width: 0; flex: 1; font: inherit; }
 .pks-bg[aria-checked="true"] { border-color: var(--pk-hot); background: var(--pk-baby); color: var(--pk-hot); box-shadow: inset 0 0 0 3px var(--pk-hot); }
 
 /* らくがきタイムの残り時間: 写真の右上の角に付けた丸い札（ストップウォッチのシール） */

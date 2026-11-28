@@ -44,7 +44,7 @@ async function drawLine(page) {
 await suite("purikura-studio", async (check) => {
   await check("portrait-studio-text-stamp-pen", async (page) => {
     await page.waitForFunction(() => window.__verticalLook?.scene?.() === "title", null, { timeout: 20000 });
-    await openStudio(page);
+    await openStudio(page, { owned: ["home_rig_pro"] });
     const root = page.locator(`#vt-motion > ${t("pks")}`);
     await root.waitFor();
     assert.match(await root.getAttribute("class"), /\btall\b/, "縦持ちは縦の並べ方");
@@ -72,6 +72,11 @@ await suite("purikura-studio", async (check) => {
     const order = await page.locator(t("pks-photo")).evaluate((n) => [...n.children].map((c) => c.getAttribute("class")));
     assert.deepEqual(order, ["pkd-backdrop", "pks-shot", "pks-layer"], "下から 背景 → 抜いた写真 → 落書き");
 
+    assert.equal(await page.locator(t("pks-bg-flavor-double-apple")).count(), 1, "既存のフレーバー背景を選べる");
+    await page.locator(t("pks-tab-rig")).click();
+    await page.locator(t("pks-rig")).selectOption("home_rig_pro");
+    assert.match(await page.locator(`${t("pks-layer")} .pkd-rig`).getAttribute("href"), /shisha_home_pro/);
+
     // もじ: キーボードで入れて Enter で置く。書体・色・ふちは、置いた文字にもそのまま効く
     await page.locator(t("pks-tab-text")).click();
     assert.equal(await page.locator(t("pks-title")).textContent(), "らくがきタイム♪");
@@ -96,7 +101,8 @@ await suite("purikura-studio", async (check) => {
     await page.locator(t("pks-tab-stamp")).click();
     await page.locator(t("pks-stamp-heart")).click();
     await dragItem(page, 1, 40, -30);
-    await page.locator(t("pks-stamp-star")).click();
+    await page.locator(t("pks-stamp-bowl")).click();
+    assert.match(await page.locator(`${t("pks-layer")} .pkd-item[data-index="2"] image`).getAttribute("href"), /lotos_hagal/);
     assert.equal(await page.locator(`${t("pks-layer")} .pkd-item`).count(), 3);
     await page.locator(t("pks-remove")).click();
     assert.equal(await page.locator(`${t("pks-layer")} .pkd-item`).count(), 2, "選んだスタンプを消せる");
@@ -115,6 +121,7 @@ await suite("purikura-studio", async (check) => {
     await page.locator(t("pks-print")).waitFor();
     const doodle = await page.evaluate(() => window.__pks);
     assert.equal(doodle.v, 1);
+    assert.equal(doodle.rig, "home_rig_pro", "持ち込んだ台が印刷した写真に残る");
     assert.deepEqual(doodle.bg, ["leopard", "sparkle"], "コマごとの背景が残る");
     const [text, heart] = doodle.items;
     assert.deepEqual([text.t, text.text, text.f, text.c, text.e, text.s], ["text", "うちら最強", "mincho", "blue", "black", 1.6], "文字の書体・色・ふち・大きさ");
