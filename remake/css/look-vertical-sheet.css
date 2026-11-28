@@ -293,6 +293,11 @@
 .vt-sheet-host .vt-sheet-pane[data-kind="shop"] .rs-foot > .s-shop-checkout { grid-column: 1 / -1; }
 .vt-sheet-host .vt-sheet-pane .rs-btn.s-shop-summary { justify-content: space-between; }
 .vt-sheet-host .vt-sheet-pane .rs-btn.s-shop-checkout:not([disabled]) { background: var(--r-gold); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+/* 初回の仕入れでは、案内が指す数量ボタンを商品名の横に置く。カートが空の間は会計を一段に収める。 */
+.vt-sheet-pane .s-shop-row.s-errand:has(> .s-shop-quantity > [data-errand-target]) > .s-shop-product { grid-column: 1; min-width: 0; }
+.vt-sheet-pane .s-shop-row.s-errand:has(> .s-shop-quantity > [data-errand-target]) > .s-shop-quantity { grid-column: 2; grid-row: 1; }
+.vt-sheet-pane[data-kind="shop"]:has(.s-shop-quantity > [data-errand-target="true"]) .rs-foot > .s-shop-summary:disabled { display: none; }
+.vt-sheet-host .vt-sheet-pane[data-kind="shop"]:has(.s-shop-quantity > [data-errand-target="true"]) .rs-foot > .s-shop-checkout { grid-column: auto; }
 .vt-sheet-pane .s-shop-floors { display: flex; flex-direction: column; gap: calc(var(--d) * 5); }
 .vt-sheet-host .vt-sheet-pane .rs-btn.s-shop-floor { flex-direction: column; align-items: stretch; width: 100%; padding: calc(var(--d) * 3); }
 .vt-sheet-pane .s-shop-floor-picture { position: relative; display: block; }

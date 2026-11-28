@@ -1,6 +1,6 @@
 // 縦画面「煙の舞台」: 日常の地図。本編の地図（daily/map.js の .map と .spot-pin）を読み、縦の絵に街を大きく映して、
 // 選んだ店が画面の真ん中へ来るように動かす（試作 VPL06・VPL10）。左右キー・点・札を払う＝地図の左から右の順に隣の店へ、
-// 上＝現在地より上の最寄りの店、下＝行き先の一覧。決定＝その店へ行く。選ぶ・行くは本編のピンへの click として中継する
+// 上＝現在地より上の最寄りの店、下＝行き先の一覧。丸ボタンは全体で拡大、寄った地図でその店へ行く。
 // （本編は1回目で選び、選んでいるピンをもう一度押すと行く）。行けるかどうか・料金・体力の判定は本編のまま。
 import { el } from "../../core/util.js";
 import { state } from "../../core/state.js";
@@ -331,7 +331,9 @@ export function createMapScene(frame) {
       : {
         dirs: nearestAbove() ? ["up", "down", "left", "right"] : ["down", "left", "right"],
         marks: { down: ["list", "一覧"] },
-        a: pin ? (canGo() ? { face: "go", label: `${pin.name}へ行く` } : { face: "rest", label: pin.status || "いまは行けない", disabled: true }) : { face: "ok", disabled: true },
+        a: overview ? { face: "ok", text: "拡大", label: "地図を拡大" }
+          : pin ? (canGo() ? { face: "go", text: "行く", label: `${pin.name}へ行く` } : { face: "rest", label: pin.status || "いまは行けない", disabled: true })
+          : { face: "ok", disabled: true },
       });
   }
 

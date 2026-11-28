@@ -1355,6 +1355,13 @@ function showChoices(line) {
   const fortuneHint = fortuneChoiceIndex(state, r.id, line, DB.fortuneHints);
   const growthHint = growthChoiceIndex(state, r.currentId || r.id, line, DB.fortuneHints, r.growthScene);
   const reasons = [];
+  let focused, highlighted;
+  const moveSound = (button) => {
+    if (running !== r || !r.waitingChoice || r.choiceLine !== line
+      || !button.isConnected || layers.modal.classList.contains("show") || dom.log.classList.contains("show")) return;
+    highlighted = button;
+    SE.uiCursor?.();
+  };
   const buttons = (line.choices || []).map((c, i) => {
     const shortfall = c.condition_type === "money" ? Number(c.threshold || 0) - state.money : 0;
     const hint = i === fortuneHint ? "占いの予感" : i === growthHint ? "会話の気配" : null;
@@ -1366,16 +1373,25 @@ function showChoices(line) {
       "aria-disabled": shortfall > 0 ? "true" : null,
       style: { animationDelay: `${i * 45}ms` },
       dataset: { test: `choice-${i}` },
+      onfocus: () => {
+        if (shortfall > 0 || focused === button) return;
+        focused = button;
+        if (button.matches(":focus-visible")) moveSound(button);
+      },
+      onpointerenter: (e) => {
+        if (shortfall <= 0 && highlighted !== button && e.pointerType !== "touch" && !e.buttons) moveSound(button);
+      },
       onclick: (e) => { e.stopPropagation(); if (shortfall <= 0) pickChoice(line, c); },
     });
     reasons.push(shortfall > 0 ? el("span.vn-choice-reason", { id: reasonId, text: `所持金不足（あと${shortfall.toLocaleString("ja-JP")}円）` }) : null);
     return button;
   });
+  focused = highlighted = buttons.find((button) => button.getAttribute("aria-disabled") !== "true");
   dom.choices.replaceChildren(...buttons);
   dom.choices.classList.add("show");
   r.choiceShownAt = performance.now();
   r.choiceNavigated = false;
-  buttons.find((button) => button.getAttribute("aria-disabled") !== "true")?.focus();
+  focused?.focus();
   // 選択肢は1行（GUI22）。文言は全角26字以内で書く。差し込みで長くなったときだけ字を縮める
   buttons.forEach((b, i) => {
     // 本文だけ従来の下限で測り、補足によって本文の字が縮まないようにする。
@@ -1398,7 +1414,7 @@ function pickChoice(line, c) {
   // 取り外したボタンの二度押しも、LOAD前の選択も適用しない。
   if (!r || !r.waitingChoice || r.choiceLine !== line || !line.choices?.includes(c)) return;
   if (r.owner !== state) return finish(true);
-  SE.select();
+  SE.uiDecide?.();
   r.waitingChoice = false;
   dom.choices.classList.remove("show");
   dom.choices.replaceChildren();

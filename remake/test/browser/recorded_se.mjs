@@ -66,16 +66,17 @@ try {
     assert(await page.evaluate(() => rms()) > .0001);
     await page.evaluate(() => stopWater());
     assert.equal(await page.evaluate(() => seStarts.at(-1).file), "water_end.wav");
-    await page.waitForTimeout(600);
+    await page.waitForFunction(() => seNodes.at(-1).testEnded && rms() === 0, null, { timeout: 3000 });
     assert.equal(await page.evaluate(() => rms()), 0, "water and tail stop completely");
     assert(await page.evaluate(() => seNodes.filter(n => n.loop).every(n => n.testEnded)));
-    const expected = { click: "ui_click.wav", select: "ui_select.wav", cancel: "ui_back.wav", phone: "lime_glass.wav", doorbell: "shop_bell.wav", coalSnip: "coal_grab_", coalPlace: "hms_knock_", foilPunch: "foil_puncture.wav" };
+    const expected = { click: "ui_click.wav", select: "ui_select.wav", uiCursor: "ui_cursor.wav", uiDecide: "ui_decide.wav",
+      cancel: "ui_back.wav", phone: "lime_glass.wav", doorbell: "shop_bell.wav", coalSnip: "coal_grab_", coalPlace: "hms_knock_", foilPunch: "foil_puncture.wav" };
     for (const [id, file] of Object.entries(expected)) {
       await page.evaluate(id => audio.SE[id](), id);
       assert((await page.evaluate(() => seStarts.at(-1).file)).startsWith(file), id);
     }
     await page.evaluate(() => { config.mute = true; audio.applyVolumes(); });
-    await page.waitForTimeout(80); assert.equal(await page.evaluate(() => rms()), 0);
+    await page.waitForFunction(() => rms() === 0, null, { timeout: 3000 });
     assert.deepEqual(errors, []); assert.deepEqual(seFailures, []);
     console.log(`PASS: ${mobile ? "touch" : "PC"} WAV decode, real samples, continuous loop, volume/mute, final bubble, SE mappings and cleanup`);
     await context.close();

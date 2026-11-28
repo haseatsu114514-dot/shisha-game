@@ -141,6 +141,56 @@ await suite("portrait_live_scenes", async check => {
     assert.ok(await page.evaluate(() => window.shiftResult));
   }, options);
 
+  await check("floor-orders-stay-readable-and-tappable", async page => {
+    await start(page);
+    await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      const { bgUrl } = await import("./js/core/data.js");
+      const { floorTest, runTonariFloor } = await import("./js/daily/tonari-floor-view.js");
+      Object.assign(state, { chapter: 1, day: 4 });
+      floorTest.manual = true;
+      void runTonariFloor({ seed: 7, chapter: 1, art: bgUrl("res://assets/backgrounds/bg_tonari_inside.png", "day") });
+    });
+    await native(page, "floor");
+    await button(page, "tonari-floor-option-start").tap();
+    await page.evaluate(async () => {
+      const { floorTest } = await import("./js/daily/tonari-floor-view.js");
+      // 1卓「フルーティ」残り3秒と2卓「刺激系」残り6秒の注文が並ぶ所まで進める。
+      floorTest.api.tick(28);
+    });
+    await page.waitForFunction(() => document.querySelector(".tonari-floor")?.dataset.band === "false" && !document.querySelector(".tf-pop"));
+    const orders = page.locator('.tf-spot[data-phase="order"] .tf-bubble');
+    const cards = await orders.evaluateAll(nodes => nodes.map(card => {
+      const rect = card.getBoundingClientRect();
+      const parts = [".tf-tag-want", ".tf-wish > span:last-child", ".tf-tag-no", ".tf-tag-face b"].map(selector => {
+        const node = card.querySelector(selector);
+        const bounds = node.getBoundingClientRect();
+        const { x, y, width, height } = bounds;
+        return { text: node.textContent, visible: getComputedStyle(node).visibility === "visible" &&
+          bounds.left >= rect.left - 1 && bounds.right <= rect.right + 1 && bounds.top >= rect.top - 1 && bounds.bottom <= rect.bottom + 1 &&
+          card.contains(document.elementFromPoint(x + width / 2, y + height / 2)) };
+      });
+      return { rect: rect.toJSON(), parts };
+    }));
+    assert.deepEqual(cards.map(card => card.parts.map(part => part.text)), [
+      ["注文", "フルーティ", "1", "3"], ["注文", "刺激系", "2", "6"],
+    ]);
+    const [{ rect: first }, { rect: second }] = cards;
+    assert(first.bottom <= second.top || second.bottom <= first.top || first.right <= second.left || second.right <= first.left,
+      `Order cards overlap: ${JSON.stringify([first, second])}`);
+    assert(cards.every(card => card.parts.every(part => part.visible)), `An order field is covered: ${JSON.stringify(cards)}`);
+    await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/floor-two-orders.png` });
+    const sheet = button(page, "tonari-floor-sheet");
+    for (const id of [1, 2]) {
+      await page.locator(`.tf-spot[data-id="${id}"] .tf-tag-box`).tap();
+      assert.equal(await sheet.locator("h2 b").textContent(), String(id));
+      await button(page, "tonari-floor-sheet-later").tap();
+    }
+    await button(page, "tonari-floor-table-1").focus();
+    await page.keyboard.press("ArrowUp");
+    assert.equal(await page.locator(":focus").getAttribute("data-test"), "tonari-floor-table-2");
+  }, options);
+
   await check("axe-aim-and-release", async page => {
     await start(page);
     await page.evaluate(async () => {

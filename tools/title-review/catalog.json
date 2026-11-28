@@ -15,8 +15,8 @@
   },
   "items": [
     {
-      "id": "2b5ed2ad1e29964a2edb03c3f70167a52531add9aff5a3452f499a5f043a2419",
-      "sha256": "2b5ed2ad1e29964a2edb03c3f70167a52531add9aff5a3452f499a5f043a2419",
+      "id": "4a81fbb064416d6cf6592f2be5071602af1139f852dc0cbe8afc3374af078896",
+      "sha256": "4a81fbb064416d6cf6592f2be5071602af1139f852dc0cbe8afc3374af078896",
       "character": "adam",
       "label": "title_art_adam_01_sunset_proclamation",
       "size": [
@@ -35,12 +35,12 @@
       "prompts": [],
       "current": true,
       "related": [],
-      "image": "media/2b5ed2ad1e29964a2edb03c3f70167a52531add9aff5a3452f499a5f043a2419.webp",
-      "thumbnail": "media/2b5ed2ad1e29964a2edb03c3f70167a52531add9aff5a3452f499a5f043a2419-thumb.webp"
+      "image": "media/4a81fbb064416d6cf6592f2be5071602af1139f852dc0cbe8afc3374af078896.webp",
+      "thumbnail": "media/4a81fbb064416d6cf6592f2be5071602af1139f852dc0cbe8afc3374af078896-thumb.webp"
     },
     {
-      "id": "38841895d8e50f0c82bdcbcc79bfed7e6720854607739b2a3852978cbc0b069e",
-      "sha256": "38841895d8e50f0c82bdcbcc79bfed7e6720854607739b2a3852978cbc0b069e",
+      "id": "6aa3af77e1ae3d2e59a695b573447a691c60fc283f6b4938dd02d0e12110b8bc",
+      "sha256": "6aa3af77e1ae3d2e59a695b573447a691c60fc283f6b4938dd02d0e12110b8bc",
       "character": "adam",
       "label": "title_art_adam_02_twin_apple_throne",
       "size": [
@@ -59,8 +59,8 @@
       "prompts": [],
       "current": true,
       "related": [],
-      "image": "media/38841895d8e50f0c82bdcbcc79bfed7e6720854607739b2a3852978cbc0b069e.webp",
-      "thumbnail": "media/38841895d8e50f0c82bdcbcc79bfed7e6720854607739b2a3852978cbc0b069e-thumb.webp"
+      "image": "media/6aa3af77e1ae3d2e59a695b573447a691c60fc283f6b4938dd02d0e12110b8bc.webp",
+      "thumbnail": "media/6aa3af77e1ae3d2e59a695b573447a691c60fc283f6b4938dd02d0e12110b8bc-thumb.webp"
     },
     {
       "id": "1cfd2e3e5e1b43430f2ba1aa87cd8a4a03642fa3a36be2d837770ed9b9d35278",
@@ -683,8 +683,8 @@
       "thumbnail": "media/7324deb26600496f18caf19c8bcb316f317a144f0366c11fe1f2c796dd94cf53-thumb.webp"
     },
     {
-      "id": "a3c087dcbaceb7dbc4f619efc4a3ed1180d2b03661ae1f5f77bae6d73e164a12",
-      "sha256": "a3c087dcbaceb7dbc4f619efc4a3ed1180d2b03661ae1f5f77bae6d73e164a12",
+      "id": "d0409a97afeacd116bea201d944e6abfa0b832e55a5ad6b59606fd3534c0e123",
+      "sha256": "d0409a97afeacd116bea201d944e6abfa0b832e55a5ad6b59606fd3534c0e123",
       "character": "naru",
       "label": "title_art_naru_01_bakery_morning",
       "size": [
@@ -703,8 +703,8 @@
       "prompts": [],
       "current": true,
       "related": [],
-      "image": "media/a3c087dcbaceb7dbc4f619efc4a3ed1180d2b03661ae1f5f77bae6d73e164a12.webp",
-      "thumbnail": "media/a3c087dcbaceb7dbc4f619efc4a3ed1180d2b03661ae1f5f77bae6d73e164a12-thumb.webp"
+      "image": "media/d0409a97afeacd116bea201d944e6abfa0b832e55a5ad6b59606fd3534c0e123.webp",
+      "thumbnail": "media/d0409a97afeacd116bea201d944e6abfa0b832e55a5ad6b59606fd3534c0e123-thumb.webp"
     },
     {
       "id": "308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18",
@@ -1009,6 +1009,54 @@
       "thumbnail": "media/25ffd1077e42537f71f66b179743307431ca3c66e10aaa31683507c572045ff2-thumb.webp"
     },
     {
+      "id": "9866d2d50a45a464e0a02d021610d77bad2e6ca53273596e7d548a785d8cef23",
+      "sha256": "9866d2d50a45a464e0a02d021610d77bad2e6ca53273596e7d548a785d8cef23",
+      "character": "tsumugi",
+      "label": "title_art_tsumugi_02_tablet_cat",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_tsumugi_02_tablet_cat.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/9866d2d50a45a464e0a02d021610d77bad2e6ca53273596e7d548a785d8cef23.webp",
+      "thumbnail": "media/9866d2d50a45a464e0a02d021610d77bad2e6ca53273596e7d548a785d8cef23-thumb.webp"
+    },
+    {
+      "id": "31fddd552583e9879bd1e0f485239cbe618a54f88997b82ce76eb5fdb006f7e6",
+      "sha256": "31fddd552583e9879bd1e0f485239cbe618a54f88997b82ce76eb5fdb006f7e6",
+      "character": "tsumugi",
+      "label": "title_art_tsumugi_03_twilight_sketch",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_tsumugi_03_twilight_sketch.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/31fddd552583e9879bd1e0f485239cbe618a54f88997b82ce76eb5fdb006f7e6.webp",
+      "thumbnail": "media/31fddd552583e9879bd1e0f485239cbe618a54f88997b82ce76eb5fdb006f7e6-thumb.webp"
+    },
+    {
       "id": "a8acbf72091293470a7f0b3a00445361bdf3f5b2f63141606e32cb5e1bd014ab",
       "sha256": "a8acbf72091293470a7f0b3a00445361bdf3f5b2f63141606e32cb5e1bd014ab",
       "character": "tsumugi",
@@ -1055,68 +1103,6 @@
       "related": [],
       "image": "media/cd594310240e50f7fe4d909c62eacc092953f33c05d8572aeefcf3b66ce87402.webp",
       "thumbnail": "media/cd594310240e50f7fe4d909c62eacc092953f33c05d8572aeefcf3b66ce87402-thumb.webp"
-    },
-    {
-      "id": "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489",
-      "sha256": "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489",
-      "character": "tsumugi",
-      "label": "タブレットの猫",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "assets/ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/02-tablet-cat.png"
-      ],
-      "groups": [
-        "正式タイトル",
-        "新版19案"
-      ],
-      "history": [
-        "現在の本編タイトルで使用中",
-        "adopted-title"
-      ],
-      "prompts": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/02-tablet-cat.prompt.txt"
-      ],
-      "current": true,
-      "related": [
-        "4d1504f404e6ef250eb08cf2b7c8f35e3f5e5d4ef57f2bafd1588445c0c92e90"
-      ],
-      "image": "media/336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489.webp",
-      "thumbnail": "media/336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489-thumb.webp"
-    },
-    {
-      "id": "eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1",
-      "sha256": "eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1",
-      "character": "tsumugi",
-      "label": "川辺のスケッチ",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "assets/ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/03-twilight-sketch.png"
-      ],
-      "groups": [
-        "正式タイトル",
-        "新版19案"
-      ],
-      "history": [
-        "現在の本編タイトルで使用中",
-        "adopted-title"
-      ],
-      "prompts": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/03-twilight-sketch.prompt.txt"
-      ],
-      "current": true,
-      "related": [
-        "7ee0cc7147bd7b49a32a49f38db8d2da5d69088e9e0804f04ffe409393f2feed"
-      ],
-      "image": "media/eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1.webp",
-      "thumbnail": "media/eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1-thumb.webp"
     },
     {
       "id": "d603aac37922f3c75879f7b7f8dcb22f3c919b784290ffc24ede7703f613cbb4",
@@ -2823,6 +2809,62 @@
       "thumbnail": "media/6505b7d4c89b45dcfd89559c5f10da2373949cb4bab7353fbde2449cae84eaf7-thumb.webp"
     },
     {
+      "id": "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489",
+      "sha256": "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489",
+      "character": "tsumugi",
+      "label": "タブレットの猫",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/02-tablet-cat.png"
+      ],
+      "groups": [
+        "新版19案"
+      ],
+      "history": [
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/02-tablet-cat.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "4d1504f404e6ef250eb08cf2b7c8f35e3f5e5d4ef57f2bafd1588445c0c92e90"
+      ],
+      "image": "media/336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489.webp",
+      "thumbnail": "media/336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489-thumb.webp"
+    },
+    {
+      "id": "eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1",
+      "sha256": "eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1",
+      "character": "tsumugi",
+      "label": "川辺のスケッチ",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/03-twilight-sketch.png"
+      ],
+      "groups": [
+        "新版19案"
+      ],
+      "history": [
+        "adopted-title"
+      ],
+      "prompts": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/03-twilight-sketch.prompt.txt"
+      ],
+      "current": false,
+      "related": [
+        "7ee0cc7147bd7b49a32a49f38db8d2da5d69088e9e0804f04ffe409393f2feed"
+      ],
+      "image": "media/eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1.webp",
+      "thumbnail": "media/eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1-thumb.webp"
+    },
+    {
       "id": "ca362b651be43adfc60901d66c86242b96287ac73aac85fc744dfd4f569e852a",
       "sha256": "ca362b651be43adfc60901d66c86242b96287ac73aac85fc744dfd4f569e852a",
       "character": "tsumugi",
@@ -3165,8 +3207,8 @@
   },
   "summary": {
     "originalPaths": 134,
-    "uniqueArt": 112,
-    "duplicatePaths": 22,
+    "uniqueArt": 114,
+    "duplicatePaths": 20,
     "current": 41,
     "missingHistoricalSlots": [
       {
