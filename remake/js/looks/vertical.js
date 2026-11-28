@@ -51,16 +51,20 @@ export function setActive(on) {
 }
 
 let loadToken = 0;
-function syncOrientation() {
+async function syncOrientation() {
   const want = active && !!query?.matches;
   if (!want) { loadToken++; session?.stop(); session = null; return; }
   if (session) return;
   const mine = ++loadToken;
   // 見た目の CSS は縦画面を使う時だけ読み込む（index.html の styles-look-vertical。ほかの端末には読ませない）
-  withMinigameStyles("look-vertical", null, async () => {
-    if (mine !== loadToken || !active || !query?.matches || session) return;
-    session = start();
-  }).catch((error) => console.error("[look] 縦画面の見た目を読み込めませんでした", error));
+  try {
+    await withMinigameStyles("look-vertical", null, () => {
+      if (mine !== loadToken || !active || !query?.matches || session) return;
+      session = start();
+    });
+  } catch (error) {
+    console.error("[look] 縦画面の見た目を読み込めませんでした", error);
+  }
 }
 
 function start() {
