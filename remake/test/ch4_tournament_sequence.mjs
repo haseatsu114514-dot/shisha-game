@@ -25,7 +25,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
   cheers = [] } = {}) {
   const value = resume || newState();
   if (!resume) {
-    value.chapter = 4; value.phase = "tournament";
+    value.chapter = 4; value.phase = "tournament"; value.weatherSeed = 0;
     value.flags._ch4_strategy = "sakura";
     value.flags._ch4 = { part: "tournament", read: { ch4_tournament_start: true, ch4_stranger_second: true, ch4_stranger_third: true } };
   }
@@ -242,8 +242,8 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   const average = await run({ quality: 89, rulesVersion: 1 });
   const legacyStrong = await run({ rulesVersion: 1 });
   const currentStrong = await run({ quality: 100 });
-  // 版4では92の一台が、提供後になるに並ばれて先頭を譲り、最後の票で勝つ（版2・版3の96の一台と同じ形）。
-  const currentContested = await run({ quality: 92 });
+  // 比較票を使う試合では、93の一台が提供後になるに先行され、最後の票で逆転する。
+  const currentContested = await run({ quality: 93 });
   assert.equal(currentContested.result.win, true);
   assert(legacyStrong.trace.includes("story:interlude1:1"), "Legacy strong crafts keep the original story context");
   assert.equal(currentStrong.result.win, true);

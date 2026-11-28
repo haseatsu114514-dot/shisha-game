@@ -7,7 +7,7 @@ body:has(.vt-resume-smoke:not(:empty)) > :is(.loading-gate, .loading-exit-haze).
 
 /* 大会 CONTINUE。幅640の紙面。上の2:3を顔と吹き出しに使い、残りは親指で押す選択コマ。
    .gameover は #screen に残す。入力・期限・読み上げ・反応の所有者を替えない。 */
-:root[data-vt-continue] #stage {
+:root:is([data-vt-continue], [data-vt-tournament]) #stage {
   --page-scale: tan(atan2(min(100vw, 66.6667dvh), 640px));
   width: 640px; height: min(1390px, calc(100dvh / var(--page-scale)));
   transform: translate(-50%, -50%) scale(var(--page-scale));

@@ -11147,7 +11147,8 @@ details.ch2-contest-reason[open] > summary, .tournament-result-details[open] > s
 .result-table:not([data-rank='1']) .rt-rays { opacity: .35; }
 .rt-hero { position: relative; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid #e8c27a33; }
 .rt-emblem { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex: none; width: 112px; height: 112px; clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%); background: linear-gradient(160deg, #4b4057, #241c2e); color: #e9e1ef; animation: emblem-in .7s cubic-bezier(.2, 1.3, .3, 1) backwards; }
-.rt-emblem[data-rank='1'] { background: linear-gradient(160deg, #fff1c4, #e7b450 45%, #8f5f1a); color: #3b2405; }
+.rt-emblem[data-rank='1'] { clip-path: none; background: url('../img/ui/tournament-show/champion-seal.webp') center / contain no-repeat; }
+.rt-emblem[data-rank='1'] > * { visibility: hidden; }
 .rt-emblem[data-rank='2'] { background: linear-gradient(160deg, #ffffff, #b9c0cc 45%, #5b6270); color: #1f2430; }
 .rt-emblem[data-rank='3'] { background: linear-gradient(160deg, #ffd9b8, #c47a45 45%, #5e3014); color: #2c1405; }
 .rt-emblem b { font-size: 52px; font-weight: 900; font-style: italic; line-height: 1; }
@@ -11554,12 +11555,6 @@ html:root[data-density="phone"] body:not(:root) .gameover .go-limit-note { font-
 .ts-splash-copy { position: absolute; left: 50%; top: 50%; width: 740px; margin-left: -150px; display: grid; justify-items: center; gap: 4px; transform: translateY(-52%); text-align: center; }
 .ts-splash-copy .ts-crest { width: 230px; height: 230px; transform: scale(.2) rotate(-30deg); opacity: 0; transition: transform .7s cubic-bezier(.2, 1.4, .3, 1) .1s, opacity .3s ease .1s; }
 .ts-splash.show .ts-crest { transform: none; opacity: 1; }
-.ts-splash .ts-crest b { position: absolute; left: 0; right: 0; top: 80px; text-align: center; font-size: 96px; line-height: 1; font-weight: 900; font-style: italic;
-  background: var(--ts-gold-text); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 3px 0 #3b2405); }
-.ts-splash .ts-crest small { position: absolute; left: 0; right: 0; top: 168px; text-align: center; font-size: 18px; font-weight: 900; letter-spacing: .24em; padding-left: .24em; color: #f6d68e; }
-.ts-splash[data-metal="silver"] .ts-crest b { background: linear-gradient(180deg, #fff, #d7dce6 50%, #8d95a6); -webkit-background-clip: text; background-clip: text; }
-.ts-splash[data-metal="bronze"] .ts-crest b { background: linear-gradient(180deg, #ffe2c8, #d99a66 50%, #96582c); -webkit-background-clip: text; background-clip: text; }
-.ts-splash[data-metal="plain"] .ts-crest b { background: linear-gradient(180deg, #efe4fb, #c9a7e6 50%, #7d5aa6); -webkit-background-clip: text; background-clip: text; }
 .ts-splash:not(.win) .ts-splash-copy .ts-crest { position: absolute; left: 50%; top: 50%; width: 250px; height: 250px; margin: -128px 0 0 -125px; opacity: 0; }
 .ts-splash.show:not(.win) .ts-splash-copy .ts-crest { opacity: .4; }
 /* 届かなかった時は冠を出さず、月桂冠だけを敷く（冠が上の大会名の帯にかぶらないように） */
@@ -11789,6 +11784,9 @@ html:root[data-density="phone"] .ch2-contest-board .ch2-contest-rival strong {
   .ts-live-bug, .ts-live-rank { animation: none !important; }
 }
 .reduce-shake .ts-halo { animation: none; }
+
+.ts-splash .winner-lockup { display: contents; }
+.ts-splash .ts-splash-copy .ts-crest { order: -1; }
 
 /* ===== css/motions.css ===== */
 /* ============================================================

@@ -284,7 +284,7 @@ const constants = [source.match(/const BOARD_FACES = new Set\(\[[\s\S]*?\]\);/)[
   source.match(/function portraitEyes\([\s\S]*?\n\}/)[0], source.match(/function boardFaceUrl\([\s\S]*?\n\}/)[0],
   source.match(/const PANEL_FACE_W = [^;]+;/)[0], source.match(/const PANEL_FACE = \{[\s\S]*?\n\};/)[0]].join("\n");
 const panelGrowth = { known: false }, cropCalls = [], panelRoot = new Element();
-const panelContext = vm.createContext({ characterArtStem: resolver.characterArtStem, el: util.el, g: panelGrowth, root: panelRoot, ART_DIR: "img/ui/growth_board/",
+const panelContext = vm.createContext({ characterArtStem: resolver.characterArtStem, characterPortraitStyle: resolver.characterPortraitStyle, el: util.el, g: panelGrowth, root: panelRoot, ART_DIR: "img/ui/growth_board/",
   lessonKnown: () => panelGrowth.known, faceFrame: data.faceFrame, portraitStyle: () => core.config.portraitStyle,
   portraitInfo: (...args) => { const p = data.portraitInfo(...args); cropCalls.push({ args, p }); return p; },
 });
@@ -303,9 +303,11 @@ for (const preference of ["classic", "new"]) {
     panelGrowth.known = known;
     const image = panelContext.panelPortrait(node, "open"), { args, p } = cropCalls.at(-1);
     assert.equal(args[2], undefined, `${node.kind}/${known}: the board follows the VN setting`);
-    assert.equal(p.style, preference);
-    assert.match(image.attrs.src, preference === "new" ? /sprites\/character_variants\/new\// : /sprites\/characters\//);
-    const who = node.kind === "skill" ? "hajime" : node.who, frame = frames[preference][who];
+    const who = node.kind === "skill" ? "hajime" : node.who;
+    const expectedStyle = who === "hajime" ? "classic" : preference;
+    assert.equal(p.style, expectedStyle);
+    assert.match(image.attrs.src, expectedStyle === "new" ? /sprites\/character_variants\/new\// : /sprites\/characters\//);
+    const frame = frames[expectedStyle][who];
     const [ex, ey] = frame.eye, k = 82 / (frame.unit * panelContext.perUnit);
     assert.equal(image.style.width, `${Math.round(896 * k)}px`);
     assert.equal(image.style.marginLeft, `${Math.round(-ex * k)}px`);
@@ -313,6 +315,7 @@ for (const preference of ["classic", "new"]) {
     assert.equal(core.config.portraitStyle, preference, "Showing the board must not change the saved VN setting");
   }
   assert.equal(panelContext.boardFaceUrl("tsumugi"), preference === "new" ? "img/ui/growth_board/faces/new/tsumugi.webp" : "img/ui/growth_board/faces/tsumugi.webp");
+  assert.equal(panelContext.boardFaceUrl("hajime"), "img/ui/growth_board/faces/hajime.webp");
 }
 assert.notDeepEqual(frames.new.tsumugi.eye, frames.classic.tsumugi.eye, "new artwork uses its own coordinates");
 core.config.portraitStyle = "new";

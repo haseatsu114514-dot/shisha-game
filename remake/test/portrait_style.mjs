@@ -296,12 +296,14 @@ test('intro morph uses the eye measurements of the displayed style',()=>{
  const rect={left:100,top:20,width:448,height:600,img:{naturalWidth:896}};
  for(const choice of ['new','classic']) {
   state.config.portraitStyle=choice;
-  const p=data.portraitInfo('hajime','normal');
-  const head=headCtx.head(rect,p);
-  assert.equal(p.style,choice);
-  assert.equal(head.x,100+448*((choice==='classic'?544.5:483.5)/896));
-  assert.equal(head.top,20+(1-p.b-p.h)*600);
-  assert.equal(head.height,p.h*600*.16);
+  for (const [id,style,eye] of [['tsumugi',choice,choice==='classic'?428:435],['hajime','classic',544.5]]) {
+   const p=data.portraitInfo(id,'normal');
+   const head=headCtx.head(rect,p);
+   assert.equal(p.style,style);
+   assert.equal(head.x,100+448*(eye/896));
+   assert.equal(head.top,20+(1-p.b-p.h)*600);
+   assert.equal(head.height,p.h*600*.16);
+  }
   assert.equal(state.config.portraitStyle,choice,'Measuring the transition never changes the preference');
  }
 });

@@ -1,0 +1,119 @@
+/* 会場会話は第1章のテロップ・パッドを使い、絵の上端に本編の中継枠を収める。 */
+:root[data-vt] .vt-pic:has(.ts-live) {
+  .ts-live-back { z-index: 0; }
+  .vt-actors { top: calc(5 * var(--u)); }
+  .ts-live-front {
+    inset: max(6px, env(safe-area-inset-top)) auto auto 0;
+    width: 100%;
+    display: grid;
+    justify-items: start;
+    gap: 3px;
+  }
+  .ts-live-bug, .ts-live-rank { position: relative; inset: auto; max-width: 100%; }
+  .ts-live-bug {
+    min-height: 0; height: auto; padding: 5px 18px 5px 10px;
+    gap: 7px; line-height: 1.3;
+  }
+  .ts-live-bug :is(b, span, .tournament-live) { font-size: calc(1.24 * var(--u)); }
+  .ts-live-bug span { padding-left: 7px; }
+  .ts-live-rank { flex-wrap: wrap; gap: 3px; padding: 2px 14px 2px 8px; }
+  .ts-live-chip { grid-template-columns: auto auto auto; gap: 3px; padding: 2px 4px; }
+  .ts-live-chip :is(img, em) { width: 20px; height: 20px; }
+  .ts-live-chip b { width: 14px; height: 16px; }
+  .ts-live-chip :is(b, i, em) { font-size: calc(1.12 * var(--u)); }
+  &.vt-live-hidden .ts-live { display: none; }
+}
+.vt-shell:has(.vt-pic > .ts-live-front) .vt-hud { display: none; }
+
+/* 票・審査員・幕・時限入力は元のノードが所有する。640幅の紙面で組み替える。 */
+:root[data-vt-tournament] #stage {
+  --tournament-phone-sub: 21px;
+  --foot: max(18px, calc(env(safe-area-inset-bottom, 0px) / var(--page-scale)));
+  --head: max(18px, calc(env(safe-area-inset-top, 0px) / var(--page-scale)));
+
+  .entrance { background-color: #150d22; }
+  .ent-card {
+    width: 82%; flex-direction: column; align-items: stretch; gap: 38px;
+  }
+  .ent-cut { align-self: center; width: 260px; height: 260px; }
+  .ent-face { width: 210px; height: 210px; }
+  .ent-meta::after { width: 100%; }
+  .ent-note { font-size: 26px; }
+  .round-cut-band { top: calc(50% - 80px); height: 160px; }
+  .round-cut-band b { font-size: 94px; }
+  .ts-eyecatch-copy { gap: 14px; text-align: center; }
+  .ts-eyecatch-copy b { font-size: 62px; letter-spacing: .06em; }
+  .ts-eyecatch-l::before, .ts-eyecatch-r::before { background-size: 100% 100%; }
+  .ts-sting-copy b { font-size: 68px; }
+
+  .standings.tournament-board {
+    display: block; width: calc(100% - 32px); max-height: calc(100% - var(--head) - var(--foot));
+    padding: 20px; overflow: hidden auto; overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  .standings .tournament-heading { display: block; }
+  .standings .tournament-heading p { padding: 0; font-size: 21px; }
+  .standings .ts-round-mark { top: 12px; right: 16px; font-size: 50px; }
+  .standings .ts-round-mark small { font-size: 17px; }
+  .sd-main { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .sd-main > .judge-panel { overflow: visible; }
+  .standings .sd-row, .ch2-contest-board .ch2-contest-rival {
+    grid-template-columns: 40px 46px minmax(0, 1fr) minmax(68px, .75fr) 74px;
+    gap: 8px; padding-inline: 9px;
+  }
+  .standings .sd-feed { flex-wrap: wrap; gap: 6px; padding: 8px; }
+  .standings :is(.sd-feed-lines, .sd-recognition, .sd-status, .judge-legend, .judge-left, .judge-focus, .judge-pick) {
+    font-size: 20px; line-height: 1.4;
+  }
+  .standings :is(.sd-name, .judge-name) { font-size: 24px; }
+  .sd-feed-lines { flex: 1 1 72%; }
+  .sd-feed .btn, .ch2-contest-actions .primary, .modal-actions .primary {
+    width: 100%; min-height: calc(44px / var(--page-scale));
+  }
+  /* 第2・3章の持ち点カードと第4章の小窓。最終の票も同じ紙面で開示する。 */
+  #screen > .ch2-contest:has(> .ch2-contest-board),
+  #modal > .ts-contest-modal .ch4-standings {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  #screen > .ch2-contest:has(> .ch2-contest-board) {
+    inset: var(--head) 16px var(--foot); padding: 18px 20px;
+  }
+  #screen > .ch2-contest > *, #modal .ch4-standings > * { flex-shrink: 0; align-self: stretch; }
+  :is(.ch2-contest, .ch4-standings) :is(.judge-name, .ch2-contest-rival > span) { font-size: 23px; }
+  :is(.ch2-contest, .ch4-standings) :is(.judge-legend, .judge-left, .ch2-contest-note, .ch2-contest-reason p) {
+    font-size: 20px; line-height: 1.4;
+  }
+  #screen > .ch2-contest > .ch2-contest-actions { margin-top: auto; bottom: -18px; margin-inline: -20px; }
+  #modal > .ts-contest-modal {
+    width: calc(100% - 32px); max-width: none; max-height: calc(100% - var(--head) - var(--foot));
+    padding: 20px;
+  }
+}
+
+:root[data-vt-tournament] #stage {
+  .count-screen.ts-count .tournament-heading,
+  .sui-cut.ts-final .tournament-heading {
+    display: block; padding: 22px 22px 20px; width: auto; border-bottom: 1px solid #bb9a62;
+    background: #101a2c url('../img/ui/tournament-show/result-foil.webp') right center / cover;
+  }
+  .count-screen.ts-count .tournament-heading { inset: var(--head) 18px auto; }
+  :is(.count-screen.ts-count, .sui-cut.ts-final) .tournament-heading p { padding: 0; font-size: 22px; }
+  .count-screen.ts-count :is(.rc-ring, .rc-num, .rc-pulse) { top: 39%; }
+  .count-screen.ts-count .rc-pray {
+    inset: 60% 18px auto; height: clamp(185px, 22cqh, 272px);
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;
+  }
+  .count-screen.ts-count .rc-card:nth-child(n) { position: relative; inset: auto; width: auto; height: 100%; }
+  .count-screen.ts-count .rc-card > span:last-child { font-size: 21px; line-height: 1.2; }
+  .count-screen.ts-count .rc-skip { inset: auto 24px var(--foot) auto; }
+  .count-screen.ts-count .rc-cut { left: 28% !important; max-width: 68%; }
+  .sui-cut.ts-final { padding: var(--head) 18px var(--foot); gap: 18px; }
+  .sui-cut.ts-final .nc-row { grid-template-columns: 40px 50px minmax(0,1fr) minmax(70px,.92fr) 62px; gap: 8px; min-height: clamp(70px, 7.6cqh, 108px); }
+  .sui-cut.ts-final .nc-name { font-size: 23px; }
+  .sui-cut.ts-final .nc-callers { position: relative; inset: auto; width: 100%; }
+  .sui-cut.ts-final .nc-cut { inset: max(510px, 48%) 0 0; width: 100%; }
+  .sui-cut.ts-final .nc-cut-art { left: 15%; }
+  .sui-cut.ts-final .nc-cut-art img { width: 155%; left: -18%; top: -5%; bottom: auto; }
+  .sui-cut.ts-final .nc-cut-text { left: 20px; bottom: var(--foot); }
+  .sui-cut.ts-final .nc-stamp { top: 62%; left: 25%; font-size: 50px; }
+}

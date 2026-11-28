@@ -28,11 +28,11 @@ const hajimeVotes = (p) => p.result.rows.find(row => row.id === "hajime").points
 
 // 同じ配点でも、最後の1点の前の首位が違えば実際の決め手は変わる。
 for (const [settings, total, beforeLeader, beforePoints, afterPoints, text] of [
-  [{ heat: 70, pull: 80, care: [97, 100], attack: [1, 2, 3] }, 90, "hajime", [10, 10], [11, 10],
-    "二度目の調整後の投票で、2位より5点多く取った。最終1点差。"],
-  [{ heat: 70, pull: 80, care: [97, 100], attack: [1, 2, 3] }, 80, "naru", [10, 10], [11, 10],
+  [{ heat: 70, pull: 65, care: [95, 96], attack: [1, 2, 3] }, 80, "hajime", [11, 8], [12, 8],
+    "二度目の調整後の投票で、2位より4点多く取った。"],
+  [{ heat: 70, pull: 65, care: [95, 100] }, 80, "naru", [9, 9], [10, 9],
     "千須の最後の1点ではじめが首位に立った。"],
-  [{ heat: 86, pull: 65, care: [80, 100], attack: [1, 2, 3] }, 90, "minto", [10, 9], [10, 10],
+  [{ heat: 95, pull: 65, care: [99, 96] }, 90, "minto", [10, 9], [10, 10],
     "千須の最後の1点で同点。判定ではじめが首位に立った。"],
 ]) {
   const p = JSON.parse(JSON.stringify(match({ ...craft(settings), total })));

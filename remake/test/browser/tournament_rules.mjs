@@ -25,6 +25,8 @@ await suite("tournament-rules", async check => {
       const legacyFourth = ruleSheetPanel(4).textContent;
       return { first, legacy, legacyJudging, second, third, fourth, legacyFourth };
     });
+    for (const rulesText of [rules.first, rules.second, rules.third, rules.fourth]) assert.match(rulesText, /ライバルの調子/);
+    for (const rulesText of [rules.legacyJudging, rules.legacyFourth]) assert.doesNotMatch(rulesText, /ライバルの調子/);
     assert.match(rules.first, /レモン.*2g以上.*大会支給/);
     // 課題フレーバーは全章で大会が支給（無制限）。事前の練習が有利なことも短く伝える。
     assert.match(rules.first, /課題の葉は大会が用意.*好きなだけ使える/);
@@ -36,9 +38,9 @@ await suite("tournament-rules", async check => {
     assert.match(rules.second, /課題の葉は大会が用意/);
     assert.match(rules.third, /ドバジ チョコレート.*4g以上.*大会支給/s);
     assert(!/私物持ち込み/.test(rules.third), "No brought-in wording once the challenge leaf is supplied");
-    assert.match(rules.first, /審査員3人が各10点.*2・3・2・3点.*2位に1点.*その回までに仕上げた工程/);
+    assert.match(rules.first, /審査員3人が各10点.*2・3・2・3点.*比較票.*その回までに仕上げた工程/);
     for (const sheet of [rules.second, rules.third, rules.fourth]) {
-      assert.match(sheet, /第四条　審査.*各10点.*2・3・2・3点.*2位に1点.*基礎票1点/);
+      assert.match(sheet, /第四条　審査.*各10点.*2・3・2・3点.*比較票.*基礎票1点/);
       assert.match(sheet, /評価が同じなら.*最終順位は総得票で決め、同点なら.*最終回の出来栄え/);
     }
     assert.match(rules.second, /上園は好みであげはに4点、クラウドに1点.*チャコール博士は神崎竜二に3点.*千須はクラウドに3点/);
@@ -46,7 +48,8 @@ await suite("tournament-rules", async check => {
     assert.match(rules.fourth, /はじめの台は.*穴あけを省いた台は、その項目を外す.*千須が最終総合を25.*ダ・シルヴァが炭の温度を25.*エミルが調整2回目を25.*ほかの項目は各15/);
     assert.match(rules.fourth, /相手の台には、各回ごとの出来栄え.*はじめ・なる・シェイク・王 煙楼の順/);
     assert.match(rules.legacyFourth, /その回までに仕上げた工程の平均.*最後の回は一台の総合点/);
-    assert.doesNotMatch(rules.legacyFourth, /項目の重み/);
+    assert.match(rules.legacyFourth, /2位に1点/);
+    assert.doesNotMatch(rules.legacyFourth, /項目の重み|比較票/);
     const open = (chapter = 1) => page.evaluate(async chapter => {
       const { state } = await import('./js/core/state.js');
       state.chapter = chapter;
