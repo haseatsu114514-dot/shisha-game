@@ -11708,6 +11708,11 @@ html:root[data-density="phone"] .ch2-contest-board .ch2-contest-rival strong {
 }
 .reduce-shake .ts-halo { animation: none; }
 
+.ts-splash .winner-lockup, .ts-splash .winner-rank { display: contents; }
+.ts-splash .ts-splash-copy .ts-crest { order: -1; }
+.ts-splash.win .ts-crest b { top: 42%; font-size: 64px; }
+.ts-splash.win .ts-crest small { top: 69%; font-size: 15px; }
+
 /* ===== css/motions.css ===== */
 /* ============================================================
    場面ごとの一度きりのモーショングラフィックス（core/scene-motions.js・CI107〜CI109）の共通部分。

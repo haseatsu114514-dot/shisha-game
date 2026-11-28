@@ -20,6 +20,8 @@ import { createSheetScene } from "./vertical/sheet.js";
 import { createBoardScene, boardOpen } from "./vertical/board.js";
 import { createCraftScene, craftOpen } from "./vertical/craft.js";
 
+import { createTournamentResultScene } from "./vertical/tournament-result.js";
+
 const PORTRAIT = "(orientation: portrait)";
 const DETECT_MS = 110;      // 場面の確認は 1 秒に 9 回ほど
 const SYNC_MS = 250;        // 変化の通知が無くても、この間隔で写し直す
@@ -78,7 +80,7 @@ function start() {
   const own = [frame.root, resumeSmoke];
   const scenes = {
     // CONTINUE は本編の文字・ボタン・アニメーションを直接表示する。
-    continue: { native: true }, tournament: { native: true },
+    continue: { native: true }, tournament: { native: true }, tournamentResult: createTournamentResultScene(),
     title: createTitleScene(frame), vn: createTalkScene(frame), map: createMapScene(frame), menu: createMenuScene(frame),
     sheet: createSheetScene(frame), cover: createCoverScene(frame, own), board: createBoardScene(frame), craft: createCraftScene(frame),
   };
@@ -110,6 +112,7 @@ function start() {
     frame.root.hidden = !scene || !!scene.native;
     root.toggleAttribute("data-vt-continue", next === "continue");
     root.toggleAttribute("data-vt-tournament", next === "tournament");
+    root.toggleAttribute("data-vt-result", next === "tournamentResult");
     if (next !== "cover") holdSince = 0; // 覆いを待つ時間は、覆いに入るたびに数え直す（前の転換から数えると、すぐ待ちすぎと判断してしまう）
     if (scene) {
       if (scene.native) delete root.dataset.vtShell;

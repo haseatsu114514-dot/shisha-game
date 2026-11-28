@@ -434,3 +434,8 @@ html:root[data-density="phone"] .ch2-contest-board .ch2-contest-rival strong {
   .ts-live-bug, .ts-live-rank { animation: none !important; }
 }
 .reduce-shake .ts-halo { animation: none; }
+
+.ts-splash .winner-lockup, .ts-splash .winner-rank { display: contents; }
+.ts-splash .ts-splash-copy .ts-crest { order: -1; }
+.ts-splash.win .ts-crest b { top: 42%; font-size: 64px; }
+.ts-splash.win .ts-crest small { top: 69%; font-size: 15px; }

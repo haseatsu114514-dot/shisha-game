@@ -206,6 +206,32 @@ await suite("look_vertical", async (check) => {
     await page.waitForFunction(() => !document.documentElement.hasAttribute("data-vt-tournament"));
   }, { ...SHORT, pageEntry: entry });
 
+  await check("tournament-result-restores-rows-and-progress-on-rotation", async (page) => {
+    await page.evaluate(() => { window.resultRead = window.__remake.dev.show("champion"); });
+    await waitScene(page, "tournamentResult");
+    const splash = page.locator(".ts-splash.win");
+    assert.match(await splash.locator(".ts-crest img").getAttribute("src"), /champion-seal/);
+    await splash.tap();
+    await page.locator(".result-table.ts-revealed").waitFor();
+    await page.locator(".vote-breakdown").tap();
+    const dialog = page.locator("dialog.review[open]");
+    assert.equal(await dialog.locator(".rt-votes").count(), 4);
+    await dialog.locator(".rt-votes").first().evaluate(node => { window.firstVotes = node; });
+    await page.setViewportSize(WIDE.viewport);
+    await page.waitForFunction(() => !document.documentElement.hasAttribute("data-vt-result"));
+    assert.equal(await page.locator(".rt-name .rt-votes").count(), 4);
+    assert(await page.locator(".rt-name .rt-votes").first().evaluate(node => node === window.firstVotes));
+    assert.equal(await page.locator("dialog.review").count(), 0);
+    await page.setViewportSize(SHORT.viewport);
+    await waitScene(page, "tournamentResult");
+    await page.locator(".review-more").tap();
+    await dialog.locator(".rt-judge-comment").waitFor();
+    await dialog.getByRole("button", { name: "閉じる" }).tap();
+    await page.locator(t("result-next")).tap();
+    await page.evaluate(() => window.resultRead);
+    assert.equal(await page.locator(".result-table:not(.done)").count(), 0);
+  }, { ...SHORT, pageEntry: entry });
+
   await check("title-and-conversation-in-two-line-pages", async (page) => {
     await waitScene(page, "title");
     assert.equal(await page.evaluate(() => document.documentElement.dataset.look), "vertical");

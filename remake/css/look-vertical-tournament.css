@@ -70,7 +70,7 @@
   .sd-feed .btn, .ch2-contest-actions .primary, .modal-actions .primary {
     width: 100%; min-height: calc(44px / var(--page-scale));
   }
-  /* 第2・3章の持ち点カードと第4章の小窓。結果版には適用しない。 */
+  /* 第2・3章の持ち点カードと第4章の小窓。最終の票も同じ紙面で開示する。 */
   #screen > .ch2-contest:has(> .ch2-contest-board),
   #modal > .ts-contest-modal .ch4-standings {
     display: flex; flex-direction: column; gap: 14px;
@@ -88,4 +88,32 @@
     width: calc(100% - 32px); max-width: none; max-height: calc(100% - var(--head) - var(--foot));
     padding: 20px;
   }
+}
+
+:root[data-vt-tournament] #stage {
+  .count-screen.ts-count .tournament-heading,
+  .sui-cut.ts-final .tournament-heading {
+    display: block; padding: 22px 22px 20px; width: auto; border-bottom: 1px solid #bb9a62;
+    background: #101a2c url('../img/ui/tournament-show/result-foil.webp') right center / cover;
+  }
+  .count-screen.ts-count .tournament-heading { inset: var(--head) 18px auto; }
+  :is(.count-screen.ts-count, .sui-cut.ts-final) .tournament-heading p { padding: 0; font-size: 22px; }
+  .count-screen.ts-count :is(.rc-ring, .rc-num, .rc-pulse) { top: 39%; }
+  .count-screen.ts-count .rc-pray {
+    inset: 60% 18px auto; height: clamp(185px, 22cqh, 272px);
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;
+  }
+  .count-screen.ts-count .rc-card:nth-child(n) { position: relative; inset: auto; width: auto; height: 100%; }
+  .count-screen.ts-count .rc-card > span:last-child { font-size: 21px; line-height: 1.2; }
+  .count-screen.ts-count .rc-skip { inset: auto 24px var(--foot) auto; }
+  .count-screen.ts-count .rc-cut { left: 28% !important; max-width: 68%; }
+  .sui-cut.ts-final { padding: var(--head) 18px var(--foot); gap: 18px; }
+  .sui-cut.ts-final .nc-row { grid-template-columns: 40px 50px minmax(0,1fr) minmax(70px,.92fr) 62px; gap: 8px; min-height: clamp(70px, 7.6cqh, 108px); }
+  .sui-cut.ts-final .nc-name { font-size: 23px; }
+  .sui-cut.ts-final .nc-callers { position: relative; inset: auto; width: 100%; }
+  .sui-cut.ts-final .nc-cut { inset: max(510px, 48%) 0 0; width: 100%; }
+  .sui-cut.ts-final .nc-cut-art { left: 15%; }
+  .sui-cut.ts-final .nc-cut-art img { width: 155%; left: -18%; top: -5%; bottom: auto; }
+  .sui-cut.ts-final .nc-cut-text { left: 20px; bottom: var(--foot); }
+  .sui-cut.ts-final .nc-stamp { top: 62%; left: 25%; font-size: 50px; }
 }

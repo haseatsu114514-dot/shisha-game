@@ -1,5 +1,6 @@
-/* 第1章・結果画面の採用判断用。本編の resultTable / resultSplash の DOM に適用する。 */
-#stage { width: min(100vw, 430px); height: min(100dvh, 920px); --stage-gutter: 0px; }
+/* 大会の縦表彰と第1章の順位表。横持ちへ戻ると本編の配置に復帰する。 */
+:root[data-vt-result] {
+#stage { width: min(100vw, 430px); height: min(100dvh, 920px); --stage-gutter: 0px; transform: translate(-50%, -50%); }
 #preview-status { padding: 20px; color: #fff0cb; }
 #stage .ts-splash.win {
   background: linear-gradient(0deg, #081121 16%, #0e192b 42%, transparent 66%),
@@ -17,7 +18,7 @@
   left: 0; top: 8%; width: 100%; height: 62%; bottom: auto; margin: 0; overflow: hidden;
   mask: linear-gradient(#000 69%,transparent 100%); filter: drop-shadow(0 3px 14px #090d17b3);
 }
-#stage .ts-splash .ts-splash-bust img {
+#stage .ts-splash[data-portrait="grateful"] .ts-splash-bust img {
   width: 100%!important; height: 100%!important; object-fit: cover; object-position: 50% 0%;
   inset: 0!important; transform: none!important; max-width: none;
 }
@@ -25,15 +26,24 @@
 #stage .ts-splash-copy { inset: 0; width: auto; margin: 0; transform: none; display: block; z-index: 4; }
 #stage .ts-splash-eyebrow {
   display: block; position: absolute; text-align: center; font: 700 10px/1.4 var(--font);
-  letter-spacing: .22em; text-shadow: 0 2px 5px #05101d; top: 27px; left: 12%; right: 12%;
+  letter-spacing: .22em; text-shadow: 0 2px 5px #05101d; top: max(27px, env(safe-area-inset-top)); left: 12%; right: 12%;
   padding: 7px 0; background: linear-gradient(90deg,transparent,#101725ed 12% 88%,transparent);
   color: #fff1c8;
+}
+#stage .ts-splash:not([data-portrait]) .ts-splash-bust:not(.fallback) img { width: 265% !important; }
+#stage .ts-splash:not(.win) .ts-splash-copy p {
+  font-size: 16px; letter-spacing: .02em; width: 100%; gap: 6px; margin-top: 22px;
+}
+#stage .ts-splash:not(.win) .ts-splash-copy p::before,
+#stage .ts-splash:not(.win) .ts-splash-copy p::after { width: 14px; }
+#stage .ts-splash:not(.win) .ts-splash-copy .ts-crest {
+  inset: auto auto 38px 50%; width: 130px; height: 130px; margin: 0 0 0 -65px; opacity: .28;
 }
 #stage .winner-lockup {
   position: absolute; bottom: 9%; left: 18px; right: 18px; display: flex; flex-direction: column;
   align-items: center; text-align: center;
 }
-#stage .ts-splash-copy .ts-crest { width: 104px; height: 104px; flex: none; display: grid; place-items: center; }
+#stage .ts-splash-copy .ts-crest { width: clamp(108px, 16dvh, 138px); height: auto; aspect-ratio: 1; flex: none; display: grid; place-items: center; }
 #stage .ts-splash .ts-crest img { position: absolute; inset: 0; width: 100%; height: 100%; }
 #stage .ts-splash-copy h2 {
   position: relative; margin: 4px 0 0; padding: 0; letter-spacing: .015em; line-height: 1.17;
@@ -55,12 +65,12 @@
 #stage .result-table {
   display: flex; flex-direction: column; align-items: stretch; gap: 0; padding: 24px 19px 15px;
   color: #f4eddd; background: linear-gradient(0deg,#09101d 0%,#101c2d 77%,#16253b 100%); border: none;
-  overflow: hidden;
+  overflow: hidden; padding-bottom: max(15px, env(safe-area-inset-bottom));
 }
 #stage .result-table > :is(.ts-lights,.rt-confetti,.rt-rays) { display: none; }
 #stage .rt-hero {
   flex: none; display: block; border: 0; margin: -24px -19px 16px; padding: 24px 19px 18px;
-  isolation: isolate; border-bottom: 1px solid #d7b46b99;
+  padding-top: max(24px, env(safe-area-inset-top)); isolation: isolate; border-bottom: 1px solid #d7b46b99;
 }
 #stage .rt-hero .rt-emblem { display: none; }
 #stage .rt-hero .tournament-heading { border: 0; padding: 0; display: block; background: none; }
@@ -95,6 +105,11 @@
 #stage .rt-row .rt-rank {
   width: auto; height: auto; background: none; border: 0; box-shadow: none; color: #cfbd9f;
   line-height: 1; font: italic 700 15px Georgia,serif; white-space: nowrap; text-shadow: none;
+}
+#stage .rt-row[data-rank="1"] .rt-rank {
+  width: 40px; height: 40px; margin-inline: -5px; padding-top: 6px; display: grid; place-items: center;
+  font: 700 11px/1 'Suien Name',serif; color: #fff2c9;
+  background: url('../img/ui/tournament-show/champion-seal.webp') center / contain no-repeat;
 }
 #stage .rt-row .rt-face { border-radius: 50%; box-shadow: 0 0 0 1px #8f836a88; height: 40px; width: 40px; }
 #stage .rt-name { font: 700 18px/1.35 'Suien Name',serif; color: #f7eddf; white-space: nowrap; }
@@ -159,19 +174,19 @@ dialog.review button {
 #stage .ts-splash.show .ts-splash-tap { transition-delay: .6s; animation: none; opacity: .9; }
 #stage .rt-hero::before {
   content: ""; position: absolute; inset: 0; z-index: -1;
-  background: linear-gradient(90deg,#101a2a 20%,#101a2acc 55%,transparent 100%),url('../img/ui/character_intros/graphic/bg_hajime.webp') right 39% / cover;
-  opacity: .88;
+  background: url('../img/ui/tournament-show/result-foil.webp') right center / cover;
+  opacity: 1;
 }
 #stage .rt-ranking-head h2 { display: none; }
 #stage .judge-legend { font: 600 12px/1.5 var(--font); gap: 13px; color: #dbd8cf; }
 #stage .rt-row .rt-bar { display: flex; height: 5px; }
 dialog.review .rt-deductions { display: block; }
 #stage .winner-rank {
-  position: absolute; inset: 29% 0 13%; display: flex; align-items: baseline; justify-content: center;
+  position: absolute; inset: 50% 0 auto; transform: translateY(-24%); display: flex; align-items: center; flex-direction: column; justify-content: center;
   align-self: center; gap: 2px;
 }
-#stage .ts-crest .winner-rank b { position: static; font-size: 39px; line-height: 1; letter-spacing: -.06em; }
-#stage .ts-crest .winner-rank small { position: static; font: 700 13px/1 'Suien Name',serif; letter-spacing: 0; }
+#stage .ts-crest .winner-rank b { position: static; font: 700 36px/.9 Georgia,serif; line-height: 1; letter-spacing: -.06em; }
+#stage .ts-crest .winner-rank small { position: static; padding: 0; font: 700 9px/1 'Suien Name',serif; letter-spacing: 0; }
 #stage .vote-breakdown {
   background: none; border: 0; padding: 0; min-height: 44px; color: #e0c48b; font: 600 14px var(--font);
 }
@@ -185,4 +200,5 @@ dialog.review .tournament-result-reason { margin-top: 16px; color: #f5ead7; font
   #stage .rt-hero { margin-inline: -12px; }
   #stage .rt-row { gap: 4px; padding-right: 6px; }
   #stage .rt-name { font-size: 16px; }
+}
 }
