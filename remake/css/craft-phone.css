@@ -50,7 +50,6 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-top > .craft-rank[data-grade="unavailable"] .craft-rank-caption {
   display: block !important; position: static !important; font-size: var(--ph-sub) !important; line-height: 1 !important; letter-spacing: .08em; color: #b9a3d2;
 }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-top > .craft-rank .craft-rank-provisional { display: none; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-top > .craft-rank[data-grade="unavailable"] .craft-rank-wide {
   position: static !important; inset: auto !important; width: auto; height: auto;
 }
@@ -461,7 +460,7 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .craft-water .craft-water-band { z-index: 2; background: #fff3b03d !important; border-color: #ffe9a0 !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .craft-water .craft-water-band:not(.precise)::after {
   content: "目安"; position: absolute; right: 6px; top: 50%; translate: 0 -50%; padding: 1px 8px; border-radius: 4px; font-size: var(--ph-sub); line-height: 1.15; font-weight: 700;
-  color: #2a1a05; background: #ffe9a0;
+  color: #fff; border: 1px solid #fff; background: #120c1d;
 }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .craft-water .craft-water-fill { z-index: 0; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .craft-water .craft-water-band.precise { background: #ffc46a73 !important; border-color: #ffca72 !important; }

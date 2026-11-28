@@ -61,7 +61,7 @@ export const waterView = {
       { target: "bottle", say: "煙は水をくぐって冷える" }, // 本編の文のまま
       { target: "band", say: "量で吸い心地が変わるから、まずは目安に合わせろ" }, // 本編の文のまま
       { target: "hold", say: "注ぐときは長押し。こぼして戻してもいい" },
-      { target: "ok", say: "細い帯なら高得点。水位を合わせたら決定だ" },
+      { target: "ok", say: "細い帯が理想だ。水位を合わせて決定" },
     ];
     const steps = [...lines.map((say) => ({ say })), ...extras].map((line) => ({ ...line, target: aimOf(line.say) }));
     return [...steps.filter((step) => step.target !== "ok"), ...steps.filter((step) => step.target === "ok")];
@@ -126,7 +126,7 @@ export const waterView = {
       last = now;
       const live = readLive();
       if (pic.dataset.zone !== live.zone) pic.dataset.zone = live.zone;
-      const label = `ボトルの水量 ${Math.round(live.level * 100)}%。外の帯が目安、内側の細い帯は高得点`;
+      const label = `ボトルの水量 ${Math.round(live.level * 100)}%。外の帯が目安、内側の細い帯が理想`;
       if (pic.getAttribute("aria-label") !== label) pic.setAttribute("aria-label", label);
       pic.classList.toggle("pouring", live.flow === "pour");
       pic.classList.toggle("draining", live.flow === "drain");
@@ -222,7 +222,7 @@ export const waterView = {
     return {
       pic, ctrl,
       spots: { bottle, band: [S.band, S.mark], hold: [drain, pour], ok },
-      coach: () => "外の帯が目安。細い帯なら高得点だ",
+      coach: () => "外の帯が目安。内側の細い帯が理想だ",
       thermo: () => null, // 試作の水入れは温度計を出さない（加熱前の帯は配合・詰め方で見る）
       sync(livePanel, bench) {
         panel = livePanel;

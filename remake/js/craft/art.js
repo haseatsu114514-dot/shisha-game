@@ -43,6 +43,11 @@ export const FLAVOR_COLORS = {
   grape: "#8a4fc0", melon: "#9fe07a", watermelon: "#f25c64", banana: "#f3dc6a", cinnamon: "#b0602c", rose: "#e67aa4",
   lychee: "#f2c6d0", nightside_earlgrey: "#8c7aa8",
 };
+
+export const pullRainbowGradient = id => `<linearGradient id="${id}" x1="0%" x2="100%" y1="0%" y2="65%">
+  <stop stop-color="#ff87a0"/><stop offset="25%" stop-color="#ffe99a"/><stop offset="50%" stop-color="#9cf4be"/>
+  <stop offset="75%" stop-color="#91deff"/><stop offset="100%" stop-color="#dbb7ff"/>
+</linearGradient>`;
 const CAT_COLORS = { cooling: "#7fe0c2", sweet: "#f0c890", fruit: "#f28a6a", spice: "#c06a3a", floral: "#d98ac0" };
 export const flavorColor = (id) => FLAVOR_COLORS[id] || CAT_COLORS[DB.flavorById[id]?.category] || "#c9a070";
 

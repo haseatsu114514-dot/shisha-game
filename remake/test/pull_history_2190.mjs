@@ -11,11 +11,11 @@ globalThis.window = {};
 const naru = await import("../js/core/naru-finish.js");
 const attackBand = await import("../js/craft/attack-band.js");
 const { craftContext } = await import("../js/craft/context.js");
-const [{ DB }, conditions, life, coals, model, water, waterText, { judgeComment }, { improvementOf }, { gradeOf }] = await Promise.all([
+const [{ DB }, conditions, life, coals, model, water, waterText, { judgeComment }, { improvementOf }, { gradeOf }, art] = await Promise.all([
   import("../js/core/data.js"), import("../js/craft/conditions.js"), import("../js/craft/flavor-life.js"),
   import("../js/craft/coals.js"), import("../js/craft/temperature-model.js"), import("../js/craft/water.js"),
   import("../js/craft/pull-water.js"), import("../js/craft/feedback.js"), import("../js/craft/advice.js"),
-  import("../js/craft/common.js"),
+  import("../js/craft/common.js"), import("../js/craft/art.js"),
 ]);
 DB.flavorById = Object.fromEntries(JSON.parse(fs.readFileSync(new URL("../../data/flavors.json", import.meta.url))).flavors.map(f => [f.id, f]));
 DB.equipById = Object.fromEntries(JSON.parse(fs.readFileSync(new URL("../../data/equipment.json", import.meta.url))).equipment.map(e => [e.id, e]));
@@ -91,7 +91,7 @@ async function harness({ learned = false, noWobble = false, lessons = [] } = {})
     "./heat_logic.js": { replacementCoals },
     "./conditions.js": conditions,
     "./fx.js": { impact: noop, exhale: async () => false, smokeRing: () => false },
-    "./art.js": { mixColor: () => "#d9d2e6" },
+    "./art.js": art,
     "./thermometer.js": { buildThermometer: () => ({ root: new Node(), update: noop, preview: value => { metrics.preview = value; }, pop: noop }) },
     // 桜井式の攻めの帯（SKR04）。この一台は練習なので帯は出ないが、読み込みは本物を使う。
     "./attack-band.js": attackBand,

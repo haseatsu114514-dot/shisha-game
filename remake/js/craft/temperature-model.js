@@ -4,8 +4,10 @@ import { leafDamageRatio, LEAF_DAMAGE } from "./flavor-life.js";
 import { coalWarmth } from "./coals.js";
 
 // 基準帯は互換用の読み取り専用定数。一台の配合で上書きしない。
-/** 本番の緑（適温）・虹（最適）の帯の幅の倍率。IDEAL・OPTIMAL は写し先の基準（中心.54±.12／±.05）のまま。 */
+/** 本番の適温帯と採点の最適温帯にかかる幅の倍率。IDEAL・OPTIMAL は温度計を写すための基準。 */
 export const BAND_TIGHTNESS = 0.7;
+const SERVING_HEAT_SHIFT = .02;
+const RAINBOW_WIDTH_FACTOR = .70;
 export const IDEAL = Object.freeze([0.42, 0.66]);
 export const OPTIMAL = Object.freeze([0.49, 0.59]);
 export const DANGER_TEMP = 0.90;
@@ -83,13 +85,12 @@ function computeBands(cs, entries, damage, flavorById) {
     * (EQUIP_WIDTH_FACTORS.hms[cs?.equip?.hms] || 1)
     * (EQUIP_WIDTH_FACTORS.charcoal[cs?.equip?.charcoal] || 1.04);
   const totalWidthScale = makerWidth * equipWidth;
-  const center = .54 * t;
+  const center = .54 * t + SERVING_HEAT_SHIFT;
   // #1106: 葉が傷むほど適温帯を段階的に細くする。中心は動かさず、幅だけを縮める（温度計・ダイヤルで見て分かる）。
   // 試作HMD装備中は、熱が蓋全体に回る分だけこの縮みが半分になる（M-W9）。
   const damageResist = cs?.equip?.hms === PROTO_HMD_ID ? PROTO_HMD_DAMAGE_RESIST : 1;
   const damageScale = 1 - LEAF_DAMAGE.bandNarrow * damage * damageResist;
-  // 帯の締め（PST01・2026-11-20 オーナー「判定甘すぎる…虹ゲージを全体的に小さく、緑も」）: 本番は緑・虹とも 0.7 倍。
-  // レッスン（チュートリアル）は今までの幅のまま。採点（temperatureFitness）も同じ帯を使うので、温度合わせが全体に厳しくなる。
+  // 本番では適温帯と採点の最適温帯を狭める。レッスンは幅を広く取る。
   const tightness = cs?.mode === "tutorial" ? 1 : BAND_TIGHTNESS;
   const halfIdeal = .12 * tightness * totalWidthScale * damageScale, halfOptimal = .05 * tightness * totalWidthScale * damageScale;
   // 表情対応の葉だけをグラム比で反映。少量を足して全配合の中央狙いを消せない。
@@ -99,7 +100,7 @@ function computeBands(cs, entries, damage, flavorById) {
   const spread = expressionWeight >= .999 ? 1 : Math.min(1, .4 * expressionWeight / (1 - expressionWeight));
   const rainbowBase = halfOptimal + (halfIdeal - halfOptimal) * spread;
   const rainbowCenter = center + rainbowBase * .20;
-  const halfRainbow = rainbowBase * .78;
+  const halfRainbow = rainbowBase * RAINBOW_WIDTH_FACTOR;
   return Object.freeze({
     t, center, selected: entries.length > 0, makerWidth, equipWidth, totalWidthScale, expressionWeight, damageScale,
     ideal: Object.freeze([center - halfIdeal, center + halfIdeal]),

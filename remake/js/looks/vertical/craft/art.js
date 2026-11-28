@@ -1,4 +1,6 @@
 // 縦試作と本編で共用する絵記号。
+import { pullRainbowGradient } from "../../../craft/art.js";
+
 export const GENRES = {
   fruit: { name: "フルーティ", color: "#ff8f6b", icon: '<path d="M12 8.2c-1.7-1.3-4.7-1.1-6.1 1.1-1.6 2.5-.6 6.8 1.7 9.3 1.3 1.5 2.9 1.6 4.4.7 1.5.9 3.1.8 4.4-.7 2.3-2.5 3.3-6.8 1.7-9.3-1.4-2.2-4.4-2.4-6.1-1.1z" fill="currentColor"/><path d="M12 8.2c0-2.2 1-3.9 3.2-4.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' },
   sweet: { name: "スイート", color: "#f7a8d8", icon: '<circle cx="12" cy="12" r="4.6" fill="currentColor"/><path d="M7.6 12 3 8.2v7.6zM16.4 12 21 8.2v7.6z" fill="currentColor"/>' },
@@ -25,14 +27,14 @@ export const meterNeedle = '<g class="needle"><path d="M100 10L103.2 96L96.8 96Z
 
 export function meterHtml(
   [downFrom, downTo, keepFrom, keepTo, upFrom, upTo] = [.13, .2, .44, .56, .8, .87],
-  withNeedle = true, [downEnd, keepEnd] = [.27, .73],
+  withNeedle = true, [downEnd, keepEnd] = [.27, .73], rainbowStops = [],
 ) {
   const C = 100, RO = 92, RI = 60;
   const pt = (t, r) => { const a = Math.PI * (1 - t); return [C + r * Math.cos(a), C - r * Math.sin(a)]; };
-  const band = (t0, t1, fill) => {
+  const band = (t0, t1, fill, inner = RI, outer = RO, cls = "z") => {
     if (t0 >= t1) return "";
-    const [x0, y0] = pt(t0, RO), [x1, y1] = pt(t1, RO), [x2, y2] = pt(t1, RI), [x3, y3] = pt(t0, RI);
-    return `<path class="z" fill="${fill}" d="M${x0.toFixed(2)} ${y0.toFixed(2)}A${RO} ${RO} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}L${x2.toFixed(2)} ${y2.toFixed(2)}A${RI} ${RI} 0 0 0 ${x3.toFixed(2)} ${y3.toFixed(2)}Z"/>`;
+    const [x0, y0] = pt(t0, outer), [x1, y1] = pt(t1, outer), [x2, y2] = pt(t1, inner), [x3, y3] = pt(t0, inner);
+    return `<path class="${cls}" fill="${fill}" d="M${x0.toFixed(2)} ${y0.toFixed(2)}A${outer} ${outer} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}L${x2.toFixed(2)} ${y2.toFixed(2)}A${inner} ${inner} 0 0 0 ${x3.toFixed(2)} ${y3.toFixed(2)}Z"/>`;
   };
   const steps = (start, end, colors) => colors.map((color, i) => {
     const width = (end - start) / colors.length;
@@ -40,10 +42,13 @@ export function meterHtml(
   }).join("");
   const zone = (name, start, from, to, end, before, just, after) =>
     `<g data-zone="${name}">${steps(start, from, before)}${band(from, to, just)}${steps(to, end, after)}</g>`;
-  return `<svg class="meter" viewBox="${meterViewBox}" role="img" aria-label="吸い出しのメーター">
+  const rainbowId = "vtc-pull-rainbow";
+  return `<svg class="meter" viewBox="${meterViewBox}" role="img" aria-label="吸い出しのメーター${rainbowStops.length ? "。虹色の位置で針を止めると最適温に届く" : ""}">
+    ${rainbowStops.length ? `<defs>${pullRainbowGradient(rainbowId)}</defs>` : ""}
     ${zone("down", 0, downFrom, downTo, downEnd, ["#438eff", "#529eef", "#63a9e5"], "#a9e1ff", ["#78b4df", "#91bddb"])}
     ${zone("keep", downEnd, keepFrom, keepTo, keepEnd, ["#898798", "#a7a4b5", "#c7c3d1"], "#fff", ["#c7c3d1", "#a7a4b5", "#898798"])}
     ${zone("up", keepEnd, upFrom, upTo, 1, ["#d59a7b", "#e99668"], "#ffe0aa", ["#ff9d61", "#ff7c53", "#ff604a"])}
+    ${rainbowStops.map(([from, to]) => band(from, to, `url(#${rainbowId})`, 83, 96, "vtc-pull-rainbow")).join("")}
     ${withNeedle ? meterNeedle : ""}
   </svg>`;
 }

@@ -1312,6 +1312,7 @@ await suite("look_vertical", async (check) => {
     assert(clearances.comment >= 9 && clearances.stopDrop >= 5 && clearances.stopGap >= 8, JSON.stringify(clearances));
     assert(clearances.thermoIconGap >= 8, JSON.stringify(clearances));
     assert.deepEqual(clearances.leaves, [true, true, true, true, true], JSON.stringify(clearances));
+    assert.equal(await page.locator(t("vt-craft-rank")).textContent(), "");
     assert(await serve.isDisabled());
     await page.setViewportSize({ width: 844, height: 390 });
     await page.waitForFunction(() => !document.querySelector(".bench[data-portrait-pull]")
@@ -1336,6 +1337,56 @@ await suite("look_vertical", async (check) => {
     await serve.tap();
     await page.locator(t("vt-craft-result-next")).tap();
     await page.waitForFunction(() => window.vtStepDone);
+  }, { ...TALL, pageEntry: entry });
+
+  await check("pull-rainbow-guide-indicates-the-next-real-pull", async page => {
+    await waitScene(page, "title");
+    const start = (temp, rainy = false) => runCraftStep(page, {
+      module: "./js/craft/pull.js", fn: "runPull", mode: "rehearsal",
+      setup: { mix: { vanilla: 12 }, steam: { temp, score: 100 }, environment: { rainy } },
+    });
+    const ready = page.locator(t("vt-pull-stop") + ":enabled");
+    const aim = page.locator(".vtc-pull-rainbow").first();
+    await start(.12);
+    await ready.waitFor();
+    assert.equal(await aim.count(), 0, "a cold mix outside one pull's reach has no rainbow guide");
+    assert.doesNotMatch(await page.locator(".vtc-say-text").textContent(), /光ったところ/);
+
+    for (const [temp, side, rainy] of [[.352, "up", true], [.54, "down", false]]) {
+      await start(temp, rainy);
+      await ready.waitFor();
+      await aim.waitFor();
+      assert.match(await page.locator(".vtc-say-text").textContent(), /虹を狙え/);
+      const ranges = await page.evaluate(() => {
+        const dial = document.querySelector(".pull-dial");
+        return { keepEnd: +dial.dataset.keepEnd, downEnd: +dial.dataset.downEnd, stops: JSON.parse(dial.dataset.rainbowStops) };
+      });
+      assert.equal(ranges.stops.length, 2, "the normal pull regions are separated by the stronger center of the zone");
+      assert(ranges.stops.every(([from, to]) => side === "up" ? from > ranges.keepEnd : to < ranges.downEnd), JSON.stringify(ranges));
+      assert.equal(await page.locator(".vtc-pull-rainbow").count(), ranges.stops.length);
+
+      await page.locator(".bench-guide").evaluate(guide => { guide.open = true; });
+      await aim.waitFor({ state: "detached" });
+      await page.locator(".bench-guide").evaluate(guide => { guide.open = false; });
+      await aim.waitFor();
+      await page.waitForFunction(() => {
+        const dial = document.querySelector(".pull-dial");
+        const stop = document.querySelector('[data-test="vt-pull-stop"]');
+        if (!dial?.dataset.rainbowStops || !stop || stop.disabled) return false;
+        const position = Number(dial.querySelector(".pg-needle").dataset.pos) / 100;
+        const within = JSON.parse(dial.dataset.rainbowStops).some(([from, to]) =>
+          position > from + .01 && position < to - .01);
+        if (within) stop.click();
+        return within;
+      });
+      await aim.waitFor({ state: "detached" });
+      await ready.waitFor();
+      await aim.waitFor();
+      assert.equal(await page.locator(t("vt-craft-thermo")).getAttribute("data-state"), "best");
+      assert.match(await page.locator(".vtc-say-text").textContent(), /虹をキープ/);
+      assert(await page.locator(".pull-dial").evaluate(dial =>
+        JSON.parse(dial.dataset.rainbowStops).some(([from, to]) => from < .5 && to > .5)), "keeping the current temperature stays in the rainbow");
+    }
   }, { ...TALL, pageEntry: entry });
 
   await check("drill-hole-help", async page => {
@@ -1389,7 +1440,7 @@ await suite("look_vertical", async (check) => {
       { target: ".vtc-bottle", say: "煙は水をくぐって冷える", live: waterLive },
       { target: ".vtc-w-band, .vtc-w-mark", say: "量で吸い心地が変わるから、まずは目安に合わせろ", live: waterLive },
       { target: `${t("vt-water-drain")}, ${t("vt-water-pour")}`, say: "注ぐときは長押し。こぼして戻してもいい" },
-      { target: t("vt-water-ok"), say: "細い帯なら高得点。水位を合わせたら決定だ", last: true },
+      { target: t("vt-water-ok"), say: "細い帯が理想だ。水位を合わせて決定", last: true },
     ];
     const waterButtons = () => page.evaluate(() => ["drain", "pour", "ok"].map((key) => document.querySelector(`[data-test="vt-water-${key}"]`).disabled));
     for (const [i, spot] of waterSpots.entries()) {
@@ -1443,6 +1494,9 @@ await suite("look_vertical", async (check) => {
     assert.equal(await level(), poured, "the water stops when the button is let go");
     await page.waitForFunction(() => document.querySelector('[data-test="vt-water-pic"]').dataset.zone
       === document.querySelector('#screen [data-test="water-status"]').dataset.band);
+    assert.deepEqual(await page.locator(".vtc-w-mark").evaluate(mark => [
+      getComputedStyle(mark.querySelector("text")).fill, getComputedStyle(mark.querySelector("rect")).stroke,
+    ]), ["rgb(255, 255, 255)", "rgb(255, 255, 255)"]);
     // 「こぼす」の長押し: 本編の水量が減る
     await holdShell(page, "vt-water-drain", 500, async () => {
       await page.waitForFunction(() => document.querySelector('#screen [data-test="water-step"]').dataset.flow === "drain");
@@ -1464,7 +1518,7 @@ await suite("look_vertical", async (check) => {
     });
     assert(evaluation.actual.seconds >= 3, "time includes pouring and draining");
     assert.deepEqual(evaluation.actual, evaluation.expected);
-    assert.match(await page.locator(".toast.water-evaluation").textContent(), /水入れ \d+点 · \d+\.\d秒/);
+    assert.doesNotMatch(await page.locator(".toast.water-level").textContent(), /\d+点|\d+(\.\d+)?秒/);
   }, { ...TALL, pageEntry: entry });
 
   await check("craft-holes-in-the-shell", async (page) => {

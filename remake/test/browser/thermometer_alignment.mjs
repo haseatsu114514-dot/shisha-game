@@ -28,13 +28,15 @@ await suite("thermometer-alignment", async check => {
         await page.setViewportSize(viewport);
         const measurements = await page.evaluate(async () => {
           const { session, buildThermometer, el, conditions } = QA;
+          const bands = conditions.temperatureBands();
+          const [low, high] = bands.rainbow;
           const results = [];
           for (const step of ["steam-timer", "steam", "pull", "care"]) {
             const compact = step.startsWith("steam");
             const meter = buildThermometer({ compact, height: 360, width: 64 });
             const panel = session.stepPanel(step, "温度");
             panel.append(el(`div.${step === "care" ? "pull" : step}`, [meter.root]));
-            for (const temp of [0, .2, .42, .489, .49, .54, .59, .591, .66, .9, 1, .54]) {
+            for (const temp of [0, .2, bands.ideal[0], low - .001, low, bands.center, high, high + .001, bands.ideal[1], .9, 1, bands.center]) {
               meter.update(temp);
               await new Promise(requestAnimationFrame);
               const tube = meter.root.querySelector(".thermo-tube").getBoundingClientRect();
@@ -44,8 +46,8 @@ await suite("thermometer-alignment", async check => {
               results.push({ step, temp, arrow: (tube.bottom - arrow.y - arrow.height / 2) / tube.height,
                 mark: (tube.bottom - mark.y - mark.height / 2) / tube.height,
                 low: (tube.bottom - band.bottom) / tube.height, high: (tube.bottom - band.top) / tube.height,
-                optimal: meter.root.classList.contains("optimal"), expected: conditions.isOptimalTemperature(temp),
-                bounds: conditions.temperatureBands().optimal });
+                optimal: meter.root.classList.contains("optimal"), expected: conditions.isRainbowTemperature(temp, bands),
+                bounds: bands.rainbow });
             }
           }
           return results;
@@ -54,7 +56,7 @@ await suite("thermometer-alignment", async check => {
           assert(Math.abs(m.arrow - m.temp) < .002, `Arrow lags behind judgment: ${JSON.stringify(m)}`);
           assert(Math.abs(m.mark - m.temp) < .002, JSON.stringify(m));
           assert(Math.abs(m.low - m.bounds[0]) < .001 && Math.abs(m.high - m.bounds[1]) < .001,
-            `Optimal band moved: ${JSON.stringify(m)}`);
+            `Rainbow band differs from the shared model: ${JSON.stringify(m)}`);
           assert.equal(m.optimal, m.expected);
         }
       }

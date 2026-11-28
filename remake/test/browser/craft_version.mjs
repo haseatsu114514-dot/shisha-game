@@ -121,7 +121,7 @@ await suite("craft-version", async (check) => {
     await page.evaluate(() => window.tutorialRun);
     assert.equal(await page.evaluate(() => window.__remake.state.flags._tutorial_done), true);
     const s = await seen(page);
-    assert.equal(s.grades[0], "unavailable");
+    assert.equal(s.grades[0], "D");
     assert(s.grades.some(grade => grade !== "unavailable"));
     assert.equal(s.attack, false);
     assert.deepEqual(s.attackResults, [], "レッスンに攻めの帯は出さない");
@@ -131,7 +131,7 @@ await suite("craft-version", async (check) => {
 
   await check("sakurai-holes-before-renewal", async (page) => {
     assert.equal(await page.locator(".bench").getAttribute("data-craft-version"), "sakurai");
-    assert.match(await rankText(page), /未計測/, "桜井版の暫定ランクは、はじめ「—」（工程を終えた平均）");
+    assert.match(await rankText(page), /制作ランク D/, "桜井版もDから始まる");
     await page.locator(t("hole-start")).click();
     await page.locator(t("hole-punch")).waitFor();
     // リニューアル前の「次のリングへ」「穴あけを終えて結果へ」のボタンがあり、はじめは押せない

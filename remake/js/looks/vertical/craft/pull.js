@@ -1,4 +1,4 @@
-// 半円の帯と針は本編の成功帯・針位置をそのまま表示する。
+// 半円の帯と針は、本編の成功帯・虹に届く範囲・針位置を表示する。
 import { el } from "../../../core/util.js";
 import { imgFileUrl } from "../../../core/img-file.js";
 import { portraitBreath } from "../../../craft/portrait-breath.js";
@@ -59,7 +59,10 @@ export const pullView = {
         sourcePlay?.removeEventListener("pull-exhale", exhale);
         sourcePlay?.removeEventListener("pull-inhale", endPose);
       },
-      coach: bench => bench.querySelector(".bench-hint")?.textContent || "",
+      coach(bench) {
+        const tip = sourceDial?.parentElement?.dataset.rainbowTip;
+        return tip ? `${tip}。光ったところで針を止めろ` : bench.querySelector(".bench-hint")?.textContent || "";
+      },
       thermo: () => ({ node: panel?.querySelector(".pull .thermo"), mode: "live" }),
       sync(next) {
         panel = next;
@@ -106,12 +109,12 @@ export const pullView = {
           actions.replaceChildren(...buttons.map(item => item.button));
         }
         const bounds = [...dial.querySelectorAll(".pg-just")].flatMap(z => [Number(z.dataset.from), Number(z.dataset.to)]);
-        const { downEnd, keepEnd } = dial.parentElement.dataset;
+        const { downEnd, keepEnd, rainbowStops } = dial.parentElement.dataset;
         const edges = [Number(downEnd), Number(keepEnd)];
-        const nextBands = String([...edges, ...bounds]);
+        const nextBands = String([...edges, ...bounds, rainbowStops]);
         if (nextBands !== bandSignature) {
           bandSignature = nextBands;
-          bands.innerHTML = meterHtml(bounds, false, edges);
+          bands.innerHTML = meterHtml(bounds, false, edges, rainbowStops ? JSON.parse(rainbowStops) : []);
         }
         const leaves = play.querySelector(".leaf-icon");
         if (leaves) {

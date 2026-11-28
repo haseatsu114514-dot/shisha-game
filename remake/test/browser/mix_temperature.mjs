@@ -121,7 +121,7 @@ await suite("mix-temperature", async check => {
 
       // The real timer, forecast and steam path retain exactly the selected preview.
       await page.evaluate(() => {
-        // PST01: 緑・虹を 0.7 倍にしたので、虹の中心（ミントは 0.648）近くに着く気温にする（蒸らしは上限の10分のまま）
+        // ミントの虹に近い温度に着く気温にする（蒸らしは上限の10分）。
         Object.assign(QA.cs, { water: 0.5, steamSeconds: 600, steamVariation: { offset: 0, transfer: 1 },
           environment: { rainy: false, ambientC: 33, humidityPercent: 52 }, place: "four", pack: "normal",
           equip: { ...QA.cs.equip, charcoal: "cube_charcoal" },
@@ -242,7 +242,7 @@ await suite("mix-temperature", async check => {
         return [a, b, c];
       });
       for (const row of changed) {
-        near(row.center, .54);
+        near(row.center, .56);
         for (const view of [row.meter, row.gauge]) { near(Number(view.idealLow), row.ideal[0]); near(Number(view.optimalHigh), row.optimal[1]); }
       }
       assert.notEqual(changed[0].meter.idealLow, changed[1].meter.idealLow);

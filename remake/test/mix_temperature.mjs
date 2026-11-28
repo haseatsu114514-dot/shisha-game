@@ -14,11 +14,11 @@ const near = (actual, expected, label = "") => assert(Math.abs(actual - expected
 const checkModel = (cs, expected, catalog, width = 1.04) => {
   const bands = temperatureBands(cs, catalog);
   near(bands.t, expected, "t");
-  // PST01: 本番は緑・虹とも 0.7 倍、レッスンは今までの幅
+  // 幅はモードごとの設定。緑と虹は配合の中心から高温側へ移動する。
   const tight = cs?.mode === "tutorial" ? 1 : BAND_TIGHTNESS;
-  bands.ideal.forEach((value, i) => near(value, .54 * expected + (i ? 1 : -1) * .12 * tight * width, "ideal"));
-  bands.optimal.forEach((value, i) => near(value, .54 * expected + (i ? 1 : -1) * .05 * tight * width, "optimal"));
-  near(bands.center, .54 * expected, "center");
+  bands.ideal.forEach((value, i) => near(value, .54 * expected + .02 + (i ? 1 : -1) * .12 * tight * width, "ideal"));
+  bands.optimal.forEach((value, i) => near(value, .54 * expected + .02 + (i ? 1 : -1) * .05 * tight * width, "optimal"));
+  near(bands.center, .54 * expected + .02, "center");
   for (const band of [bands.ideal, bands.optimal]) assert(band.every(Number.isFinite) && band[1] > band[0] && band[0] > 0);
   return bands;
 };
@@ -28,15 +28,15 @@ for (const flavor of flavors) checkModel({ mix: { [flavor.id]: 12 } }, flavor.he
 const vanilla = checkModel({ mix: { vanilla: 12 } }, .8);
 const apple = checkModel({ mix: { double_apple: 12 } }, 1);
 const mint = checkModel({ mix: { mint: 12 } }, 1.2);
-assert.equal(BAND_TIGHTNESS, .7, "PST01: 本番の緑・虹は 0.7 倍");
-near(vanilla.ideal[0], .34464); near(vanilla.ideal[1], .51936);
-near(vanilla.optimal[0], .3956); near(vanilla.optimal[1], .4684);
-near(mint.ideal[0], .56064); near(mint.ideal[1], .73536);
-near(mint.optimal[0], .6116); near(mint.optimal[1], .6844);
-// PST04: レッスンは今までの幅（緑 ±.12・虹 ±.05 × 道具の補正）
+assert.equal(BAND_TIGHTNESS, .7, "本番の適温帯の基準幅は0.7倍");
+near(vanilla.ideal[0], .36464); near(vanilla.ideal[1], .53936);
+near(vanilla.optimal[0], .4156); near(vanilla.optimal[1], .4884);
+near(mint.ideal[0], .58064); near(mint.ideal[1], .75536);
+near(mint.optimal[0], .6316); near(mint.optimal[1], .7044);
+// レッスンでは緑 ±.12、採点の最適温 ±.05 に道具の幅補正を掛ける。
 const lessonVanilla = checkModel({ mode: "tutorial", mix: { vanilla: 12 } }, .8);
-near(lessonVanilla.ideal[0], .3072); near(lessonVanilla.ideal[1], .5568);
-near(lessonVanilla.optimal[0], .38); near(lessonVanilla.optimal[1], .484);
+near(lessonVanilla.ideal[0], .3272); near(lessonVanilla.ideal[1], .5768);
+near(lessonVanilla.optimal[0], .4); near(lessonVanilla.optimal[1], .504);
 console.log("[mix temperature] PASS: every real flavor, including vanilla / AF apple / AF mint examples");
 
 checkModel({ mix: { vanilla: 9, mint: 3 } }, .9);
@@ -91,14 +91,15 @@ for (const flavor of flavors) {
     if (isIdealTemperature(temp, bands)) assert.equal(effect.fire + effect.dark + effect.sparks, 0);
   }
 }
-// ミントは作り分ける葉なので、おいしく作れる範囲全体が虹（2026-11-10）。緑の上端近くの高め（PST01 で上端は .735）も炎ではなく虹。
-const mintHigh = mint.ideal[1] - .005;
-assert(mintHigh > mint.optimal[1], "高め（虹の中心帯より上）を見る");
+// ミントは作り分ける葉なので虹が広く、緑の上側まで届く。
+const mintHigh = mint.rainbow[1] - .002;
+assert(mintHigh > mint.optimal[1], "採点の最適温より上にも虹が残る");
 assert.equal(thermalBand(mintHigh, mint).id, "optimal");
 assert.equal(envAt(mintHigh, mint).fire, 0);
-assert.notEqual(thermalBand(.76, mint).id, "optimal", "PST01: 締めた後の .76 は緑の外");
+assert.equal(thermalBand(mint.ideal[1] - .002, mint).id, "ready", "緑の上端近くは虹の外");
+assert.notEqual(thermalBand(.76, mint).id, "optimal", ".76 は緑の外");
 assert(visualTemperature(.76, mint) > mint.ideal[1] && visualTemperature(.76, mint) < DANGER_TEMP);
-// 虹は従来の各配合の幅より22%細く、高温側へ寄る。虹の端でも適合度は90以上。
+// 虹の幅は配合別の基準の70%。虹の端でも適合度は90以上。
 let rainbowCases = 0, sawFull = false, sawFocused = false;
 for (const mix of [...flavors.map(f => ({ [f.id]: 12 })), { lemon: 6, mint: 6 }, { lemon: 6, peach: 6 }, { mint: 9, vanilla: 3 }, { mint: 3, vanilla: 9 }]) {
   const bands = temperatureBands({ mix });
@@ -106,8 +107,13 @@ for (const mix of [...flavors.map(f => ({ [f.id]: 12 })), { lemon: 6, mint: 6 },
   assert(bands.rainbow[0] >= bands.ideal[0] - 1e-12 && bands.rainbow[1] <= bands.ideal[1] + 1e-12, `rainbow inside ideal ${JSON.stringify(mix)}`);
   assert(bands.rainbow[1] > bands.rainbow[0], `rainbow exists ${JSON.stringify(mix)}`);
   for (const edge of bands.rainbow) assert(temperatureFitness(edge, bands) >= 90 - 1e-9, `rainbow edge scores ${JSON.stringify(mix)}`);
-  if (bands.expressionWeight >= .999) { sawFull = true; near(bands.rainbow[1] - bands.rainbow[0], (bands.ideal[1] - bands.ideal[0]) * .78); }
-  if (bands.expressionWeight === 0) { sawFocused = true; near(bands.rainbow[1] - bands.rainbow[0], (bands.optimal[1] - bands.optimal[0]) * .78); }
+  const idealWidth = bands.ideal[1] - bands.ideal[0], optimalWidth = bands.optimal[1] - bands.optimal[0];
+  const spread = bands.expressionWeight >= .999 ? 1 : Math.min(1, .4 * bands.expressionWeight / (1 - bands.expressionWeight));
+  const baseWidth = optimalWidth + (idealWidth - optimalWidth) * spread;
+  near(bands.rainbow[1] - bands.rainbow[0], baseWidth * .7);
+  near((bands.rainbow[1] + bands.rainbow[0]) / 2, bands.center + baseWidth * .1);
+  sawFull ||= spread === 1;
+  sawFocused ||= spread === 0;
   rainbowCases++;
 }
 assert(sawFull && sawFocused);

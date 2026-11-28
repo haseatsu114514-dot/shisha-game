@@ -23,14 +23,14 @@ import { gradeOf, autoSkill, skill, resultCard, keys } from "./common.js";
 import { HEAT_GRADES } from "./heat.js";
 import { replacementCoals } from "./heat_logic.js";
 
-import { craftConditions, heatDelta, pullResult, isIdealTemperature, isRainbowTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, steamFocusNote, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT } from "./conditions.js";
+import { craftConditions, heatDelta, pullResult, isIdealTemperature, isRainbowTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, steamFocusNote, isBurnt, isColdOut, DANGER_TEMP, BURST_TEMP, COLD_OUT } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
 import { attackGuide, attackRange, inAttackRange, attackScore, ATTACK_BAND } from "./attack-band.js";
 import { renewalCraft } from "../core/craft-version.js";
 import { assistEffect } from "./retry-assist-level.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
 import { impact, exhale, smokeRing } from "./fx.js";
-import { mixColor } from "./art.js";
+import { mixColor, pullRainbowGradient } from "./art.js";
 import { ensureFlavorLife, applyLeafDamage, leafDamagePerPull, leafDamageRatio, leafStopDrift } from "./flavor-life.js";
 import { coalCount } from "./coals.js";
 import { makerMixProfile } from "./temperature-model.js";
@@ -92,6 +92,33 @@ const dialPoint = (p, r) => {
 };
 const dialSector = (p0, p1, r0 = DIAL.r0, r1 = DIAL.r1) =>
   `M${dialPoint(p0, r1)}A${r1} ${r1} 0 0 1 ${dialPoint(p1, r1)}L${dialPoint(p1, r0)}A${r0} ${r0} 0 0 0 ${dialPoint(p0, r0)}Z`;
+
+/** 区間内で直線的に変わる到達温度を逆算し、止められる針の範囲へ戻す。 */
+function rainbowStopRanges(segments, [low, high], drift) {
+  // 温度は0〜1に収まる。焦げる温度では案内を出さない。
+  if (high < 0 || low >= BURST_TEMP - 1e-6) return [];
+  const targetLow = low <= 0 ? -Infinity : low;
+  const targetHigh = Math.min(high, BURST_TEMP - 1e-6);
+  const ranges = [];
+  for (const [start, end, startTemp, endTemp] of segments) {
+    if (!Number.isFinite(startTemp) || !Number.isFinite(endTemp)) continue;
+    let from = start, to = end;
+    const rise = endTemp - startTemp;
+    if (rise) {
+      const a = (targetLow - startTemp) / rise, b = (targetHigh - startTemp) / rise;
+      from += (end - start) * clamp(Math.min(a, b), 0, 1);
+      to = start + (end - start) * clamp(Math.max(a, b), 0, 1);
+    } else if (startTemp < targetLow || startTemp > targetHigh || isBurnt(startTemp)) continue;
+    if (from >= to) continue;
+    const last = ranges.at(-1);
+    if (last && from - last[1] < 1e-9) last[1] = to;
+    else ranges.push([from, to]);
+  }
+  // 葉が傷むと針は押した位置からずれる。隣へはみ出さない範囲だけ表示する。
+  const inset = drift + 1e-6;
+  return ranges.map(([from, to]) => [from === 0 ? 0 : from + inset, to === 1 ? 1 : to - inset])
+    .filter(([from, to]) => from < to);
+}
 let dials = 0;
 export { LEAF_MAX } from "./flavor-life.js";
 /**
@@ -125,7 +152,7 @@ export function careStartTemp(cs) {
 const MODES = {
   pull: {
     store: "pull", title: "吸い出し", min: 2, safe: 3, drift: false, serveLabel: "提供する",
-    hint: "右の上げ吸いで温度を上げ、左の下げ吸いで下げる。中央のキープは左寄りで微減、右寄りで微増。雨の日は熱が入りにくいので、温度が下がったら上げ吸いを増やそう。吸い終えてから次の針を止めよう。温度計は緑で合格、虹が理想だ。低めと高めで表情が変わる葉もある。蒸らしで集中できたほど針はゆっくり動く",
+    hint: "右の上げ吸いで温度を上げ、左の下げ吸いで下げる。中央のキープは左寄りで微減、右寄りで微増。雨の日は熱が入りにくいので、温度が下がったら上げ吸いを増やそう。吸い終えてから次の針を止めよう。温度計は緑で合格、虹が理想だ。半円に虹が光ったら、そこに針を止めろ。低めと高めで表情が変わる葉もある。蒸らしで集中できたほど針はゆっくり動く",
     start: startTemp, focus: pullFocusFromSteam,
   },
   care: {
@@ -254,14 +281,15 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
   const thermometer = buildThermometer({ cs, finishGuide: mode.store === "pull", attackGuide: attacking, coldLimit: mode.drift ? COLD_OUT : null, height: 360, width: 64 });
   // SVGの縦横比を保ち、針・リングを同じ中心で回す。
   const id = ++dials;
-  const dial = el("div.pull-dial", { dataset: { downEnd: zones[0].to, keepEnd: zones[1].to },
+  const rainbowId = `pull-rainbow-${id}`;
+  const dial = el("div.pull-dial", { role: "img", "aria-label": "吸い出しのメーター", dataset: { downEnd: zones[0].to, keepEnd: zones[1].to },
     html: `<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
     <defs><linearGradient id="dial-grad-${id}" x1="0" x2="1" y1="0" y2="0">
       <stop offset="0" stop-color="#149cfc"/><stop offset="${grad(.59)}" stop-color="#206bb9"/><stop offset="${grad(1.12)}" stop-color="#454a69"/>
       <stop offset=".5" stop-color="#887c70"/><stop offset="${gradR(1.12)}" stop-color="#714341"/><stop offset="${gradR(.59)}" stop-color="#ff7525"/><stop offset="1" stop-color="#ff431b"/>
     </linearGradient><radialGradient id="dial-shade-${id}" cx=".5" cy="1" r=".72">
       <stop offset=".35" stop-color="#000" stop-opacity=".34"/><stop offset=".72" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".26"/>
-    </radialGradient></defs>
+    </radialGradient>${mode.drift ? "" : pullRainbowGradient(rainbowId)}</defs>
     <path class="dial-recess" d="${dialSector(0, 1, 118, 212)}"/>
     <path class="dial-ring" d="${dialSector(0, 1)}" fill="url(#dial-grad-${id})"/>
     <path class="dial-shade" d="${dialSector(0, 1)}" fill="url(#dial-shade-${id})"/>
@@ -269,6 +297,7 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
     ${[zones[0].to, zones[1].to].map((p) => `<path class="pg-divider" d="M${dialPoint(p, DIAL.r0 - 4)}L${dialPoint(p, DIAL.r1 + 2)}"/>`).join("")}
     ${zones.map((z) => `<g class="pg-zone z-${z.id}"><path class="pg-sense-extra"/><path class="pg-just"/></g>`).join("")}
     <path class="dial-rim" d="${dialSector(0, 1)}"/>
+    ${mode.drift ? "" : '<g class="pg-rainbow-aim"/>'}
     ${renewal ? `<path class="pg-draw-arc" pathLength="1" d="M${dialPoint(0, DIAL.r1 + 12)}A${DIAL.r1 + 12} ${DIAL.r1 + 12} 0 0 1 ${dialPoint(1, DIAL.r1 + 12)}"/>` : ""}
     <g class="pg-needle" data-test="pull-needle">
       <path class="needle-trail" d="M${DIAL.cx} ${DIAL.cy - 9}V${DIAL.cy - DIAL.r1 + 7}"/>
@@ -293,6 +322,7 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
   ]);
   const dialRow = el("div.pull-dial-row", [dial, labels, currentZone]);
   const needle = dial.querySelector(".pg-needle");
+  const rainbowAim = mode.drift ? null : dial.querySelector(".pg-rainbow-aim");
   const justs$ = [...dial.querySelectorAll(".pg-just")];
   const senseExtras = [...dial.querySelectorAll(".pg-sense-extra")];
   const justBounds = (zone, scale = widen) => {
@@ -422,8 +452,10 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
     setText(serveStatus, drawing ? "吸引中" : remaining ? `あと${remaining}口` : "");
     setFlag(serveStatus, "hidden", !drawing && remaining === 0);
     setFlag(serveBtn, "disabled", !running || drawing || finished || pulls < mode.min || !!failed);
-    setFlag(pullBtn, "disabled", !running || drawing || finished || !!failed || pulls >= MAX_PULLS);
+    const canPull = running && !drawing && !finished && !failed && pulls < MAX_PULLS;
+    setFlag(pullBtn, "disabled", !canPull);
     if (deepBtn) setFlag(deepBtn, "disabled", pullBtn.disabled);
+    if (rainbowAim) updateRainbowAim(canPull && !gameClock.paused);
   };
 
   // その一台がダメになったら、すぐに止めて結果へ進む。
@@ -469,22 +501,55 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
     raf = requestAnimationFrame(loop);
   };
   gameClock.onPauseChange?.((paused) => {
+    if (paused) updateRainbowAim(false);
     if (!paused && running && !drawing && !finished && !abandoned && !raf && play.isConnected) {
       last = gameClock.now();
       raf = requestAnimationFrame(loop);
     }
   });
 
+  const pullDelta = (zone, at, isJust) => {
+    // キープ中央は維持。半円の色に合わせ、左寄りは微減、右寄りは微増。
+    const raw = zone.id === "keep" ? (at - .5) * PULL_TUNING.keepSlope : (isJust ? zone.justDelta : zone.delta) + PULL_TUNING.sideBias;
+    // 熱管理の吸いは確かめの一口。上げ吸いで冷えた一台を戻すことはできない（E06 案A）。
+    return mode.drift ? raw * CARE_PULL_SCALE : raw;
+  };
   const actionAt = (at) => {
-    const z = zones.find((zz) => at >= zz.from && at <= zz.to) || zones[1];
+    const z = zones.find(zone => at >= zone.from && at <= zone.to) || zones[1];
     const [from, to] = justBounds(z);
     const isJust = at >= from && at <= to;
-    // キープ中央は維持。半円の色に合わせ、左寄りは微減、右寄りは微増。
-    const raw = z.id === "keep" ? (at - .5) * PULL_TUNING.keepSlope : (isJust ? z.justDelta : z.delta) + PULL_TUNING.sideBias;
-    // 熱管理の吸いは確かめの一口。上げ吸いで冷えた一台を戻すことはできない（E06 案A）。
-    const delta = mode.drift ? raw * CARE_PULL_SCALE : raw;
-    return { z, isJust, delta, critical: isJust && growthCritical(state, at - (from + to) / 2, to - from, { tutorial }) };
+    return { z, isJust, delta: pullDelta(z, at, isJust), critical: isJust && growthCritical(state, at - (from + to) / 2, to - from, { tutorial }) };
   };
+  function nextRainbowStops() {
+    let nextBands = bands;
+    if (pulls + 1 > safeLimit) {
+      const leaf = { ...cs.leaf };
+      applyLeafDamage(leaf, leafDamagePerPull(cs));
+      if (leaf.hp <= 0) return [];
+      nextBands = temperatureBands({ ...cs, leaf });
+    }
+    const segments = zones.flatMap(zone => {
+      const [from, to] = justBounds(zone);
+      // キープは正負で熱の補正が変わる。左右の帯は芯の内外で熱が一定。
+      const pieces = zone.id === "keep" ? [[zone.from, .5, false], [.5, zone.to, false]]
+        : [[zone.from, from, false], [from, to, true], [to, zone.to, false]];
+      const tempAt = (at, isJust) => coreTemp + pullHeat(pullDelta(zone, at, isJust));
+      return pieces.map(([start, end, isJust]) => [start, end, tempAt(start, isJust), tempAt(end, isJust)]);
+    });
+    return rainbowStopRanges(segments, nextBands.rainbow, leafStopDrift(leafDamageRatio(cs.leaf), 1));
+  }
+  // 吸い出しの温度は針を待つ間は一定。案内は押せる状態が切り替わった時だけ更新する。
+  let aiming = false;
+  function updateRainbowAim(ready) {
+    if (!rainbowAim || ready === aiming) return;
+    aiming = ready;
+    const stops = ready ? nextRainbowStops() : [];
+    rainbowAim.innerHTML = stops.map(([from, to]) =>
+      `<path fill="url(#${rainbowId})" d="${dialSector(from, to, DIAL.r1 - 14, DIAL.r1)}"/>`).join("");
+    setData(dial, "rainbowStops", stops.length ? JSON.stringify(stops) : "");
+    setData(dial, "rainbowTip", !stops.length ? "" : isRainbowTemperature(T, bands) ? "虹をキープ" : "虹を狙え");
+    setAttr(dial, "aria-label", stops.length ? "吸い出しのメーター。光った位置で針を止めると虹に届く" : "吸い出しのメーター");
+  }
   // 吸いすぎでフレーバーが傷む。文字は出さず、ダメージの音と揺れ、葉の傷みで伝える（TH27・TH28）。
   const damageLeaf = () => {
     applyLeafDamage(cs.leaf, leafDamagePerPull(cs));

@@ -599,9 +599,6 @@ function updateBenchRank() {
   const dodging = !!cs.steamLive && !cs.steam;
   if (progress?.grade && before && !dodging && order.indexOf(progress.grade) - order.indexOf(before) === 1) burstRank(bench, progress.grade);
   bench.rankHud.root.dataset.provisional = String(!final);
-  bench.rankHud.root.setAttribute("aria-label", final ? "制作ランク" : "制作ランク（暫定）");
-  // 「（暫定）」は分けておく（スマホの上のレールは幅が要るので「RANK」だけを出す・css/craft-phone.css）。文は今までと同じ
-  bench.rankHud.root.querySelector(".craft-rank-caption").replaceChildren("RANK", ...(final ? [] : [el("span.craft-rank-provisional", { text: "（暫定）" })]));
 }
 
 /** 左側の工程キャプションを更新。今後の作業アニメーションもここで同期する。 */
