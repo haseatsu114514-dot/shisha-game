@@ -91,9 +91,11 @@
           "text": "ふと目に入ったタブレットの画面。葉の耳と煙の尾を持つ猫が、窓辺で眠っている。"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "取材の日にもいた子だ。……この子、猫なの？ 煙なの？"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_tsumugi_contest_research",
+          "next_true": "cat_research_known",
+          "next_false": "cat_research_new"
         },
         {
           "speaker": "tsumugi",
@@ -220,6 +222,20 @@
             "face": "",
             "text": "描いている間は、いつもこのくらいの声だ。"
           }
+        ],
+        "cat_research_known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "取材の日にもいた子だ。……この子、猫なの？ 煙なの？"
+          }
+        ],
+        "cat_research_new": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "いつも描いてる子だ。……この子、猫なの？ 煙なの？"
+          }
         ]
       }
     },
@@ -329,7 +345,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……同じ形は、二度と来ない。一瞬で消える。[pause]だから、……描きたくなる"
+          "text": "……同じ形は、二度と来ない。一瞬で消える。[pause]だから……描きたくなる"
         },
         {
           "speaker": "",
@@ -719,7 +735,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "窓の光とか、煙とか、……時々、人の手も"
+          "text": "窓の光とか、煙とか……時々、人の手も"
         },
         {
           "speaker": "tsumugi",
@@ -2332,13 +2348,13 @@
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎが、鉛筆をテーブルの端に置いた。",
+          "text": "つむぎが、ペンをテーブルの端に置いた。",
           "portrait": "tsumugi"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "いつもなら、ラベンダーに口をつけるより先に鉛筆が動く。"
+          "text": "いつもなら、ラベンダーに口をつけるより先にペンが動く。"
         },
         {
           "speaker": "tsumugi",
@@ -2373,7 +2389,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "鉛筆を取り直す。煙の尾に、さっきより静かな線が足される。"
+          "text": "ペンを取り直す。煙の尾に、さっきより静かな線が足される。"
         },
         {
           "speaker": "hajime",
@@ -2470,7 +2486,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "俺は、つむぎが置いた鉛筆を、元の端へそっと戻した。"
+            "text": "俺は、つむぎが置いたペンを、元の端へそっと戻した。"
           },
           {
             "speaker": "tsumugi",
@@ -2552,7 +2568,7 @@
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……ふふ、……なら、いいです"
+          "text": "……ふふ。……なら、いいです"
         },
         {
           "speaker": "",
@@ -2656,7 +2672,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "…ピンク！？"
+          "text": "……ピンク！？"
         },
         {
           "speaker": "hajime",
@@ -2706,7 +2722,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "…これは、炭の熱のせいで"
+          "text": "……これは、炭の熱のせいで"
         },
         {
           "speaker": "tsumugi",
