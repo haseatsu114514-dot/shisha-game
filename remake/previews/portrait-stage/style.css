@@ -258,8 +258,6 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .meter { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 1rem 1.6rem #0009); }
 .meter .needle { transform-origin: 100px 100px; transform: rotate(var(--needle, 4deg)); }
 .meter .z { stroke: #0b0812; stroke-width: 1.3; }
-.meter .z-cold { fill: #4aa3ff; } .meter .z-hot { fill: #ff5a3c; } .meter .z-keep { fill: #ffffffe6; } .meter .z-just { fill: #fff; filter: drop-shadow(0 0 4px #fff); }
-.meter .z-cool { fill: color-mix(in oklab, #4aa3ff var(--mix), #ffffff3d); } .meter .z-warm { fill: color-mix(in oklab, #ff9a4a var(--mix), #ffffff3d); }
 .meter .needle path { fill: #fff; filter: drop-shadow(0 0 3px var(--acc)); }
 .btn-a.center { left: 50%; right: auto; top: calc(15.7rem + var(--aux-g, 0rem)); width: 13rem; height: 13rem; margin-left: -6.5rem; }
 .serve { position: absolute; right: 1.2rem; top: 1.2rem; height: 3.5rem; padding: 0 1.4rem; display: flex; align-items: center; gap: 0.7rem; border: 0.1rem solid color-mix(in srgb, var(--acc) 70%, transparent); border-radius: 2rem; background: color-mix(in srgb, var(--acc) 18%, #120c1d99); }

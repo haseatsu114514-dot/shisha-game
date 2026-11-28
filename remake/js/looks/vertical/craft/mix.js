@@ -32,7 +32,7 @@ export const mixView = {
   match: panel => !!panel.querySelector(".mix"),
   create({ relay, hold }) {
     const layers = ["empty", "partial-brown", "partial", "normal-brown", "normal"].map(s => image("vtc-scale-bowl", "ui-bowl-" + s));
-    const grams = el("b.vtc-scale-digits");
+    const grams = el("b.vtc-scale-digits", { text: "0.0g" });
     const pic = el("div.vtc-scale", [image("vtc-scale-base", "ui-scale"), ...layers, grams]);
     const shelf = el("div.vtc-leaves"), genres = el("div.vtc-genres");
     const selected = el("div.vtc-mix-selected");
@@ -115,6 +115,11 @@ export const mixView = {
             tile.onclick = () => select(item);
             return item;
           });
+          // 少ないうちは1段の大きな箱、増えたら2段、11種以上は5列のままスクロールする。
+          const count = rows.length;
+          shelf.dataset.size = count <= 3 ? "large" : count <= 8 ? "medium" : "compact";
+          const columns = count <= 3 ? Math.max(1, count) : Math.min(5, Math.ceil(count / 2));
+          shelf.style.setProperty("--shelf-columns", columns);
           shelf.replaceChildren(...rows.map(r => r.tile));
           selection = shelfState.get(live) || {};
           shelfState.set(live, selection);
@@ -138,7 +143,7 @@ export const mixView = {
         const alpha = v => Math.max(0, Math.min(1, v));
         const partial = alpha((fill - .05) / .35), full = alpha((fill - .5) / .5);
         [1, partial, partial * redRatio, full, full * redRatio].forEach((a, i) => { layers[i].style.opacity = a.toFixed(2); });
-        setText(grams, String(total).padStart(2, "0") + " g");
+        setText(grams, `${total.toFixed(1)}g`);
         const rule = live.querySelector(".reg-line").textContent;
         setText(reg, lcd + "　" + rule);
         const source = live.querySelector('[data-test="mix-ok"]');

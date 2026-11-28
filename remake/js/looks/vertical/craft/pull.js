@@ -19,11 +19,15 @@ export const pullView = {
     const pointer = el("div.vtc-pull-pointer", { "aria-hidden": "true",
       html: `<svg viewBox="${meterViewBox}">${meterNeedle}</svg>` });
     const gauge = el("div.vtc-pull-dial", [bands, pointer]);
-    const status = el("div.vtc-pull-status");
+    const legend = el("div.vtc-pull-legend", [
+      el("span", { text: "下げ吸い" }),
+      el("span", { text: "キープ" }),
+      el("span", { text: "上げ吸い" }),
+    ]);
     const life = el("span.vtc-pull-life", { role: "img" });
     let leafSignature = "", bandSignature = "", needleObserver;
     const actions = el("div.vtc-pull-actions");
-    const ctrl = el("div.vtc-pull-controls", [gauge, status, life, actions]);
+    const ctrl = el("div.vtc-pull-controls", [legend, gauge, life, actions]);
     let panel, sourceBench, buttons = [], sourceDial, sourcePlay, layer, poseTimer;
     function endPose() {
       clearTimeout(poseTimer);
@@ -97,9 +101,12 @@ export const pullView = {
           actions.replaceChildren(...buttons.map(item => item.button));
         }
         const bounds = [...dial.querySelectorAll(".pg-just")].flatMap(z => [Number(z.dataset.from), Number(z.dataset.to)]);
-        if (String(bounds) !== bandSignature) {
-          bandSignature = String(bounds);
-          bands.innerHTML = meterHtml(bounds, false);
+        const { downEnd, keepEnd } = dial.parentElement.dataset;
+        const edges = [Number(downEnd), Number(keepEnd)];
+        const nextBands = String([...edges, ...bounds]);
+        if (nextBands !== bandSignature) {
+          bandSignature = nextBands;
+          bands.innerHTML = meterHtml(bounds, false, edges);
         }
         const leaves = play.querySelector(".leaf-icon");
         if (leaves) {
@@ -112,7 +119,6 @@ export const pullView = {
         }
         const pips = [...play.querySelectorAll(".pull-pip")];
         const count = pips.filter(pip => pip.classList.contains("on")).length;
-        setText(status, play.querySelector(".pull-current-zone > b")?.textContent || "");
         for (const { source, button, label, dots, kind } of buttons) {
           const text = source.querySelector(".btn-label")?.firstChild?.textContent || source.textContent;
           setText(label, kind === "pull-stop" ? "吸う" : kind === "pull-serve" ? "提供" : text);

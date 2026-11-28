@@ -254,7 +254,8 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
   const thermometer = buildThermometer({ cs, finishGuide: mode.store === "pull", attackGuide: attacking, coldLimit: mode.drift ? COLD_OUT : null, height: 360, width: 64 });
   // SVGの縦横比を保ち、針・リングを同じ中心で回す。
   const id = ++dials;
-  const dial = el("div.pull-dial", { html: `<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+  const dial = el("div.pull-dial", { dataset: { downEnd: zones[0].to, keepEnd: zones[1].to },
+    html: `<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
     <defs><linearGradient id="dial-grad-${id}" x1="0" x2="1" y1="0" y2="0">
       <stop offset="0" stop-color="#149cfc"/><stop offset="${grad(.59)}" stop-color="#206bb9"/><stop offset="${grad(1.12)}" stop-color="#454a69"/>
       <stop offset=".5" stop-color="#887c70"/><stop offset="${gradR(1.12)}" stop-color="#714341"/><stop offset="${gradR(.59)}" stop-color="#ff7525"/><stop offset="1" stop-color="#ff431b"/>

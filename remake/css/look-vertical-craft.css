@@ -158,7 +158,7 @@
 .vtc-w-drain { left: var(--edge); bottom: var(--low); }
 .vtc-w-pour { left: 50%; bottom: var(--low); margin-left: calc(var(--ok) / -2); }
 .vtc-w-ok { right: var(--edge); bottom: var(--low); }
-.vtc-water-ctrl .vtc-tool { inset: 8% 17% 30% 17%; width: 66%; height: 62%; } /* 注ぐ・こぼすはボトルを大きく見せる */
+.vtc-water-ctrl .vtc-tool { inset: 13% 23% 36%; width: 54%; height: 51%; } /* 丸い縁と下のラベルの間にアイコンを収める */
 .vtc-gl-pipe { fill: none; stroke: currentColor; stroke-width: 7; stroke-linecap: round; }
 .vtc-gl-glass { fill: none; stroke: currentColor; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; } .vtc-gl-glass.thin { stroke-width: 3; opacity: 0.8; }
 .vtc-w-pour.pressing .vtc-gl-drops circle { animation: vtc-drop-fall 0.42s linear infinite; }
@@ -449,19 +449,23 @@
 .vtc-scale-base { width:100%; height:100%; }
 .vtc-scale-bowl { position:absolute; width:68%; bottom:44%; left:16%; }
 .vtc-scale-digits { position:absolute; left:30.5%; top:82.5%; width:32.5%; height:13.5%; display:grid; place-items:center; color:#95ffc2; font:700 calc(1.9 * var(--u)) monospace; }
-/* 試作 VPL78・111。ジャンル、5列の棚、選んだ葉だけの計量。 */
-.vtc-mix-controls { display:grid; grid-template-rows: auto minmax(0,1fr) auto; gap:calc(.55 * var(--u)); padding:0 var(--u) var(--low); color:#fff; }
+/* 試作 VPL78・111。ジャンル、葉の数で列数を変える棚、選んだ葉の計量。 */
+.vtc[data-step="mix"] { --mix-top:calc(1.2 * var(--u)); --cp:calc(var(--cp-std) + var(--mix-top)); }
+.vtc-mix-controls { display:grid; grid-template-rows: auto minmax(0,1fr) auto; gap:calc(.55 * var(--u)); padding:var(--mix-top) var(--u) var(--low); color:#fff; }
 .vtc-genres { display:grid; grid-template-columns:repeat(4, 1fr); gap:calc(.45 * var(--u)); }
 .vtc-genre { display:flex; align-items:center; justify-content:center; color:var(--g); border:1px solid color-mix(in srgb,var(--g) 55%,transparent); border-radius:calc(1.1 * var(--u)); background:color-mix(in srgb,var(--g) 12%,#120c1d); }
 .vtc-genres button { height:calc(4.5 * var(--u)); flex-direction:column; line-height:1.15; }
 .vtc-genres svg { width:calc(2.2 * var(--u)); height:calc(2.2 * var(--u)); }
 .vtc-genres b { color:white; font-size:calc(1.08 * var(--u)); }
 .vtc-genres [aria-pressed=true] { background:color-mix(in srgb,var(--g) 38%,#120c1d); border-color:var(--g); }
-.vtc-leaves { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); grid-auto-rows:minmax(calc(5.7 * var(--u)), 48%); align-content:start; overflow:auto; overscroll-behavior:contain; touch-action:pan-y; gap:calc(.45 * var(--u)); padding:calc(.4 * var(--u)) 0; }
-.vtc-leaf { position:relative; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; border:1px solid #ffffff30; border-radius:var(--u); background:#120c1de0; color:#fff; font-size:calc(1.03 * var(--u)); line-height:1.15; }
+.vtc-leaves { display:grid; grid-template-columns:repeat(var(--shelf-columns, 5), minmax(0, 1fr)); grid-auto-rows:minmax(calc(5.7 * var(--u)), 48%); align-content:start; overflow:auto; overscroll-behavior:contain; touch-action:pan-y; gap:calc(.45 * var(--u)); padding:calc(.4 * var(--u)) 0; }
+.vtc-leaves[data-size="medium"] { --leaf-type:1.19; --package-height:62%; }
+.vtc-leaves[data-size="large"] { --leaf-type:1.48; --package-height:69%; grid-auto-rows:96%; align-content:center; gap:calc(.7 * var(--u)); }
+.vtc-leaf { position:relative; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; border:1px solid #ffffff30; border-radius:var(--u); background:#120c1de0; color:#fff; font-size:calc(var(--leaf-type, 1.03) * var(--u)); line-height:1.15; }
+.vtc-leaf:only-child { width:50%; justify-self:center; }
 .vtc-leaf.dim { opacity:.48; }
 .vtc-leaf[aria-pressed=true] { opacity:1; border-color:var(--acc); background:color-mix(in srgb,var(--acc) 18%,#120c1d); }
-.vtc-leaf .fr-package { display:grid; height:55%; width:100%; place-items:center; }
+.vtc-leaf .fr-package { display:grid; flex:none; height:var(--package-height, 55%); width:100%; place-items:center; }
 .vtc-packet { display:block; position:relative; height:100%; overflow:hidden; }
 .vtc-packet img { position:absolute; max-width:none; }
 .vtc-leaf-tags { display:flex; gap:2px; }
@@ -513,18 +517,18 @@
 
 /* 吸い出し。試作と同じ半円・マウスピース・葉・提供の灯り。 */
 .vtc-pull-controls { --pill:calc(5.4 * var(--u)); --puff:min(calc(14 * var(--u)),calc(var(--cp) * .45)); color:white; text-align:center; }
-.vtc-pull-status { position:absolute; inset:0 0 auto; color:#d7c9bc; font-size:calc(1.15 * var(--u)); }
-.vtc-pull-dial { position:absolute; --width:min(77%,calc((var(--cp) - var(--pill) - var(--low) - var(--puff) * .5 - var(--u)) * 1.9)); left:50%; right:auto; top:auto; bottom:calc(var(--low) + var(--pill) + var(--puff) * .51); width:var(--width); aspect-ratio:212/112; transform:translateX(-50%); }
+.vtc-pull-legend { position:absolute; inset:0 var(--edge) auto; display:grid; grid-template-columns:repeat(3, 1fr); color:#fff4ee; font-size:calc(1.38 * var(--u)); font-weight:700; line-height:1.3; }
+.vtc-pull-legend span:first-child { color:#a9d7ff; }
+.vtc-pull-legend span:last-child { color:#ffc49f; }
+.vtc-pull-dial { position:absolute; --base:calc(var(--low) + var(--pill) + var(--puff) * .25);
+  left:50%; bottom:var(--base); width:min(90%, calc((var(--cp) - var(--base) - 1.85 * var(--u)) * 212 / 112));
+  aspect-ratio:212/112; transform:translateX(-50%); }
 /* 外枠が吸い出しを表示中も本編で採点・入力を扱う。裏の針、作業風景、温度計の描画だけを休む。 */
 .bench[data-portrait-pull] :is(.pull-play, .pull > .thermo, .bench-worker) { content-visibility:hidden; }
 .vtc-pull-bands, .vtc-pull-pointer { position:absolute; inset:0; pointer-events:none; }
 /* 試作の針の軸 (100,100) は viewBox (-6,-2,212,112) のこの位置。帯の上で針の層だけを回す。 */
 .vtc-pull-pointer { transform-origin:50% 91.07142857%; will-change:transform; }
 .vtc-pull-dial .z { stroke:#110c18; stroke-width:1; }
-.vtc-pull-dial .z-cold { fill:#4aa3ff; } .vtc-pull-dial .z-hot { fill:#ff5a3c; }
-.vtc-pull-dial .z-keep, .vtc-pull-dial .z-just { fill:#fff; }
-.vtc-pull-dial .z-cool { fill:color-mix(in oklab,#4aa3ff var(--mix),#ffffff45); }
-.vtc-pull-dial .z-warm { fill:color-mix(in oklab,#ff9a4a var(--mix),#ffffff45); }
 .vtc-pull-dial .needle path { fill:white; filter:drop-shadow(0 0 2px #ffc978); }
 .vtc-pull-actions button { color:white; font-size:calc(1.65 * var(--u)); }
 .vtc-pull-actions [data-test="vt-pull-stop"] { padding:calc(1.4 * var(--u)); align-content:center; gap:0; box-sizing:border-box; }

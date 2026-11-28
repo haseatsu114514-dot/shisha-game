@@ -23,17 +23,27 @@ export const portraitTools = {
 export const meterViewBox = "-6 -2 212 112";
 export const meterNeedle = '<g class="needle"><path d="M100 10L103.2 96L96.8 96Z"/></g>';
 
-export function meterHtml([cold, coldEnd, center, centerEnd, hot, hotEnd] = [.13, .2, .44, .56, .8, .87], withNeedle = true) {
+export function meterHtml(
+  [downFrom, downTo, keepFrom, keepTo, upFrom, upTo] = [.13, .2, .44, .56, .8, .87],
+  withNeedle = true, [downEnd, keepEnd] = [.27, .73],
+) {
   const C = 100, RO = 92, RI = 60;
   const pt = (t, r) => { const a = Math.PI * (1 - t); return [C + r * Math.cos(a), C - r * Math.sin(a)]; };
-  const band = (t0, t1, cls, style = "") => {
+  const band = (t0, t1, fill) => {
+    if (t0 >= t1) return "";
     const [x0, y0] = pt(t0, RO), [x1, y1] = pt(t1, RO), [x2, y2] = pt(t1, RI), [x3, y3] = pt(t0, RI);
-    return `<path class="${cls}" ${style ? `style="${style}"` : ""} d="M${x0.toFixed(2)} ${y0.toFixed(2)}A${RO} ${RO} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}L${x2.toFixed(2)} ${y2.toFixed(2)}A${RI} ${RI} 0 0 0 ${x3.toFixed(2)} ${y3.toFixed(2)}Z"/>`;
+    return `<path class="z" fill="${fill}" d="M${x0.toFixed(2)} ${y0.toFixed(2)}A${RO} ${RO} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}L${x2.toFixed(2)} ${y2.toFixed(2)}A${RI} ${RI} 0 0 0 ${x3.toFixed(2)} ${y3.toFixed(2)}Z"/>`;
   };
-  const steps = (t0, t1, cls, n, from, to) => Array.from({ length: n }, (_, i) => band(t0 + (t1 - t0) * i / n, t0 + (t1 - t0) * (i + 1) / n + 0.002, cls, `--mix:${Math.round(from + (to - from) * i / (n - 1))}%`)).join("");
+  const steps = (start, end, colors) => colors.map((color, i) => {
+    const width = (end - start) / colors.length;
+    return band(start + width * i, start + width * (i + 1), color);
+  }).join("");
+  const zone = (name, start, from, to, end, before, just, after) =>
+    `<g data-zone="${name}">${steps(start, from, before)}${band(from, to, just)}${steps(to, end, after)}</g>`;
   return `<svg class="meter" viewBox="${meterViewBox}" role="img" aria-label="吸い出しのメーター">
-    ${band(0, cold, "z z-cold")}${band(cold, coldEnd, "z z-keep")}${steps(coldEnd, center, "z z-cool", 6, 100, 0)}
-    ${band(center, centerEnd, "z z-just")}${steps(centerEnd, hot, "z z-warm", 6, 0, 100)}${band(hot, hotEnd, "z z-keep")}${band(hotEnd, 1, "z z-hot")}
+    ${zone("down", 0, downFrom, downTo, downEnd, ["#438eff", "#529eef", "#63a9e5"], "#a9e1ff", ["#78b4df", "#91bddb"])}
+    ${zone("keep", downEnd, keepFrom, keepTo, keepEnd, ["#898798", "#a7a4b5", "#c7c3d1"], "#fff", ["#c7c3d1", "#a7a4b5", "#898798"])}
+    ${zone("up", keepEnd, upFrom, upTo, 1, ["#d59a7b", "#e99668"], "#ffe0aa", ["#ff9d61", "#ff7c53", "#ff604a"])}
     ${withNeedle ? meterNeedle : ""}
   </svg>`;
 }
