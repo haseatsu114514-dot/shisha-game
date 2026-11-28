@@ -1,0 +1,28 @@
+/* 縦画面C案「煙の舞台」: スチル（stills.mjs）。長さは rem（スマホの幅 39rem）。
+   上＝スチル（2:3 の絵を幅いっぱいに。下の端は帯の下へ溶ける）、真ん中＝台詞の帯（photo.css の .pt-telop。押すと次へ）、
+   下＝前・横の元絵・次の札。十字キーと丸ボタンは置かない（チェキ・プリクラと同じ）。 */
+
+.st-app { position: absolute; inset: 0; display: flex; flex-direction: column; color: #ece6f5; background: #0b0812; }
+.st-stage { position: relative; flex: 1 1 0; min-height: 0; overflow: hidden; background: #0b0812; cursor: pointer; }
+.st-amb { position: absolute; left: -10%; top: -10%; width: 120%; height: 120%; object-fit: cover; filter: blur(3rem) brightness(0.38) saturate(1.2); }
+.st-pic { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%;
+  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 80%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 80%, transparent 100%); }
+.st-pic.in { animation: st-in 0.5s var(--ease-out) both; }
+@keyframes st-in { from { opacity: 0; transform: scale(1.03); } to { opacity: 1; transform: none; } }
+/* 比べる: 今の横長の元絵を、縦の画面の幅いっぱいに置いた見え方（上に寄せる。下は空く） */
+.st-old { position: absolute; left: 0; top: 6rem; width: 100%; height: auto; }
+.st-pic[hidden], .st-old[hidden] { display: none; } /* style.css の img { display: block } が hidden 属性を打ち消すので */
+.st-app.old .st-amb { filter: blur(3rem) brightness(0.22) saturate(1); }
+
+.st-head { position: absolute; z-index: 3; left: 0; right: 0; top: 0; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; padding: 1.2rem 1.4rem 2.4rem; background: linear-gradient(180deg, #0b0812b8, transparent); pointer-events: none; }
+.st-title { display: grid; gap: 0.2rem; }
+.st-title b { font-family: var(--mincho); font-size: 1.7rem; letter-spacing: 0.06em; color: #fff; text-shadow: 0 0.1rem 0.6rem #000; }
+.st-title small { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.14em; color: var(--acc); }
+.st-count { flex: none; padding: 0.3rem 0.9rem; border-radius: 1rem; font-size: 1.2rem; font-weight: 700; color: #d8cfe6; background: #0a0710b3; }
+
+.st-ctrl { min-height: 0; }
+.st-nav { display: grid; grid-template-columns: 6rem 1fr 6rem; gap: 0.9rem; }
+.st-nav button { min-height: 5.4rem; border-radius: 2.7rem; font-size: 1.5rem; font-weight: 800; color: #ece6f5; background: #ffffff14; border: 0.1rem solid #ffffff33; }
+.st-nav button span { font-size: 2.8rem; line-height: 1; }
+.st-nav button[aria-pressed="true"] { color: #170f1f; background: var(--acc); border-color: transparent; }
+.st-nav button:active { transform: scale(0.97); }

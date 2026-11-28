@@ -31,3 +31,17 @@ A premium mobile game title logo for a desert camel racing game. The logo text r
 ```
 A cute, cosy mobile game title logo for a cat-petting mini game. The logo text is Japanese hiragana and reads exactly てつこといっしょ (eight characters: て、つ、こ、と、い、っ、し、ょ — the っ and ょ are the small kana), written large in a soft, rounded, hand-drawn brush lettering in deep cocoa-brown with a cream inner highlight and a thick creamy outline, slightly bouncy. Decorate it in the same style as the references: a ginger-and-cream tabby Scottish Fold cat (folded ears, round face, tabby stripes like the reference cat) peeking over the top edge of the letters with its paws resting on them, a small paw-print stamp badge, a corrugated cardboard name plate with an orange-and-cream striped edge behind the letters, a little yarn ball. Warm cardboard, cream and orange palette, hand-painted cosy anime game UI style. Isolated on a fully transparent background, centred, fills most of the canvas. No other text, no English, no letters other than the eight kana, no watermark.
 ```
+
+## `logo_axe_throw.png`・`logo_table_talk_rpg.png`・`logo_dj_mix.png`（2026-11-28・EXT06）
+
+オーナー「今ミニゲームによってロゴがあったりなかったりなのでないのは作って」。上の3つと同じ作り方（`gpt-image-2.6-sunburst` の edits・1536x1024・背景透過・quality high）で、各1回の生成で採用。プロンプトと参照画像は `asset_sources/ui/extra-ui-20261128/generate.py` の `logo_*`（`python3 generate.py logo_axe_throw` などで作り直せる。原画はこのフォルダの `originals/` に出る）。
+
+| 原画（`originals/`） | 使う所 | 参照画像 | ゲームの絵 |
+|---|---|---|---|
+| `logo_axe_throw.png` | EXTRA の斧投げのスライドの題 | 斧投げの実画面（刺さった斧）・投げ斧の絵・CAMEL RACE のロゴ | `remake/img/ui/axe_throw/logo.webp`（900×597） |
+| `logo_table_talk_rpg.png` | EXTRA のボドゲカフェのスライドの題 | ダイスを振る実画面・SUCCESS の題字・CAMEL RACE のロゴ | `remake/img/ui/trpg/logo.webp`（900×600） |
+| `logo_dj_mix.png` | EXTRA の DJ のスライドの題 | DJ の実画面・紫のジョグホイール・CAMEL RACE のロゴ | `remake/img/ui/dj/logo.webp`（900×588） |
+
+- 文字はゲームの中の呼び名（斧投げ AXE THROW・TRPG は TABLE TALK RPG・DJ MIX）。綴りの誤りが無いことを目で確かめた
+- TRPG は最初 TABLETOP RPG で作ったが、オーナー「テーブルトークRPGね　テーブルトップではなくて」で TABLE TALK RPG に作り直した（本編の TRPG の入口の演出の小見出しも TABLE TALK RPG に）
+- 原画の SHA-256（先頭16桁）: `logo_axe_throw` c5cbe95c11d7314b, `logo_table_talk_rpg` 183fbd373dd760a3, `logo_dj_mix` 94a2c7ce104a548e
