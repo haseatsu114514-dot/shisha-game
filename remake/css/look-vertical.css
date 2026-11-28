@@ -5,7 +5,11 @@
 
 /* ───────── 本編側の調整（縦画面を使っている間だけ） ───────── */
 :root[data-look="vertical"][data-vt-shell="on"] #viewport { opacity: 0; }
-:root[data-look="vertical"][data-vt="on"][data-vt-hint="hold"] #rotate-hint { display: none; }
+/* 回転案内は、まだ縦にしていない場面（シーシャ作り・大会・店番・ミニゲーム）でだけ出す（js/looks/vertical.js が外枠を出せない間）。
+   外枠を出している間・読み込みの画面・縦の小窓（data-vt-hint="hold"）は出さない。縦持ちが基本なので、ほかの場面では回転案内を使わない（base.css・VPO01） */
+@media (orientation: portrait) and (hover: none) and (pointer: coarse) {
+  :root[data-look="vertical"][data-vt="on"]:not([data-vt-hint="hold"]) #rotate-hint { display: grid; }
+}
 :root[data-look="vertical"][data-vt="on"] #rotate-hint > :not(.vt-hint) { display: none; }
 /* 本編の会話の箱を、縦のテロップと同じ比（全角約16字×2行）にする。本編の会話エンジンがこの幅で2行ずつページを分ける（VPL29）。
    テロップ: 幅 33 単位・字 1.94 単位・字間 0.03em → 本編: 字 32px なら幅 544px（エンジンは幅 −4 で測るので 548px） */
@@ -746,3 +750,16 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
 @keyframes vt-ct-rule { from { transform: scaleX(0); } }
 .vt-ct-read { font-family: "Times New Roman", "Suien Name", serif; font-style: italic; font-size: calc(1.8 * var(--u)); letter-spacing: 0.1em; opacity: 0.9; }
 @media (prefers-reduced-motion: reduce) { .vt-ct-logo, .vt-ct-art, .vt-ct-copy, .vt-ct-rule { animation: none; } }
+
+/* ───────── 演出の縦の舞台（VPO02・js/looks/vertical/motion-layer.js・js/core/motion-frame.js） ─────────
+   縦持ちの間、モーショングラフィックスは本編の画面（見えなくしてある）ではなく、ここで画面いっぱいに見せる。
+   論理の幅 720 × 高さ（data-h）の箱を、画面に収まる倍率で真ん中に当てる（倍率と位置は JS が transform で入れる）。外枠（990）と回転案内（2000）の間 */
+.vt-motion { position: fixed; left: 0; top: 0; z-index: 1000; width: 720px; height: 1280px; overflow: hidden; transform-origin: 0 0; pointer-events: none; font-family: var(--font); }
+.vt-motion:empty { visibility: hidden; }
+.vt-motion > * { pointer-events: auto; }
+/* まだ縦の構図を持たない演出: 横の舞台（1280×720）を、幅いっぱい（×0.5625）で縦の真ん中に置く。上下は暗い幕で、境目に細い金の線（章タイトルと同じ見せ方・VPN27） */
+.vt-mo-wide { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(120% 60% at 50% 50%, #1a1228f0, #07050cf7 70%); }
+.vt-mo-wide::before, .vt-mo-wide::after { content: ""; position: absolute; z-index: 2; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #d9b86a 18%, #f3dfa6 50%, #d9b86a 82%, transparent); opacity: 0.8; }
+.vt-mo-wide::before { top: calc(50% - 204px); }
+.vt-mo-wide::after { top: calc(50% + 202px); }
+.vt-mo-wide-box { position: absolute; left: 0; top: calc(50% - 202.5px); width: 1280px; height: 720px; overflow: hidden; transform: scale(0.5625); transform-origin: 0 0; }

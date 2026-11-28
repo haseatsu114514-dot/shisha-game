@@ -19,6 +19,7 @@ import { createCoverScene } from "./vertical/cover.js";
 import { createSheetScene } from "./vertical/sheet.js";
 import { createBoardScene, boardOpen } from "./vertical/board.js";
 import { createCraftScene, craftOpen } from "./vertical/craft.js";
+import { createMotionLayer } from "./vertical/motion-layer.js";
 
 import { createTournamentResultScene } from "./vertical/tournament-result.js";
 
@@ -57,15 +58,17 @@ function syncOrientation() {
   if (session) return;
   const mine = ++loadToken;
   // 見た目の CSS は縦画面を使う時だけ読み込む（index.html の styles-look-vertical。ほかの端末には読ませない）
-  withMinigameStyles("look-vertical", null, async () => {
+  // withMinigameStyles はテンプレートが無い（読み込み済み）時に Promise でなく開始結果を返すため、包んでから catch する
+  Promise.resolve(withMinigameStyles("look-vertical", null, () => {
     if (mine !== loadToken || !active || !query?.matches || session) return;
     session = start();
-  }).catch((error) => console.error("[look] 縦画面の見た目を読み込めませんでした", error));
+  })).catch((error) => console.error("[look] 縦画面の見た目を読み込めませんでした", error));
 }
 
 function start() {
   const root = document.documentElement;
   root.dataset.vt = "on"; // 本編の会話の箱を縦のテロップと同じ比にする（css/look-vertical.css）
+  root.dataset.vtHint = "hold"; // 最初の確認までは回転案内を出さない（出すかは evaluate() が決める）
   let scene = null, sceneName = "";
   const frame = createFrame({
     dir: (dir) => { scene?.dir?.(dir); wake(400); },
@@ -77,7 +80,9 @@ function start() {
   // タイトルからのロードでは本編の煙そのものを縦の舞台に重ねる。時計も SE も本編が所有する。
   const resumeSmoke = el("div.vt-resume-smoke", { "aria-hidden": "true" });
   document.body.append(resumeSmoke);
-  const own = [frame.root, resumeSmoke];
+  // 演出（モーショングラフィックス）の縦の舞台（VPO02）。場面の確認・中継・DOM の見張りでは、外枠と同じく自分の物として除く
+  const motionLayer = createMotionLayer();
+  const own = [frame.root, resumeSmoke, motionLayer.root];
   const scenes = {
     // CONTINUE は本編の文字・ボタン・アニメーションを直接表示する。
     continue: { native: true }, tournament: { native: true }, tournamentResult: createTournamentResultScene(),
@@ -88,6 +93,7 @@ function start() {
     if (sceneName === "cover" && !event.target.closest("button")) scenes.cover.overTap();
   });
   frame.mount();
+  motionLayer.mount();
   // 回転案内の文を差し替える（元の文は CSS で隠すだけで、書き換えない）
   const hint = document.getElementById("rotate-hint");
   const hintText = hint ? el("div.vt-hint", { dataset: { test: "vt-hint" } }, [
@@ -143,6 +149,10 @@ function start() {
     if (found.kind !== "none") noneSince = 0;
     if (found.kind === "scene" || found.kind === "none") coverBlocked = false;
     hold = false;
+    // 縦の舞台で演出（モーショングラフィックス）が出ている間は、外枠を引っ込めない（回転案内を演出の上に出さない・VPO02）。
+    // 演出の下が場面の切り替えの途中でも待ちすぎと判断しないよう、待つ時間は演出が終わってから数え直す
+    const motionOn = motionLayer.root.childElementCount > 0;
+    if (motionOn) { noneSince = 0; if (holdSince) holdSince = now; coverBlocked = false; }
     if (scene) {
       if (found.kind === "scene") setScene(found.name);
       else if (found.kind === "cover" || found.kind === "gap") {
@@ -175,6 +185,11 @@ function start() {
         setScene("cover");
         candidate = null; streak = 0;
       }
+    } else if (motionOn) {
+      // 回転案内の場面で演出が始まった（または演出の下が写せない場面）: 演出の間だけ外枠の覆いで待つ
+      hold = true;
+      setScene("cover");
+      candidate = null; streak = 0;
     } else { candidate = null; streak = 0; }
     // 外枠を出している間と、読み込みの画面（縦持ち用の配置を持つ）の間は回転案内を隠す
     const holdHint = !!scene || isLoading() || dialogOpen;
@@ -252,7 +267,7 @@ function start() {
     attributeFilter: ["class", "hidden", "style", "src", "disabled", "aria-disabled", "aria-pressed", "data-screen", "data-revealing", "data-slot", "data-health", "data-tab", "aria-selected", "aria-expanded", "aria-checked", "title", "data-rain", "open", "data-step"],
   });
 
-  const onResize = () => { scene?.relayout?.(); detectSoon = true; dirty = true; wake(); };
+  const onResize = () => { motionLayer.relayout(); scene?.relayout?.(); detectSoon = true; dirty = true; wake(); };
   const onVisibility = () => {
     if (stopped) return;
     if (document.hidden) { cancelAnimationFrame(frameId); frameId = 0; clearTimeout(timer); timer = 0; return; }
@@ -277,6 +292,7 @@ function start() {
       frame.unmount();
       document.getElementById("wipe")?.append(...resumeSmoke.children);
       resumeSmoke.remove();
+      motionLayer.unmount();
       hintText?.remove();
       delete window.__verticalLook;
       delete root.dataset.vt;

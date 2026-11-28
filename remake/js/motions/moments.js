@@ -5,18 +5,23 @@ import { el, sleep, nextFrame } from "../core/util.js";
 import { W, H, COLOR, EASE, svg, stageSvg, move, reducedMotion } from "../core/transition-kit.js";
 import { holdCover, bgSnapshot, smokeArt, smokeOut } from "../core/transitions.js";
 import { duckBgm } from "../core/audio.js";
+import { mountMotion, frameOf } from "../core/motion-frame.js";
 
 const fx = () => document.getElementById("fx");
 const skip = () => reducedMotion() || !!(window.__remake?.vnTest?.turbo || window.__remake?.craftTest?.auto);
 const layer = (cls, data) => el(`div.mo-moment.${cls}`, { "aria-hidden": "true", dataset: { moment: data } });
 
-/** 覆う型の共通部分: 入力を止め、片付けを必ず行う */
-async function covering(node, body) {
+/**
+ * 覆う型の共通部分: 入力を止め、片付けを必ず行う。
+ * 縦画面を縦持ちで使っている間は縦の舞台（core/motion-frame.js・VPO13）に置く。portrait: false の演出（立ち絵の位置を横の舞台で決めるもの）は、
+ * 横の舞台のまま縦の舞台の真ん中に収める。
+ */
+async function covering(node, body, { portrait = true } = {}) {
   const host = fx();
   if (!host) return body(null);
   const unhold = holdCover();
-  host.append(node);
-  try { return await body(node); } finally { node.remove(); unhold(); }
+  const mounted = mountMotion(node, { portrait, host });
+  try { return await body(node); } finally { mounted.remove(); unhold(); }
 }
 
 // ---------------------------------------------------------------- A3 回想 → 現在（第3章の公園の回想。作り直し TMG60）
@@ -157,12 +162,14 @@ export async function mixedSmoke(colors = []) {
     await move(dark, [{ opacity: 0 }, { opacity: 1 }], 500, { easing: "ease-in" });
     // 1. それぞれの色の煙が下から昇り、真ん中へ寄って重なる（重なった所は色が足されて明るく混ざる）
     const RISE = 1900;
+    // 縦の舞台では、横に並ぶ煙の間を画面の幅に合わせて詰める（立ちのぼる高さは同じ・VPO13）
+    const k = frameOf(node).portrait ? 720 / W : 1;
     const runs = plumes.map(({ el: p, x0, i }) => {
       const x1 = 640 + (x0 - 640) * 0.12, tilt = (x0 < 640 ? 1 : -1) * 8;
       return move(p, [
-        { opacity: 0, transform: `translate(${x0 - 640}px, 300px) rotate(-90deg) scale(.55, .7)` },
-        { opacity: 0.95, offset: 0.35, transform: `translate(${(x0 + (x1 - x0) * 0.35) - 640}px, 120px) rotate(${-90 + tilt * 0.5}deg) scale(.8, .9)` },
-        { opacity: 0.8, transform: `translate(${x1 - 640}px, -140px) rotate(${-90 + tilt}deg) scale(1.25, 1.2)` },
+        { opacity: 0, transform: `translate(${(x0 - 640) * k}px, 300px) rotate(-90deg) scale(.55, .7)` },
+        { opacity: 0.95, offset: 0.35, transform: `translate(${((x0 + (x1 - x0) * 0.35) - 640) * k}px, 120px) rotate(${-90 + tilt * 0.5}deg) scale(.8, .9)` },
+        { opacity: 0.8, transform: `translate(${(x1 - 640) * k}px, -140px) rotate(${-90 + tilt}deg) scale(1.25, 1.2)` },
       ], RISE, { easing: "cubic-bezier(.3,.1,.3,1)", delay: i * 80 });
     });
     // 2. 混ざった白い煙が真ん中から上へ抜ける
@@ -293,6 +300,6 @@ export async function shadowUnveil(figure) {
       await sleep(650);
       duckBgm(1, 500);
       await move(node, [{ opacity: 1 }, { opacity: 0 }], 480, { easing: "ease-in" });
-    });
+    }, { portrait: false }); // 立ち絵の大きさと足元は会話の枠取り（横の舞台）のまま。縦の舞台では横長のまま真ん中に収める
   } finally { showDialogue(); duckBgm(1, 300); }
 }

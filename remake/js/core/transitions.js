@@ -9,6 +9,7 @@ import { moveCurtain, moveStyle } from "./transition-moves.js";
 import { state } from "./state.js";
 import { createEntrySound } from "./entry-sound.js";
 import { withStoreArrival } from "./store-arrival.js";
+import { mountMotion } from "./motion-frame.js";
 
 // 全面を覆う型の数。覆っている間の背景切り替えは、別の幕を出さずに差し替える（ui.setBg）
 let covering = 0;
@@ -460,10 +461,14 @@ export async function nightToMorning(host, mid) {
   const typeReady = dateTypeReady(); // 灯りが落ちる間に、日付の題字の明朝を読む
   const unhold = holdCover();
   const node = el("div.tr-dawn", { "aria-hidden": "true", dataset: { transition: "dawn" } });
-  host.append(node);
+  // 縦画面を縦持ちで使っている間は、縦の舞台（core/motion-frame.js・VPO18）で画面いっぱいに見せる。
+  // 部屋の絵は窓（光の出どころ）が横の同じ割合の所に来るよう寄せて敷き、日付の題字は画面の下の方に大きく出す（css/base.css の .mo-portrait.tr-dawn）
+  const mounted = mountMotion(node, { portrait: true, host });
+  const tall = mounted.frame.portrait;
+  const fitPic = (pic) => { if (tall && pic && isHome(pic)) pic.style.backgroundPosition = "61% 50%"; return pic; };
   try {
     // 1. 眠る前の絵（写し）の上で灯りが落ちる。写しは元の絵と同じなので、上に出ていた画面だけが消えていく
-    const night = bgSnapshot() || el("div.tr-dawn-pic.blank");
+    const night = fitPic(bgSnapshot()) || el("div.tr-dawn-pic.blank");
     const grade = el("div.tr-dawn-grade");
     node.append(night, grade);
     await nextFrame();
@@ -472,7 +477,7 @@ export async function nightToMorning(host, mid) {
     const info = await mid();
     if (!info) return;
     // 2. 朝の絵（mid() が #bg に置いた朝の背景の写し）。窓を中心に広がる光の形で見せる
-    const day = bgSnapshot();
+    const day = fitPic(bgSnapshot());
     const home = isHome(day);
     const weather = info.sick ? null : info.weather ?? (info.rain ? "rain" : null);
     if (info.sick) node.classList.add("sick");
@@ -534,7 +539,7 @@ export async function nightToMorning(host, mid) {
     move(card, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-12px)" }], 340, { easing: EASE.in });
     await move(node, [{ opacity: 1 }, { opacity: 0 }], 380, { delay: 120, easing: "ease" });
   } finally {
-    node.remove();
+    mounted.remove();
     unhold();
   }
 }

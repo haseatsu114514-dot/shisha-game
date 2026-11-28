@@ -9,6 +9,7 @@ import { W, svg, stageSvg, move } from "../core/transition-kit.js";
 import { MG_EASE as E, pick, burst, ring, confetti, twinkle, kinetic, playKinetic } from "../core/mg-kit.js";
 import { flavorColor, bowlArtFiles } from "../craft/art.js";
 import { stagePlay, backdrop } from "./stage.js";
+import { frameOf } from "../core/motion-frame.js";
 import { graphicIntro } from "../vn/intro-graphic.js";
 
 // イージング。指数の曲線は短い動き用なので、長めの動きは quint／cubic のやわらかい曲線にする
@@ -30,11 +31,11 @@ function giverColor(from) {
 
 /** ハガルの絵を中身の幅 w px で置く。sheen は絵の形で切り抜いた光の帯 */
 const bowlFile = gear => gear?.art ? bowlArtFiles({ equip: { bowl: gear.id } })[0] : BOWL;
-function bowlArt(w = BOWL_W, gear = null, file = bowlFile(gear)) {
+function bowlArt(w = BOWL_W, gear = null, file = bowlFile(gear), tall = 1) {
   const url = makingUrl(file);
   const [l, t, r, b, aspect] = DB.manifest?.makingBox?.[file] || BOWL_BOX;
-  // 背の高い（脚のある）専用ハガルも、縦横比を保って文字より上へ収める。
-  const maxHeight = String(gear?.id || "").startsWith("suyaki_") ? 380 : 440;
+  // 背の高い（脚のある）専用ハガルも、縦横比を保って文字より上へ収める。tall は縦の舞台で高さの上限を伸ばす倍率
+  const maxHeight = (String(gear?.id || "").startsWith("suyaki_") ? 380 : 440) * tall;
   w = Math.min(w, maxHeight * (r - l) * aspect / (b - t));
   const fullW = w / (r - l), fullH = fullW / aspect;
   const h = Math.round(fullH * (b - t));
@@ -349,12 +350,20 @@ export async function c(gear) {
   await Promise.all([file ? loadBowl(gear, file) : null, loadImage(set.url)]);
   await stagePlay("gift", async (node) => {
     node.classList.add("at-c");
+    // 縦画面の縦の舞台（720×H・VPO05）では、品を画面の真ん中より少し上に大きく置き、名前の帯はその下（画面の下 1/4）に
+    const { W: FW, H: FH, portrait } = frameOf(node);
     const dim = el("i.mo-gift-dim");
     const art = el("i.mo-gift-set-art", { style: { backgroundColor: set.color, backgroundImage: set.url ? `url("${set.url}")` : "none" } });
-    const stage = el("div.mo-gift-set", [art, el("i.mo-gift-set-shade"), el("i.mo-gift-set-pool")]);
-    const bowl = file ? bowlArt(478, gear, file) : null;
-    const cy = bowl ? Math.min(300, BAND_TOP - 16 - bowl.h / 2) : 300; // 背の高いハガルは上へ寄せて、帯に重ねない
-    const item = el("div.mo-gift-item", { style: { top: `${cy}px` } }, bowl ? [bowl.node] : []);
+    const pool = el("i.mo-gift-set-pool");
+    const stage = el("div.mo-gift-set", [art, el("i.mo-gift-set-shade"), pool]);
+    const bowl = file ? (portrait ? bowlArt(580, gear, file, 1.45) : bowlArt(478, gear, file)) : null;
+    const bandTop = portrait ? Math.round(FH * 0.66) : BAND_TOP;
+    const centerY = portrait ? Math.round(FH * 0.42) : 300;
+    const cy = bowl ? Math.min(centerY, bandTop - (portrait ? 40 : 16) - bowl.h / 2) : centerY; // 背の高いハガルは上へ寄せて、帯に重ねない
+    const item = el("div.mo-gift-item", { style: { top: `${cy}px`, ...(portrait ? { left: `${FW / 2}px` } : {}) } }, bowl ? [bowl.node] : []);
+    if (portrait) {
+      pool.style.background = `radial-gradient(330px 96px at 50% ${cy + (bowl ? bowl.h / 2 : 0) + 10}px, #05020ab3, transparent 70%), radial-gradient(440px 440px at 50% ${cy}px, #fff0d24d, transparent 70%)`;
+    }
     const [pre, title] = splitGiftName(gear.name);
     const name = el("span.t", { text: title });
     const tag = el("div.mo-gift-tag", [
@@ -362,6 +371,7 @@ export async function c(gear) {
       pre ? el("div.pre", { text: pre }) : null,
       name,
     ]);
+    if (portrait) Object.assign(tag.style, { top: `${bandTop}px`, bottom: "auto", width: `${FW + 51 - 30}px` });
     node.append(dim, stage, item, tag);
     // 品名は帯の見えている幅（画面の右端まで）に収める。長い名前（しろくまグミ…など）は字を小さく
     if (name.scrollWidth > TAG_TEXT_W) name.style.fontSize = `${Math.floor(58 * TAG_TEXT_W / name.scrollWidth)}px`;
@@ -389,5 +399,5 @@ export async function c(gear) {
     move(item, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(38px) scale(.94)" }], 320, { easing: E.in });
     move(dim, [{ opacity: 0.45 }, { opacity: 0 }], 520, { delay: 200, easing: "ease" });
     await move(stage, SET_OUT, 500, { delay: 200, easing: E.inOut });
-  });
+  }, { portrait: true });
 }

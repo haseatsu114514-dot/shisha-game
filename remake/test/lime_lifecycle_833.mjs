@@ -59,6 +59,11 @@ async function fixture({ waitAt = null, faceReady = true } = {}) {
     },
     'transitions.js': { holdCover: () => { throw Error('LIME must use the existing key hold'); } },
     'mg-kit.js': { motionVariant: () => 'a', MG_EASE: { out: 'out', in: 'in', inOut: 'inOut', back: 'back' } },
+    // 演出の置き先（VPO02）。横の本編と同じく #fx に置く（縦の舞台は look_vertical_motion.mjs が確かめる）
+    'motion-frame.js': {
+      mountMotion: (node) => { host.append(node); return { frame: { W: 1280, H: 720, portrait: false }, remove: () => node.remove() }; },
+      frameOf: () => ({ W: 1280, H: 720, portrait: false }),
+    },
   };
   const modules = new Map(Object.entries(values).map(([name, exports]) => [name,
     new vm.SyntheticModule(Object.keys(exports), function () {

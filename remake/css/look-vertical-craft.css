@@ -165,7 +165,7 @@
 
 /* ───────── 詰め方（試作の pack・VPL77・VPL91）: 上に選んだ詰め方の器、下に3枚の札・説明・決定 ───────── */
 .vtc-pack-pic { position: absolute; inset: 0; }
-.vtc-bowl { position: absolute; left: 46%; top: 18%; height: 66%; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 calc(2 * var(--u)) calc(2.4 * var(--u)) #000c); }
+.vtc-bowl { position: absolute; left: 46%; top: 24%; height: 66%; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 calc(2 * var(--u)) calc(2.4 * var(--u)) #000c); }
 .vtc-pack { --card-h: min(calc(18.4 * var(--u)), calc(var(--cp) - var(--ok) - var(--low) - 2.2 * var(--u))); }
 .vtc-cards { position: absolute; left: calc(1.2 * var(--u)); right: calc(1.2 * var(--u)); top: calc(0.6 * var(--u)); display: grid; grid-template-columns: repeat(3, 1fr); gap: calc(0.8 * var(--u)); }
 .vtc-card { position: relative; height: var(--card-h); min-width: 0; display: grid; justify-items: center; align-content: start; gap: calc(0.35 * var(--u)); padding: calc(0.7 * var(--u)) calc(0.3 * var(--u)) 0;
@@ -196,7 +196,7 @@
 
 /* ───────── 穴あけ（試作の holes・VPL27・VPL58・VPL80・VPL90）: 上にアルミと目印・穴・針先、下に大きな「刺す」と周りの点・開けた数 ───────── */
 .vtc-holes-pic { position: absolute; inset: 0; }
-.vtc-foil { position: absolute; left: 50%; bottom: calc(9 * var(--u)); width: calc(31.6 * var(--u)); aspect-ratio: 1; transform: translateX(-50%); filter: drop-shadow(0 calc(1.6 * var(--u)) calc(2.4 * var(--u)) #000c); }
+.vtc-foil { position: absolute; left: 50%; bottom: calc(5 * var(--u)); width: calc(31.6 * var(--u)); aspect-ratio: 1; transform: translateX(-50%); filter: drop-shadow(0 calc(1.6 * var(--u)) calc(2.4 * var(--u)) #000c); }
 @container vtshell (min-aspect-ratio: 39 / 80) { .vtc-foil { width: calc(27.6 * var(--u)); } }
 @container vtshell (min-aspect-ratio: 39 / 71) { .vtc-foil { width: calc(23 * var(--u)); } }
 .vtc-foil > img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }

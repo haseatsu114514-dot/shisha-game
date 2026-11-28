@@ -637,13 +637,11 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .w-body { opacity: 0.94; } .w-deep { fill: #123f80; opacity: 0.22; }
 .w-surf { fill: none; stroke: #e8fbff; stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.2s; }
 [data-zone="none"] .w-surf { stroke: #ff8a8a; } [data-zone="ideal"] .w-surf { stroke: #7df0b0; } [data-zone="shallow"] .w-surf, [data-zone="deep"] .w-surf { stroke: #ffe07a; }
-.w-line { display: none; } /* ガラスの奥の線はやめ、手前の .w-line2 に描く（VPL119） */
 .w-band { fill: #7df0b0; opacity: 0.16; transition: opacity 0.2s; } [data-zone="ideal"] .w-band { opacity: 0.32; }
 .w-line2 { fill: none; stroke: #fff6c8; stroke-width: 6; stroke-dasharray: 18 10; filter: drop-shadow(0 0 2px #0b0812) drop-shadow(0 0 5px #0b0812); }
 [data-zone="ideal"] .w-line2 { stroke: #7df0b0; }
 .w-mark rect { fill: #120c1de6; stroke: #fff6c8; stroke-width: 3; } .w-mark text { fill: #fff6c8; font-size: 30px; font-weight: 800; text-anchor: middle; }
 [data-zone="ideal"] .w-mark rect { stroke: #7df0b0; } [data-zone="ideal"] .w-mark text { fill: #7df0b0; }
-[data-zone="ideal"] .w-line { stroke: #5fe39a; }
 .w-stream { opacity: 0.8; filter: drop-shadow(0 0 3px #bfeaff); } .w-stream.in { opacity: 1; } /* 胴の中の水流はガラス越しなので濃いめ */
 .bottle-svg.fx { pointer-events: none; }
 .w-bubbles circle { fill: #ffffff26; stroke: #e8fbff; stroke-width: 1.6; }
@@ -667,7 +665,6 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .thermo.bands[data-selected="false"] .th-bar { filter: grayscale(1) brightness(0.55); }
 .thermo.bands .th-bar { transition: filter 0.3s; }
 .th-note { width: 7.4rem; margin: 0 -1rem; text-align: center; font-size: 1.05rem; line-height: 1.3; font-weight: 700; color: #d9fbe9; text-shadow: 0 0.1rem 0.4rem #000; }
-.thermo.bands[data-selected="false"] .th-note { color: #ffffffa6; }
 .mixbowl { position: absolute; left: 50%; top: 6.4rem; width: 21rem; aspect-ratio: 1; transform: translateX(-50%); }
 .mixbowl img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 1rem 1.4rem #000a); }
 .mixbowl .b-airy, .mixbowl .b-full { opacity: 0; transition: opacity 0.25s; }
@@ -967,7 +964,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 .phone[data-scene="steam"] .act-swap { left: auto; right: calc(var(--edge) + var(--ok) - 2.6rem); top: calc(var(--cp) - var(--low) - var(--ok) * 2 - 2rem); width: 4.4rem; height: 4.4rem; z-index: 3; }
 /* 真ん中の押し続ける丸（刺す・吸う） */
 .phone[data-scene="holes"] .ctrl > * { --hb: var(--hold); --hp: calc(var(--hold) * 1.45); --hy: calc(var(--cp) - var(--hold-y) - var(--hp) / 2); }
-.pic.craft-holes .foil { bottom: 9rem; width: 31.6rem; } /* 上の画面の余白を使って大きく（VPL90） */
+.pic.craft-holes .foil { bottom: 5rem; width: 31.6rem; } /* 上の画面の余白を使って大きく（VPL90） */
 /* 吸い出し（VPL89）: いちばん下の段に 葉の持ち（左）と 提供（右）を同じ高さの横長で並べ、その上に強さのゲージと「吸う」をまとめる */
 .phone[data-scene="pull"] > * { --pill: 5.4rem; --puff: 14rem; --hold-y: calc(var(--low) + var(--pill) + 0.8rem + var(--puff) / 2); --g-side: 4.9rem; --g-up: 13.97rem; }
 .phone[data-scene="pull"] .btn-a.center { top: calc(var(--cp) - var(--hold-y) - var(--puff) / 2); width: var(--puff); height: var(--puff); margin-left: calc(var(--puff) / -2); }
@@ -989,7 +986,7 @@ html[data-view="play"] #app { height: 100%; display: grid; place-items: center; 
 /* 詰め方: 札は上、選んだ詰め方の温まり方は下の段で決定の左。器は一言にかからない大きさ */
 .phone[data-scene="pack"] .ctrl > * { --card-h: min(18.4rem, calc(var(--cp) - var(--ok) - var(--low) - 2.2rem)); --pok: var(--ok); }
 .phone[data-scene="pack"] .packinfo { left: var(--edge); bottom: var(--low); right: calc(var(--ok) + var(--edge) + 1rem); }
-.pic.craft-pack .bowl { top: 18%; height: 66%; } /* 下の余白の分だけ下げる（VPL91） */
+.pic.craft-pack .bowl { top: 24%; height: 66%; } /* 下の余白の分だけ下げる（VPL91） */
 /* 炭焼き: コンロは下の端にそろえ、パネルの高さに収める（絵は 3:2） */
 .phone[data-scene="coal"] .veil { top: calc(100% - var(--cp) - 12.2rem); }
 .phone[data-scene="coal"] .stove { top: auto; bottom: 1.4rem; width: calc((var(--cp) - 0.6rem) * 1.5); } /* 少し上へ（VPL104。前は -1rem で下の縁が画面の外） */

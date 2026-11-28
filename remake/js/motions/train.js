@@ -5,6 +5,7 @@ import { W, H, svg, stageSvg, move } from "../core/transition-kit.js";
 import { sleep, nextFrame } from "../core/util.js";
 import { MONO } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
+import { frameOf } from "../core/motion-frame.js";
 import { PRIVATE_PASSENGERS, trainPassengers } from "./train-passengers.js";
 import { characterArtStem } from "../core/portrait-resolver.js";
 
@@ -376,9 +377,14 @@ export async function c(mid, opts = {}) {
     const light = tone === "day" ? daylight(P, id, sun) : cabinLight(P, id);
     const art = stageSvg([...edgeShadows(id), car.g, light.g]);
     art.setAttribute("preserveAspectRatio", "xMidYMid slice");
+    // 縦画面の縦の舞台（720×H・VPO10）: 車内の絵（1280×720）を画面の高さいっぱい（k 倍）に置き、横は真ん中を見せる。
+    // 車両は同じ道のり（舞台の座標）を同じ時間で走るので、見える幅が狭いぶん、近くを走り抜ける車両のように見える
+    const { W: FW, H: FH, portrait } = frameOf(node);
+    const k = portrait ? FH / H : 1;
+    if (portrait) Object.assign(art.style, { inset: "auto", left: `${((FW - W * k) / 2).toFixed(1)}px`, top: "0px", width: `${(W * k).toFixed(1)}px`, height: `${(H * k).toFixed(1)}px` });
     // 車両全体の移動と揺れはルートSVGの合成層へ。中のSVG座標で毎フレーム
     // 動かすと、光や乗客まで広くラスタライズし直してフレームが落ちていた（#3653）。
-    art.style.transformOrigin = `${W / 2}px ${H + 220}px`;
+    art.style.transformOrigin = `${(W / 2) * k}px ${(H + 220) * k}px`;
     art.style.willChange = "transform";
     node.append(art);
     // 位置は時刻から決める（描画が遅れても、覆い終える時刻と走り去る時刻はずれない）
@@ -395,7 +401,7 @@ export async function c(mid, opts = {}) {
       const beat = (t / 1.2) * Math.PI * 2;
       const sway = 0.16 * Math.sin(beat);
       const x = xAt(now);
-      art.style.transform = `translate3d(0,${jolt(t).toFixed(2)}px,0) rotate(${sway.toFixed(3)}deg) translateX(${x.toFixed(1)}px)`;
+      art.style.transform = `translate3d(0,${(jolt(t) * k).toFixed(2)}px,0) rotate(${sway.toFixed(3)}deg) translateX(${(x * k).toFixed(1)}px)`;
       // 画面外の部品は更新しない。切り口付近の揺れ・吊り革の幅を余白に含める。
       const left = -x - POSE_PAD, right = -x + W + POSE_PAD;
       for (let i = 0; i < car.straps.length; i++) {
@@ -437,6 +443,6 @@ export async function c(mid, opts = {}) {
     } finally {
       cancelAnimationFrame(frameId);
     }
-  }, { cover: true });
+  }, { cover: true, portrait: true });
 }
 
