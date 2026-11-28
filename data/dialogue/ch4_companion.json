@@ -572,7 +572,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "木と、……奥に、花。薔薇ですか"
+          "text": "木と……奥に、花。薔薇ですか"
         },
         {
           "speaker": "rio",
@@ -1195,6 +1195,7 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余は、痛くない。だが、格好が悪い"
         },
         {
