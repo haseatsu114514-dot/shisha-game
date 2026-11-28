@@ -83,6 +83,16 @@ for (const id of ["minto", "ageha"]) {
   assert(all.allFaceIconUrls().includes(all.faceIconUrl(id)), "preload and display use the same icon URL");
 }
 assert.equal(all.portraitInfo("minto", "normal").style, "new");
+for (const id of ["hajime", "hazime"]) {
+  for (const face of [...all.DB.manifest.portraits.hajime.faces, "wink"]) {
+    const expected = all.portraitInfo("hajime", face, "classic");
+    assert.deepEqual(all.portraitInfo(id, face, "new"), expected);
+    assert.match(expected.src, /sprites\/characters\/hajime\//);
+  }
+  assert.equal(all.faceIconUrl(id), "img/ui/face_icons/face_hajime.webp");
+}
+assert(all.allFaceIconUrls().includes(all.faceIconUrl("hajime")));
+assert(!all.allFaceIconUrls().includes("img/ui/face_icons/new/face_hajime.webp"));
 assert.equal(all.portraitInfo("minto", "normal").src, "img/sprites/character_variants/new/minto/chr_minto_normal.webp");
 assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/bg_tonari_inside_day.webp");
 assert.equal(all.faceIconUrl("oneesan", null, { style: "classic" }), "img/ui/face_icons/face_minto_private.webp");

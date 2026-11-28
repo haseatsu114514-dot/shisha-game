@@ -25,8 +25,11 @@ data.DB.manifest = manifest;
 data.DB.characters = chars;
 let checked = 0;
 for (const [style, portraits] of [['classic', manifest.portraits], ['new', manifest.portraitVariants?.new || {}]]) {
-  for (const [folder, metrics] of Object.entries(portraits)) {
-    const scale = chars[folder]?.spriteScaleVariants?.[style] || chars[folder]?.spriteScale || 1;
+  for (const [folder, requestedMetrics] of Object.entries(portraits)) {
+    // はじめは両方の画風設定で正規の立ち絵と同じ表情・寸法を使う。
+    const expectedStyle = style === 'new' && folder === 'hajime' ? 'classic' : style;
+    const metrics = expectedStyle === style ? requestedMetrics : manifest.portraits[folder];
+    const scale = chars[folder]?.spriteScaleVariants?.[expectedStyle] || chars[folder]?.spriteScale || 1;
     const p = { ...metrics, folder, scale };
     const result = render(p);
     const target = (folder === 'tetsuko' ? .34 : folder === 'pakki' ? .94 : 1.675) * scale;
@@ -36,7 +39,7 @@ for (const [style, portraits] of [['classic', manifest.portraits], ['new', manif
     for (const face of metrics.faces) {
       const resolved = data.portraitInfo(folder, face, style);
       assert.equal(resolved.face, face, `${style}/${folder}/${face}: expression changed`);
-      assert.equal(resolved.style, style, `${style}/${folder}/${face}: wrong artwork style`);
+      assert.equal(resolved.style, expectedStyle, `${style}/${folder}/${face}: wrong artwork style`);
       assert.deepEqual(render(resolved).style, result.style, `${style}/${folder}/${face}: resolved expression changes frame`);
       checked++;
     }

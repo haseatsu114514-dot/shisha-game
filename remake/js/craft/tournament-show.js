@@ -139,12 +139,12 @@ export function crestSvg({ metal = "gold", crown = true, laurel = true } = {}) {
 }
 
 /**
- * 大見出しの紋章（生成絵 crest-gold）。中央は透過で、順位などの文字は呼び出し側が重ねる。
+ * 表彰の生成紋章。優勝は1stを刻んだ琺瑯の紋章、他の順位は透かしの月桂冠を使う。
  * 金以外の順位は CSS の filter で色を寄せる（.ts-crest-art img）。
  */
 export function crestImg({ metal = "gold" } = {}) {
   return el("span.ts-crest.ts-crest-art", { "aria-hidden": "true", dataset: { metal } }, [
-    el("img", { src: "img/ui/tournament-show/crest-gold.webp", alt: "", decoding: "async", draggable: "false" }),
+    el("img", { src: `img/ui/tournament-show/${metal === "gold" ? "champion-seal" : "crest-gold"}.webp`, alt: "", decoding: "async", draggable: "false" }),
   ]);
 }
 
@@ -555,19 +555,17 @@ export async function eyecatch(host, { title = "", sub = "", note = "", ms = 125
 export async function resultSplash(rank, { event = "SMOKE CROWN CUP", face = null, host = layers.fx } = {}) {
   if (!showMoves() || !host) return;
   const win = rank === 1, metal = metalOf(rank);
-  // 優勝は紋章（生成絵）に「1 ST」。届かなかった時は紋章を順位の後ろに薄く敷く。
+  // 優勝は文字を含む生成紋章。届かなかった時は紋章を順位の後ろに薄く敷く。
   const crest = crestImg({ metal });
-  if (win) crest.append(el("b", { text: "1" }), el("small", { text: "ST" }));
-  const node = el(`div.ts-splash${win ? ".win" : ""}`, { dataset: { test: "result-splash", rank, metal }, tabindex: "-1", role: "status",
+  const node = el(`div.ts-splash${win ? ".win" : ""}`, { dataset: { test: "result-splash", rank, metal, ...(win && !face ? { portrait: "grateful" } : {}) }, tabindex: "-1", role: "status",
     "aria-label": win ? "優勝" : `${rank}位` }, [
     win ? haloOf() : null,
     el("i.ts-splash-floor", { "aria-hidden": "true" }),
     bustOf("hajime", { cls: ".ts-splash-bust", face: face || (win ? "smile" : "serious"), zoom: 1.5, headTop: 0.06, name: "はじめ" }),
     el("div.ts-splash-copy", [
-      crest,
       el("small.ts-splash-eyebrow", { text: `${event} ／ FINAL RESULT` }),
-      el("h2", { text: win ? "CHAMPION" : `${rank}位` }),
-      el("p", { text: win ? "逢縁 はじめ" : "この一台の記録を、次の挑戦へ。" }),
+      el("div.winner-lockup", [crest, el("h2", { text: win ? "CHAMPION" : `${rank}位` }),
+        el("p", { text: win ? "逢縁 はじめ" : "この一台の記録を、次の挑戦へ。" })]),
     ]),
     el("span.ts-splash-tap", { text: "タップで順位表へ" }),
   ]);

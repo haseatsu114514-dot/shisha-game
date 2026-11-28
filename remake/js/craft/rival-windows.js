@@ -9,7 +9,8 @@ import { state } from "../core/state.js";
 import { CH1_RIVALS } from "./ch1-votes.js";
 import { RIVAL_QUALITY as CH2_RIVALS } from "../chapters/ch2-tournament-state.js";
 import { RIVAL_QUALITY as CH3_RIVALS } from "../chapters/ch3-tournament-state.js";
-import { CH4_RIVAL_CURVE } from "../chapters/ch4-tournament-state.js";
+import { CH4_RIVAL_CURVE, CH4_RIVAL_FORM_SHARE } from "../chapters/ch4-tournament-state.js";
+import { rivalScores } from "../chapters/tournament-ballot.js";
 import { RECORD_STEPS, recordTier } from "./rig-record.js";
 import { sparks, fxMode } from "./fx.js";
 
@@ -36,6 +37,10 @@ const lampOf = (key) => (/^care\d*$/.test(key) ? "care" : key);
 export function buildRivalWindows(cs) {
   const lineup = rivalLineup(cs);
   if (!lineup?.length) return null;
+  const form = ({ 1: state?.tournament?.voteAttempt, 2: state?.flags?._ch2_tournament,
+    3: state?.flags?._ch3_tournament, 4: state?.flags?._ch4?.match })[cs.chapter]?.rivalForm;
+  const share = cs.chapter === 4 ? CH4_RIVAL_FORM_SHARE : 1;
+  const scoresFor = key => rivalScores(Object.fromEntries(lineup.map(rival => [rival.id, rival.score(key)])), form, share);
   const cards = lineup.map((rival) => {
     const lamps = new Map(STEP_IDS.map((id) => [id, el("i.rival-lamp", { dataset: { step: id, tier: "off" } })]));
     // 顔は飾りなので、作業台の開始条件にしない（読み込みは showFaces まで待つ）
@@ -50,8 +55,8 @@ export function buildRivalWindows(cs) {
   const root = el("div.rival-windows", { "aria-hidden": "true", dataset: { test: "rival-windows" } }, cards.map((c) => c.card));
   const timers = new Set();
   let cheered = 0;
-  const light = (c, key) => {
-    const step = lampOf(key), lamp = c.lamps.get(step), score = c.rival.score(key);
+  const light = (c, key, score) => {
+    const lamp = c.lamps.get(lampOf(key));
     if (!lamp || !Number.isFinite(score) || !root.isConnected) return;
     const tier = recordTier(score);
     lamp.dataset.tier = tier;
@@ -67,9 +72,10 @@ export function buildRivalWindows(cs) {
     mark(key, { quiet = false } = {}) {
       if (!STEP_IDS.includes(lampOf(key))) return;
       cheered = 0;
+      const scores = scoresFor(key);
       cards.forEach((c, i) => {
-        if (quiet || fxMode() === "off") { const t = c.lamps.get(lampOf(key)); const s = c.rival.score(key); if (t && Number.isFinite(s)) t.dataset.tier = recordTier(s); return; }
-        const timer = setTimeout(() => { timers.delete(timer); light(c, key); }, 450 + i * 380);
+        if (quiet || fxMode() === "off") { const t = c.lamps.get(lampOf(key)); const s = scores[c.rival.id]; if (t && Number.isFinite(s)) t.dataset.tier = recordTier(s); return; }
+        const timer = setTimeout(() => { timers.delete(timer); light(c, key, scores[c.rival.id]); }, 450 + i * 380);
         timers.add(timer);
       });
     },

@@ -1,6 +1,7 @@
 // 第1章の新規試合。票は各工程の確定時に一度だけ記録し、結果表にも同じ記録を使う。
 // 方式は2つ（core/vote-style.js）: いままで（rulesVersion 2・各回はそこまでの全工程の平均）と、
 // 桜井式（rulesVersion 3・試作。各回はその回に仕上げた工程・提供時の制作ボーナス・攻めの帯の上積み）。
+import { rivalScores, tournamentBallot } from "../chapters/tournament-ballot.js";
 import { initialBaseVotes, baseVoteOf } from "../chapters/tournament-base-votes.js";
 import { liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
 import { ATTACK_BAND } from "./attack-band.js";
@@ -33,11 +34,11 @@ function liftCh1Rival(base, carryP) {
 }
 
 /** style: "sakurai" で桜井式の試合を始める。それ以外（省略を含む）はいままでの審査。始めた後は方式を変えない。 */
-export function beginCh1Votes(attempt, { style = null } = {}) {
+export function beginCh1Votes(attempt, { style = null, rivalForm, comparisonBallot = true } = {}) {
   if (attempt.voteAttempt) return attempt.voteAttempt;
   const sakurai = style === "sakurai";
   return attempt.voteAttempt = { rulesVersion: sakurai ? CH1_SAKURAI_VERSION : CH1_VOTE_VERSION,
-    picks: [], ...(sakurai ? { style: "sakurai", views: [], attacks: [] } : {}),
+    ...(rivalForm ? { rivalForm } : {}), comparisonBallot, picks: [], ...(sakurai ? { style: "sakurai", views: [], attacks: [] } : {}),
     voted: 0, votes: emptyVotes(), baseVotes: initialBaseVotes(CH1_CONTESTANTS), finalVotes: null, result: null };
 }
 export const isSakuraiVotes = (p) => p?.style === "sakurai" && p?.rulesVersion === CH1_SAKURAI_VERSION;
@@ -56,6 +57,11 @@ function evaluated(parts, weights, limit) {
   }
   return total / weight;
 }
+function judgeRivals(form, scoreOf, carryP) {
+  const base = Object.fromEntries(Object.keys(CH1_RIVALS).map(id => [id, scoreOf(id)]));
+  const scores = rivalScores(base, form);
+  return Object.fromEntries(Object.entries(scores).map(([id, score]) => [id, liftCh1Rival(score, carryP)]));
+}
 function checkBudget(p, round) {
   for (const judge of CH1_JUDGES) {
     const expected = SPEND.slice(0, round).reduce((a, b) => a + b, 0) - (judge === "sensu" && round > 3 ? 1 : 0);
@@ -70,7 +76,7 @@ function checkBudget(p, round) {
  * この1点を含めた総得票で1位ならクリア（2026-11-20 オーナー指示・#3916）。
  */
 export const CH1_LAST_POINT = "hajime";
-/** その回に審査員が入れる点（1位に点−1・2位に1）。千須だけ最後の回は1点を残し、最後の1点に回す。 */
+/** その回に審査員が入れる点。千須だけ最後の回は1点を残し、最後の1点に回す。 */
 export const ch1RoundPoints = (judge, round) => SPEND[round] - (judge === "sensu" && round === 3 ? 1 : 0);
 export function castCh1Votes(attempt, round, cs, { carryP = 0, serveBonus = 0 } = {}) {
   const p = beginCh1Votes(attempt);
@@ -81,12 +87,15 @@ export function castCh1Votes(attempt, round, cs, { carryP = 0, serveBonus = 0 } 
   checkBudget(p, round);
   p.finalVotes = round === 3 ? emptyVotes() : null;
   const picks = {};
-  for (const judge of CH1_JUDGES) {
+  for (const [judgeIndex, judge] of CH1_JUDGES.entries()) {
     const weights = CH1_WEIGHTS[judge];
-    const scores = Object.fromEntries(CH1_CONTESTANTS.map(id => [id, id === "hajime"
-      ? evaluated(mine, weights, limit) + bonus : liftCh1Rival(evaluated(CH1_RIVALS[id], weights, limit), carryP)]));
-    const [first, second] = CH1_CONTESTANTS.slice().sort((a, b) => scores[b] - scores[a] || voteTie(a, b));
-    const amount = SPEND[round] - (judge === "sensu" && round === 3 ? 1 : 0);
+    const scores = judgeRivals(p.rivalForm, id => evaluated(CH1_RIVALS[id], weights, limit), carryP);
+    scores.hajime = evaluated(mine, weights, limit) + bonus;
+    const [first, second] = tournamentBallot(
+      CH1_CONTESTANTS, judgeIndex, round, id => scores[id], voteTie,
+      p.comparisonBallot, p.rivalForm,
+    );
+    const amount = ch1RoundPoints(judge, round);
     picks[judge] = { first, second, points: { [first]: amount - 1, [second]: 1 } };
     p.votes[judge][first] += amount - 1;
     p.votes[judge][second]++;
@@ -108,8 +117,8 @@ export function castCh1Votes(attempt, round, cs, { carryP = 0, serveBonus = 0 } 
   return true;
 }
 export function ch1Standings(p, mineTotal) {
-  const quality = Object.fromEntries(CH1_CONTESTANTS.map(id => [id, id === "hajime" ? mineTotal
-    : CH1_RIVALS[id].reduce((a, b) => a + b, 0) / 5]));
+  const base = Object.fromEntries(Object.entries(CH1_RIVALS).map(([id, parts]) => [id, parts.reduce((a, b) => a + b, 0) / parts.length]));
+  const quality = { ...rivalScores(base, p.rivalForm), hajime: mineTotal };
   const points = id => baseVoteOf(p, id) + CH1_JUDGES.reduce((n, j) => n + p.votes[j][id], 0);
   const last = id => CH1_JUDGES.reduce((n, j) => n + (p.finalVotes?.[j]?.[id] || 0), 0);
   const rows = CH1_CONTESTANTS.slice().sort((a, b) => points(b) - points(a)
@@ -130,7 +139,7 @@ export function ch1BeforeLastStandings(p, mineTotal) {
 // ---------------------------------------------------------------- 桜井式（試作・rulesVersion 3）
 // 2026-11-13 オーナー「桜井式も作ってみて　なお気に入らなかったら戻せるようにはしといて」（SKR04）。
 // 案は docs/reports/sakurai_review_20261113.md の柱1〜4（1回ごとの勝負・審査員の見る所・攻めの帯・ライバルの票田）。
-// 持ち点（各10点を 2・3・2・3 点）・1位に点−1と2位に1・基礎票・千須の最後の1点（はじめへ）は、いままでと同じ。
+// 持ち点（各10点を 2・3・2・3 点）・基礎票・千須の最後の1点（はじめへ）は、いままでと同じ。
 // 数値は試作値。根拠（remake/tools/balance/measure.mjs --votes sakurai）は docs/master_spec.md の 2026-11-13 の節。
 export const SAKURAI = Object.freeze({
   /** 攻めの帯で提供・調整を終えた回の上積み（その回の、はじめへの全審査員の評価に足す） */
@@ -213,10 +222,13 @@ function castSakurai(p, round, cs, carryP, serveBonus) {
   checkBudget(p, round);
   p.finalVotes = round === 3 ? emptyVotes() : null;
   const views = {}, picks = {};
-  for (const judge of CH1_JUDGES) {
-    const scores = Object.fromEntries(CH1_CONTESTANTS.map(id => [id, id === "hajime"
-      ? mine[judge] : liftCh1Rival(sakuraiRival(id, judge, round), carryP)]));
-    const [first, second] = CH1_CONTESTANTS.slice().sort((a, b) => scores[b] - scores[a] || voteTie(a, b));
+  for (const [judgeIndex, judge] of CH1_JUDGES.entries()) {
+    const scores = judgeRivals(p.rivalForm, id => sakuraiRival(id, judge, round), carryP);
+    scores.hajime = mine[judge];
+    const [first, second] = tournamentBallot(
+      CH1_CONTESTANTS, judgeIndex, round, id => scores[id], voteTie,
+      p.comparisonBallot, p.rivalForm,
+    );
     const amount = ch1RoundPoints(judge, round);
     p.votes[judge][first] += amount - 1;
     p.votes[judge][second]++;

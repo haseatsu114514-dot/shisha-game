@@ -2,6 +2,7 @@ import { finishTournamentStep } from "./tournament-finish-step.js";
 import { tournamentResources, restoreTournamentResources, recoverTournamentResources } from "./tournament-resource-snapshot.js";
 import { ChapterSaveError } from "../core/chapter-save.js";
 import { tournamentStandings } from "./tournament-standings.js";
+import { drawRivalForm, rivalScores, tournamentBallot } from "./tournament-ballot.js";
 import { initialBaseVotes } from "./tournament-base-votes.js";
 import { liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
 // 第2章の保存境界と持ち点。第1章のstate.tournament/固定逆転票には触れない。
@@ -79,7 +80,8 @@ export function startAttempt(value, craft) {
   restoreResources(value, p.entry);
   p.attempts++;
   Object.assign(p, { stage: "craft", step: 0, craft: copy(craft), rollback: null,
-    votes: Object.fromEntries(JUDGES.map(id => [id, Object.fromEntries(CONTESTANTS.map(c => [c, 0]))])),
+    rivalForm: drawRivalForm(Object.keys(RIVAL_QUALITY), value.weatherSeed, 2, p.attempts),
+    comparisonBallot: true, votes: Object.fromEntries(JUDGES.map(id => [id, Object.fromEntries(CONTESTANTS.map(c => [c, 0]))])),
     baseVotes: initialBaseVotes(CONTESTANTS), voted: 0, lastVotes: null, roundVotes: [], result: null, failure: null });
   value.phase = "tournament";
   return p;
@@ -101,27 +103,29 @@ export function finishStep(value, craft) {
 /** 1回投入した点は保存後も戻らない。各審査員の累計を常に10以内にする。 */
 export function castVotes(p, round, performance, prefByJudge = null, carryP = 0) {
   if (round !== p.voted || round < 0 || round >= SPEND.length) return false;
-  const quality = Object.fromEntries(Object.entries(RIVAL_QUALITY).map(([id, base]) => {
+  const quality = Object.fromEntries(Object.entries(rivalScores(RIVAL_QUALITY, p.rivalForm)).map(([id, base]) => {
     const lifted = liftRivalScore(base, carryP, 2);
     observeRivalScore(base, carryP, 2, lifted);
     return [id, lifted];
   }));
   quality.hajime = bounded(performance);
   const lastVotes = {};
-  for (const judge of JUDGES) {
+  for (const [judgeIndex, judge] of JUDGES.entries()) {
     const bias = judge === "uezono" ? { ageha: 4, kuraudo: 1 }
       : judge === "dr_charcoal" ? { kumicho: 3 } : { kuraudo: 3 };
     const hajimeScore = prefByJudge && judge in prefByJudge
       ? evaluateJudgeScore(judge, quality.hajime, prefByJudge[judge])
       : quality.hajime;
     const scoreOf = (c) => (c === "hajime" ? hajimeScore : quality[c]) + (bias[c] || 0);
-    const order = CONTESTANTS.slice().sort((a, b) =>
-      scoreOf(b) - scoreOf(a) || byChapterTwoTie(a, b));
+    const [first, second] = tournamentBallot(
+      CONTESTANTS, judgeIndex, round, scoreOf, byChapterTwoTie,
+      p.comparisonBallot, p.rivalForm,
+    );
     const amount = SPEND[round], row = p.votes[judge];
     const available = 10 - Object.values(row).reduce((sum, n) => sum + n, 0);
     if (available < amount) throw new ChapterSaveError(2, "審査員の持ち点が不足しています", "_ch2_tournament.votes." + judge);
     // 表示専用（#909）。この回に誰へ何点入れたか。得点・順位の計算には使わない。
-    lastVotes[judge] = { first: order[0], second: order[1], points: { [order[0]]: amount - 1, [order[1]]: 1 } };
+    lastVotes[judge] = { first, second, points: { [first]: amount - 1, [second]: 1 } };
   }
   // 全審査員の持ち点を確認できてから、この一回分をまとめて確定する。
   for (const judge of JUDGES) {

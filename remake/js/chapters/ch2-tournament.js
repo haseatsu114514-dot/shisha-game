@@ -215,8 +215,10 @@ export function voteReason(p, cs, final = false) {
   const got = JUDGES.reduce((sum, j) => sum + (last[j]?.points?.hajime || 0), 0);
   const names = list => list.map(j => displayName(j, state)).join("・");
   const firsts = JUDGES.filter(j => last[j]?.first === "hajime"), seconds = JUDGES.filter(j => last[j]?.second === "hajime");
-  const who = [firsts.length ? `${names(firsts)}が一番に` : "", seconds.length ? `${names(seconds)}が二番手に` : ""].filter(Boolean).join("、");
-  const lines = [got > 0 ? `今回 +${got}点。${who}推した。` : "今回は、どの審査員の上位2人にも入らなかった。"];
+  const secondPick = p.comparisonBallot ? "比較票で" : "二番手に";
+  const who = [firsts.length ? `${names(firsts)}が一番に` : "", seconds.length ? `${names(seconds)}が${secondPick}` : ""].filter(Boolean).join("、");
+  const noVotes = p.comparisonBallot ? "今回は本命票も比較票も入らなかった。" : "今回は、どの審査員の上位2人にも入らなかった。";
+  const lines = [got > 0 ? `今回 +${got}点。${who}推した。` : noVotes];
   const parts = partScores(cs, p.voted - 1);
   if (parts.length) {
     const weakest = parts.reduce((low, part) => part.score < low.score ? part : low);

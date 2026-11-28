@@ -37,6 +37,10 @@
 
 配布用 WebP は `remake/tools/build_ui_skin.py` の `TOURNAMENT_SHOW_PARTS` で生成し、`remake/img/ui/tournament-show/` に置く（背景1280・コイン128・紋章512・幕640）。
 
+## 縦表彰で追加した生成装飾（2026-11-28）
+
+優勝専用の `assets/ui/tournament-show/champion-seal.png`（1254×1254・透過）と、表彰紙面の見出し用の `assets/ui/tournament-show/result-foil.png`（2172×724）を画像生成で制作。この2点は採用 PNG が原画。前者は王冠・金の月桂冠・紺の七宝で中央に金文字の「1st」を同時生成し、後者は金箔の煙を右に寄せて左に見出しを載せる。金印の「1st」以外の順位・見出しは本編で描画する。`python3 remake/tools/build_ui_skin.py tournament-show` で幅512・960の配布用 WebP を再生成できる。
+
 ## 受け取った後（組み込みの手順）
 
 1. 原画を `raw/` に置き、この表に寸法・SHA-256・採用先を足す（[夜紫UIの記録](../craft-night-20261102/README.md) と同じ形）。

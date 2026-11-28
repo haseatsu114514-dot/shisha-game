@@ -21,7 +21,7 @@ DB.equipById = Object.fromEntries(read("equipment").equipment.map(row => [row.id
 const finalScene = read("dialogue/ch4_main").dialogues.find(row => row.dialogue_id === "ch4_final");
 function entry() {
   const value = newState();
-  Object.assign(value, { chapter: 3, phase: "cleared", day: 45 });
+  Object.assign(value, { chapter: 3, phase: "cleared", day: 45, weatherSeed: 0 });
   value.flags._ch3_cleared = true;
   advanceToChapterFour(value);
   delete value.flags._ch4.routeVersion; // 旧行程（ドバイ5日）
@@ -108,7 +108,8 @@ function drive(value, cs, { failAt = -1, failureKind = "burnt" } = {}) {
   assert.equal(p.result.rulesVersion, CH4_RULES_VERSION);
   assert(new Set(CH4_JUDGES.map(j => JSON.stringify(p.votes[j]))).size > 1, "審査員別の重みが実票に出る");
   const agreed = drive(entry(), craft(100));
-  assert.equal(new Set(CH4_JUDGES.map(j => JSON.stringify(agreed.votes[j]))).size, 1, "一致も正当な結果");
+  assert(CH4_JUDGES.every(j => agreed.votes[j].hajime === 6), "満点の本命票は全審査員で一致する");
+  assert.deepEqual(agreed.result.rows.map(row => row.points), [19, 5, 5, 5], "他3人は比較票を分け合う");
 }
 // Poor complete craft loses; burnt/cold/leaf failure cannot be promoted to a completed victory.
 for (const [failAt, failureKind] of [[-1, null], [8, "burnt"], [9, "cold"], [10, "leaf"]]) {
