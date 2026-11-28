@@ -1,5 +1,5 @@
 // 会話演出の採用5件（#2828）を本編の会話エンジンで確かめる。
-// 1 溜めの一拍（beat）／29 BGMの息継ぎ（duck）／3 文中ポーズ（[pause]）／7 心の声の薄墨（「（」始まり）／8 震え文字（[shiver]）。
+// 1 溜めの一拍（beat）／29 BGMの息継ぎ（duck）／3 文中ポーズ（[pause]）／7 心の声の書体と色（「（」始まり）／8 震え文字（[shiver]）。
 // どれも印のある行だけで動き、SKIP・瞬間表示では省き、揺れは「揺れ・閃光を減らす」・端末の「動きを減らす」で止まる。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
@@ -120,7 +120,7 @@ await suite("conversation-effects-2828", async check => {
     await end(page);
   });
 
-  await check("inner-voice-pale-small-silent", async page => {
+  await check("inner-voice-readable-and-silent", async page => {
     await start(page, [{ text: "声のある行です。少し長めに話します。" }, { text: "（……言えなかった。言えばよかった）" }, END]);
     assert.ok(await page.evaluate(() => convfx.blips) > 0, "ふつうの行は文字送りの音が鳴る");
     assert.equal(await page.locator(".vn-text .tx-voice").count(), 0);
@@ -130,10 +130,13 @@ await suite("conversation-effects-2828", async check => {
     assert.equal(await page.evaluate(() => convfx.blips), 0, "心の声は文字送りの音を鳴らさない");
     const style = await page.evaluate(() => {
       const box = getComputedStyle(document.querySelector(".vn-text")), voice = getComputedStyle(document.querySelector(".vn-text .tx-voice"));
-      return { box: parseFloat(box.fontSize), voice: parseFloat(voice.fontSize), color: voice.color, boxColor: box.color };
+      return { box: parseFloat(box.fontSize), voice: parseFloat(voice.fontSize), color: voice.color, boxColor: box.color, weight: voice.fontWeight, family: voice.fontFamily };
     });
-    assert.ok(style.voice < style.box, `少し小さい（${style.voice}px < ${style.box}px）`);
-    assert.notEqual(style.color, style.boxColor, "薄墨の色");
+    assert.equal(style.voice, style.box, "心の声も本文と同じ大きさ");
+    assert.equal(style.weight, "700");
+    assert.match(style.family, /Suien Gothic/);
+    assert.equal(style.color, "rgb(77, 66, 94)", "明るい紙の背景で読める濃い紫");
+    assert.notEqual(style.color, style.boxColor);
     assert.equal(await text(page), "（……言えなかった。言えばよかった）");
     await end(page);
   });

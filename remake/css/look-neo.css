@@ -134,7 +134,7 @@
 :root[data-look="neo"] body:not(:root) #stage #vn .vn-box .tx-red { color: #ff8585; }
 :root[data-look="neo"] body:not(:root) #stage #vn .vn-box .tx-blue { color: #9cc0ff; }
 :root[data-look="neo"] body:not(:root) #stage #vn .vn-box .tx-sub { color: #cbbfd6; }
-:root[data-look="neo"] body:not(:root) #stage #vn .vn-box .tx-voice { color: #b9bdd4; text-shadow: 0 1px 2px rgba(0, 0, 0, .5); }
+:root[data-look="neo"] body:not(:root) #stage #vn .vn-box .tx-voice { color: #e4daf7; text-shadow: 0 1px 2px rgba(0, 0, 0, .5); }
 :root[data-look="neo"] body:not(:root) #stage #vn .vn-next {
   right: var(--neo-side);
   bottom: calc(22px + var(--neo-safe-b));

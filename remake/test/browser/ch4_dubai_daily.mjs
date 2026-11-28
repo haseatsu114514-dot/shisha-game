@@ -346,6 +346,7 @@ await suite("ch4-dubai-daily", async check => {
     assert.equal(state.money, money - 6000, "One shisha at the alley cafe is 3,000 yen too");
     // 翌日の昼: もう一度中心地のカフェ。再訪の会話（窓際の席）の後に、おまかせ → まだ頼んでいないダブルアップル。
     await go(page, "ch4_dubai_cafe");
+    await page.locator(dt("dubai-cafe-customer")).click();
     await page.locator(dt("cafe-order-omakase")).click();
     await dubaiMap(page, { day: 52, slot: 1 });
     state = await get(page);
@@ -391,6 +392,7 @@ await suite("ch4-dubai-daily", async check => {
     assert((await backlog(page)).some(text => text.startsWith("回る肉の塊を")));
     // 夜の中心地のカフェ（初めての夜）
     await go(page, "ch4_dubai_cafe");
+    await page.locator(dt("dubai-cafe-customer")).click();
     await page.locator(dt("cafe-order-grape_mint")).click();
     await dubaiMap(page, { day: 52, slot: 0 });
     state = await get(page);
@@ -411,6 +413,7 @@ await suite("ch4-dubai-daily", async check => {
     assert.equal(state.stamina, Math.min(max, before + 12), "The midday creek walk restores 12");
     // 二度目の夜は一行だけ
     await go(page, "ch4_dubai_cafe");
+    await page.locator(dt("dubai-cafe-customer")).click();
     await page.locator(dt("cafe-order-mint")).click();
     await dubaiMap(page, { day: 53, slot: 0 });
     state = await get(page);

@@ -171,6 +171,33 @@ const manual = (page) => page.evaluate(async () => {
 const typed = (page) => page.waitForFunction(() => document.querySelector("#vn .vn-next")?.classList.contains("show") || document.querySelector("#vn .vn-choices.show"));
 
 await suite("look_vertical", async (check) => {
+  await check("exhibition-audience-vote-details-and-next", async page => {
+    await seedChapterFive(page);
+    await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      Object.assign(state, { phase: "tournament", day: 52 });
+      Object.assign(state.flags, { _ch5_match_started: true, _ch5_match_scheduled: true });
+      const progress = state.flags._ch5;
+      Object.assign(progress, { part: "match", scheduleDecision: "decide" });
+      for (const id of ["ch5_schedule_contact", "ch5_match_day_arrival", "ch5_copy_first_cup", "ch5_relationship_before_second_cup"]) progress.read[id] = true;
+      await (await import("./js/chapters/ch5.js")).resumeChapterFive();
+    });
+    await waitScene(page, "tournament");
+    const first = page.locator(t("ch5-second-cup"));
+    assert.match(await first.innerText(), /はじめ 19／9000 21/);
+    await page.locator(t("ch5-second-cup-start")).tap({ trial: true });
+    await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      state.flags._ch5.secondCup = { total: 90, category: "steady", votes: { hajime: 26, machine: 14 } };
+      await (await import("./js/chapters/ch5.js")).resumeChapterFive();
+    });
+    const panel = page.locator(t("ch5-match"));
+    await panel.locator("summary").tap();
+    assert.match(await panel.locator("details[open]").innerText(), /合計 はじめ 45／9000 35/);
+    await page.locator(t("ch5-continue")).tap();
+    await waitScene(page, "vn");
+  }, { ...SHORT, pageEntry: entry });
+
   await check("tournament-live-frame-survives-rotation", async (page) => {
     await page.evaluate(() => { void window.__remake.dev.show("interval"); });
     await waitScene(page, "tournament");
