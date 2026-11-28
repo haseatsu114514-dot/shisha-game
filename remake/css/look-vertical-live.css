@@ -32,7 +32,19 @@
 #stage[data-portrait-scene] .gal-characters { max-height: 15%; overflow: auto; }
 #stage[data-portrait-scene] :is(.ri-panel,.rn-panel) { width: calc(100% - 32px); max-height: calc(100% - 48px); overflow: auto; }
 #stage[data-portrait-scene] .rn-cols { grid-template-columns: 1fr; }
-#stage[data-portrait-scene="reel"] .reel-night .reel-widget { max-width: 100%; }
+#stage[data-portrait-scene="reel"] .reel-night {
+  display: grid; place-items: center;
+  background: radial-gradient(ellipse at center, #26182b88, #0a0713de);
+}
+#stage[data-portrait-scene="reel"] .reel-night .rn-label {
+  inset: 18% auto auto; justify-self: center; font-size: 25px;
+}
+#stage[data-portrait-scene="reel"] .reel-night .reel-widget {
+  position: relative; inset: auto; scale: 2.3; transform-origin: center;
+}
+#stage[data-portrait-scene="reel"] .reel-night .rw-bubble {
+  left: 50%; translate: -50% 0; max-width: 215px; white-space: normal; font-size: 13px;
+}
 #stage[data-portrait-scene]:is([data-portrait-scene="equipment"],[data-portrait-scene="steam"]) .bench {
   position: absolute; inset: 0; width: auto; height: auto; display: grid;
   grid-template-columns: minmax(0,1fr); grid-template-rows: auto minmax(180px, 26%) minmax(0,1fr); gap: 8px;
@@ -118,15 +130,17 @@
 #stage[data-portrait-scene="floor"] .tf-slip-body { grid-template-columns: 1fr; gap: 10px; }
 #stage[data-portrait-scene="floor"] .tf-slip > .tf-eyebrow { top: 0; }
 #stage[data-portrait-scene="floor"] .tf-options { grid-template-columns: 1fr 1fr; }
-#stage[data-portrait-scene="floor"] .tf-options[data-count="1"] { grid-template-columns: 1fr; }
+#stage[data-portrait-scene="floor"] :is(.tf-list,.tf-options[data-count="1"]) { grid-template-columns: 1fr; }
 #stage[data-portrait-scene="floor"] .tf-sheet { inset: 10px; width: auto; max-height: calc(100% - 20px); }
 #stage[data-portrait-scene="floor"] .tf-intro-card h2 { min-width: 0; }
 #stage[data-portrait-scene="axe"] .axe-first-person .axe-body { position: absolute; inset: 0; display: flex; flex-direction: column; }
 #stage[data-portrait-scene="axe"] .axe-first-person .axe-board-pane {
-  flex: 1 0 auto; min-height: 0; height: 64%; max-height: 75%; overflow: hidden;
+  flex: none; min-height: 0; height: min(648px, 56cqh); overflow: hidden;
 }
-#stage[data-portrait-scene="axe"] .axe-first-person .axe-target {
-  position: absolute; inset: 0 auto 0 50%; width: max(100%, 900px); height: 100%; transform: translateX(-50%);
+/* 的の絵、当たり判定のSVG、手元は同じカメラに置く。 */
+#stage[data-portrait-scene="axe"] .axe-first-person :is(.axe-target-art,.axe-target,.axe-hand-front) {
+  position: absolute; inset: 0 auto 0 50%; width: max(100%, min(1152px, 99.56cqh)); height: 100%;
+  translate: -50% 0;
 }
 #stage[data-portrait-scene="axe"] .axe-first-person .axe-panel {
   flex: 0 1 auto; min-height: 86px; overflow: visible; background: transparent;

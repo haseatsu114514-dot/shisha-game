@@ -13,11 +13,18 @@ export const careView = {
     const pic = el("div.vtc-care-pic", [dial, info]);
     const ctrl = el("div.vtc-care-controls");
     let panel, signature;
-    ctrl.addEventListener("click", (event) => {
+    function activate(event) {
       const key = event.target.closest("button")?.dataset.key;
       const live = key && panel?.querySelector(`[data-test="${key}"]`);
-      if (live && !live.disabled) relay(live);
-    });
+      if (!live || live.disabled || live.closest("[inert]")) return;
+      if (event.type === "pointerdown") {
+        if (key !== "pull-stop" || event.button !== 0) return;
+        event.preventDefault();
+      } else if (key === "pull-stop" && event.detail > 0) return;
+      relay(live);
+    }
+    ctrl.addEventListener("pointerdown", activate);
+    ctrl.addEventListener("click", activate);
     return {
       pic, ctrl,
       coach: (bench) => textOf(bench.querySelector(".bench-title")),
@@ -34,7 +41,8 @@ export const careView = {
           svg.id = `vt-source-${id}`;
           dial.innerHTML = `<svg viewBox="0 0 480 240" aria-hidden="true"><use href="#${svg.id}"/></svg>`;
         }
-        const message = textOf(panel.querySelector(choice ? ".care-coals-lead" : ".pull-current-zone"));
+        const message = choice ? textOf(choice.querySelector(".care-coals-lead"))
+          : [".pull-current-zone > b", ".pull-count-num", ".pull-serve-status"].map(selector => textOf(panel.querySelector(selector))).filter(Boolean).join("　");
         if (info.textContent !== message) info.textContent = message;
         ctrl.dataset.phase = choice ? "coals" : "draw";
         const live = choice ? [...choice.querySelectorAll("button")] : [...panel.querySelectorAll('[data-test="pull-stop"], [data-test="pull-serve"]')];

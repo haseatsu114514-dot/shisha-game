@@ -54,6 +54,7 @@ await suite("portrait_live_scenes", async check => {
       window.shiftResult = runTonariFloor({ venue, seed: 4, chapter: 4 });
     }, venue);
     await native(page, "floor");
+    assert.equal(await page.locator(".tonari-floor").getAttribute("data-venue"), venue);
     const tap = key => button(page, `tonari-floor-${key}`).tap();
     await tap("option-start");
     if (venue === "tonari") await rotate(page, "floor");
@@ -73,6 +74,13 @@ await suite("portrait_live_scenes", async check => {
     await native(page, "axe");
     const phase = value => page.waitForFunction(v => document.querySelector(".axe-game")?.dataset.phase === v, value);
     await phase("choice");
+    const cameras = await page.locator(".axe-target-art, .axe-target, .axe-hand-front").evaluateAll(nodes =>
+      nodes.map(svg => {
+        const { a, b, c, d, e, f } = svg.getScreenCTM();
+        return [a, b, c, d, e, f];
+      }));
+    assert.equal(cameras.length, 3);
+    for (const camera of cameras.slice(1)) assert.deepEqual(camera, cameras[0]);
     await stanceAt(page, { touch: true });
     await phase("power");
     await flickFromHandle(page, { touch: true });
