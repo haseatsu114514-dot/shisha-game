@@ -292,7 +292,7 @@ for (let step = 0; step <= 10; step++) {
 
 // 4つ目の値は、元の一文を分けた行数。アダムのLIMEは、続きの釣り針の一文を台本から削ったので1行（2026-11-11 全体講評 C9）。
 const sentenceCases = [
-  ["ch1_tournament_judging", "チャコール博士も、", "チャコール博士も、炭の出来と調整後の味を見て票を投じる。スクリーンに並ぶ四台の票を見つめた。", 2],
+  ["ch1_tournament_judging", "チャコール博士も、", "チャコール博士も、炭の出来と、調整後の煙を見て票を投じる。スクリーンに並ぶ四台の票を見つめた。", 2],
   ["interval_day2_adam_lime", "アダムからはそれきりで、", "アダムからはそれきりで、こちらの返信にも既読がつかなかった。", 1],
 ];
 for (const [id, start, original, count] of sentenceCases) {
