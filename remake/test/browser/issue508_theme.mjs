@@ -142,7 +142,7 @@ await suite("issue508-theme", async checkAll => {
         assert(ls.includes("（──たぶん、気のせいだ）"));
       }
       if (opts.id === "ch1_tournament_arrival") {
-        assert.equal(ls.includes("頭に浮かんだのは、スミさんの「1つずつ手を動かして覚えろ」だった。"), opts.practice);
+        assert.equal(ls.includes("頭に浮かんだのは、スミさんの「一つずつ手を動かして覚えろ」だった。"), opts.practice);
         assert.equal(ls.filter(t => t === "（……今の俺にできることを、やるしかない）").length, 1);
       }
       if (opts.id === "ch1_tsumugi_work_in_progress") {

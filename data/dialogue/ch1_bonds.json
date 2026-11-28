@@ -236,9 +236,11 @@
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "帰り道の分かれ道で、栞さんが足を止めた。"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_minto_name_known",
+          "next_true": "intro_known",
+          "next_false": "intro_unknown"
         },
         {
           "speaker": "minto",
@@ -251,29 +253,76 @@
           "text": "……次に会うのも、お店の外がいいな。……だめ？"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（栞さんは、返事を待ったまま隣にいる）"
-        },
-        {
-          "type": "choice",
-          "id": "bond_q1_minto",
-          "romance_char": "minto",
-          "choices": [
-            {
-              "text": "「栞さんと二人だと、ちょっと緊張する」",
-              "next": "close",
-              "romance": 1
-            },
-            {
-              "text": "「また話そう。愚痴でも聞くよ」",
-              "next": "friend",
-              "romance": 0
-            }
-          ]
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_minto_name_known",
+          "next_true": "ask_known",
+          "next_false": "ask_unknown"
         }
       ],
       "branches": {
+        "intro_known": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り道の分かれ道で、栞さんが足を止めた。"
+          }
+        ],
+        "intro_unknown": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り道の分かれ道で、みんとが足を止めた。"
+          }
+        ],
+        "ask_known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（栞さんは、返事を待ったまま隣にいる）"
+          },
+          {
+            "type": "choice",
+            "id": "bond_q1_minto",
+            "romance_char": "minto",
+            "choices": [
+              {
+                "text": "「栞さんと二人だと、ちょっと緊張する」",
+                "next": "close",
+                "romance": 1
+              },
+              {
+                "text": "「また話そう。愚痴でも聞くよ」",
+                "next": "friend",
+                "romance": 0
+              }
+            ]
+          }
+        ],
+        "ask_unknown": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（みんとは、返事を待ったまま隣にいる）"
+          },
+          {
+            "type": "choice",
+            "id": "bond_q1_minto",
+            "romance_char": "minto",
+            "choices": [
+              {
+                "text": "「みんとと二人だと、ちょっと緊張する」",
+                "next": "close",
+                "romance": 1
+              },
+              {
+                "text": "「また話そう。愚痴でも聞くよ」",
+                "next": "friend",
+                "romance": 0
+              }
+            ]
+          }
+        ],
         "close": [
           {
             "speaker": "minto",
@@ -291,9 +340,25 @@
             "text": "でも……また、二人で会いたい。……今日は、ここまでね"
           },
           {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_minto_name_known",
+            "next_true": "close_end_known",
+            "next_false": "close_end_unknown"
+          }
+        ],
+        "close_end_known": [
+          {
             "speaker": "",
             "face": "",
             "text": "小さく手を振って、栞さんは駅の方へ歩いていった。何度も、振り返りながら。"
+          }
+        ],
+        "close_end_unknown": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "小さく手を振って、みんとは駅の方へ歩いていった。何度も、振り返りながら。"
           }
         ],
         "friend": [
@@ -308,9 +373,25 @@
             "text": "また、こうやって歩こうね。……気楽に"
           },
           {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_minto_name_known",
+            "next_true": "friend_end_known",
+            "next_false": "friend_end_unknown"
+          }
+        ],
+        "friend_end_known": [
+          {
             "speaker": "",
             "face": "",
             "text": "栞さんは軽く手を振った。店で見る笑顔より、ずっと肩の力が抜けていた。"
+          }
+        ],
+        "friend_end_unknown": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "みんとは軽く手を振った。店で見る笑顔より、ずっと肩の力が抜けていた。"
           }
         ]
       }
@@ -542,7 +623,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "この店を始めた頃から使ってた一台。バニラばっか詰めてたら、土まで甘くなった"
+          "text": "この店を始めた頃から使ってたやつだ。バニラばっか詰めてたら、土まで甘くなった"
         },
         {
           "speaker": "naru",
@@ -726,7 +807,7 @@
         {
           "speaker": "adam",
           "face": "serious",
-          "text": "アニスとリコリスの残り香が、千の夜を越えて土に宿った一台だ"
+          "text": "アニスとリコリスの残り香が、千の夜を越えて土に宿った器だ"
         },
         {
           "speaker": "",
@@ -782,7 +863,7 @@
         {
           "speaker": "adam",
           "face": "smile",
-          "text": "一つを愛すると、一つでは済まなくなる。……リンゴの、唯一の欠点だ"
+          "text": "一つを愛すると、一つでは済まなくなる。……ダブルアップルの、唯一の欠点だ"
         },
         {
           "speaker": "hajime",
@@ -918,7 +999,7 @@
           {
             "speaker": "adam",
             "face": "smile",
-            "text": "常連の半分も、同じ方を選ぶ。お前の舌はリンゴに素直だ"
+            "text": "常連の半分も、同じ方を選ぶ。お前の舌はダブルアップルに素直だ"
           }
         ],
         "fifth_other": [
@@ -1035,7 +1116,7 @@
           "speaker": "tsumugi",
           "face": "normal",
           "beat": 500,
-          "text": "……絵の煙は、この素焼きから上ってた煙です。スミさんに預けてた、私の一台"
+          "text": "……絵の煙は、この素焼きから上ってた煙です。スミさんに預けてた、私のボウル"
         },
         {
           "speaker": "hajime",
@@ -1229,7 +1310,7 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "家で使ってた一台。……ミントしか、詰めたことないの"
+          "text": "家で使ってたやつ。……ミントしか、詰めたことないの"
         },
         {
           "speaker": "minto",
@@ -1393,7 +1474,7 @@
           {
             "speaker": "minto",
             "face": "ura_normal",
-            "text": "次はお店で、『みんと』に作ってね。この一台で"
+            "text": "次はお店で、『みんと』に作ってね。このボウルで"
           },
           {
             "speaker": "",

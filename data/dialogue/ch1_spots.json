@@ -652,7 +652,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "もう1人が口を挟む。"
+            "text": "もう一人が口を挟む。"
           },
           {
             "speaker": "old_man",
@@ -742,7 +742,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "作業台が4つ。客席が前面にずらり。照明のテストで、スポットが点滅している。"
+            "text": "作業台が四つ。客席が前面にずらり。照明のテストで、スポットが点滅している。"
           },
           {
             "speaker": "hajime",
@@ -883,7 +883,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "千須会長。1人で静かにシーシャを吸っている。"
+          "text": "千須会長。一人で静かにシーシャを吸っている。"
         },
         {
           "speaker": "",
@@ -989,16 +989,6 @@
             "char_id": "dr_charcoal",
             "next_true": "known_greeting",
             "next_false": "new_greeting"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "…はい。tonariの逢縁です"
-          },
-          {
-            "speaker": "dr_charcoal",
-            "face": "normal",
-            "text": "tonari。……スミさんのところか。あの人の炭は数値が美しい"
           }
         ],
         "greet_after": [
@@ -1023,6 +1013,16 @@
             "speaker": "dr_charcoal",
             "face": "normal",
             "text": "おや、きみ。見ない顔だね。今度の大会の出場者かい？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……はい。tonariの逢縁です"
+          },
+          {
+            "speaker": "dr_charcoal",
+            "face": "normal",
+            "text": "tonari。……スミさんのところか。あの人の炭は数値が美しい"
           }
         ],
         "known_greeting": [
@@ -1030,6 +1030,16 @@
             "speaker": "dr_charcoal",
             "face": "normal",
             "text": "おや、逢縁くん。今日は何を吸いに来たんだい？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "勉強がてら、一服しに来ました"
+          },
+          {
+            "speaker": "dr_charcoal",
+            "face": "normal",
+            "text": "いい心がけだね。そういえば、tonariはスミさんのところだったね。あの人の炭は数値が美しい"
           }
         ]
       }
@@ -1140,7 +1150,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "…はい。逢縁です"
+            "text": "……はい。逢縁です"
           }
         ],
         "notice_after": [
@@ -1152,7 +1162,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "…どうも……"
+            "text": "……どうも……"
           }
         ]
       }
@@ -3176,7 +3186,7 @@
         {
           "speaker": "naru",
           "face": "serious",
-          "text": "…はい。……ありがとうございます、円頓寺さん"
+          "text": "……はい。……ありがとうございます、円頓寺さん"
         },
         {
           "speaker": "",
@@ -3242,7 +3252,7 @@
           {
             "speaker": "naru",
             "face": "normal",
-            "text": "こはくの件、……誰にも言うなよ"
+            "text": "こはくの件……誰にも言うなよ"
           },
           {
             "speaker": "hajime",
@@ -3284,7 +3294,7 @@
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "え、……分かりますか"
+            "text": "え……分かりますか"
           },
           {
             "speaker": "naru",
