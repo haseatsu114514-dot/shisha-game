@@ -5583,6 +5583,24 @@
       ]
     },
     {
+      "id": "portrait-live-scenes",
+      "title": "縦画面の本編で機材・卓・店番・遊びを操作し、端末の回転後も続行する",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 6,
+      "paths": [
+        "remake/js/looks/vertical/live-stage.js",
+        "remake/js/core/stage-fit.js",
+        "remake/css/look-vertical-live.css",
+        "remake/js/trpg/portrait-layout.js",
+        "remake/js/minigames/tetsuko-portrait.js",
+        "remake/test/browser/portrait_live_scenes.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/portrait_live_scenes.mjs"
+      ]
+    },
+    {
       "id": "look-vertical",
       "title": "縦画面（煙の舞台・C案）: 会話を2行ずつ・返事・地図と店へ・tonari の行動選び・LIME と MENU のシート・心得の盤を十字キーで灯す・登場カットインの縦のポスター・シーシャ作りの水入れ・詰め・穴あけ・炭焼き・蒸らし時間（縦の作る場面で長押し・札・炭・タイマー・結果の札を本編へ中継）・ほかの工程は回転案内・横持ちは旧版・第2〜5章の朝の小窓・駅から隣町・場面カード・東京の地図の小窓・第5章の地図・タイトルコール（上にロゴ・真ん中に正方形の章の絵・下に章の情報）",
       "kind": "browser",

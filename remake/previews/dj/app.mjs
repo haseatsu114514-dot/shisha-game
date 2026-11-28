@@ -244,7 +244,7 @@ for (const jog of jogs) {
 // （◀ ＝ 左回り＝戻す、▶ ＝ 右回り＝先へ）。ひと押しは矢印キー1回ぶん、押し続けると一定の速さで回り続ける。判定・採点は皿と同じ（回した分を同じ所へ送る）。
 // 縦画面（?layout=portrait）では、つなぎの間は真ん中のミキサーへ寄っていて皿が見えないので、案内もボタンを指す。
 // 横の画面にも出す（2026-11-27「横にも出す」）。横は皿も見えているので、案内は皿を先に言い、ボタンは脇の一言で添える（皿で直すのが本筋、ボタンは救済）。
-const portraitLayout = params.get('layout') === 'portrait';
+const portraitLayout = () => document.documentElement.dataset.layout === 'portrait';
 const NUDGE = { holdAfterMs: 220, beatsPerSecond: .32 };
 for (const [id, dir] of [['nudge-back', -1], ['nudge-fwd', 1]]) {
   const el = $(id);
@@ -586,8 +586,8 @@ function navi(m, now, away) {
     // DJG: the incoming track has slipped out of time. Turn its platter the way the arrows run (ahead → back, behind → on) until the gold dot is in the frame.
     // 縦は皿が見えないのでボタンを、横は皿を先に言い、光るボタンでも直せることを下の一言で添える（VPG15）
     if (view.sync?.off) { const key = view.sync.error > 0 ? '◀' : '▶';
-      return { ...out, step: 3, warn: true, main: portraitLayout ? `ズレた！ 光る ${key} を押して、金の点を枠へ` : `ズレた！ ${sideOf(to)}の皿を${view.sync.error > 0 ? '左回り' : '右回り'}に回そう`,
-        sub: portraitLayout ? '金の点が枠に入れば戻る。フェーダーはそのまま' : `光る ${key} を押しても戻る。フェーダーはそのまま`, points: ['fader', `jog-${to ? 'b' : 'a'}`] }; }
+      return { ...out, step: 3, warn: true, main: portraitLayout() ? `ズレた！ 光る ${key} を押して、金の点を枠へ` : `ズレた！ ${sideOf(to)}の皿を${view.sync.error > 0 ? '左回り' : '右回り'}に回そう`,
+        sub: portraitLayout() ? '金の点が枠に入れば戻る。フェーダーはそのまま' : `光る ${key} を押しても戻る。フェーダーはそのまま`, points: ['fader', `jog-${to ? 'b' : 'a'}`] }; }
     // #2456 §4-2: the grace is over but the incoming track still cannot be heard. The outgoing one keeps playing until the fader is half way.
     if (view.stuck) return { ...out, step: 3, warn: true, main: `${deckOf(to)} に移れていない！ ${sideOf(to)}へ動かそう`, sub: '真ん中を越えれば乗り換わる。曲は止まらない', points: ['fader'] };
     if (view.progress >= 1) return { ...out, step: 3, main: `最後まで${sideOf(to)}へ動かしきろう`, sub: `フェーダーが${sideOf(to)}の端に着くと、${deckOf(to)} に乗り換わる`, points: ['fader'] };

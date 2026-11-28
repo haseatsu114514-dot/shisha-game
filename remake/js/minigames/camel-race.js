@@ -7,7 +7,7 @@
 // ラクダ・ロボット騎手・SUV・車輪は Codex の絵（assets/ui/camel_race・2026-11-02 採用。原画は asset_sources/ch4-camel-race）。
 // 絵が読めない環境では Canvas の描画に戻す。砂漠・柵・砂煙・合図の輪・HUD は Canvas で描く。
 import { withMinigameStyles } from "./minigame-styles.js";
-import { installRotateGuard, rotateGuarded as rotateGuardedNow } from "../core/rotate-guard.js";
+import { installRotateGuard, rotateGuarded as rotateGuardedNow, rotateHintVisible } from "../core/rotate-guard.js";
 import { el } from "../core/util.js";
 import { TIER_LABEL, TIER_RULE_LINE, PLAY_RULES } from "../core/play-tiers.js";
 import { SE, currentBgm, playBgm, preloadBgm, unlockAudio, playCamelRaceSe, preloadCamelRaceSe, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
@@ -543,10 +543,9 @@ export function runCamelRace(options = {}) {
 
 function startCamelRace({ host = document.getElementById("stage"), signal = null, seed = null, tutorial = true, allowRetry = true,
   pilot = null, timeScale = 1, best = null, cups = null, cupRecords = {}, debugTools = false, reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches,
-  layout = "landscape" } = {}) {
-  // layout: "portrait" は縦画面の試作（remake/previews/portrait-stage/frame/camel.html）だけが渡す。並べ方は data-layout を見るCSSが決め、
-  // 規則・採点・描く中身は横と同じ。縦では横向きの案内（回転ガード）を見張らない。既定（横）の動きは変えない。
-  const portrait = layout === "portrait";
+  layout = "auto" } = {}) {
+  const portraitNow = () => layout === "portrait" || (layout === "auto" && document.documentElement.dataset.look === "vertical" && matchMedia("(orientation: portrait)").matches);
+  let portrait = portraitNow();
   const rotateGuarded = () => !portrait && rotateGuardedNow();
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
@@ -686,6 +685,9 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
   /** いま見えている範囲（寄りの倍率を戻した、描く時の座標）。 */
   const viewSpan = () => { const half = viewW() / (2 * duelScale); return [viewCx() - half, viewCx() + half]; };
   const measureView = () => {
+    portrait = portraitNow();
+    if (portrait) root.dataset.layout = "portrait";
+    else { delete root.dataset.layout; viewL = 0; viewR = W; }
     const { width, height, top } = stageNode.getBoundingClientRect();
     viewScale = width > 0 ? clamp(W / width, 1, 1.6) : 1;
     if (!controls.hidden && height > 0) voiceTop = (voiceButton.getBoundingClientRect().top - top) * H / height;
@@ -991,7 +993,8 @@ function startCamelRace({ host = document.getElementById("stage"), signal = null
       event.preventDefault(); event.stopImmediatePropagation();
       return;
     }
-    if (rotateGuarded()) {
+    // CSS が回転案内を表示してから resize が届くまでの Enter も、背後の再開ボタンへ渡さない。
+    if (!portraitNow() && rotateHintVisible()) {
       if (ours(event) || isPauseKey(event) || event.key === "Enter") {
         event.preventDefault();
         event.stopImmediatePropagation();

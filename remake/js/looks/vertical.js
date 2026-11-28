@@ -21,6 +21,7 @@ import { createCoverScene } from "./vertical/cover.js";
 import { createSheetScene } from "./vertical/sheet.js";
 import { createBoardScene, boardOpen } from "./vertical/board.js";
 import { createCraftScene, craftOpen } from "./vertical/craft.js";
+import { livePortraitScene, setLivePortraitScene } from "./vertical/live-stage.js";
 import { createMotionLayer } from "./vertical/motion-layer.js";
 
 import { createTournamentResultScene } from "./vertical/tournament-result.js";
@@ -33,7 +34,7 @@ const GAP_MS = 3000;        // 場面と場面のあいだの何も出ていな�
 const STUCK_MS = 6000;      // 何も写せない覆いがタップを待ったままなら、回転案内へ切り替える
 const COVER_MAX_MS = 20000; // 覆いの中身が変わらないまま続く上限
 const HINT_MAIN = "この場面は横向きで遊びます";
-const HINT_SUB = "機材選び・炭の配置などの工程・店番・ミニゲームの縦画面は準備中です";
+const HINT_SUB = "この場面では端末を横向きにしてください";
 
 let active = false, query = null, session = null;
 
@@ -114,7 +115,7 @@ function start() {
   let holdSince = 0, pressable = false, gap = false, noneSince = 0, hold = false, coverBlocked = false;
 
   function setScene(next) {
-    if (next === sceneName) return;
+    if ((next || "") === sceneName) return;
     scene?.leave?.();
     frame.reset();
     sceneName = next || "";
@@ -149,6 +150,17 @@ function start() {
       (frontMotion ? frontMotion.matches(".day-card, .tr-dawn") :
         frontFx?.matches('.beat, .round-cut, .entrance, .day-card, .tr-dawn, .chapter-poem[data-poem="poem_ch1"]'));
     let found = interlude ? { kind: "scene", name: "interlude" } : boardOpen() ? { kind: "scene", name: "board" } : detectState(wipe ? [...own, wipe] : own);
+    // 作業台に重なった大会中継・投票は、前面の大会用レイアウトで操作する。
+    const tournament = found.name === "tournament" || found.name === "tournamentResult";
+    const live = !interlude && !tournament && livePortraitScene();
+    if (live) {
+      root.dataset.vtHint = "hold";
+      setScene(null);
+      setLivePortraitScene(live);
+      candidate = null; streak = 0; noneSince = 0; fresh = true;
+      return;
+    }
+    setLivePortraitScene("");
     if (found.variant === "end" && document.querySelector('#screen > .gameover[data-layout="manga"]:not(.done)')) {
       found = { kind: "scene", name: "continue" };
     }
@@ -295,6 +307,7 @@ function start() {
     stop() {
       if (stopped) return;
       stopped = true;
+      setLivePortraitScene("");
       cancelAnimationFrame(frameId);
       clearTimeout(timer);
       observer.disconnect();

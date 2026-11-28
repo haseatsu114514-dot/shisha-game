@@ -7,10 +7,9 @@
 //   3. いまやること（案内の1行）を、フロアのすぐ下へ写す（皿へ寄っている間、真ん中の案内は窓の外になるので）。
 // ?shot=a|b|mix は、一覧（PC）に並べる止め絵（寄る先を固定し、遊び方の板を閉じる）。
 const params = new URLSearchParams(location.search);
-if (params.get('layout') === 'portrait') {
+if (['portrait', 'auto'].includes(params.get('layout'))) {
   const root = document.documentElement, stage = document.getElementById('dj-stage'), $ = id => document.getElementById(id);
-  root.dataset.layout = 'portrait';
-  root.dataset.density = 'phone'; // 字と押す所は、本編のスマホ向けの大きさ（style.css の phone density）を土台にする
+  const previousDensity = root.dataset.density; // 字と押す所は、本編のスマホ向けの大きさ（style.css の phone density）を土台にする
   const link = document.createElement('link');
   link.rel = 'stylesheet'; link.href = new URL('./portrait.css', import.meta.url).href;
   document.head.append(link);
@@ -18,6 +17,14 @@ if (params.get('layout') === 'portrait') {
   const W = 640, MIN_H = W * 66 / 39, MAX_H = W * 92 / 39;
   const FLOOR = 300, COACH = 84, BOOTH_H = 432; // フロアの最低の高さ・案内の1行の高さ・ブースの元の高さ（style.css の値）
   function fit() {
+    if (params.get('layout') === 'auto' && innerWidth > innerHeight) {
+      delete root.dataset.layout;
+      if (previousDensity) root.dataset.density = previousDensity;
+      else delete root.dataset.density;
+      return;
+    }
+    root.dataset.layout = 'portrait';
+    root.dataset.density = 'phone';
     const k = Math.min(innerWidth / W, innerHeight / MIN_H), height = Math.round(Math.min(innerHeight / k, MAX_H));
     stage.style.setProperty('--ps', String(k));
     stage.style.setProperty('--ph', `${height}px`);

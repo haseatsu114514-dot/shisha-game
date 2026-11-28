@@ -148,7 +148,7 @@ export function playRollShow(host, show) {
   if (skillNode) {
     camera.append(skillNode);
     // ロゴの絵が読めない時は、文字の「SKILL!」に戻す。
-    const skillLogo = skillNode.querySelector(".trpg-rs-skill-logo"), skillWho = skillNode.querySelector(".trpg-rs-skill-copy > small");
+    const skillLogo = skillNode.querySelector(".trpg-rs-skill-logo"), skillWho = skillNode.querySelector(".trpg-rs-skill-kicker > small");
     skillLogo?.addEventListener?.("error", () => { skillLogo.hidden = true; skillWho.textContent = "SKILL!  " + skillWho.textContent; });
   }
   if (hintNode) camera.append(hintNode);
