@@ -19,7 +19,7 @@ try {
       Object.assign(A.core.config, { textSpeed: 2, voiceBlip: true, seVolume: .8, bgmVolume: 0 });
       A.core.config.skipSeenOnly = false; // 未読の台詞も SKIP で送る（既定は既読のみ・#4194）
       A.audio.stopBgm(0); A.audio.applyVolumes();
-      for (const id of ['click', 'blip', 'phoneReceive', 'phoneSend', 'doorbell', 'select', 'perfect']) {
+      for (const id of ['click', 'blip', 'phoneReceive', 'phoneSend', 'doorbell', 'select', 'uiCursor', 'uiDecide', 'perfect']) {
         const native = A.audio.SE[id]; A.audio.SE[id] = (...args) => {
           A.events.push({ id, time: performance.now(), mode: document.body.className }); return native(...args);
         };
@@ -78,11 +78,18 @@ try {
       await page.evaluate(() => {
         A.events.length = 0;
         A.choiceRun = A.vn.play({ dialogue_id: 'audio573_choice_fixture', lines: [
-          { type: 'choice', choices: [{ text: '音を確認する' }] } ] });
+          { type: 'choice', choices: [{ text: '音を確認する' }, { text: '次の音を確認する' }] } ] });
       });
-      await press('[data-test="choice-0"]'); await page.evaluate(() => A.choiceRun);
-      assert.equal(await page.evaluate(() => A.events.filter(e => e.id === 'select').length), 1, 'real VN choice preserves select');
-      assert.equal(await page.evaluate(() => A.events.filter(e => e.id === 'click').length), 0, 'choice is not text advance click');
+      await page.locator('[data-test="choice-0"]').waitFor();
+      if (touch) await press('[data-test="choice-1"]');
+      else {
+        await page.keyboard.press('ArrowDown');
+        assert.equal(await page.evaluate(() => document.activeElement.dataset.test), 'choice-1');
+        await page.keyboard.press('Enter');
+      }
+      await page.evaluate(() => A.choiceRun);
+      const choiceSounds = await page.evaluate(() => A.events.filter(e => ['uiCursor', 'uiDecide', 'select', 'click'].includes(e.id)).map(e => e.id));
+      assert.deepEqual(choiceSounds, touch ? ['uiDecide'] : ['uiCursor', 'uiDecide'], 'real VN choice plays the input-specific cues once');
       await page.evaluate(() => {
         const s = A.core.newGame(); Object.assign(s, { phase: 'daily', day: 4, slot: 0 });
         Object.assign(s.flags, { _lime_opened: true, _lime_tut: 1, _intro_sumi: true }); s.met.sumi = true;

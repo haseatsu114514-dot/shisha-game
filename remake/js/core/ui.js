@@ -755,7 +755,7 @@ function trapModalTab(event, box) {
   }
 }
 
-export function modal({ title = "", body = "", options = [{ label: "OK", value: true, primary: true }], className = "", signal }) {
+export function modal({ title = "", body = "", options = [{ label: "OK", value: true, primary: true }], className = "", signal, confirmSe = "select" }) {
   if (signal?.aborted) return Promise.resolve(null);
   return new Promise((resolve) => {
     const previousFocus = document.activeElement;
@@ -771,7 +771,7 @@ export function modal({ title = "", body = "", options = [{ label: "OK", value: 
           text: o.label,
           ...(o.disabled ? { disabled: true } : {}),
           dataset: { test: o.test || "" },
-          onclick: () => { if (!o.disabled && !settled && !signal?.aborted) { SE.select(); close(o.value); } },
+          onclick: () => { if (!o.disabled && !settled && !signal?.aborted) { SE[confirmSe]?.(); close(o.value); } },
         })
       )),
     ]);

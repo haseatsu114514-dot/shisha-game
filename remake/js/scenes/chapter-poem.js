@@ -94,7 +94,7 @@ const holdFor = (lines) => HOLD_BASE + HOLD_PER_CHAR * lines.reduce((sum, line) 
  * 読了の保存は呼び出し元が行う（章タイトルと同じ titleSeen の判定に乗せ、再開時に繰り返さない）。
  */
 export async function playChapterPoem(key, options = {}) {
-  const releaseBgm = silenceBgm();
+  const releaseBgm = silenceBgm({ ui: true });
   try {
     return await showChapterPoem(key, options);
   } finally {
