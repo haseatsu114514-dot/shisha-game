@@ -569,7 +569,7 @@ for (const [total, category, expected, reason] of [
   const metOne = record.lines.find(line => line.type === "condition" && line.next_true === "met_one");
   assert.deepEqual([metOne.condition_type, metOne.dialogue], ["story_seen", "ch5_tsumugi_doctor"]);
   assert.equal(record.lines[record.lines.indexOf(metOne) - 1].text, "……会ってなくても、その人たちの手は、今日の9000の煙にいました");
-  assert.match(record.branches.met_one[0].text, /一人だけ、会った人がいます/);
+  assert.match(record.branches.met_one[0].text, /店先で会った人の一行もあります/);
   assert.deepEqual([thermo.condition_type, thermo.flag, thermo.next_true, thermo.next_false],
     ["flag", "_stk_kemuri_thermo_borrowed", "thermo", undefined]);
   assert.equal(record.lines.indexOf(thermo), order[3] + 1, "Right after the judging lines");
@@ -856,7 +856,7 @@ for (const scenes of [
   // 名乗りの後はトロフィー。つむぎのノートの猫を読んだ保存だけ、その後に『表さん』を書き足す一行（2026-11-24 添削 N9）
   {
     const name = files.ending.find(row => row.dialogue_id === "ending_salaryman_name");
-    const trophy = name.lines.findIndex(line => line.text === "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。");
+    const trophy = name.lines.findIndex(line => line.text === "客が帰ったあと、カウンターのいちばん古いトロフィーを拭いた。");
     assert(trophy > 0, "The trophy line stays");
     // ノートの猫は、つむぎ目線の新人編では初日（ch5_tsumugi_first_day）、旧来の並びでは自由場面の開店前の練習（#4253）
     const [first, tail] = name.lines.slice(trophy + 1, trophy + 3);
@@ -874,7 +874,7 @@ for (const scenes of [
     assert(closing.includes("戸締まり、頼む。明日の朝、返せ") && closing.includes("暇だったからな"), "The first chapter's night is still there");
     const mirror = name.lines.slice(trophy + 3).map(line => line.text).filter(Boolean);
     for (const text of ["炭を扱う前に、息を吐くようになったね", "暇だったから", "戸締まり、頼める？ 明日の朝、返して",
-      "マスター、俺、ひより、はじめ、……それから、お前だ"]) assert(mirror.includes(text), text);
+      "マスター、俺、ひより、はじめ……それから、お前だ"]) assert(mirror.includes(text), text);
     assert(mirror.includes("スミさんが、昔からそうしてきたように。"));
     // 物語の最後は、半年後の自分の店の最初の朝。第1章の最初の一文と鍵束の重さを写し、「いらっしゃいませ」で終わる
     const shop = mirror.slice(mirror.indexOf("スミさんが、昔からそうしてきたように。") + 1);
