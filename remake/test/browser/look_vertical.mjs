@@ -5,7 +5,7 @@
 // 本編の操作の説明はスミさんの説明のスポットライトで、段ごとに指す所を明るく抜く・VPN32）、
 // 水入れ・穴あけ・炭焼きも縦の作る場面（外枠の長押しを本編のボタンへ pointerdown／pointerup で中継し、炭は押した瞬間に本編の炭を取る。
 // 工程の結果の札も外枠で閉じる・VPN31。初回の説明のスポットライトは工程の部品を順に指す・VPN32）、
-// まだ縦にしていない場面（シーシャ作りのほかの工程）は回転案内、横持ちは旧版、様式を替えると何も残らない、
+// 専用の縦配置がない場面も縦持ちで操作でき、横持ちは縦への回転案内、様式を替えると何も残らない、
 // 第2〜5章の日常（朝の小窓・地図・駅から隣町・場面カード・東京の地図の小窓・第5章の地図）も縦の外枠のまま。
 // 自動操作のブラウザの既定は旧版なので ?look=vertical を付けて選ぶ。
 import assert from "node:assert/strict";
@@ -281,6 +281,21 @@ await suite("look_vertical", async (check) => {
     } finally { release(); }
     await waitScene(page, "title");
   }, { ...TALL, pageEntry: entry });
+
+  for (const resource of ["js/looks/vertical.js", "css/look-vertical.css"]) {
+    const url = new URL(resource, entry).href;
+    await check(`portrait-boot-retries-${resource.split(".").pop()}`, async page => {
+      await page.route(url, route => route.fulfill({ status: 503, body: "" }), { times: 1 });
+      await page.reload();
+      await page.locator("#boot.is-failed .boot-retry").waitFor();
+      assert.equal(await page.locator("#viewport").evaluate(node => getComputedStyle(node).opacity), "0");
+      assert.equal(await page.locator("#screen > .title").count(), 0);
+      await page.locator("#boot .boot-retry").tap();
+      await waitScene(page, "title");
+      await page.locator(t("vt-title-config")).tap();
+      await waitScene(page, "sheet");
+    }, { ...TALL, pageEntry: entry, ignoreFailedResource: failure => failure.endsWith(url) });
+  }
 
   await check("loading-keeps-landscape-covered", async page => {
     await waitScene(page, "title");
@@ -884,24 +899,24 @@ await suite("look_vertical", async (check) => {
     assert.deepEqual(await page.evaluate(() => window.rotateFlashes), []);
   }, { ...TALL, pageEntry: entry });
 
-  await check("unsupported-scenes-show-the-rotate-hint", async (page) => {
+  await check("card-game-remains-playable-in-portrait", async (page) => {
     await waitScene(page, "title");
     await page.evaluate(async () => {
       const { runIchidai } = await import("./js/minigames/ichidai.js");
       window.stopCards = new AbortController();
       void runIchidai({ signal: window.stopCards.signal });
     });
-    await page.waitForFunction(() => getComputedStyle(document.getElementById("rotate-hint")).display !== "none", null, { timeout: 10000 });
-    assert.equal(await scene(page), "");
-    const hint = await page.evaluate(() => document.getElementById("rotate-hint").innerText.replace(/\s+/g, " "));
-    assert(hint.includes("この場面は横向きで遊びます"), hint);
-    await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true");
+    await page.waitForSelector("html[data-vt-native]");
+    const stage = await page.locator("#stage").boundingBox();
+    assert(stage.height > stage.width);
     await page.setViewportSize(WIDE.viewport);
+    await page.locator("#rotate-hint .portrait-required").waitFor();
+    await page.setViewportSize(TALL.viewport);
     await page.locator("#rotate-hint").waitFor({ state: "hidden" });
     await page.locator(t("ichi-help")).tap();
     await page.locator(t("ichi-help-close")).tap();
     await page.evaluate(() => window.stopCards.abort());
-    await page.locator("#rotate-hint .portrait-required").waitFor();
+    await waitScene(page, "title");
   }, { ...TALL, pageEntry: entry });
 
   await check("craft-pack-and-steam-timer-in-the-shell", async (page) => {

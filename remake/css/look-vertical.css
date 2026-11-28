@@ -14,12 +14,8 @@
 :root[data-vt="on"] body > :is(.loading-gate, .loading-exit-haze).is-viewport { z-index: 1002; }
 :root[data-vt-loading] #viewport { opacity: 0; }
 :root[data-vt-loading] :is(.vt-shell, .vt-motion) { visibility: hidden; }
-/* 回転案内は、まだ縦にしていない場面（シーシャ作り・大会・店番・ミニゲーム）でだけ出す（js/looks/vertical.js が外枠を出せない間）。
-   外枠を出している間・読み込みの画面・縦の小窓（data-vt-hint="hold"）は出さない。縦持ちが基本なので、ほかの場面では回転案内を使わない（base.css・VPO01） */
-@media (orientation: portrait) and (hover: none) and (pointer: coarse) {
-  :root[data-look="vertical"][data-vt="on"]:not([data-vt-hint="hold"]) #rotate-hint { display: grid; }
-}
-:root[data-look="vertical"][data-vt="on"] #rotate-hint > :not(.vt-hint) { display: none; }
+/* 専用の縦配置へ移している途中の画面。既存の操作座標の幅を保ち、縦は表示領域を使い切る。 */
+:root[data-vt-native] #stage { height: calc(100dvh / var(--k, 1)); }
 /* 本編の会話の箱を、縦のテロップと同じ比（全角約16字×2行）にする。本編の会話エンジンがこの幅で2行ずつページを分ける（VPL29）。
    テロップ: 幅 33 単位・字 1.94 単位・字間 0.03em → 本編: 字 32px なら幅 544px（エンジンは幅 −4 で測るので 548px） */
 html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box .vn-text,
@@ -30,14 +26,6 @@ html:root[data-look="vertical"][data-vt="on"] body:not(:root) #stage #vn .vn-box
   font-weight: var(--vt-dialogue-weight) !important;
   letter-spacing: 0.03em !important;
 }
-
-#rotate-hint > .vt-hint { display: grid; justify-items: center; gap: 10px; color: #f1ecf9; font-family: var(--font); }
-.vt-hint p { margin: 0; }
-.vt-hint-main { font-size: 18px; font-weight: 700; letter-spacing: 0.06em; }
-.vt-hint-sub { max-width: 18em; color: #c3b0ff; font-size: 13px; line-height: 1.6; }
-.vt-hint-device { position: relative; width: 28px; height: 46px; margin-bottom: 8px; border: 2.5px solid #c3b0ff; border-radius: 6px; box-sizing: border-box; animation: vt-turn 2.4s ease-in-out infinite; }
-.vt-hint-device::after { content: ""; position: absolute; left: 50%; bottom: 3px; width: 8px; height: 2px; margin-left: -4px; border-radius: 2px; background: #c3b0ff; }
-@keyframes vt-turn { 0%, 40% { transform: none; } 55%, 95% { transform: rotate(-90deg); } 100% { transform: none; } }
 
 /* ───────── 外枠（スマホ1台ぶん） ───────── */
 .vt-shell {

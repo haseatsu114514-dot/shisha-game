@@ -227,6 +227,8 @@ export function detectState(own = [], vertical = document.documentElement.datase
   const probe = variant === "shop" || variant === "end" ? "shop" : scene;
   for (const [px, py] of PROBES[probe]) {
     const layer = topLayer(stage, rect, px, py, own);
+    // 更新通知など、舞台の外にある要素がタイトルに重なっても縦のメニューを維持する。
+    if (scene === "title" && layer === "outside") continue;
     if (layer && !EXPECTED_LAYERS[probe].includes(layer)) return NONE;
   }
   return { kind: "scene", name: scene, variant };

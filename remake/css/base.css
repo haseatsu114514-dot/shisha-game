@@ -868,11 +868,7 @@ small.dc-sub { font-size: 20px; color: #f1e7d6; }
   text-align: center;
   padding: 16px;
 }
-/* 縦持ちが基本（LK24・VPO01。2026-11-28 オーナー「基本は縦画面で遊ぶ仕様にしていって　今開くと横向きにしろとか出るけど」）。
-   回転案内で全画面を覆うのは、旧版の画面を選んだ端末を縦に持った時だけ。縦画面では、まだ縦にしていない場面
-   （シーシャ作り・大会・店番・ミニゲーム）でだけ look-vertical.css が出す。
-   本編（index.html）の、様式が決まる前（起動直後。<html> の data-look-boot は js/core/look.js が様式を付けた時に外す）は出さない
-   （開いた瞬間に「横向きで」と出ていた）。様式を持たない単独のページ（ミニゲームの試遊ページなど）は今までどおり縦持ちで出す。 */
+/* 旧版の単体ページ用の回転案内。 */
 @media (orientation: portrait) and (hover: none) and (pointer: coarse) {
   :root:not([data-look="vertical"]):not([data-look-boot]) #rotate-hint { display: grid; }
 }
@@ -880,12 +876,12 @@ small.dc-sub { font-size: 20px; color: #f1e7d6; }
 #rotate-hint > .portrait-required { display: none; }
 @media (pointer: coarse) { #rotate-hint .portrait-required small { display: none; } }
 @media (orientation: landscape) {
-  :root[data-look="vertical"]:not([data-vt-wide-play]) body:not(:has(#boot.is-failed)) #rotate-hint { display: grid; }
+  :root[data-look="vertical"] body:not(:has(#boot.is-failed)) #rotate-hint { display: grid; }
   :root[data-look="vertical"] #rotate-hint > * { display: none; }
   :root[data-look="vertical"] #rotate-hint > .portrait-required { display: block; }
   /* ネイティブ dialog は通常の z-index より手前。開いた状態のまま縦へ戻せるようにする。 */
-  :root[data-look="vertical"]:not([data-vt-wide-play]) dialog:modal,
-  :root[data-look="vertical"]:not([data-vt-wide-play]) dialog:modal::backdrop { opacity: 0; pointer-events: none; }
+  :root[data-look="vertical"] dialog:modal,
+  :root[data-look="vertical"] dialog:modal::backdrop { opacity: 0; pointer-events: none; }
 }
 
 /* 初めて縦に持ち替えた時は、縦用 CSS が届くまで横長の画面とその操作を隠す。 */

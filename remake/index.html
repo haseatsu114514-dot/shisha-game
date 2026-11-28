@@ -81,7 +81,7 @@
 <meta property="og:image" content="https://haseatsu114514-dot.github.io/shisha-game/remake/og-image.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <!-- ホーム画面に追加すると全画面で遊べる（iPhone の Safari は Fullscreen API 非対応のため唯一の道）。
-     向きは固定しない（manifest の orientation は any）。縦持ちが基本で、まだ縦にしていない場面だけ横にして遊ぶ（VPO01） -->
+     ホーム画面版も縦向きで起動する。 -->
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -122,6 +122,7 @@
 :is(.loading-gate, .boot-gate).is-ready .loading-bar-fill { width: 100%; }
 /* 縦の様式を取得する間は横の舞台を隠す。読み込み画面自体は body 直下で操作できる。 */
 @media (orientation: portrait) {
+  :root[data-look="vertical"] #screen > .title { opacity: 0; }
   :root[data-look-boot] #viewport,
   :root[data-look="vertical"][data-vt-pending] #viewport { opacity: 0; }
   :root[data-look="vertical"] body:has(> :is(#boot, .loading-gate).is-viewport) #viewport { opacity: 0; }
