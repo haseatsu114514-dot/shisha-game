@@ -1,0 +1,91 @@
+/* タイトルのロード。元の煙のマスク・時間を保ち、縦のタイトルから再開先へ渡す。 */
+.vt-resume-smoke:not(:empty) {
+  position: fixed; z-index: 991; inset: 0; overflow: hidden; touch-action: none;
+}
+.vt-resume-smoke .wipe-smoke { background: radial-gradient(ellipse at 50% 60%, #1a1424, #0a0710 70%); }
+body:has(.vt-resume-smoke:not(:empty)) > :is(.loading-gate, .loading-exit-haze).is-viewport { z-index: 992; }
+
+/* 大会 CONTINUE。幅640の紙面。上の2:3を顔と吹き出しに使い、残りは親指で押す選択コマ。
+   .gameover は #screen に残す。入力・期限・読み上げ・反応の所有者を替えない。 */
+:root[data-vt-continue] #stage {
+  --page-scale: tan(atan2(min(100vw, 66.6667dvh), 640px));
+  width: 640px; height: min(1390px, calc(100dvh / var(--page-scale)));
+  transform: translate(-50%, -50%) scale(var(--page-scale));
+}
+/* 全ての配置はこの場面だけ。元絵の顔中心は (親幅/2, 273px)。 */
+:root[data-vt-continue] #screen > .gameover {
+  --top-margin: max(18px, calc(env(safe-area-inset-top, 0px) / var(--page-scale)));
+  --foot: max(22px, calc(env(safe-area-inset-bottom, 0px) / var(--page-scale)));
+  --panel-end: min(960px, 74%);
+  --panel-top: calc(var(--top-margin) + 132px);
+  --panel-cut: polygon(0 0, 100% 0, 100% 97%, 0 100%);
+
+  .go-manga-frames, .go-manga-panel { display: none; }
+  .go-manga-tone, .go-manga-lines, .go-left {
+    inset: var(--panel-top) 16px auto; bottom: calc(100% - var(--panel-end)); width: auto; height: auto;
+    clip-path: var(--panel-cut);
+  }
+  .go-manga-tone { background: #141218; }
+  .go-manga-tone::after {
+    content: ""; position: absolute; inset: 6px; clip-path: var(--panel-cut);
+    background: color-mix(in srgb, var(--go-accent) 48%, #fff);
+  }
+  .go-manga-lines {
+    margin: 6px; mask: radial-gradient(ellipse at 50% 46%, transparent 21%, #0008 60%, #000);
+    background: repeating-conic-gradient(from 3deg at 50% 46%, #19121b 0 .6deg, transparent .6deg 3.4deg);
+  }
+  .go-left { margin: 6px; }
+  .go-portrait { top: 45%; bottom: auto; height: 1100px; transform: translateY(-273px); }
+  .go-heading { z-index: 4; }
+  .go-title { inset: var(--top-margin) auto auto 17px; width: 403px; height: 103px; }
+  .go-clock { inset: var(--top-margin) 6px auto auto; width: 190px; height: 130px; }
+  .go-count { font-size: 76px; }
+  .go-clock::before { left: -4px; top: 8px; font-size: 24px; }
+  .go-clock::after { right: 1px; bottom: 5px; font-size: 24px; }
+  .go-limit-note {
+    inset: calc(var(--top-margin) + 100px) auto auto 29px;
+    width: auto; font-size: 20px; white-space: nowrap;
+  }
+  .go-look-name { z-index: 1; left: 49px; bottom: calc(100% - var(--panel-end) + 117px); font-size: 24px; }
+  .go-dialogue {
+    inset: auto 30px calc(100% - var(--panel-end) + 12px); width: auto; height: 124px;
+    padding: 12px 26px; border-radius: 38px;
+  }
+  .go-dialogue::before { left: 67%; }
+  .go-dialogue::after { left: calc(67% + 6px); }
+  .go-speech-text { white-space: normal; font-size: 32px; line-height: 1.32; }
+  mark.go-letter { text-decoration: underline; text-decoration-color: var(--go-accent); text-underline-offset: .1em; }
+  .end-actions, .go-playback, .go-difficulty {
+    inset: calc(var(--panel-end) + 16px) 20px var(--foot); width: auto;
+  }
+  .end-actions { display: grid; grid-template-rows: 1fr 1fr; gap: 14px; }
+  .end-actions[hidden] { display: none; }
+  &[data-choice]:not([data-timed-out="true"]) .end-actions[hidden] { display: grid; }
+  .go-choice, .go-proceed {
+    position: relative; inset: auto; width: 100%; height: 100%; min-height: 0;
+    clip-path: none; border: 5px solid #141218; box-shadow: 5px 5px 0 #141218;
+    background-color: #fff; font-size: 36px;
+  }
+  .go-choice:not(:disabled):is(:focus-visible, :active), .go-proceed:is(:focus-visible, :active) {
+    background-color: #111; color: #fff;
+  }
+  @media (hover: hover) {
+    .go-choice:not(:disabled):hover, .go-proceed:hover { background-color: #111; color: #fff; }
+  }
+  .go-quit { grid-row: 2; }
+  &[data-choice="quit"] .go-quit { grid-row: 1; }
+  &:is([data-choice="retry"], [data-choice="quit"]) .go-choice:disabled { background-color: #111; }
+  .go-playback { pointer-events: none; }
+  .go-caption-controls { position: absolute; inset: calc(50% + 7px) 0 0; }
+  .go-proceed { pointer-events: auto; }
+  &[data-phase="difficulty"] { --panel-end: min(900px, 65%); }
+  .go-difficulty { clip-path: none; border: 5px solid #111; padding: 8px 18px; gap: 4px; outline: none; }
+  .go-difficulty-title { font-size: 28px; margin: 0; }
+  .go-difficulty-list { gap: 5px; }
+  .go-difficulty-choice { min-height: calc(44.2px / var(--page-scale)); padding: 3px 8px; font-size: 29px; }
+  .go-effect { inset: var(--panel-top) 16px calc(100% - var(--panel-end)); overflow: hidden; pointer-events: none; }
+  .go-approval, .go-effect-word, .go-stars { left: auto; right: 18px; top: 8%; }
+  .go-pencil, .go-scan { left: 50%; top: 32%; translate: -50% 0; }
+  .go-wave { left: 6%; top: 55%; width: 88%; }
+  &[data-timed-out="true"] .go-title { position: relative; inset: auto; width: 88%; height: 200px; }
+}

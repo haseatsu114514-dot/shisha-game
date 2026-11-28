@@ -413,11 +413,12 @@ export function clearScreen() {
  * 煙が床から昇って画面を覆い（約0.7秒）、覆っている間に mid()、そのあとゆっくり上へほどける（約1.2秒）。
  * 覆っている間は #wipe に cover を付ける（覆いの有無を見る処理のため）。
  */
-export async function smokeWipe(mid, { color = "light" } = {}) {
+export async function smokeWipe(mid, { color = "light", resume = false } = {}) {
   const w = layers.wipe;
   w.dataset.color = color;
   w.classList.remove("clear");
   w.classList.add("cover", "smoke");
+  if (resume) w.classList.add("resume");
   const veil = el("div.wipe-smoke");
   const haze = el("div.wipe-haze", { style: { backgroundImage: `url("${smokeArt().haze}")` } });
   w.append(veil, haze);
@@ -443,7 +444,7 @@ export async function smokeWipe(mid, { color = "light" } = {}) {
   } finally {
     veil.remove();
     haze.remove();
-    w.classList.remove("cover", "clear", "smoke");
+    w.classList.remove("cover", "clear", "smoke", "resume");
   }
 }
 

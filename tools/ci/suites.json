@@ -5604,6 +5604,26 @@
       ]
     },
     {
+      "id": "continue-vertical",
+      "title": "Portrait continue presentation: title resume smoke and tournament CONTINUE manga layout",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 8,
+      "paths": [
+        "remake/css/look-vertical-continue.css",
+        "remake/js/looks/vertical.js",
+        "remake/js/looks/**",
+        "remake/js/chapters/gameover.js",
+        "remake/js/chapters/continue-view.js",
+        "remake/js/scenes/title.js",
+        "remake/js/core/ui.js",
+        "remake/test/browser/continue_vertical.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/continue_vertical.mjs"
+      ]
+    },
+    {
       "id": "romance-hesitation",
       "title": "New romance hesitation model and VN controller: eight heroines, cancel, apology, LOAD and duplicate clicks",
       "kind": "quick",

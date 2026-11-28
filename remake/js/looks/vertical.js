@@ -72,8 +72,13 @@ function start() {
     tapPicture: () => { scene?.tap?.(); wake(400); },
     tapTelop: () => { scene?.tap?.(); wake(400); },
   });
-  const own = [frame.root];
+  // タイトルからのロードでは本編の煙そのものを縦の舞台に重ねる。時計も SE も本編が所有する。
+  const resumeSmoke = el("div.vt-resume-smoke", { "aria-hidden": "true" });
+  document.body.append(resumeSmoke);
+  const own = [frame.root, resumeSmoke];
   const scenes = {
+    // CONTINUE は本編の文字・ボタン・アニメーションを直接表示する。
+    continue: { native: true },
     title: createTitleScene(frame), vn: createTalkScene(frame), map: createMapScene(frame), menu: createMenuScene(frame),
     sheet: createSheetScene(frame), cover: createCoverScene(frame, own), board: createBoardScene(frame), craft: createCraftScene(frame),
   };
@@ -102,11 +107,13 @@ function start() {
     scene = next ? scenes[next] : null;
     frame.root.dataset.scene = sceneName;
     frame.root.dataset.layout = scene?.layout || ""; // "full": 下画面を出さない場面（試作どおりのタイトルなど）
-    frame.root.hidden = !scene;
+    frame.root.hidden = !scene || !!scene.native;
+    root.toggleAttribute("data-vt-continue", !!scene?.native);
     if (next !== "cover") holdSince = 0; // 覆いを待つ時間は、覆いに入るたびに数え直す（前の転換から数えると、すぐ待ちすぎと判断してしまう）
     if (scene) {
-      root.dataset.vtShell = "on";
-      scene.enter();
+      if (scene.native) delete root.dataset.vtShell;
+      else root.dataset.vtShell = "on";
+      scene.enter?.();
       dirty = true;
     } else {
       delete root.dataset.vtShell;
@@ -117,7 +124,12 @@ function start() {
 
   /** 定期の確認（1 秒に 9 回ほど）。DOM の変化を受けた臨時の確認では、外枠を引っ込める・つなぐ判断だけを行う。 */
   function evaluate(now, periodic) {
-    let found = boardOpen() ? { kind: "scene", name: "board" } : detectState(own);
+    const wipe = document.querySelector("#wipe.resume");
+    if (wipe) resumeSmoke.append(...wipe.querySelectorAll(".wipe-smoke, .wipe-haze"));
+    let found = boardOpen() ? { kind: "scene", name: "board" } : detectState(wipe ? [...own, wipe] : own);
+    if (found.variant === "end" && document.querySelector('#screen > .gameover[data-layout="manga"]:not(.done)')) {
+      found = { kind: "scene", name: "continue" };
+    }
     // シーシャ作り: 作業台の今の工程に縦の画面があれば、作る場面として写す（会話・写せる小窓が上に出ている間と、画面の一番上の小窓の間は除く）
     if (found.kind !== "scene" && !topDialogOpen() && craftOpen()) found = { kind: "scene", name: "craft" };
     // 地図のピンが現れる演出・地図の上のスロットの間も、地図のまま写す
@@ -191,7 +203,7 @@ function start() {
     if (dirty || now - lastSync >= SYNC_MS) {
       dirty = false;
       lastSync = now;
-      scene.sync({ pressable, gap, hold });
+      scene.sync?.({ pressable, gap, hold });
       syncNotices();
     }
   }
@@ -226,7 +238,7 @@ function start() {
     if (typed && scene && !stopped && !other) {
       dirty = false;
       lastSync = performance.now();
-      scene.sync({ pressable, gap, hold });
+      scene.sync?.({ pressable, gap, hold });
       return;
     }
     if (dirty) wake();
@@ -259,6 +271,8 @@ function start() {
       document.removeEventListener("visibilitychange", onVisibility);
       setScene(null);
       frame.unmount();
+      document.getElementById("wipe")?.append(...resumeSmoke.children);
+      resumeSmoke.remove();
       hintText?.remove();
       delete window.__verticalLook;
       delete root.dataset.vt;
