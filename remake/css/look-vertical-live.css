@@ -80,15 +80,6 @@ html body #viewport #stage[data-portrait-scene] #screen .bench .bench-top {
 html body #viewport #stage[data-portrait-scene="steam"] #screen .bench .bench-worker .worker-actor {
   width: 100%; height: auto; max-width: none; left: -16%; top: -30%; bottom: auto; transform: none;
 }
-html body #viewport #stage[data-portrait-scene="steam"] #screen .bench[data-mode] .steam-play > .dodge-timer {
-  position: static !important; inset: auto !important; transform: none !important;
-  order: -1; align-self: center; margin: 0 auto !important;
-}
-#stage[data-portrait-scene="steam"] .bench .steam { display: flex; flex-flow: column; align-items: center; width: 100%; height: auto; gap: 14px; }
-#stage[data-portrait-scene="steam"] .bench .steam-play { width: 100%; display: flex; flex-direction: column; gap: 9px; }
-#stage[data-portrait-scene="steam"] .bench .dodge { flex: none; zoom: .73; }
-#stage[data-portrait-scene="steam"] .bench .dodge-controls { position: static; display: flex; width: 100%; flex-wrap: wrap; justify-content: space-around; gap: 8px; }
-#stage[data-portrait-scene="steam"] .bench .steam > .thermo { position: static; width: 100%; }
 
 /* 横の作業台には工程別の優先指定がある。縦の三段だけ、その幾何を一か所で決める。 */
 @layer portrait-bench {

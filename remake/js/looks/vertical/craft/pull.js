@@ -1,8 +1,10 @@
-// SVG の use で本編の針と成功帯を参照する。縦側には別の時計を持たない。
+// 半円の帯と針は本編の成功帯・針位置をそのまま表示する。
 import { el } from "../../../core/util.js";
 import { portraitBreath } from "../../../craft/portrait-breath.js";
 import { smokeAllowed, smokeLayer } from "../../../core/smoke.js";
 import { setAttr, setFlag, setText } from "../../../core/dom-write.js";
+
+import { meterHtml, portraitTools } from "./art.js";
 
 export const pullView = {
   id: "pull", step: "pull", intro: true,
@@ -13,9 +15,10 @@ export const pullView = {
       el("img." + pose, { src: new URL(i ? "craft-pull-hajime-exhale.webp" : "craft-pull-hajime.webp", art).href, alt: "" })));
     const smoke = el("div.vtc-pull-smoke");
     pic.append(smoke);
-    const gauge = el("div.vtc-pull-dial", { html: '<svg viewBox="0 0 480 240" aria-hidden="true"><use/></svg>' });
+    const gauge = el("div.vtc-pull-dial", { html: meterHtml() });
     const status = el("div.vtc-pull-status");
-    const life = el("span.vtc-pull-life");
+    const life = el("span.vtc-pull-life", { role: "img" });
+    let leafSignature = "", bandSignature = "", needleObserver;
     const actions = el("div.vtc-pull-actions");
     const ctrl = el("div.vtc-pull-controls", [gauge, status, life, actions]);
     let panel, buttons = [], sourceDial, sourcePlay, layer, poseTimer;
@@ -39,7 +42,9 @@ export const pullView = {
       leave() {
         endPose();
         layer?.destroy();
+        needleObserver?.disconnect();
         sourcePlay?.removeEventListener("pull-exhale", exhale);
+        sourcePlay?.removeEventListener("pull-inhale", endPose);
       },
       coach: bench => bench.querySelector(".bench-hint")?.textContent || "",
       thermo: () => ({ node: panel?.querySelector(".pull .thermo"), mode: "live" }),
@@ -50,11 +55,19 @@ export const pullView = {
         const dial = play.querySelector(".pull-dial > svg");
         if (sourceDial !== dial) {
           sourcePlay?.removeEventListener("pull-exhale", exhale);
+          sourcePlay?.removeEventListener("pull-inhale", endPose);
           sourcePlay = play;
+          play.addEventListener("pull-inhale", endPose);
           play.addEventListener("pull-exhale", exhale);
           sourceDial = dial;
-          dial.id = "vt-source-" + dial.querySelector("linearGradient").id;
-          gauge.querySelector("use").setAttribute("href", "#" + dial.id);
+          bandSignature = "";
+          needleObserver?.disconnect();
+          const needle = dial.querySelector(".pg-needle");
+          const aim = () => gauge.querySelector(".needle")?.setAttribute("transform",
+            "rotate(" + (Number(needle.dataset.pos) * 1.8 - 90) + " 100 100)");
+          needleObserver = new MutationObserver(aim);
+          needleObserver.observe(needle, { attributes: true, attributeFilter: ["data-pos"] });
+          aim();
           buttons = [...play.querySelectorAll(".pull-btns button")].map(source => {
             const timed = source.dataset.test === "pull-stop" || source.dataset.test === "pull-deep";
             const available = () => source.isConnected && !source.disabled && !source.closest("[inert]");
@@ -65,23 +78,42 @@ export const pullView = {
             if (timed) button.addEventListener("pointerdown", event => {
               if (event.button === 0 && available()) { event.preventDefault(); relay(source); }
             });
-            const icon = source.querySelector(".pull-btn-icon, .pull-serve-icon")?.cloneNode(true);
-            const label = el("span");
-            if (icon) button.append(icon);
-            button.append(label);
-            return { source, button, label };
+            const kind = source.dataset.test;
+            const tool = kind === "pull-stop" ? "mouthpiece" : kind === "pull-serve" ? "serve" : null;
+            if (tool) button.append(el("span.vtc-pull-icon", { html: portraitTools[tool] }));
+            const label = el("span"), dots = el("span.vtc-pull-pips", { "aria-hidden": "true" });
+            const slots = kind === "pull-stop" ? play.querySelectorAll(".pull-pip").length
+              : kind === "pull-serve" ? Number(source.dataset.minPulls) : 0;
+            for (let i = 0; i < slots; i++) dots.append(el("i"));
+            button.append(label, dots);
+            return { source, button, label, dots, kind };
           });
           actions.replaceChildren(...buttons.map(item => item.button));
         }
-        if (play.dataset.draw) endPose();
+        const bounds = [...dial.querySelectorAll(".pg-just")].flatMap(z => [Number(z.dataset.from), Number(z.dataset.to)]);
+        if (String(bounds) !== bandSignature) {
+          bandSignature = String(bounds);
+          gauge.innerHTML = meterHtml(bounds);
+          const pos = Number(dial.querySelector(".pg-needle").dataset.pos || 0);
+          gauge.querySelector(".needle").setAttribute("transform", "rotate(" + (pos * 1.8 - 90) + " 100 100)");
+        }
         const leaves = play.querySelector(".leaf-icon");
-        setText(life, leaves ? `葉の持ち　${leaves.dataset.hp}/${leaves.childElementCount}` : "");
-        if (leaves) life.title = leaves.getAttribute("aria-label") || "";
-        setText(status, [play.querySelector(".pull-current-zone > b"), play.querySelector(".pull-count-num"),
-          play.querySelector(".pull-destination")].map(node => node?.textContent).filter(Boolean).join("　"));
-        for (const { source, button, label } of buttons) {
-          const main = source.querySelector(".btn-label");
-          setText(label, main?.firstChild?.textContent || source.textContent);
+        if (leaves) {
+          const stages = [...leaves.children].map(n => n.dataset.stage).join(",");
+          if (stages !== leafSignature) {
+            leafSignature = stages;
+            life.replaceChildren(...[...leaves.children].map(node => node.cloneNode(true)));
+            setAttr(life, "aria-label", leaves.getAttribute("aria-label") || "葉の持ち " + leaves.dataset.hp);
+          }
+        }
+        const pips = [...play.querySelectorAll(".pull-pip")];
+        const count = pips.filter(pip => pip.classList.contains("on")).length;
+        setText(status, play.querySelector(".pull-current-zone > b")?.textContent || "");
+        for (const { source, button, label, dots, kind } of buttons) {
+          const text = source.querySelector(".btn-label")?.firstChild?.textContent || source.textContent;
+          setText(label, kind === "pull-stop" ? "吸う" : kind === "pull-serve" ? "提供" : text);
+          setAttr(button, "aria-label", text + (dots.children.length ? " " + count + "口" : ""));
+          [...dots.children].forEach((dot, i) => dot.classList.toggle("on", i < count));
           setFlag(button, "disabled", source.disabled);
           if (source.hasAttribute("aria-pressed")) setAttr(button, "aria-pressed", source.getAttribute("aria-pressed"));
         }

@@ -309,6 +309,8 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
       baseTo < to ? dialSector(baseTo, to) : "",
     ].join(" "));
     senseExtras[i].dataset.span = extra.toFixed(4);
+    justs$[i].dataset.from = from;
+    justs$[i].dataset.to = to;
     justs$[i].dataset.span = (to - from).toFixed(4); // 芯（成功帯）の実際の幅（ダイヤル一周＝1）
   });
   placeJusts();
@@ -338,7 +340,7 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
   }):null;
   const serveStatus = el("span.pull-serve-status", { role: "status", dataset: { test: "pull-serve-status" } });
   const serveIcon = el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="23" width="8" height="14" rx="1.5"/><path d="m11 26 7-6c1-1 3-1 4-1h6c2 0 3 1 3 3s-1 3-3 3h-7M11 34h16c2 0 4-1 6-2l10-7c2-1 3-4 1-6s-3-1-5 0l-8 6"/></svg>' });
-  const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [
+  const serveBtn = el("button.btn", { dataset: { test: "pull-serve", minPulls: mode.min }, disabled: true }, [
     serveIcon, el("span.btn-label", { text: serveBtnLabel }), serveStatus,
   ]);
   // 吸った回数の点。無傷で吸える回数を超える点は橙の枠で、吸いすぎの範囲だと分かるようにする。
@@ -523,6 +525,7 @@ async function pullGame(cs, mode, { holdFailedResult = false, review = null } = 
     const from = coreTemp, to = clamp(from + heat, 0, 1), sway = T - coreTemp;
     const insuranceAtStart = !!cs.growthInsuranceUsed;
     play.dataset.draw = z.id;
+    play.dispatchEvent(new CustomEvent("pull-inhale"));
     play.style.setProperty("--draw-duration", `${duration}ms`);
     pullLabel.textContent = "吸っている…";
     drawStatus.textContent = `${z.label}で吸っている…`;

@@ -99,7 +99,9 @@ export async function runSteamDodge(cs) {
     : "";
   const panel = stepPanel("steam", "蒸らし", dodgeHelp + attackHelp, { brief: "" });
   const isCurrent = () => state === owner && benchRoot(cs) === root && panel.dataset.step === "steam";
-  const W = 784, H = 414;
+  // 縦は同じ面積の正方形を基準にする。描画・出現位置・接触判定・指の座標がこの寸法を共用する。
+  const portrait = root.ownerDocument?.documentElement.dataset.vt === "on";
+  const W = portrait ? 570 : 784, H = portrait ? 570 : 414;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius), stage, table: table.id } });
   const heart = el(`div.dodge-heart${effectVisible("guts") ? ".guts-visible" : ""}`, { role: "img", "aria-label": "心。中央の白丸が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core"), effectBadge("guts", "根")]);
   const clock = buildDigitalClock("dodge-timer", { label: "蒸らしの残り時間", test: "steam-clock" });
@@ -507,6 +509,7 @@ export async function runSteamDodge(cs) {
           }
           if (b.x + b.w < -60 || b.x > W + 60 || b.y + b.h < -60 || b.y > H + 60) { b.node.remove(); bullets.splice(i, 1); }
         }
+        if (portrait) box.style.setProperty("--steam-left", Math.max(0, 1 - time / dur).toFixed(3));
         clock.update(Math.max(0, Math.ceil((dur - time) * seconds / dur)));
         const level = mental.update(time, hits);
         setPlayerMental(cs, level); setData(box, "mental", level);

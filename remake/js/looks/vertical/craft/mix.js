@@ -1,44 +1,89 @@
-// 葉・手持ち・課題と使える操作は、いま本編が並べているものを使う。
+// 本編の在庫と計量ボタンを、縦試作のジャンル別の棚に並べる。
 import { el } from "../../../core/util.js";
 import { setText } from "../../../core/dom-write.js";
+import { DB } from "../../../core/data.js";
+import { FLAVORS } from "../../../daily/tonari-floor-data.js";
+import { GENRES } from "./art.js";
 
+const shelfState = new WeakMap();
+const redLeaves = new Set(["double_apple", "blueberry", "strawberry", "grape", "watermelon"]);
+const categoryFamily = { fruit: "fruit", sweet: "sweet", cooling: "fresh", spice: "fresh", floral: "deep" };
+const art = new URL("previews/portrait-stage/img/", document.baseURI);
+const image = (cls, name) => el("img." + cls, { src: new URL(name + ".webp", art).href, alt: "" });
+function genre(id, named) {
+  const { name, icon, color } = GENRES[id];
+  return el(named ? "button.vtc-genre" : "i.vtc-genre", { type: named ? "button" : null,
+    "aria-label": name, title: name, style: { "--g": color },
+    html: '<svg aria-hidden="true" viewBox="0 0 24 24">' + icon + "</svg>" + (named ? "<b>" + name + "</b>" : "") });
+}
+
+// 商品画像の元の切り出し範囲を保ち、棚の高さに合わせて拡縮する。
+function packageCrop(row) {
+  const source = row.querySelector(".fr-package img");
+  if (!source) return row.querySelector(".fr-package").cloneNode(true);
+  const w = parseFloat(source.parentElement.style.width), h = parseFloat(source.parentElement.style.height);
+  const pct = (prop, size) => (parseFloat(source.style[prop]) / size * 100) + "%";
+  const picture = el("img", { src: source.src, alt: "", style: { width: pct("width", w), height: pct("height", h),
+    left: pct("left", w), top: pct("top", h) } });
+  return el("span.fr-package", [el("span.vtc-packet", { style: { aspectRatio: w + " / " + h } }, [picture])]);
+}
 export const mixView = {
   id: "mix", step: "mix", intro: true,
   match: panel => !!panel.querySelector(".mix"),
   create({ relay, hold }) {
-    const art = new URL("previews/portrait-stage/img/", document.baseURI);
-    const bowl = el("img.vtc-scale-bowl", { src: new URL("ui-bowl-empty.webp", art).href, alt: "" });
+    const layers = ["empty", "partial-brown", "partial", "normal-brown", "normal"].map(s => image("vtc-scale-bowl", "ui-bowl-" + s));
     const grams = el("b.vtc-scale-digits");
-    const pic = el("div.vtc-scale", [el("img.vtc-scale-base", { src: new URL("ui-scale.webp", art).href, alt: "" }), bowl, grams]);
-    const shelf = el("div.vtc-leaves");
-    const actions = el("div.vtc-mix-tools");
-    const ok = el("button.vtc-bench-button", { type: "button", disabled: true });
-    const reg = el("span");
-    const ctrl = el("div.vtc-mix-controls", [shelf, el("div.vtc-mix-footer", [reg, ok])]);
-    let panel, rows = [], extras = [];
-    const holds = [];
+    const pic = el("div.vtc-scale", [image("vtc-scale-base", "ui-scale"), ...layers, grams]);
+    const shelf = el("div.vtc-leaves"), genres = el("div.vtc-genres");
+    const selected = el("div.vtc-mix-selected");
+    const reg = el("span.vtc-mix-reg");
+    const ok = el("button.vtc-mix-ok", { type: "button", text: "決定", disabled: true, dataset: { test: "vt-mix-ok" } });
+    const details = el("details.vtc-mix-notes", [el("summary", { text: "配合メモ" })]);
+    const ctrl = el("div.vtc-mix-controls", [genres, shelf, el("div.vtc-mix-footer", [selected, ok]), details]);
+    let panel, selection, rows = [], chosen, sort;
+    const extras = [], holds = [];
     const available = source => source?.isConnected && !source.disabled && !source.closest("[inert]");
-    function tap(button) {
-      if (available(button)) relay(button);
-    }
-    ok.onclick = () => tap(panel?.querySelector('[data-test="mix-ok"]'));
     function proxy(source, repeat = false) {
-      function click(detail) {
-        // 本編の holdRepeat が長押し後の click を除外できるよう detail を渡す。
-        if (available(source)) source.dispatchEvent(new MouseEvent("click", { bubbles: true, detail }));
-      }
       const button = el("button.vtc-bench-button", { type: "button", text: source.textContent,
         "aria-label": source.getAttribute("aria-label"), dataset: { test: "vt-" + source.dataset.test },
         onclick: event => {
-          if (!repeat) tap(source);
-          else click(event.detail);
+          if (!available(source)) return;
+          if (repeat) source.dispatchEvent(new MouseEvent("click", { bubbles: true, detail: event.detail }));
+          else relay(source);
         } });
-      if (repeat) holds.push(hold(button, () => available(source) ? source : null, () => click(1)));
+      if (repeat) holds.push(hold(button, () => available(source) ? source : null, () => {
+        if (available(source)) source.dispatchEvent(new MouseEvent("click", { bubbles: true, detail: 1 }));
+      }));
       return button;
     }
-    return {
-      pic, ctrl,
-      leave() { holds.forEach(binding => binding.end()); },
+    function select(item) {
+      chosen?.tile.setAttribute("aria-pressed", "false");
+      chosen = item;
+      selection.flavor = item.id;
+      item.tile.setAttribute("aria-pressed", "true");
+      selected.replaceChildren(item.info, item.minus, item.amount, item.plus);
+    }
+    function sortBy(id) {
+      sort = id;
+      if (selection) selection.genre = id;
+      for (const chip of genres.children) chip.setAttribute("aria-pressed", String(chip.dataset.genre === id));
+      for (const item of rows) {
+        const dim = !!id && !item.families.includes(id);
+        item.tile.style.order = dim ? 1 : 0;
+        item.tile.classList.toggle("dim", dim);
+      }
+      shelf.scrollTop = 0;
+    }
+    for (const id of Object.keys(GENRES)) {
+      const chip = genre(id, true);
+      chip.dataset.genre = id;
+      chip.setAttribute("aria-pressed", "false");
+      chip.onclick = () => sortBy(sort === id ? null : id);
+      genres.append(chip);
+    }
+    ok.onclick = () => { const source = panel?.querySelector('[data-test="mix-ok"]'); if (available(source)) relay(source); };
+    return { pic, ctrl, spots: { shelf, selected, ok },
+      leave() { holds.forEach(h => h.end()); },
       coach: bench => bench.querySelector(".bench-hint")?.textContent || "",
       thermo: () => ({ node: panel?.querySelector(".mix-temperature-preview .thermo"), mode: "bands" }),
       sync(next) {
@@ -46,35 +91,59 @@ export const mixView = {
         const live = panel.querySelector(".mix");
         if (!live) return;
         if (!rows.length) {
-          extras = [...live.querySelectorAll(".mix-list-head button")].map(source => ({ source, button: proxy(source) }));
-          actions.replaceChildren(...extras.map(item => item.button));
+          for (const source of live.querySelectorAll(".mix-list-head button")) {
+            const button = proxy(source);
+            extras.push({ source, button });
+            details.append(button);
+          }
+          details.append(reg);
           rows = [...live.querySelectorAll(".flavor-row")].map(row => {
-            const amount = el("b"), info = proxy(row.querySelector(".fr-feature"));
-            const image = row.querySelector(".fr-package img");
-            if (image) info.prepend(el("img", { src: image.src, alt: "" }));
-            const [minus, plus] = [...row.querySelectorAll(".fr-btn")].map(source => proxy(source, true));
+            const id = row.dataset.flavor, f = FLAVORS[id];
+            const family = categoryFamily[DB.flavorById[id]?.category];
+            const families = f ? [f.family, ...f.also] : family ? [family] : [];
+            if (id === "double_apple") families.push("fruit");
+            const name = f?.full || row.querySelector(".fr-feature b").textContent;
+            const pack = packageCrop(row);
+            const badge = el("b.vtc-leaf-grams");
+            const tile = el("button.vtc-leaf", { type: "button", "aria-label": name, "aria-pressed": "false",
+              dataset: { test: "vt-mix-select-" + id } }, [pack, el("span", { text: name }), el("span.vtc-leaf-tags", families.map(key => genre(key, false))), badge]);
+            const info = proxy(row.querySelector(".fr-feature"));
             const note = row.querySelector(".fr-reg, .fr-stock, .fr-name > small");
-            const name = el("div.vtc-leaf-name", [info, el("small", { text: note?.textContent || "" })]);
-            return { row, amount, node: el("div.vtc-leaf", [name, minus, amount, plus]) };
+            if (note) info.append(el("small", { text: note.textContent }));
+            const [minus, plus] = [...row.querySelectorAll(".fr-btn")].map(source => proxy(source, true));
+            const item = { id, families, tile, info, minus, plus, badge, amount: el("b"), liveAmount: row.querySelector(".fr-g") };
+            tile.onclick = () => select(item);
+            return item;
           });
-          shelf.replaceChildren(actions, ...rows.map(item => item.node));
+          shelf.replaceChildren(...rows.map(r => r.tile));
+          selection = shelfState.get(live) || {};
+          shelfState.set(live, selection);
+          if (rows.length) select(rows.find(item => item.id === selection.flavor) || rows[0]);
+          sortBy(selection.genre || null);
         }
-        for (const { row, amount } of rows) setText(amount, row.querySelector(".fr-g").textContent);
+        let red = 0;
+        for (const item of rows) {
+          const amount = item.liveAmount.textContent;
+          setText(item.amount, amount);
+          setText(item.badge, parseFloat(amount) ? amount : "");
+          if (redLeaves.has(item.id)) red += parseFloat(amount);
+        }
         for (const { source, button } of extras) {
           button.disabled = source.disabled;
           if (source.hasAttribute("aria-pressed")) button.setAttribute("aria-pressed", source.getAttribute("aria-pressed"));
         }
-        const total = live.querySelector(".lcd").textContent;
-        setText(grams, total.split("/")[0].trim());
-        const filled = live.querySelector(".mix-vessel").dataset.filled;
-        if (bowl.dataset.filled !== filled) {
-          bowl.dataset.filled = filled;
-          bowl.src = new URL(filled === "true" ? "ui-bowl-normal.webp" : "ui-bowl-empty.webp", art).href;
-        }
-        setText(reg, [total, live.querySelector(".reg-line").textContent].filter(Boolean).join("　"));
-        const confirm = live.querySelector('[data-test="mix-ok"]');
-        setText(ok, confirm.textContent);
-        ok.disabled = confirm.disabled;
+        const lcd = live.querySelector(".lcd").textContent;
+        const [total, cap] = lcd.split("/").map(parseFloat);
+        const fill = total / cap, redRatio = total ? red / total : 0;
+        const alpha = v => Math.max(0, Math.min(1, v));
+        const partial = alpha((fill - .05) / .35), full = alpha((fill - .5) / .5);
+        [1, partial, partial * redRatio, full, full * redRatio].forEach((a, i) => { layers[i].style.opacity = a.toFixed(2); });
+        setText(grams, String(total).padStart(2, "0") + " g");
+        const rule = live.querySelector(".reg-line").textContent;
+        setText(reg, lcd + "　" + rule);
+        const source = live.querySelector('[data-test="mix-ok"]');
+        ok.disabled = source.disabled;
+        ok.title = source.textContent;
       },
     };
   },

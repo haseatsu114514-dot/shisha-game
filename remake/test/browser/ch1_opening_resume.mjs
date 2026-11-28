@@ -160,7 +160,17 @@ await suite("ch1-opening-resume", async check => {
   await check("interrupted-first-craft-restarts-and-completes", async page => {
     await setup(page, { choice: "practice", auto: null });
     await page.evaluate(() => O.run("new"));
+    await page.locator(".bench-guide[open]").waitFor();
+    assert.equal(await page.locator(".bench-title").textContent(), "水入れ");
+    await page.locator('[data-test="bench-guide-close"]').click();
+    const pour = page.locator('[data-test="water-pour"]');
+    await pour.focus();
+    await page.keyboard.down("Space");
+    await page.waitForFunction(() => Number(document.querySelector('[data-test="water-meter"]').getAttribute("aria-valuenow")) > 0);
+    await page.keyboard.up("Space");
+    await page.locator('[data-test="water-confirm"]').click();
     await page.locator('[data-test="mix-ok"]').waitFor();
+    assert.equal(await page.locator(".bench-title").textContent(), "フレーバーのミックス");
     const interrupted = await page.evaluate(() => O.snapshot());
     assert.equal(interrupted.saved.phase, "opening");
     assert.equal(interrupted.saved.flags._ch1_opening.tutorialChoice, "practice");

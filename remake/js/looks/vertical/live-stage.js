@@ -41,7 +41,7 @@ export function livePortraitScene() {
     const panel = screen.querySelector(".bench-panel");
     if (!panel) return "";
     const step = panel.dataset.step;
-    if (step === "steam" && (panel.querySelector(".steam, .dodge") || screen.querySelector(".bench-title")?.textContent === "0分蒸らし")) return "steam";
+    if (step === "steam" && screen.querySelector(".bench-title")?.textContent === "0分蒸らし") return "steam";
     if (step === "place" || panel.querySelector(".vent-preview") || step === "setup" && screen.querySelector(".bench-title")?.textContent.startsWith("機材")) return "equipment";
   }
   return "";
