@@ -106,6 +106,61 @@
 .vtc-ok[disabled] { filter: grayscale(1) brightness(0.7); cursor: default; } .vtc-ok[disabled]::before { animation: none; }
 .vtc-lab { position: absolute; z-index: 4; left: 0; right: 0; bottom: 15%; text-align: center; font-size: calc(var(--ok) * 0.12); line-height: 1.1; font-weight: 800; letter-spacing: 0.06em; color: #fff; text-shadow: 0 calc(0.1 * var(--u)) calc(0.4 * var(--u)) #0b0812, 0 0 calc(0.2 * var(--u)) #0b0812; pointer-events: none; }
 
+/* 押している間だけ効く丸いボタン（注ぐ・こぼす・刺す）。押している間は少し沈んで明るくなる。長押しでメニューや文字選びを出さない */
+.vtc-hold { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.vtc-ok.vtc-hold.pressing { transform: scale(0.95); filter: brightness(1.15); }
+.vtc-ok.hot { box-shadow: 0 0 0 calc(0.35 * var(--u)) #ffffffcc, 0 0 calc(4.6 * var(--u)) #fff, 0 0 calc(2 * var(--u)) var(--acc), 0 calc(1.4 * var(--u)) calc(2.6 * var(--u)) #000b; }
+/* ボタンの白い図形（試作の .tool-svg）と、図形の下の短い言葉（.vtc-lab） */
+.vtc-tool-t { position: absolute; z-index: 1; inset: 0; margin: 0; display: block; }
+.vtc-tool { position: absolute; inset: 9% 21% 31% 21%; width: 58%; height: 60%; overflow: visible; fill: currentColor; color: #fff;
+  filter: drop-shadow(0 calc(0.2 * var(--u)) calc(0.5 * var(--u)) #0b0812) drop-shadow(0 0 calc(0.15 * var(--u)) #0b0812); }
+
+/* ───────── 水入れ（試作の water・VPL36・VPL81・VPL92・VPL101・VPL111〜VPL113・VPL119）: 流し台と蛇口の下のボトル、下にこぼす・注ぐ・決定 ───────── */
+.vtc[data-step="water"] { --ok: calc(12 * var(--u)); --edge: var(--u); --cp: calc(var(--low) + var(--ok) + 0.6 * var(--u)); }
+@container vtshell (min-aspect-ratio: 39 / 80) { .vtc[data-step="water"] { --ok: calc(10.8 * var(--u)); --edge: var(--u); } }
+@container vtshell (min-aspect-ratio: 39 / 71) { .vtc[data-step="water"] { --ok: calc(9.6 * var(--u)); --edge: var(--u); } }
+/* 上の絵は、いちばん下の段のすぐ上まで続ける（流し台の下の戸棚が一言の後ろまで見える）。紫の幕はボタンの段のすぐ上から下だけ */
+.vtc[data-step="water"] .vtc-pic { height: calc(100% - var(--low) - var(--ok) - 1.2 * var(--u) - var(--safe-b));
+  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 95%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 95%, transparent 100%); }
+.vtc[data-step="water"] .vtc-veil { top: calc(100% - var(--low) - var(--ok) - 4 * var(--u) - var(--safe-b)); }
+.vtc-water-pic { --bw: min(calc(24 * var(--u)), calc((100cqh - var(--cp) - 16.4 * var(--u)) / 1.63)); position: absolute; inset: 0; background: radial-gradient(ellipse 70% 46% at 50% 60%, #ffe2a61f, transparent 70%); }
+/* ボトル（540×800）: 蛇口のてっぺんがランクのすぐ下、カウンターの手前の縁が一言の段の真ん中に来る高さ。流し台の真ん中が画面の真ん中 */
+.vtc-bottle { position: absolute; left: calc(50% - var(--bw) * 0.179); top: calc(11.6 * var(--u) + var(--bw) * 0.3325); width: var(--bw); aspect-ratio: 540 / 800; transform: translateX(-50%); }
+.vtc-glass, .vtc-bottle-svg { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+.vtc-glass { transform-origin: 50% 98.75%; transform: rotate(8deg); filter: drop-shadow(0 calc(1.2 * var(--u)) calc(1.8 * var(--u)) #000b); pointer-events: none; }
+.vtc-bottle-svg { overflow: visible; pointer-events: none; }
+/* 流し台と蛇口（1152×1010）。手前の縁から下をもう1枚ボトルの上に重ね、ボトルの足を流し台の中に隠す */
+.vtc-sink { position: absolute; z-index: 0; left: -41.33%; top: -24.9%; width: 222.6%; max-width: none; height: auto; pointer-events: none; filter: drop-shadow(0 var(--u) calc(1.6 * var(--u)) #0009); }
+.vtc-sink.front { z-index: 1; filter: none; -webkit-clip-path: inset(85.3% 0 0 0); clip-path: inset(85.3% 0 0 0); }
+/* 前板の下は流し台の下の戸棚（ステンレスの扉）で、いちばん下の段の上まで埋める */
+.vtc-cabinet { position: absolute; z-index: 1; left: -41.33%; width: 222.6%; top: calc(106.9% - 0.2 * var(--u)); height: calc(60 * var(--u)); pointer-events: none;
+  background: linear-gradient(180deg, #00000066 0, transparent calc(0.8 * var(--u))), repeating-linear-gradient(90deg, transparent 0 calc(25% - 0.1 * var(--u)), #0000004d calc(25% - 0.1 * var(--u)) 25%), linear-gradient(180deg, #8a6e5c, #5a463d 40%, #2c2027); }
+/* 水面の色: 赤＝ステムに届いていない、緑＝ちょうど、金＝浅い・深い */
+.vtc-w-body { opacity: 0.94; } .vtc-w-deep { fill: #123f80; opacity: 0.22; }
+.vtc-w-surf { fill: none; stroke: #e8fbff; stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.2s; }
+.vtc-water-pic[data-zone="none"] .vtc-w-surf { stroke: #ff8a8a; } .vtc-water-pic[data-zone="ideal"] .vtc-w-surf { stroke: #7df0b0; }
+.vtc-water-pic:is([data-zone="shallow"], [data-zone="deep"]) .vtc-w-surf { stroke: #ffe07a; }
+.vtc-w-band { fill: #7df0b0; opacity: 0.16; transition: opacity 0.2s; } .vtc-water-pic[data-zone="ideal"] .vtc-w-band { opacity: 0.32; }
+.vtc-w-line2 { fill: none; stroke: #fff6c8; stroke-width: 6; stroke-dasharray: 18 10; filter: drop-shadow(0 0 2px #0b0812) drop-shadow(0 0 5px #0b0812); }
+.vtc-water-pic[data-zone="ideal"] .vtc-w-line2 { stroke: #7df0b0; }
+.vtc-w-mark rect { fill: #120c1de6; stroke: #fff6c8; stroke-width: 3; } .vtc-w-mark text { fill: #fff6c8; font-size: 30px; font-weight: 800; text-anchor: middle; }
+.vtc-water-pic[data-zone="ideal"] .vtc-w-mark rect { stroke: #7df0b0; } .vtc-water-pic[data-zone="ideal"] .vtc-w-mark text { fill: #7df0b0; }
+.vtc-w-stream { opacity: 0.8; filter: drop-shadow(0 0 3px #bfeaff); } .vtc-w-stream.in { opacity: 1; }
+.vtc-w-spill { fill: #bfeaff; opacity: 0.85; filter: drop-shadow(0 0 3px #bfeaff); }
+.vtc-w-bubbles circle { fill: #ffffff26; stroke: #e8fbff; stroke-width: 1.6; }
+.vtc-w-drops circle { fill: #e2f7ff; }
+/* こぼす・注ぐ・決定を同じ大きさで1段に（左下・真ん中・右下） */
+.vtc-w-drain { left: var(--edge); bottom: var(--low); }
+.vtc-w-pour { left: 50%; bottom: var(--low); margin-left: calc(var(--ok) / -2); }
+.vtc-w-ok { right: var(--edge); bottom: var(--low); }
+.vtc-water-ctrl .vtc-tool { inset: 8% 17% 30% 17%; width: 66%; height: 62%; } /* 注ぐ・こぼすはボトルを大きく見せる */
+.vtc-gl-pipe { fill: none; stroke: currentColor; stroke-width: 7; stroke-linecap: round; }
+.vtc-gl-glass { fill: none; stroke: currentColor; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; } .vtc-gl-glass.thin { stroke-width: 3; opacity: 0.8; }
+.vtc-w-pour.pressing .vtc-gl-drops circle { animation: vtc-drop-fall 0.42s linear infinite; }
+.vtc-w-pour.pressing .vtc-gl-drops circle:nth-child(2) { animation-delay: -0.14s; }
+.vtc-w-drain.pressing .vtc-gl-drop { animation: vtc-drop-fall 0.6s linear infinite; }
+@keyframes vtc-drop-fall { 0% { transform: translateY(-6px); opacity: 0.3; } 50% { opacity: 1; } 100% { transform: translateY(6px); opacity: 0.3; } }
+
 /* ───────── 詰め方（試作の pack・VPL77・VPL91）: 上に選んだ詰め方の器、下に3枚の札・説明・決定 ───────── */
 .vtc-pack-pic { position: absolute; inset: 0; }
 .vtc-bowl { position: absolute; left: 46%; top: 18%; height: 66%; max-width: none; transform: translateX(-50%); filter: drop-shadow(0 calc(2 * var(--u)) calc(2.4 * var(--u)) #000c); }

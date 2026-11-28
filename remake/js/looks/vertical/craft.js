@@ -1,16 +1,17 @@
-// 縦画面「煙の舞台」: シーシャ作り（作る場面・2026-11-28 VPN30）。見た目は試作（remake/previews/portrait-stage/ の app.mjs の craftHtml・
+// 縦画面「煙の舞台」: シーシャ作り（作る場面・2026-11-28 VPN30・VPN31）。見た目は試作（remake/previews/portrait-stage/ の app.mjs の craftHtml・
 //   craftTelopHtml・craftCtrlHtml・thermoHtml・rankHtml、style.css の作る場面の部分）と同じ:
 //   上＝工程の並び（絵記号の丸。今の工程が光る・名前の文字は出さない VPL31）と制作ランク、真ん中＝工程の絵と温度計、
 //   下＝スミさんの顔と一言・「？」、いちばん下＝工程ごとの操作。日付・体力・お金は出さない（VPL12）。外枠の十字キーと丸ボタンは使わず、
 //   画面いっぱいに組む（layout "full"。下画面の操作は工程ごとに形が違うため）。
 // 作り: 本編の作業台（craft/session.js の openBench・stepPanel と各工程の関数）は裏でそのまま動かし、その DOM（工程の並び・ランク・温度計・
-//   「?」の説明・工程の部品）を読んで描き、押した操作は本編の要素へ中継する（frame.js の relayTap）。規則・数値・採点・チュートリアル・
-//   自動の検査（craftTest）は本編のまま。試作の写しの計算は持ち込まない。
+//   「?」の説明・工程の部品）を読んで描き、押した操作は本編の要素へ中継する（タップは frame.js の relayTap、長押しは relayPress）。
+//   規則・数値・採点・チュートリアル・自動の検査（craftTest）は本編のまま。試作の写しの計算は持ち込まない。
 // 工程ごとの画面は looks/vertical/craft/<工程>.js に分け、下の登録表（VIEWS）から呼ぶ。登録の無い工程（まだ縦にしていない工程）では
 //   この場面にせず、今までどおり回転案内を出す（vertical.js の evaluate）。途中の工程だけ縦、で構わない。
 import { el } from "../../core/util.js";
-import { relayTap, mirrorBackground, cssUrl, liveBackground, textOf } from "./frame.js";
+import { relayTap, relayPress, mirrorBackground, cssUrl, liveBackground, textOf } from "./frame.js";
 import { createThermo } from "./craft/thermo.js";
+import { waterView } from "./craft/water.js";
 import { packView } from "./craft/pack.js";
 import { timerView } from "./craft/timer.js";
 
@@ -20,13 +21,15 @@ import { timerView } from "./craft/timer.js";
  *   step   … 本編の作業台の data-step（stepPanel の id）
  *   match(panel) … 本編のその工程の部品が出ているか（同じ data-step の別の画面と見分ける。蒸らしは時間決めと雑念回避が同じ "steam"）
  *   intro  … true なら、工程の部品を出す前の初回の「操作の説明」（パネルが空で説明が開いている間）もこの画面で写す
- *            （同じ data-step の工程のうち、部品の前に説明を開くのは1つだけ。蒸らしでは時間決め。雑念回避は場を出してから説明する）
+ *            （同じ data-step の工程のうち、部品の前に説明を開くのは1つだけ。蒸らしでは時間決め。雑念回避は場を出してから説明する）。
+ *            同じ data-step のほかの工程も部品の前に説明を開く時は、関数 intro(bench) で見分ける（水入れと機材は作業台の見出し）
  *   create(kit)  … 画面を作る。{ pic, ctrl, coach(bench), thermo(bench), sync(panel, bench), leave() } を返す
  *                  （pic＝真ん中の絵、ctrl＝いちばん下の操作、coach＝スミさんの一言、
  *                   thermo＝写す本編の温度計と見せ方 { node, mode: "bands"|"forecast"|"live", label, note }（無ければ null で温度計を出さない）。
- *                   押す操作は kit.relay(本編の要素) で中継する。長押しの工程は pointerdown／pointerup を本編の要素へ送る口を足す）
+ *                   押す操作は kit.relay(本編の要素) で中継する。長押しは kit.hold(外枠のボタン, () => 本編の要素) で、
+ *                   押した時に本編の要素へ pointerdown、離した時に pointerup を送る）
  */
-const VIEWS = [packView, timerView];
+const VIEWS = [waterView, packView, timerView];
 
 const IMG = new URL("../../../img/", import.meta.url).href;
 const SUMI_FACE = `${IMG}ui/face_icons/new/face_sumi.webp`;
@@ -65,7 +68,48 @@ function viewFor(bench) {
   if (shown) return shown;
   // 工程の初回の「操作の説明」（craft/session.js の explainStepOnce）は、工程の部品を出す前に開く。読む間も作る場面に写す
   const intro = !panel.firstElementChild && bench.querySelector(".bench-guide")?.open;
-  return intro ? mine.find((view) => view.intro) || null : null;
+  return intro ? mine.find((view) => view.intro === true || (typeof view.intro === "function" && view.intro(bench))) || null : null;
+}
+
+/**
+ * 外枠のボタンを長押しのボタンにする（試作の「注ぐ」「こぼす」「刺す」）。押している間 .pressing を付け、本編の要素へ
+ * pointerdown を送り、離した（指が外れた・キーを離した）時に pointerup を送る。live() は押した時の本編の要素（押せなければ null）。
+ */
+function holdButton(button, live) {
+  let release = null, pointer = null;
+  const start = (who) => {
+    if (release) return;
+    const target = live();
+    if (!target) return;
+    pointer = who;
+    release = relayPress(target);
+    button.classList.add("pressing");
+  };
+  const end = () => {
+    if (!release) return;
+    const done = release;
+    release = null; pointer = null;
+    button.classList.remove("pressing");
+    done();
+  };
+  button.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || release) return;
+    event.preventDefault();
+    try { button.setPointerCapture(event.pointerId); } catch { /* 捕まえられない指でも、離した時の pointerup は届く */ }
+    start(event.pointerId);
+  });
+  for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) {
+    button.addEventListener(type, (event) => { if (event.pointerId === pointer) end(); });
+  }
+  button.addEventListener("keydown", (event) => {
+    if ((event.key === " " || event.key === "Enter") && !event.repeat) { event.preventDefault(); start("key"); }
+  });
+  button.addEventListener("keyup", (event) => {
+    if ((event.key === " " || event.key === "Enter") && pointer === "key") { event.preventDefault(); end(); }
+  });
+  button.addEventListener("blur", end);
+  button.addEventListener("contextmenu", (event) => event.preventDefault());
+  return { end };
 }
 
 /** 作業台が見えていて、今の工程に縦の画面があるか（vertical.js の evaluate が見る）。 */
@@ -100,7 +144,7 @@ export function createCraftScene(frame) {
   let bench = null, view = null, viewDef = null, panel = null, content = null;
   let stepSig = "", rankSig = "", guideSig = "", coachText = null;
 
-  const kit = { relay: relayTap, icon: craftIcon, img: IMG };
+  const kit = { relay: relayTap, hold: holdButton, icon: craftIcon, img: IMG };
   const liveGuide = () => bench?.querySelector(".bench-guide");
 
   help.addEventListener("click", () => {

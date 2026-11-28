@@ -2,6 +2,7 @@
 // 確かめること: タイトル→会話（本編の会話の箱が縦のテロップと同じ比の幅になり、2行ずつ送れる）、返事の中継、
 // 地図（左右で隣の店・一覧・決定で店に入る）、tonari の行動選び、LIME・MENU のシート、心得の盤（縦の外枠へ移して十字キーと丸ボタンで灯す・決定）、
 // 登場カットインの縦のポスター、シーシャ作りの詰め方・蒸らし時間は縦の作る場面（外枠の札・ボタンを本編へ中継して工程が進む・VPN30）、
+// 水入れも縦の作る場面（外枠の長押しを本編のボタンへ pointerdown／pointerup で中継する・VPN31）、
 // まだ縦にしていない場面（シーシャ作りのほかの工程）は回転案内、横持ちは旧版、様式を替えると何も残らない、
 // 第2〜5章の日常（朝の小窓・地図・駅から隣町・場面カード・東京の地図の小窓・第5章の地図）も縦の外枠のまま。
 // 自動操作のブラウザの既定は旧版なので ?look=vertical を付けて選ぶ。
@@ -569,6 +570,92 @@ await suite("look_vertical", async (check) => {
     await page.locator(t("vt-timer-start")).tap();
     await page.waitForFunction(() => window.timerDone === true || window.vtCraftError);
     assert.deepEqual(await page.evaluate(() => window.vtCraftError || { seconds: window.vtCraft.steamSeconds, min: window.vtCraft.steamMin }), { seconds: 190, min: 190 / 60 });
+  }, { ...TALL, pageEntry: entry });
+
+  /** 作業台を開いて、本編の工程の関数を走らせる（自動の craftTest は使わない）。終わると window.vtStepDone、失敗は window.vtCraftError。 */
+  const runCraftStep = (page, { module, fn, mode = "tutorial", setup = null }) => page.evaluate(async ({ module, fn, mode, setup }) => {
+    try { localStorage.removeItem("suien_step_intro"); } catch {}
+    const core = await import("./js/core/state.js");
+    const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 1, day: 2, slot: 0 });
+    (await import("./js/core/ui.js")).clearScreen();
+    const { newSession, openBench } = await import("./js/craft/session.js");
+    const cs = newSession(mode); window.vtCraft = cs;
+    if (setup) Object.assign(cs, setup);
+    openBench(cs, {});
+    window.vtStepDone = false;
+    (await import(module))[fn](cs).then(() => { window.vtStepDone = true; }, (error) => { window.vtCraftError = String(error.stack || error); });
+  }, { module, fn, mode, setup });
+  /** 外枠のボタンを長押しする（pointerdown → 待つ → pointerup）。during は押している間に確かめる関数。 */
+  async function holdShell(page, id, ms, during = null) {
+    const box = await page.locator(t(id)).boundingBox();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    try {
+      if (during) await during();
+      await page.waitForTimeout(ms);
+    } finally { await page.mouse.up(); }
+  }
+  /** 作る場面のまま（外枠の全画面・回転案内なし）。 */
+  async function assertCraftShell(page, label) {
+    const shell = await page.evaluate(() => ({
+      scene: window.__verticalLook?.scene?.(), layout: document.querySelector(".vt-shell").dataset.layout,
+      hint: getComputedStyle(document.getElementById("rotate-hint")).display, guard: document.documentElement.dataset.rotateGuard || "",
+    }));
+    assert.deepEqual(shell, { scene: "craft", layout: "full", hint: "none", guard: "" }, `${label}: the craft scene fills the shell, without the rotate hint`);
+  }
+
+  await check("craft-water-in-the-shell", async (page) => {
+    // 水入れ（VPN31）: 縦の作る場面の流し台とボトル。外枠の「注ぐ」「こぼす」の長押しを本編のボタンへ pointerdown／pointerup で中継し、
+    // 本編の水量（毎フレーム読む）がボトルの水面になる。「決定」で本編の水入れが終わり、水量が cs.water に入る
+    await waitScene(page, "title");
+    await runCraftStep(page, { module: "./js/craft/water-view.js", fn: "stepWater" });
+    await waitScene(page, "craft");
+    await assertCraftShell(page, "water intro");
+    // チュートリアルの初回の説明（部品の前）も、水入れの画面のまま写す
+    await page.locator(t("vt-craft-guide")).waitFor();
+    assert.equal(await page.evaluate(() => document.querySelector(".vtc").dataset.step), "water");
+    await page.locator(t("vt-craft-guide-close")).tap();
+    // 説明を閉じると本編が水入れの部品を出し、外枠のボタンが押せるようになる
+    await page.locator(`#screen ${t("water-pour")}`).waitFor();
+    await page.locator(`${t("vt-water-pour")}:not([disabled])`).waitFor();
+    await page.locator(t("vt-craft-guide")).waitFor({ state: "hidden" });
+    const level = () => page.evaluate(() => Number(document.querySelector('#screen [data-test="water-meter"]').getAttribute("aria-valuenow")));
+    const first = await page.evaluate(() => ({
+      now: document.querySelector('[data-test="vt-craft-steps"] li.now')?.dataset.step, zone: document.querySelector('[data-test="vt-water-pic"]').dataset.zone,
+      sink: document.querySelector(".vtc-sink").getAttribute("src"), glass: document.querySelector(".vtc-glass").getAttribute("src"),
+      buttons: ["drain", "pour", "ok"].map((key) => !!document.querySelector(`[data-test="vt-water-${key}"]`)),
+    }));
+    assert.equal(first.now, "pack", "water is part of the packing step");
+    assert.equal(first.zone, "empty", "the bottle starts empty like the game");
+    assert(first.sink.endsWith("img/ui/vertical-craft/ui-sink-faucet.webp") && first.glass.endsWith("img/ui/vertical-craft/ui-bottle-open.webp"), JSON.stringify(first));
+    assert.deepEqual(first.buttons, [true, true, true]);
+    assert.equal(await level(), 0);
+    // 「注ぐ」の長押し: 押している間だけ本編が注ぎ、離すと止まる
+    await holdShell(page, "vt-water-pour", 2700, async () => {
+      await page.waitForFunction(() => document.querySelector('#screen [data-test="water-step"]').dataset.flow === "pour"
+        && document.querySelector('[data-test="vt-water-pour"]').classList.contains("pressing"));
+    });
+    await page.waitForFunction(() => document.querySelector('#screen [data-test="water-step"]').dataset.flow === "stopped");
+    const poured = await level();
+    assert(poured > 40 && poured < 60, `poured into the band: ${poured}`);
+    await page.waitForTimeout(300);
+    assert.equal(await level(), poured, "the water stops when the button is let go");
+    await page.waitForFunction(() => document.querySelector('[data-test="vt-water-pic"]').dataset.zone
+      === document.querySelector('#screen [data-test="water-status"]').dataset.band);
+    // 「こぼす」の長押し: 本編の水量が減る
+    await holdShell(page, "vt-water-drain", 500, async () => {
+      await page.waitForFunction(() => document.querySelector('#screen [data-test="water-step"]').dataset.flow === "drain");
+    });
+    await page.waitForFunction(() => document.querySelector('#screen [data-test="water-step"]').dataset.flow === "stopped");
+    const drained = await level();
+    assert(drained < poured && drained > poured - 5, `drained a little: ${poured} → ${drained}`);
+    await assertCraftShell(page, "water");
+    // 「決定」で本編の水入れが終わり、確定した水量が cs.water に入る
+    await page.locator(t("vt-water-ok")).tap();
+    await page.waitForFunction(() => window.vtStepDone === true || window.vtCraftError);
+    const water = await page.evaluate(() => window.vtCraftError || window.vtCraft.water);
+    assert.equal(typeof water, "number", String(water));
+    assert(Math.abs(water * 100 - drained) < 0.01, `cs.water is the game's level: ${water} / ${drained}`);
   }, { ...TALL, pageEntry: entry });
 
   await check("short-screen-fits", async (page) => {
